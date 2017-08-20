@@ -10,7 +10,9 @@
  *
  * @flow
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
+import windowStateKeeper from 'electron-window-state';
+import { URL } from 'url';
 import MenuBuilder from './menu';
 
 let mainWindow = null;
@@ -40,6 +42,12 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+function cleanUrl(url) {
+  const currentUrl = new URL(url);
+  currentUrl.search = '';
+  currentUrl.hash = '';
+  return new URL('./', currentUrl).href;
+}
 
 /**
  * Add event listeners...
@@ -59,11 +67,20 @@ app.on('ready', async () => {
     await installExtensions();
   }
 
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 1280,
-    height: 960
+  const mainWindowState = windowStateKeeper({
+    defaultWidth: 1280,
+    defaultHeight: 960,
   });
+
+  mainWindow = new BrowserWindow({
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    show: false
+  });
+
+  mainWindowState.manage(mainWindow);
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
@@ -76,6 +93,22 @@ app.on('ready', async () => {
     mainWindow.show();
     mainWindow.focus();
   });
+
+  // prevent internal navigation, open external links in default browser
+  const handleNavigate = (e, url) => {
+    e.preventDefault();
+    const currentCleanedUrl = cleanUrl(mainWindow.webContents.getURL());
+    const newCleanedUrl = cleanUrl(url);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('navigate', url);
+    }
+    if (currentCleanedUrl !== newCleanedUrl) {
+      // external link
+      shell.openExternal(url);
+    }
+  };
+  mainWindow.webContents.on('will-navigate', handleNavigate);
+  mainWindow.webContents.on('new-window', handleNavigate);
 
   mainWindow.on('closed', () => {
     mainWindow = null;

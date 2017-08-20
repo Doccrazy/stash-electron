@@ -186,12 +186,16 @@
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
+    "alphanum-sort": "^1.0.2",
     "bootstrap": "^4.0.0-beta",
     "devtron": "^1.4.0",
     "electron-debug": "^1.2.0",
+    "electron-settings": "^3.1.1",
+    "electron-window-state": "^4.1.1",
     "font-awesome": "^4.7.0",
     "history": "^4.6.3",
     "jquery": "^3.2.1",
+    "mz": "^2.6.0",
     "popper.js": "^1.12.3",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",

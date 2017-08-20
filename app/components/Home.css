@@ -4,11 +4,12 @@
 }
 
 .sidebar {
-  width: 250px;
+  min-width: 210px;
+  width: 25%;
   height: 100%;
   flex-shrink: 0;
   padding: 15px;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
   border-right: 1px solid #eee;
 }
@@ -22,12 +23,6 @@
 }
 
 .contentHeader {
-}
-
-.breadcrumb {
-  line-height: 1.25;
-  padding: 0.5rem 1rem;
-  border: 1px solid #e9ecef;
 }
 
 .contentBody {

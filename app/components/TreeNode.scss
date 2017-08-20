@@ -1,0 +1,39 @@
+@import "~font-awesome/scss/mixins";
+@import "~font-awesome/scss/variables";
+@import "~bootstrap/scss/bootstrap";
+
+.label {
+  white-space: nowrap;
+}
+
+.labelOpen {
+}
+
+.labelSelected {
+  background-color: $yellow;
+}
+
+.icon::before {
+  content: ' ';
+  width: 1em;
+  display: inline-block;
+}
+
+.iconWithChildren::before {
+  @include fa-icon();
+
+  content: $fa-var-caret-right;
+}
+
+.iconOpen::before {
+  content: $fa-var-caret-down;
+}
+
+.children {
+  display: none;
+  margin-left: 0.75em;
+}
+
+.childrenOpen {
+  display: block;
+}
