@@ -1,0 +1,10 @@
+$fa-font-path: "~font-awesome/fonts";
+
+@import "~font-awesome/scss/font-awesome";
+@import "~bootstrap/scss/bootstrap";
+
+html,
+body,
+#root {
+  height: 100%;
+}

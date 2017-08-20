@@ -1,14 +1,41 @@
-.container {
-  position: absolute;
-  top: 30%;
-  left: 10px;
-  text-align: center;
+.home {
+  height: 100%;
+  display: flex;
 }
 
-.container h2 {
-  font-size: 5rem;
+.sidebar {
+  width: 250px;
+  height: 100%;
+  flex-shrink: 0;
+  padding: 15px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: 1px solid #eee;
 }
 
-.container a {
-  font-size: 1.4rem;
+.main {
+  height: 100%;
+  flex-grow: 1;
+  padding: 15px 15px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentHeader {
+}
+
+.breadcrumb {
+  line-height: 1.25;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e9ecef;
+}
+
+.contentBody {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.contentFooter {
+  margin-top: 5px;
+  padding: 5px;
 }

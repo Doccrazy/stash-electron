@@ -1,0 +1,54 @@
+.root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  flex-shrink: 0;
+}
+
+.form {
+  width: 50%;
+}
+
+.search {
+  flex-grow: 1;
+}
+
+.git {
+  font-size: 1.2em;
+}
+
+.spin {
+  animation: spin 2s linear infinite;
+}
+
+.pulse {
+  animation: pulse 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  30% { transform: scale(1); }
+  40% { transform: scale(1.5); }
+  50% { transform: scale(1); }
+  60% { transform: scale(1.35); }
+  70% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+.logo {
+  display: inline-block;
+  vertical-align: -20%;
+  height: 24px;
+  width: 24px;
+  background-color: white;
+  -webkit-mask: url(../logo.svg) no-repeat center;
+  -webkit-mask-size: contain;
+}
