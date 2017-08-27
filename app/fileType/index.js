@@ -1,15 +1,17 @@
 import React from 'react';
 import getClassNameForExtension from 'font-awesome-filetypes';
 import PasswordPanel from './panel/Password';
+import PasswordForm from './form/Password';
 import DefaultPanel from './panel/Default';
-import passwordParser from './parser/password';
+import * as jsonParser from './parser/json';
 
 const TYPES = [
   {
     test: fn => fn.endsWith('.pass.json'),
     panel: PasswordPanel,
+    form: PasswordForm,
     format: entry => <span><i className="fa fa-key" /> {entry.substr(0, entry.length - 10)}</span>,
-    parser: passwordParser
+    ...jsonParser
   },
   {
     test: () => true,

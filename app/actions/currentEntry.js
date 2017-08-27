@@ -16,12 +16,26 @@ export function select(ptr: EntryPtr) {
       payload: ptr
     });
 
-    const type = typeFor(ptr.entry);
-    if (type.parser) {
+    await dispatch(read());
+  };
+}
+
+export function read(preParsedContent: any) {
+  return async (dispatch, getState) => {
+    const { currentEntry } = getState();
+    if (!currentEntry.ptr) {
+      return;
+    }
+
+    const type = typeFor(currentEntry.ptr.entry);
+    if (type.parse) {
       const { repository } = getState();
 
-      const content = await fs.readFile(path.join(repository.path, ptr.nodeId, ptr.entry));
-      const parsedContent = type.parser(content);
+      let parsedContent = preParsedContent;
+      if (!parsedContent) {
+        const content = await fs.readFile(path.join(repository.path, currentEntry.ptr.nodeId, currentEntry.ptr.entry));
+        parsedContent = type.parse(content);
+      }
       dispatch({
         type: READ,
         payload: parsedContent
