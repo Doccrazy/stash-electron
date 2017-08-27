@@ -1,5 +1,6 @@
 import fs from 'mz/fs';
 import path from 'path';
+import { clear as clearSelectedEntry } from './currentEntry';
 
 export const LOAD = 'repository/LOAD';
 export const RESET_DIRS = 'repository/RESET_DIRS';
@@ -97,6 +98,7 @@ export function toggle(subPath) {
 export function select(subPath) {
   return async (dispatch, getState) => {
     await dispatch(readDir(subPath));
+    dispatch(clearSelectedEntry());
     dispatch({
       type: SELECT,
       payload: subPath

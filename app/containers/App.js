@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import type { Children } from 'react';
 import { Navbar, NavbarBrand, Nav, NavItem, Form, Input, InputGroup, InputGroupButton, Button } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
+import GitStatus from '../components/GitStatus';
 import styles from './App.css';
 
 export default class App extends Component {
@@ -34,8 +35,8 @@ export default class App extends Component {
               </InputGroupButton>
             </InputGroup>
           </Form>
-          <span className="navbar-text text-warning">
-            <i className={`fa fa-git-square ${styles.git}`} />&nbsp;<i className="fa fa-long-arrow-down" />2&nbsp;<i className="fa fa-long-arrow-up" />2
+          <span className="navbar-text">
+            <GitStatus ahead="2" />
           </span>
         </Navbar>
         {this.props.children}
