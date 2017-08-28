@@ -7,8 +7,10 @@ import { read as readCurrentEntry } from './currentEntry';
 
 export const OPEN = 'edit/OPEN';
 export const CLOSE = 'edit/CLOSE';
+export const VALIDATE = 'edit/VALIDATE';
 export const SAVED = 'edit/SAVED';
 export const CHANGE = 'edit/CHANGE';
+export const CHANGE_STATE = 'edit/CHANGE_STATE';
 
 export function open(ptr, preParsedContent) {
   EntryPtr.assert(ptr);
@@ -28,7 +30,8 @@ export function open(ptr, preParsedContent) {
         type: OPEN,
         payload: {
           ptr,
-          parsedContent
+          parsedContent,
+          formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
         }
       });
     } else {
@@ -59,12 +62,29 @@ export function change(updatedContent) {
   };
 }
 
+export function changeState(newState) {
+  return {
+    type: CHANGE_STATE,
+    payload: newState
+  };
+}
+
 export function save(closeAfter) {
   return async (dispatch, getState) => {
     const { repository, edit, currentEntry } = getState();
     const absPath = path.join(repository.path, edit.ptr.nodeId, edit.ptr.entry);
 
     const type = typeFor(edit.ptr.entry);
+    if (type.form && type.form.validate) {
+      const validationError = type.form.validate(edit.parsedContent, edit.formState);
+      dispatch({
+        type: VALIDATE,
+        payload: validationError
+      });
+      if (validationError) {
+        return;
+      }
+    }
     if (type.parse) {
       const buffer = type.write(edit.parsedContent);
       await fs.writeFile(absPath, buffer);
