@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import type { Children } from 'react';
 import { Navbar, NavbarBrand, Nav, NavItem, Form, Input, InputGroup, InputGroupButton, Button } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
+import ReduxToastr from 'react-redux-toastr';
 import GitStatus from '../components/GitStatus';
 import styles from './App.css';
 
@@ -14,6 +15,7 @@ export default class App extends Component {
   render() {
     return (
       <div className={styles.root}>
+        <ReduxToastr timeOut={2000} preventDuplicates position="top-right" transitionIn="fadeIn" transitionOut="fadeOut" />
         <Navbar color="dark" className={`navbar-dark navbar-expand-md ${styles.nav}`}>
           <NavbarBrand href="/"><span className={styles.logo} /> Stash</NavbarBrand>
           <Nav className="mr-auto" navbar>

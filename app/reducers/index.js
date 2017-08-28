@@ -1,6 +1,7 @@
 // @flow
 import { combineReducers } from 'redux';
 import { routerReducer as router } from 'react-router-redux';
+import { reducer as toastr } from 'react-redux-toastr';
 import counter from './counter';
 import currentEntry from './currentEntry';
 import edit from './edit';
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   repository,
   settings,
   router,
+  toastr
 });
 
 export default rootReducer;
