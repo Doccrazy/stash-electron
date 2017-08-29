@@ -1,7 +1,7 @@
 import electronSettings from 'electron-settings';
 import { load as loadRepo } from './repository';
 
-export const LOAD = 'settings/LOAD';
+const LOAD = 'settings/LOAD';
 
 export function load() {
   return (dispatch, getState) => {
@@ -15,4 +15,13 @@ export function load() {
       dispatch(loadRepo(settings.repositoryPath));
     }
   };
+}
+
+export default function reducer(state = { }, action) {
+  switch (action.type) {
+    case LOAD:
+      return action.payload;
+    default:
+      return state;
+  }
 }

@@ -1,8 +1,9 @@
 // @flow
+import { Set } from 'immutable';
 import { EntryPtr } from '../utils/repository';
 
-export const ADD = 'favorites/ADD';
-export const REMOVE = 'favorites/REMOVE';
+const ADD = 'favorites/ADD';
+const REMOVE = 'favorites/REMOVE';
 
 export function add(ptr: EntryPtr) {
   EntryPtr.assert(ptr);
@@ -26,4 +27,15 @@ export function toggle(ptr: EntryPtr) {
     const { favorites } = getState();
     return dispatch(favorites.has(ptr) ? remove(ptr) : add(ptr));
   };
+}
+
+export default function reducer(state: Set<string> = new Set(), action: { type: string, payload: any }) {
+  switch (action.type) {
+    case ADD:
+      return state.add(action.payload);
+    case REMOVE:
+      return state.delete(action.payload);
+    default:
+      return state;
+  }
 }

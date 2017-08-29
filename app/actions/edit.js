@@ -5,12 +5,12 @@ import { EntryPtr } from '../utils/repository';
 import typeFor from '../fileType';
 import { read as readCurrentEntry } from './currentEntry';
 
-export const OPEN = 'edit/OPEN';
-export const CLOSE = 'edit/CLOSE';
-export const VALIDATE = 'edit/VALIDATE';
-export const SAVED = 'edit/SAVED';
-export const CHANGE = 'edit/CHANGE';
-export const CHANGE_STATE = 'edit/CHANGE_STATE';
+const OPEN = 'edit/OPEN';
+const CLOSE = 'edit/CLOSE';
+const VALIDATE = 'edit/VALIDATE';
+const SAVED = 'edit/SAVED';
+const CHANGE = 'edit/CHANGE';
+const CHANGE_STATE = 'edit/CHANGE_STATE';
 
 export function open(ptr, preParsedContent) {
   EntryPtr.assert(ptr);
@@ -102,4 +102,34 @@ export function save(closeAfter) {
       }
     }
   };
+}
+
+export default function reducer(state = {}, action) {
+  switch (action.type) {
+    case OPEN:
+      if (action.payload.ptr && action.payload.parsedContent) {
+        return {
+          ptr: action.payload.ptr,
+          parsedContent: action.payload.parsedContent,
+          formState: action.payload.formState
+        };
+      }
+      return state;
+    case CHANGE:
+      if (action.payload) {
+        return { ...state, parsedContent: action.payload };
+      }
+      return state;
+    case CHANGE_STATE:
+      if (action.payload) {
+        return { ...state, formState: action.payload };
+      }
+      return state;
+    case VALIDATE:
+      return { ...state, validationError: action.payload };
+    case CLOSE:
+      return {};
+    default:
+      return state;
+  }
 }

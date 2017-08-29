@@ -23,7 +23,7 @@ export default class App extends Component {
               <NavLink to="/" exact className="nav-link">Browser</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink to="/counter" exact className="nav-link">Users</NavLink>
+              <NavLink to="/users" exact className="nav-link">Users</NavLink>
             </NavItem>
             <NavItem>
               <NavLink to="/settings" exact className="nav-link">Settings</NavLink>

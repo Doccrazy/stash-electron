@@ -1,15 +1,30 @@
+// @flow
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupButton, Row, Col } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, Row, Col } from 'reactstrap';
 
-export default class PasswordForm extends React.Component {
-  componentWillReceiveProps(nextProps) {
-    if (this.props.formState.mask !== nextProps.formState.mask && this.passwordInput) {
-      this.passwordInput.focus();
-      this.passwordInput.select();
+type Content = { username: string, password: string, url: string, description: string };
+type FormState = { mask: boolean, repeatPassword: string };
+type Props = {
+  value: Content,
+  onChange: (Content) => void,
+  formState: FormState,
+  onChangeState: (FormState) => void
+};
+
+export default class PasswordForm extends React.Component<void, Props, void> {
+  static initFormState: Content => FormState;
+  static validate: (Content, FormState) => string | boolean;
+  passwordInput: ?HTMLInputElement;
+
+  componentWillReceiveProps(nextProps: Props) {
+    const maskedInput = this.passwordInput;
+    if (this.props.formState.mask !== nextProps.formState.mask && maskedInput) {
+      maskedInput.focus();
+      maskedInput.select();
     }
   }
 
-  changeRepeatPassword = ev => {
+  changeRepeatPassword = (ev: SyntheticInputEvent) => {
     this.props.onChangeState({ ...this.props.formState, repeatPassword: ev.target.value });
   };
 
