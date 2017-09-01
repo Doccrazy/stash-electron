@@ -1,5 +1,5 @@
 // @flow
-import fs from 'mz/fs';
+import fs from 'fs-extra';
 import path from 'path';
 import { EntryPtr } from '../utils/repository';
 import typeFor from '../fileType';

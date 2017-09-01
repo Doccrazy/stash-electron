@@ -1,4 +1,4 @@
-import fs from 'mz/fs';
+import fs from 'fs-extra';
 import path from 'path';
 import { shell } from 'electron';
 import { EntryPtr } from '../utils/repository';
