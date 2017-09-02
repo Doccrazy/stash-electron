@@ -2,13 +2,15 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { EntryPtr } from '../utils/repository';
-import { repositoryEvents } from './repository';
+import { deleteEntry, repositoryEvents } from './repository';
 import typeFor from '../fileType';
 
 const SELECT = 'currentEntry/SELECT';
 const RESELECT = 'currentEntry/RESELECT';
 const READ = 'currentEntry/READ';
 const CLEAR = 'currentEntry/CLEAR';
+const PREPARE_DELETE = 'currentEntry/PREPARE_DELETE';
+const CANCEL_DELETE = 'currentEntry/CANCEL_DELETE';
 
 export function select(ptr: EntryPtr) {
   EntryPtr.assert(ptr);
@@ -60,6 +62,32 @@ export function clear() {
   };
 }
 
+export function prepareDelete() {
+  return (dispatch, getState) => {
+    const { currentEntry } = getState();
+    if (currentEntry.ptr) {
+      dispatch({
+        type: PREPARE_DELETE
+      });
+    }
+  };
+}
+
+export function confirmDelete() {
+  return async (dispatch, getState) => {
+    const { currentEntry } = getState();
+    if (currentEntry.ptr) {
+      await dispatch(deleteEntry(currentEntry.ptr));
+    }
+  };
+}
+
+export function cancelDelete() {
+  return {
+    type: CANCEL_DELETE
+  };
+}
+
 repositoryEvents.on('clearSelection', (dispatch, getState) => {
   dispatch(clear());
 });
@@ -87,7 +115,7 @@ export default function reducer(state: { ptr?: EntryPtr, parsedContent?: any } =
       return state;
     case RESELECT:
       if (action.payload instanceof EntryPtr) {
-        return { ...state, ptr: action.payload };
+        return { ...state, ptr: action.payload, deleting: false };
       }
       return state;
     case READ:
@@ -97,6 +125,10 @@ export default function reducer(state: { ptr?: EntryPtr, parsedContent?: any } =
       return state;
     case CLEAR:
       return {};
+    case PREPARE_DELETE:
+      return { ...state, deleting: true };
+    case CANCEL_DELETE:
+      return { ...state, deleting: false };
     default:
       return state;
   }

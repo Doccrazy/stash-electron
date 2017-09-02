@@ -5,7 +5,7 @@ import { fromJS, is } from 'immutable';
 import { EntryPtr, isValidFileName } from '../utils/repository';
 import typeFor, { typeById } from '../fileType';
 import * as current from './currentEntry';
-import { rename, createEntry, deleteEntry, repositoryEvents } from './repository';
+import { rename, createEntry, repositoryEvents } from './repository';
 
 const OPEN = 'edit/OPEN';
 const REPOINT_OPEN = 'edit/REPOINT_OPEN';
@@ -85,15 +85,6 @@ export function repointOpen(ptr) {
   };
 }
 
-export function deleteCurrent() {
-  return async (dispatch, getState) => {
-    const { currentEntry } = getState();
-    if (currentEntry.ptr) {
-      await dispatch(deleteEntry(currentEntry.ptr));
-    }
-  };
-}
-
 export function close() {
   return {
     type: CLOSE
@@ -147,7 +138,7 @@ export function save(closeAfter) {
     // validate content
     const type = typeById(edit.typeId);
     if (type.form && type.form.validate) {
-      const validationError = type.form.validate(edit.parsedContent, edit.formState);
+      const validationError = type.form.validate(edit.name, edit.parsedContent, edit.formState);
       dispatch({
         type: VALIDATE,
         payload: validationError

@@ -2,7 +2,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import FileDetails from '../components/FileDetails';
 import { EntryPtr } from '../utils/repository';
-import { openCurrent, deleteCurrent } from '../actions/edit';
+import { openCurrent } from '../actions/edit';
+import { prepareDelete } from '../actions/currentEntry';
 
 export default connect(state => ({
   node: state.currentEntry.ptr && state.repository.nodes[state.currentEntry.ptr.nodeId],
@@ -10,5 +11,5 @@ export default connect(state => ({
   parsedContent: state.currentEntry.parsedContent,
 }), dispatch => ({
   onEdit: () => dispatch(openCurrent()),
-  onDelete: () => dispatch(deleteCurrent())
+  onDelete: () => dispatch(prepareDelete())
 }))(FileDetails);

@@ -3,7 +3,7 @@ import { Button, Row, Col } from 'reactstrap';
 import Breadcrumb from './Breadcrumb';
 import BarsMenu from './BarsMenu';
 import { hierarchy } from '../utils/repository';
-import styles from './FolderActionBar.css';
+import styles from './FolderActionBar.scss';
 
 export default ({ nodes, currentNodeId, onSelectFolder, onCreateItem }) => {
   const nodeHierarchy = hierarchy(nodes, currentNodeId);

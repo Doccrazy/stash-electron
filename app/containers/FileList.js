@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import FileList from '../components/FileList';
 import { EntryPtr } from '../utils/repository';
 import { select } from '../actions/currentEntry';
+import { open } from '../actions/edit';
 import { toggle as toggleFavorite } from '../actions/favorites';
 
 export default connect(state => ({
@@ -11,5 +12,6 @@ export default connect(state => ({
   favorites: state.favorites.filter(ptr => ptr.nodeId === state.repository.selected).map(ptr => ptr.entry)
 }), dispatch => ({
   onSelect: (node, entry) => dispatch(select(new EntryPtr(node, entry))),
+  onEdit: (node, entry) => dispatch(open(new EntryPtr(node, entry))),
   onToggleFavorite: (node, entry) => dispatch(toggleFavorite(new EntryPtr(node, entry)))
 }))(FileList);

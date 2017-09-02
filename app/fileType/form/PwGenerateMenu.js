@@ -26,7 +26,7 @@ function generatePw(len, charClassIdx) {
 
 export default ({ onGenerate }) => (
   <div className="dropdown" style={{ display: 'inline-block' }}>
-    <button className="btn btn-secondary" data-toggle="dropdown" title="Generate password">
+    <button type="button" className="btn btn-secondary" data-toggle="dropdown" title="Generate password">
       <i className="fa fa-cog" />
     </button>
     <div className="dropdown-menu dropdown-menu-right">

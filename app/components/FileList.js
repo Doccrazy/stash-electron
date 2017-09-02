@@ -4,7 +4,7 @@ import cx from 'classnames';
 import typeFor from '../fileType';
 import utils from '../utils/styles.css';
 
-export default ({ currentNode, selectedEntry, favorites, onSelect, onToggleFavorite }) => (<div>
+export default ({ currentNode, selectedEntry, favorites, onSelect, onEdit, onToggleFavorite }) => (<div>
   <Table hover className={`table-sm ${utils.stickyTable}`}>
     <thead>
       <tr>
@@ -19,7 +19,10 @@ export default ({ currentNode, selectedEntry, favorites, onSelect, onToggleFavor
         return (<tr
           key={entry}
           className={cx(utils.clickable, selectedEntry === entry && 'table-active')}
-          onClick={() => onSelect(currentNode, entry)}
+          onClick={ev => { if (ev.detail === 1) { onSelect(currentNode, entry); } }}
+          onMouseDown={ev => { if (ev.detail > 1) { ev.preventDefault(); } }}
+          onDoubleClick={() => onEdit(currentNode, entry)}
+          onKeyDown={ev => console.log(ev)}
         >
           <td><i
             className={cx('fa', favorites.has(entry) ? 'fa-star' : 'fa-star-o')}

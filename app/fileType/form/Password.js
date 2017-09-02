@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, Row, Col } from 'reactstrap';
+import { Button, FormGroup, Label, Input, Row, Col } from 'reactstrap';
 import PwGenerateMenu from './PwGenerateMenu';
 import { cleanFileName } from '../../utils/repository';
 
@@ -59,7 +59,7 @@ export default class PasswordForm extends React.Component<void, Props, void> {
   render() {
     const { name, onChangeName, value, onChange } = this.props;
     return (
-      <Form>
+      <div>
         <FormGroup row>
           <Label sm={2} for="name">Title</Label>
           <Col sm={10}>
@@ -134,14 +134,17 @@ export default class PasswordForm extends React.Component<void, Props, void> {
             />
           </Col>
         </FormGroup>
-      </Form>
+      </div>
     );
   }
 }
 
 PasswordForm.initFormState = content => ({ mask: true, repeatPassword: content ? content.password : '' });
 
-PasswordForm.validate = (content, formState) => {
+PasswordForm.validate = (name, content, formState) => {
+  if (name === '.pass.json') {
+    return 'Please enter a title.';
+  }
   if (!content.username && !content.password) {
     return 'Please provide either a username or a password.';
   }
