@@ -2,7 +2,6 @@
 import React from 'react';
 import { Button, FormGroup, Label, Input, Row, Col } from 'reactstrap';
 import PwGenerateMenu from './PwGenerateMenu';
-import { cleanFileName } from '../../utils/repository';
 
 type Content = { username?: string, password?: string, url?: string, description?: string };
 type FormState = { mask: boolean, repeatPassword?: string };
@@ -68,7 +67,7 @@ export default class PasswordForm extends React.Component<void, Props, void> {
               id="name"
               placeholder="Title"
               value={name.substr(0, name.length - 10)}
-              onChange={ev => onChangeName(`${cleanFileName(ev.target.value)}.pass.json`)}
+              onChange={ev => onChangeName(`${ev.target.value}.pass.json`)}
             />
           </Col>
         </FormGroup>

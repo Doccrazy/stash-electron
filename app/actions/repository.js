@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import alphanumSort from 'alphanum-sort';
 import EventEmitter from 'events';
+import { toastr } from 'react-redux-toastr';
 import { EntryPtr, hierarchy } from '../utils/repository';
 
 const LOAD = 'repository/LOAD';
@@ -13,6 +14,7 @@ const RENAME_ENTRY = 'repository/RENAME_ENTRY';
 const DELETE_ENTRY = 'repository/DELETE_ENTRY';
 const CREATE_ENTRY = 'repository/CREATE_ENTRY';
 const DELETE_NODE = 'repository/DELETE_NODE';
+const RENAME_NODE = 'repository/RENAME_NODE';
 
 export function load(repoPath) {
   return async (dispatch, getState) => {
@@ -121,6 +123,7 @@ export function rename(ptr, newName) {
       repositoryEvents.emit('rename', dispatch, getState, ptr, newPtr);
     } catch (e) {
       // rename failed
+      toastr.error(`Failed to rename entry ${ptr.entry} to ${newName}: ${e}`);
     }
   };
 }
@@ -142,6 +145,7 @@ export function deleteEntry(ptr) {
       repositoryEvents.emit('delete', dispatch, getState, ptr);
     } catch (e) {
       // delete failed
+      toastr.error(`Failed to delete entry ${ptr.entry}: ${e}`);
     }
   };
 }
@@ -170,6 +174,7 @@ export function deleteNode(nodeId) {
       repositoryEvents.emit('deleteNode', dispatch, getState, node);
     } catch (e) {
       // delete failed
+      toastr.error(`Failed to delete folder ${node.name}: ${e}`);
     }
   };
 }
@@ -178,6 +183,41 @@ export function createEntry(ptr) {
   return {
     type: CREATE_ENTRY,
     payload: ptr
+  };
+}
+
+export function renameNode(nodeId, newName) {
+  if (!nodeId || nodeId === '/') {
+    return;
+  }
+  return async (dispatch, getState) => {
+    const { repository } = getState();
+    const node = repository.nodes[nodeId];
+    if (!node) {
+      return;
+    }
+    const parentNode = repository.nodes[node.parent];
+
+    const absPath = path.join(repository.path, parentNode.id, node.name);
+    const newPath = path.join(repository.path, parentNode.id, newName);
+
+    try {
+      await fs.rename(absPath, newPath);
+
+      dispatch({
+        type: RENAME_NODE,
+        payload: {
+          nodeId,
+          newName
+        }
+      });
+
+      const newId = `${parentNode.id}${newName}/`;
+      repositoryEvents.emit('moveNode', dispatch, getState, nodeId, newId);
+    } catch (e) {
+      // rename failed
+      toastr.error(`Failed to rename folder to ${newName}: ${e}`);
+    }
   };
 }
 
@@ -266,6 +306,28 @@ export default function reducer(state = { nodes: { }, open: new Set() }, action)
       if (node) {
         const newNodes = { ...state.nodes };
         delete newNodes[action.payload];
+        return { ...state, nodes: newNodes };
+      }
+      return state;
+    }
+    case RENAME_NODE: {
+      const node = state.nodes[action.payload.nodeId];
+      const newName = action.payload.newName;
+      if (node) {
+        const newParentNode = { ...state.nodes[node.parent] };
+
+        const newNode = {
+          ...node,
+          id: `${newParentNode.id}${newName}/`,
+          name: newName,
+          title: newName
+        };
+        newParentNode.children = newParentNode.children.filter(childId => childId !== node.id);
+        newParentNode.children.push(newNode.id);
+        newParentNode.children = alphanumSort(newParentNode.children);
+
+        const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
+        delete newNodes[node.id];
         return { ...state, nodes: newNodes };
       }
       return state;

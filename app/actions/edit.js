@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { shell } from 'electron';
 import { fromJS, is } from 'immutable';
-import { EntryPtr, isValidFileName } from '../utils/repository';
+import { cleanFileName, EntryPtr, isValidFileName } from '../utils/repository';
 import typeFor, { typeById } from '../fileType';
 import * as current from './currentEntry';
 import { rename, createEntry, repositoryEvents } from './repository';
@@ -108,7 +108,7 @@ export function changeState(newState) {
 export function changeName(name) {
   return {
     type: CHANGE_NAME,
-    payload: name
+    payload: cleanFileName(name)
   };
 }
 
@@ -118,15 +118,16 @@ export function save(closeAfter) {
     const node = repository.nodes[edit.ptr.nodeId];
 
     // validate new name
-    if (!edit.ptr.entry || edit.name !== edit.ptr.entry) {
-      if (!isValidFileName(edit.name)) {
+    const newName = edit.name ? edit.name.trim() : edit.name;
+    if (!edit.ptr.entry || newName !== edit.ptr.entry) {
+      if (!isValidFileName(newName)) {
         dispatch({
           type: VALIDATE,
           payload: 'Name must be provided and cannot contain / \\ : * ? " < > |.'
         });
         return;
       }
-      if (node.entries.find(e => e === edit.name)) {
+      if (node.entries.find(e => e === newName)) {
         dispatch({
           type: VALIDATE,
           payload: 'An entry with this name already exists.'
@@ -138,7 +139,7 @@ export function save(closeAfter) {
     // validate content
     const type = typeById(edit.typeId);
     if (type.form && type.form.validate) {
-      const validationError = type.form.validate(edit.name, edit.parsedContent, edit.formState);
+      const validationError = type.form.validate(newName, edit.parsedContent, edit.formState);
       dispatch({
         type: VALIDATE,
         payload: validationError
@@ -150,7 +151,7 @@ export function save(closeAfter) {
 
     // save content
     if (type.parse && !is(fromJS(edit.parsedContent), edit.initialContent)) {
-      const absPath = path.join(repository.path, edit.ptr.nodeId, edit.ptr.entry || edit.name);
+      const absPath = path.join(repository.path, edit.ptr.nodeId, edit.ptr.entry || newName);
       const buffer = type.write(edit.parsedContent);
       await fs.writeFile(absPath, buffer);
 
@@ -161,7 +162,7 @@ export function save(closeAfter) {
       if (currentEntry.ptr && currentEntry.ptr.equals(edit.ptr)) {
         dispatch(current.read(edit.parsedContent));
       } else if (!edit.ptr.entry) {
-        const newPtr = new EntryPtr(edit.ptr.nodeId, edit.name);
+        const newPtr = new EntryPtr(edit.ptr.nodeId, newName);
         dispatch(createEntry(newPtr));
         if (currentNode.nodeId === edit.ptr.nodeId) {
           dispatch(current.select(newPtr));
@@ -170,8 +171,8 @@ export function save(closeAfter) {
     }
 
     // rename
-    if (edit.ptr.entry && edit.name !== edit.ptr.entry) {
-      dispatch(rename(edit.ptr, edit.name));
+    if (edit.ptr.entry && newName !== edit.ptr.entry) {
+      dispatch(rename(edit.ptr, newName));
     }
 
     if (closeAfter) {
