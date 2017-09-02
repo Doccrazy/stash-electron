@@ -9,13 +9,13 @@ const RESET_DIRS = 'repository/RESET_DIRS';
 const READ_DIR = 'repository/READ_DIR';
 const EXPAND = 'repository/EXPAND';
 const CLOSE = 'repository/CLOSE';
-const SELECT = 'repository/SELECT';
 const RENAME_ENTRY = 'repository/RENAME_ENTRY';
 const DELETE_ENTRY = 'repository/DELETE_ENTRY';
 const CREATE_ENTRY = 'repository/CREATE_ENTRY';
+const DELETE_NODE = 'repository/DELETE_NODE';
 
 export function load(repoPath) {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     dispatch({
       type: RESET_DIRS
     });
@@ -23,7 +23,7 @@ export function load(repoPath) {
       type: LOAD,
       payload: repoPath
     });
-    await dispatch(select('/'));
+    repositoryEvents.emit('initialize', dispatch, getState);
   };
 }
 
@@ -100,18 +100,6 @@ export function toggle(subPath) {
   };
 }
 
-export function select(subPath) {
-  return async (dispatch, getState) => {
-    await dispatch(readDir(subPath));
-    repositoryEvents.emit('clearSelection', dispatch, getState);
-    dispatch({
-      type: SELECT,
-      payload: subPath
-    });
-    maybeExpand(dispatch, getState, subPath);
-  };
-}
-
 export function rename(ptr, newName) {
   return async (dispatch, getState) => {
     const { repository } = getState();
@@ -148,9 +136,7 @@ export function deleteEntry(ptr) {
 
       dispatch({
         type: DELETE_ENTRY,
-        payload: {
-          ptr
-        }
+        payload: ptr
       });
 
       repositoryEvents.emit('delete', dispatch, getState, ptr);
@@ -160,12 +146,38 @@ export function deleteEntry(ptr) {
   };
 }
 
+export function deleteNode(nodeId) {
+  if (!nodeId || nodeId === '/') {
+    return;
+  }
+  return async (dispatch, getState) => {
+    const { repository } = getState();
+    const node = repository.nodes[nodeId];
+    if (!node) {
+      return;
+    }
+
+    const absPath = path.join(repository.path, nodeId);
+
+    try {
+      await fs.remove(absPath);
+
+      dispatch({
+        type: DELETE_NODE,
+        payload: nodeId
+      });
+
+      repositoryEvents.emit('deleteNode', dispatch, getState, node);
+    } catch (e) {
+      // delete failed
+    }
+  };
+}
+
 export function createEntry(ptr) {
   return {
     type: CREATE_ENTRY,
-    payload: {
-      ptr
-    }
+    payload: ptr
   };
 }
 
@@ -214,8 +226,6 @@ export default function reducer(state = { nodes: { }, open: new Set() }, action)
       newOpen.delete(action.payload);
       return { ...state, open: newOpen };
     }
-    case SELECT:
-      return { ...state, selected: action.payload };
     case RENAME_ENTRY: {
       const node = state.nodes[action.payload.ptr.nodeId];
       if (node) {
@@ -230,23 +240,32 @@ export default function reducer(state = { nodes: { }, open: new Set() }, action)
       return state;
     }
     case DELETE_ENTRY: {
-      const node = state.nodes[action.payload.ptr.nodeId];
+      const node = state.nodes[action.payload.nodeId];
       if (node) {
         const newNode = { ...node };
-        newNode.entries = node.entries.filter(e => e !== action.payload.ptr.entry);
+        newNode.entries = node.entries.filter(e => e !== action.payload.entry);
 
-        const newNodes = { ...state.nodes, [action.payload.ptr.nodeId]: newNode };
+        const newNodes = { ...state.nodes, [action.payload.nodeId]: newNode };
         return { ...state, nodes: newNodes };
       }
       return state;
     }
     case CREATE_ENTRY: {
-      const node = state.nodes[action.payload.ptr.nodeId];
+      const node = state.nodes[action.payload.nodeId];
       if (node) {
         const newNode = { ...node };
-        newNode.entries = alphanumSort([...newNode.entries, action.payload.ptr.entry]);
+        newNode.entries = alphanumSort([...newNode.entries, action.payload.entry]);
 
-        const newNodes = { ...state.nodes, [action.payload.ptr.nodeId]: newNode };
+        const newNodes = { ...state.nodes, [action.payload.nodeId]: newNode };
+        return { ...state, nodes: newNodes };
+      }
+      return state;
+    }
+    case DELETE_NODE: {
+      const node = state.nodes[action.payload];
+      if (node) {
+        const newNodes = { ...state.nodes };
+        delete newNodes[action.payload];
         return { ...state, nodes: newNodes };
       }
       return state;

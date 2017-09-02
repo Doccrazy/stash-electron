@@ -7,9 +7,9 @@ import { open } from '../actions/edit';
 import { toggle as toggleFavorite } from '../actions/favorites';
 
 export default connect(state => ({
-  currentNode: state.repository.nodes[state.repository.selected],
-  selectedEntry: state.currentEntry.ptr && state.currentEntry.ptr.nodeId === state.repository.selected && state.currentEntry.ptr.entry,
-  favorites: state.favorites.filter(ptr => ptr.nodeId === state.repository.selected).map(ptr => ptr.entry)
+  currentNode: state.repository.nodes[state.currentNode.nodeId],
+  selectedEntry: state.currentEntry.ptr && state.currentEntry.ptr.nodeId === state.currentNode.nodeId && state.currentEntry.ptr.entry,
+  favorites: state.favorites.filter(ptr => ptr.nodeId === state.currentNode.nodeId).map(ptr => ptr.entry)
 }), dispatch => ({
   onSelect: (node, entry) => dispatch(select(new EntryPtr(node, entry))),
   onEdit: (node, entry) => dispatch(open(new EntryPtr(node, entry))),

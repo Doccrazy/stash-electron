@@ -114,7 +114,7 @@ export function changeName(name) {
 
 export function save(closeAfter) {
   return async (dispatch, getState) => {
-    const { repository, edit, currentEntry } = getState();
+    const { repository, edit, currentNode, currentEntry } = getState();
     const node = repository.nodes[edit.ptr.nodeId];
 
     // validate new name
@@ -163,7 +163,7 @@ export function save(closeAfter) {
       } else if (!edit.ptr.entry) {
         const newPtr = new EntryPtr(edit.ptr.nodeId, edit.name);
         dispatch(createEntry(newPtr));
-        if (repository.selected === edit.ptr.nodeId) {
+        if (currentNode.nodeId === edit.ptr.nodeId) {
           dispatch(current.select(newPtr));
         }
       }
