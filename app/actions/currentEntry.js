@@ -71,6 +71,13 @@ repositoryEvents.on('rename', (dispatch, getState, ptr, newPtr) => {
   }
 });
 
+repositoryEvents.on('delete', (dispatch, getState, ptr) => {
+  const { currentEntry } = getState();
+  if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
+    dispatch(clear());
+  }
+});
+
 export default function reducer(state: { ptr?: EntryPtr, parsedContent?: any } = {}, action: { type: string, payload: any }) {
   switch (action.type) {
     case SELECT:

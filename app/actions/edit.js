@@ -5,7 +5,7 @@ import { fromJS, is } from 'immutable';
 import { EntryPtr, isValidFileName } from '../utils/repository';
 import typeFor from '../fileType';
 import { read as readCurrentEntry } from './currentEntry';
-import { rename, repositoryEvents } from './repository';
+import { rename, deleteEntry, repositoryEvents } from './repository';
 
 const OPEN = 'edit/OPEN';
 const REPOINT_OPEN = 'edit/REPOINT_OPEN';
@@ -60,6 +60,15 @@ export function repointOpen(ptr) {
     type: REPOINT_OPEN,
     payload: {
       ptr,
+    }
+  };
+}
+
+export function deleteCurrent() {
+  return async (dispatch, getState) => {
+    const { currentEntry } = getState();
+    if (currentEntry.ptr) {
+      await dispatch(deleteEntry(currentEntry.ptr));
     }
   };
 }
@@ -157,6 +166,13 @@ repositoryEvents.on('rename', (dispatch, getState, ptr, newPtr) => {
   const { edit } = getState();
   if (edit.ptr && edit.ptr.equals(ptr)) {
     dispatch(repointOpen(newPtr));
+  }
+});
+
+repositoryEvents.on('delete', (dispatch, getState, ptr) => {
+  const { edit } = getState();
+  if (edit.ptr && edit.ptr.equals(ptr)) {
+    dispatch(close());
   }
 });
 

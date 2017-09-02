@@ -11,6 +11,7 @@ const EXPAND = 'repository/EXPAND';
 const CLOSE = 'repository/CLOSE';
 const SELECT = 'repository/SELECT';
 const RENAME_ENTRY = 'repository/RENAME_ENTRY';
+const DELETE_ENTRY = 'repository/DELETE_ENTRY';
 
 export function load(repoPath) {
   return async dispatch => {
@@ -135,6 +136,29 @@ export function rename(ptr, newName) {
   };
 }
 
+export function deleteEntry(ptr) {
+  return async (dispatch, getState) => {
+    const { repository } = getState();
+
+    const absPath = path.join(repository.path, ptr.nodeId, ptr.entry);
+
+    try {
+      await fs.unlink(absPath);
+
+      dispatch({
+        type: DELETE_ENTRY,
+        payload: {
+          ptr
+        }
+      });
+
+      repositoryEvents.emit('delete', dispatch, getState, ptr);
+    } catch (e) {
+      // delete failed
+    }
+  };
+}
+
 export const repositoryEvents = new EventEmitter();
 
 const MULTI_OPEN = false;
@@ -189,6 +213,17 @@ export default function reducer(state = { nodes: { }, open: new Set() }, action)
         newNode.entries = node.entries.filter(e => e !== action.payload.ptr.entry);
         newNode.entries.push(action.payload.newName);
         newNode.entries = alphanumSort(newNode.entries);
+
+        const newNodes = { ...state.nodes, [action.payload.ptr.nodeId]: newNode };
+        return { ...state, nodes: newNodes };
+      }
+      return state;
+    }
+    case DELETE_ENTRY: {
+      const node = state.nodes[action.payload.ptr.nodeId];
+      if (node) {
+        const newNode = { ...node };
+        newNode.entries = node.entries.filter(e => e !== action.payload.ptr.entry);
 
         const newNodes = { ...state.nodes, [action.payload.ptr.nodeId]: newNode };
         return { ...state, nodes: newNodes };

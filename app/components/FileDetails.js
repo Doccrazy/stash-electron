@@ -4,7 +4,7 @@ import cx from 'classnames';
 import FileActionBar from './FileActionBar';
 import typeFor from '../fileType';
 
-export default ({ node, entry, parsedContent, onEdit }) => {
+export default ({ node, entry, parsedContent, onEdit, onDelete }) => {
   if (node && entry) {
     const type = typeFor(entry);
     const TypePanel = type.panel;
@@ -14,7 +14,7 @@ export default ({ node, entry, parsedContent, onEdit }) => {
           <h4>{type.format(entry)}</h4>
         </Col>
         <Col xs="auto">
-          <FileActionBar node={node} entry={entry} onEdit={onEdit} />
+          <FileActionBar node={node} entry={entry} onEdit={onEdit} onDelete={onDelete} />
         </Col>
       </Row>
       <TypePanel node={node} entry={entry} parsedContent={parsedContent} />
