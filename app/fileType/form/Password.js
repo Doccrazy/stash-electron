@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import { Button, Form, FormGroup, Label, Input, Row, Col } from 'reactstrap';
+import PwGenerateMenu from './PwGenerateMenu';
 
 type Content = { username: string, password: string, url: string, description: string };
 type FormState = { mask: boolean, repeatPassword: string };
@@ -18,9 +19,9 @@ export default class PasswordForm extends React.Component<void, Props, void> {
   static validate: (Content, FormState) => string | boolean;
   passwordInput: ?HTMLInputElement;
 
-  componentWillReceiveProps(nextProps: Props) {
+  componentDidUpdate(prevProps: Props) {
     const maskedInput = this.passwordInput;
-    if (this.props.formState.mask !== nextProps.formState.mask && maskedInput) {
+    if (this.props.formState.mask !== prevProps.formState.mask && maskedInput) {
       maskedInput.focus();
       maskedInput.select();
     }
@@ -28,6 +29,13 @@ export default class PasswordForm extends React.Component<void, Props, void> {
 
   changeRepeatPassword = (ev: SyntheticInputEvent) => {
     this.props.onChangeState({ ...this.props.formState, repeatPassword: ev.target.value });
+  };
+
+  setPassword = (password: string) => {
+    this.props.onChange({ ...this.props.value, password });
+    if (this.props.formState.mask) {
+      this.props.onChangeState({ ...this.props.formState, repeatPassword: password });
+    }
   };
 
   toggleMask = () => {
@@ -92,7 +100,7 @@ export default class PasswordForm extends React.Component<void, Props, void> {
                 value={this.props.formState.mask ? this.props.formState.repeatPassword : ''}
                 onChange={this.changeRepeatPassword}
               /></Col>
-              <Col xs="auto"><Button title="Generate password"><i className="fa fa-cog" /></Button></Col>
+              <Col xs="auto"><PwGenerateMenu onGenerate={this.setPassword} /></Col>
             </Row>
           </Col>
         </FormGroup>

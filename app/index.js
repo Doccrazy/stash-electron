@@ -6,6 +6,11 @@ import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';
 import './app.global.scss';
 
+// TODO remove when reactstrap dropdowns are fixed
+global.jQuery = require('jquery');
+global.Popper = require('popper.js').default;
+require('bootstrap/js/src/dropdown');
+
 document.addEventListener('dragover', event => event.preventDefault());
 document.addEventListener('drop', event => event.preventDefault());
 
