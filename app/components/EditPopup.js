@@ -1,13 +1,13 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Col, Input } from 'reactstrap';
 import typeFor from '../fileType';
 
-export default ({ entry, parsedContent, formState, validationError, onChange, onChangeState, onSave, onClose }) => {
+export default ({ entry, name, parsedContent, formState, validationError, onChangeName, onChange, onChangeState, onSave, onClose }) => {
   const TypeForm = entry && typeFor(entry).form;
   return (<Modal size="lg" isOpen={!!entry} toggle={onClose}>
     <ModalHeader toggle={onClose}>Edit entry</ModalHeader>
     <ModalBody>
-      {TypeForm && <TypeForm value={parsedContent} onChange={onChange} formState={formState} onChangeState={onChangeState} />}
+      {TypeForm && <TypeForm name={name} onChangeName={onChangeName} value={parsedContent} onChange={onChange} formState={formState} onChangeState={onChangeState} />}
     </ModalBody>
     <ModalFooter>
       <div className="text-danger" style={{ flexGrow: 1 }}>{validationError}</div>

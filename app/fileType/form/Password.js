@@ -5,6 +5,8 @@ import { Button, Form, FormGroup, Label, Input, Row, Col } from 'reactstrap';
 type Content = { username: string, password: string, url: string, description: string };
 type FormState = { mask: boolean, repeatPassword: string };
 type Props = {
+  name: string,
+  onChangeName: string => void,
   value: Content,
   onChange: (Content) => void,
   formState: FormState,
@@ -37,9 +39,20 @@ export default class PasswordForm extends React.Component<void, Props, void> {
   };
 
   render() {
-    const { value, onChange } = this.props;
+    const { name, onChangeName, value, onChange } = this.props;
     return (
       <Form>
+        <FormGroup row>
+          <Label sm={2} for="name">Title</Label>
+          <Col sm={10}>
+            <Input
+              id="name"
+              placeholder="Title"
+              value={name.substr(0, name.length - 10)}
+              onChange={ev => onChangeName(`${ev.target.value}.pass.json`)}
+            />
+          </Col>
+        </FormGroup>
         <FormGroup row>
           <Label sm={2} for="username">Username</Label>
           <Col sm={10}>

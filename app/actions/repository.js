@@ -1,8 +1,8 @@
 import fs from 'fs-extra';
 import path from 'path';
 import alphanumSort from 'alphanum-sort';
-import { clear as clearSelectedEntry } from './currentEntry';
-import { hierarchy } from '../utils/repository';
+import EventEmitter from 'events';
+import { EntryPtr, hierarchy } from '../utils/repository';
 
 const LOAD = 'repository/LOAD';
 const RESET_DIRS = 'repository/RESET_DIRS';
@@ -10,6 +10,7 @@ const READ_DIR = 'repository/READ_DIR';
 const EXPAND = 'repository/EXPAND';
 const CLOSE = 'repository/CLOSE';
 const SELECT = 'repository/SELECT';
+const RENAME_ENTRY = 'repository/RENAME_ENTRY';
 
 export function load(repoPath) {
   return async dispatch => {
@@ -100,7 +101,7 @@ export function toggle(subPath) {
 export function select(subPath) {
   return async (dispatch, getState) => {
     await dispatch(readDir(subPath));
-    dispatch(clearSelectedEntry());
+    repositoryEvents.emit('clearSelection', dispatch, getState);
     dispatch({
       type: SELECT,
       payload: subPath
@@ -108,6 +109,33 @@ export function select(subPath) {
     maybeExpand(dispatch, getState, subPath);
   };
 }
+
+export function rename(ptr, newName) {
+  return async (dispatch, getState) => {
+    const { repository } = getState();
+
+    const absPath = path.join(repository.path, ptr.nodeId, ptr.entry);
+    const newPath = path.join(repository.path, ptr.nodeId, newName);
+    try {
+      await fs.rename(absPath, newPath);
+
+      dispatch({
+        type: RENAME_ENTRY,
+        payload: {
+          ptr,
+          newName
+        }
+      });
+
+      const newPtr = new EntryPtr(ptr.nodeId, newName);
+      repositoryEvents.emit('rename', dispatch, getState, ptr, newPtr);
+    } catch (e) {
+      // rename failed
+    }
+  };
+}
+
+export const repositoryEvents = new EventEmitter();
 
 const MULTI_OPEN = false;
 
@@ -154,6 +182,19 @@ export default function reducer(state = { nodes: { }, open: new Set() }, action)
     }
     case SELECT:
       return { ...state, selected: action.payload };
+    case RENAME_ENTRY: {
+      const node = state.nodes[action.payload.ptr.nodeId];
+      if (node) {
+        const newNode = { ...node };
+        newNode.entries = node.entries.filter(e => e !== action.payload.ptr.entry);
+        newNode.entries.push(action.payload.newName);
+        newNode.entries = alphanumSort(newNode.entries);
+
+        const newNodes = { ...state.nodes, [action.payload.ptr.nodeId]: newNode };
+        return { ...state, nodes: newNodes };
+      }
+      return state;
+    }
     default:
       return state;
   }

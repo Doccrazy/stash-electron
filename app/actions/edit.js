@@ -1,16 +1,20 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { shell } from 'electron';
-import { EntryPtr } from '../utils/repository';
+import { fromJS, is } from 'immutable';
+import { EntryPtr, isValidFileName } from '../utils/repository';
 import typeFor from '../fileType';
 import { read as readCurrentEntry } from './currentEntry';
+import { rename, repositoryEvents } from './repository';
 
 const OPEN = 'edit/OPEN';
+const REPOINT_OPEN = 'edit/REPOINT_OPEN';
 const CLOSE = 'edit/CLOSE';
 const VALIDATE = 'edit/VALIDATE';
 const SAVED = 'edit/SAVED';
 const CHANGE = 'edit/CHANGE';
 const CHANGE_STATE = 'edit/CHANGE_STATE';
+const CHANGE_NAME = 'edit/CHANGE_NAME';
 
 export function open(ptr, preParsedContent) {
   EntryPtr.assert(ptr);
@@ -30,6 +34,7 @@ export function open(ptr, preParsedContent) {
         type: OPEN,
         payload: {
           ptr,
+          name: ptr.entry,
           parsedContent,
           formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
         }
@@ -45,6 +50,16 @@ export function openCurrent() {
     const { currentEntry } = getState();
     if (currentEntry.ptr) {
       await dispatch(open(currentEntry.ptr, currentEntry.parsedContent));
+    }
+  };
+}
+
+export function repointOpen(ptr) {
+  EntryPtr.assert(ptr);
+  return {
+    type: REPOINT_OPEN,
+    payload: {
+      ptr,
     }
   };
 }
@@ -69,11 +84,38 @@ export function changeState(newState) {
   };
 }
 
+export function changeName(name) {
+  return {
+    type: CHANGE_NAME,
+    payload: name
+  };
+}
+
 export function save(closeAfter) {
   return async (dispatch, getState) => {
     const { repository, edit, currentEntry } = getState();
+    const node = repository.nodes[edit.ptr.nodeId];
     const absPath = path.join(repository.path, edit.ptr.nodeId, edit.ptr.entry);
 
+    // validate new name
+    if (edit.name !== edit.ptr.entry) {
+      if (!isValidFileName(edit.name)) {
+        dispatch({
+          type: VALIDATE,
+          payload: 'Name must be provided and cannot contain / \\ : * ? " < > |.'
+        });
+        return;
+      }
+      if (node.entries.find(e => e === edit.name)) {
+        dispatch({
+          type: VALIDATE,
+          payload: 'An entry with this name already exists.'
+        });
+        return;
+      }
+    }
+
+    // validate content
     const type = typeFor(edit.ptr.entry);
     if (type.form && type.form.validate) {
       const validationError = type.form.validate(edit.parsedContent, edit.formState);
@@ -85,7 +127,9 @@ export function save(closeAfter) {
         return;
       }
     }
-    if (type.parse) {
+
+    // save content
+    if (type.parse && !is(fromJS(edit.parsedContent), edit.initialContent)) {
       const buffer = type.write(edit.parsedContent);
       await fs.writeFile(absPath, buffer);
 
@@ -96,13 +140,25 @@ export function save(closeAfter) {
       if (currentEntry.ptr && currentEntry.ptr.equals(edit.ptr)) {
         dispatch(readCurrentEntry(edit.parsedContent));
       }
+    }
 
-      if (closeAfter) {
-        dispatch(close());
-      }
+    // rename
+    if (edit.name !== edit.ptr.entry) {
+      dispatch(rename(edit.ptr, edit.name));
+    }
+
+    if (closeAfter) {
+      dispatch(close());
     }
   };
 }
+
+repositoryEvents.on('rename', (dispatch, getState, ptr, newPtr) => {
+  const { edit } = getState();
+  if (edit.ptr && edit.ptr.equals(ptr)) {
+    dispatch(repointOpen(newPtr));
+  }
+});
 
 export default function reducer(state = {}, action) {
   switch (action.type) {
@@ -110,9 +166,16 @@ export default function reducer(state = {}, action) {
       if (action.payload.ptr && action.payload.parsedContent) {
         return {
           ptr: action.payload.ptr,
+          name: action.payload.name,
+          initialContent: fromJS(action.payload.parsedContent),
           parsedContent: action.payload.parsedContent,
           formState: action.payload.formState
         };
+      }
+      return state;
+    case REPOINT_OPEN:
+      if (action.payload.ptr) {
+        return { ...state, ptr: action.payload.ptr };
       }
       return state;
     case CHANGE:
@@ -125,6 +188,8 @@ export default function reducer(state = {}, action) {
         return { ...state, formState: action.payload };
       }
       return state;
+    case CHANGE_NAME:
+      return { ...state, name: action.payload };
     case VALIDATE:
       return { ...state, validationError: action.payload };
     case CLOSE:

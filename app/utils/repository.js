@@ -12,6 +12,10 @@ export function hierarchy(nodes, nodeId) {
   return result;
 }
 
+export function isValidFileName(fn: string) {
+  return fn && !/[/\\:*?"<>|]/.test(fn);
+}
+
 export class EntryPtr {
   constructor(node, entry) {
     if (typeof node === 'string') {
