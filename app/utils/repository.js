@@ -20,6 +20,11 @@ export function cleanFileName(fn: string) {
   return fn ? fn.replace(/[/\\:*?"<>|]/g, '') : fn;
 }
 
+export function hasChildOrEntry(allNodes, node, nameToCheck) {
+  return (node.entries && node.entries.find(e => e === nameToCheck))
+    || (node.children && node.children.find(child => allNodes[child].name === nameToCheck));
+}
+
 export class EntryPtr {
   constructor(node, entry) {
     if (typeof node === 'string') {

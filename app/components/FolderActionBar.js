@@ -21,7 +21,7 @@ export default ({ nodes, currentNodeId, editing, currentName, onSelectFolder, on
           {editable && <a className="dropdown-item" href="#" onClick={onRename}><i className="fa fa-pencil" /> Rename folder</a>}
           {editable && <a className="dropdown-item" href="#" onClick={onDelete}><i className="fa fa-trash-o" /> Delete folder</a>}
         </BarsMenu>&nbsp;
-        <Button onClick={() => onCreateNode(currentNodeId)}><i className="fa fa-folder" /> New folder</Button>&nbsp;
+        <Button onClick={onCreateNode}><i className="fa fa-folder" /> New folder</Button>&nbsp;
         <Button onClick={() => onCreateItem(currentNodeId)}><i className="fa fa-plus-circle" /> Create item</Button>
       </Col>
     </Row>

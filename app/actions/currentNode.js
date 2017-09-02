@@ -1,13 +1,14 @@
 import { toastr } from 'react-redux-toastr';
-import { expand, deleteNode, renameNode, repositoryEvents } from './repository';
-import { cleanFileName } from '../utils/repository';
+import { expand, deleteNode, renameNode, repositoryEvents, createChildNode } from './repository';
+import { cleanFileName, hasChildOrEntry } from '../utils/repository';
 
 const SELECT = 'currentNode/SELECT';
 const PREPARE_DELETE = 'currentNode/PREPARE_DELETE';
 const CANCEL_DELETE = 'currentNode/CANCEL_DELETE';
 const START_RENAME = 'currentNode/START_RENAME';
+const START_CREATE = 'currentNode/START_CREATE';
 const CHANGE_NAME = 'currentNode/CHANGE_NAME';
-const CLOSE_RENAME = 'currentNode/CLOSE_RENAME';
+const CLOSE_EDIT = 'currentNode/CLOSE_EDIT';
 
 export function select(nodeId) {
   return async (dispatch, getState) => {
@@ -68,6 +69,17 @@ export function startRename() {
   };
 }
 
+export function startCreate() {
+  return (dispatch, getState) => {
+    const { currentNode } = getState();
+    if (currentNode.nodeId) {
+      dispatch({
+        type: START_CREATE
+      });
+    }
+  };
+}
+
 export function changeName(name) {
   return {
     type: CHANGE_NAME,
@@ -75,30 +87,35 @@ export function changeName(name) {
   };
 }
 
-export function closeRename() {
+export function closeEdit() {
   return {
-    type: CLOSE_RENAME
+    type: CLOSE_EDIT
   };
 }
 
 export function saveNode() {
   return async (dispatch, getState) => {
     const { currentNode, repository } = getState();
-    if (currentNode.nodeId && currentNode.renaming) {
+    if (currentNode.nodeId && (currentNode.renaming || currentNode.creating)) {
       const newName = currentNode.name ? currentNode.name.trim() : currentNode.name;
       if (!newName || newName === currentNode.initialName) {
-        dispatch(closeRename());
+        dispatch(closeEdit());
         return;
       }
 
-      const parentId = repository.nodes[currentNode.nodeId].parent;
-      const parentNode = repository.nodes[parentId];
-      if (parentNode.children.find(child => repository.nodes[child].name === newName)) {
-        toastr.error(`A folder named '${newName}' already exists.`);
+      const node = repository.nodes[currentNode.nodeId];
+      const parentNode = repository.nodes[node.parent];
+      if (hasChildOrEntry(repository.nodes, currentNode.renaming ? parentNode : node, newName)) {
+        toastr.error(`An entry named '${newName}' already exists.`);
         return;
       }
 
-      await dispatch(renameNode(currentNode.nodeId, newName));
+      if (currentNode.renaming) {
+        await dispatch(renameNode(currentNode.nodeId, newName));
+      } else {
+        await dispatch(createChildNode(currentNode.nodeId, newName));
+        dispatch(closeEdit());
+      }
     }
   };
 }
@@ -121,6 +138,13 @@ repositoryEvents.on('moveNode', (dispatch, getState, nodeId, newId) => {
   }
 });
 
+repositoryEvents.on('createNode', (dispatch, getState) => {
+  const { currentNode } = getState();
+  if (currentNode.creating) {
+    dispatch(closeEdit());
+  }
+});
+
 export default function reducer(state = {}, action) {
   switch (action.type) {
     case SELECT:
@@ -130,11 +154,13 @@ export default function reducer(state = {}, action) {
     case CANCEL_DELETE:
       return { ...state, deleting: false };
     case START_RENAME:
-      return { ...state, renaming: true, initialName: action.payload, name: action.payload };
+      return { ...state, renaming: true, creating: false, initialName: action.payload, name: action.payload };
+    case START_CREATE:
+      return { ...state, renaming: false, creating: true, initialName: '', name: '' };
     case CHANGE_NAME:
       return { ...state, name: action.payload };
-    case CLOSE_RENAME:
-      return { ...state, renaming: false, initialName: null, name: null };
+    case CLOSE_EDIT:
+      return { ...state, renaming: false, creating: false, initialName: null, name: null };
     default:
       return state;
   }

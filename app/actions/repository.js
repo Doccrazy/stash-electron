@@ -15,6 +15,7 @@ const DELETE_ENTRY = 'repository/DELETE_ENTRY';
 const CREATE_ENTRY = 'repository/CREATE_ENTRY';
 const DELETE_NODE = 'repository/DELETE_NODE';
 const RENAME_NODE = 'repository/RENAME_NODE';
+const CREATE_NODE = 'repository/CREATE_NODE';
 
 export function load(repoPath) {
   return async (dispatch, getState) => {
@@ -221,6 +222,39 @@ export function renameNode(nodeId, newName) {
   };
 }
 
+export function createChildNode(parentNodeId, name) {
+  if (!parentNodeId) {
+    return;
+  }
+  return async (dispatch, getState) => {
+    const { repository } = getState();
+    const parentNode = repository.nodes[parentNodeId];
+    if (!parentNode) {
+      return;
+    }
+
+    const absPath = path.join(repository.path, parentNode.id, name);
+
+    try {
+      await fs.mkdir(absPath);
+
+      dispatch({
+        type: CREATE_NODE,
+        payload: {
+          parentNodeId,
+          name
+        }
+      });
+
+      maybeExpand(dispatch, getState, parentNode.id);
+      repositoryEvents.emit('createNode', dispatch, getState, parentNode.id, name);
+    } catch (e) {
+      // mkdir failed
+      toastr.error(`Failed to rename folder to ${newName}: ${e}`);
+    }
+  };
+}
+
 export const repositoryEvents = new EventEmitter();
 
 const MULTI_OPEN = false;
@@ -328,6 +362,25 @@ export default function reducer(state = { nodes: { }, open: new Set() }, action)
 
         const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
         delete newNodes[node.id];
+        return { ...state, nodes: newNodes };
+      }
+      return state;
+    }
+    case CREATE_NODE: {
+      const parentNode = state.nodes[action.payload.parentNodeId];
+      const name = action.payload.name;
+      if (parentNode) {
+        const newNode = {
+          id: `${parentNode.id}${name}/`,
+          name,
+          title: name,
+          parent: parentNode.id
+        };
+
+        const newParentNode = { ...parentNode };
+        newParentNode.children = alphanumSort([...newParentNode.children, newNode.id]);
+
+        const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
         return { ...state, nodes: newNodes };
       }
       return state;

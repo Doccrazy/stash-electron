@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { shell } from 'electron';
 import { fromJS, is } from 'immutable';
-import { cleanFileName, EntryPtr, isValidFileName } from '../utils/repository';
+import { cleanFileName, EntryPtr, hasChildOrEntry, isValidFileName } from '../utils/repository';
 import typeFor, { typeById } from '../fileType';
 import * as current from './currentEntry';
 import { rename, createEntry, repositoryEvents } from './repository';
@@ -127,7 +127,7 @@ export function save(closeAfter) {
         });
         return;
       }
-      if (node.entries.find(e => e === newName)) {
+      if (hasChildOrEntry(repository.nodes, node, newName)) {
         dispatch({
           type: VALIDATE,
           payload: 'An entry with this name already exists.'
