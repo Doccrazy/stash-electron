@@ -34,13 +34,13 @@ export default ({ onGenerate }) => (
         <thead>
           <tr>
             <th />
-            {LENGTHS.map(len => (<th className="text-center">{len}</th>))}
+            {LENGTHS.map(len => (<th key={len} className="text-center">{len}</th>))}
           </tr>
         </thead>
         <tbody>
-          {CLASS_NAMES.map((cls, cIdx) => (<tr>
+          {CLASS_NAMES.map((cls, cIdx) => (<tr key={cls}>
             <th className="text-center">{cls}</th>
-            {LENGTHS.map((len, lIdx) => (<td>
+            {LENGTHS.map((len, lIdx) => (<td key={len}>
               <Button size="sm" style={{ backgroundColor: mapColor(cIdx, lIdx) }} onClick={() => onGenerate(generatePw(len, cIdx))}>
                 <i className="fa fa-cog" />
               </Button>

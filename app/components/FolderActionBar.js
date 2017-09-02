@@ -5,7 +5,7 @@ import BarsMenu from './BarsMenu';
 import { hierarchy } from '../utils/repository';
 import styles from './FolderActionBar.css';
 
-export default ({ nodes, currentNodeId, onSelectFolder }) => {
+export default ({ nodes, currentNodeId, onSelectFolder, onCreateItem }) => {
   const nodeHierarchy = hierarchy(nodes, currentNodeId);
   return (<div>
     <Row>
@@ -19,7 +19,7 @@ export default ({ nodes, currentNodeId, onSelectFolder }) => {
           <a className="dropdown-item" href="#"><i className="fa fa-trash-o" /> Delete folder</a>
         </BarsMenu>&nbsp;
         <Button><i className="fa fa-folder" /> New folder</Button>&nbsp;
-        <Button><i className="fa fa-plus-circle" /> Create item</Button>
+        <Button onClick={() => onCreateItem(currentNodeId)}><i className="fa fa-plus-circle" /> Create item</Button>
       </Col>
     </Row>
   </div>);

@@ -16,6 +16,10 @@ export function isValidFileName(fn: string) {
   return fn && !/[/\\:*?"<>|]/.test(fn);
 }
 
+export function cleanFileName(fn: string) {
+  return fn ? fn.replace(/[/\\:*?"<>|]/g, '') : fn;
+}
+
 export class EntryPtr {
   constructor(node, entry) {
     if (typeof node === 'string') {

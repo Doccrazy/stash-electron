@@ -3,9 +3,9 @@ import path from 'path';
 import { shell } from 'electron';
 import { fromJS, is } from 'immutable';
 import { EntryPtr, isValidFileName } from '../utils/repository';
-import typeFor from '../fileType';
-import { read as readCurrentEntry } from './currentEntry';
-import { rename, deleteEntry, repositoryEvents } from './repository';
+import typeFor, { typeById } from '../fileType';
+import * as current from './currentEntry';
+import { rename, createEntry, deleteEntry, repositoryEvents } from './repository';
 
 const OPEN = 'edit/OPEN';
 const REPOINT_OPEN = 'edit/REPOINT_OPEN';
@@ -34,6 +34,7 @@ export function open(ptr, preParsedContent) {
         type: OPEN,
         payload: {
           ptr,
+          typeId: type.id,
           name: ptr.entry,
           parsedContent,
           formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
@@ -50,6 +51,26 @@ export function openCurrent() {
     const { currentEntry } = getState();
     if (currentEntry.ptr) {
       await dispatch(open(currentEntry.ptr, currentEntry.parsedContent));
+    }
+  };
+}
+
+export function create(nodeId, typeId) {
+  const type = typeById(typeId);
+  if (!type) {
+    return;
+  }
+
+  const parsedContent = type.initialize();
+
+  return {
+    type: OPEN,
+    payload: {
+      ptr: new EntryPtr(nodeId),
+      typeId,
+      name: '',
+      parsedContent,
+      formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
     }
   };
 }
@@ -104,10 +125,9 @@ export function save(closeAfter) {
   return async (dispatch, getState) => {
     const { repository, edit, currentEntry } = getState();
     const node = repository.nodes[edit.ptr.nodeId];
-    const absPath = path.join(repository.path, edit.ptr.nodeId, edit.ptr.entry);
 
     // validate new name
-    if (edit.name !== edit.ptr.entry) {
+    if (!edit.ptr.entry || edit.name !== edit.ptr.entry) {
       if (!isValidFileName(edit.name)) {
         dispatch({
           type: VALIDATE,
@@ -125,7 +145,7 @@ export function save(closeAfter) {
     }
 
     // validate content
-    const type = typeFor(edit.ptr.entry);
+    const type = typeById(edit.typeId);
     if (type.form && type.form.validate) {
       const validationError = type.form.validate(edit.parsedContent, edit.formState);
       dispatch({
@@ -139,6 +159,7 @@ export function save(closeAfter) {
 
     // save content
     if (type.parse && !is(fromJS(edit.parsedContent), edit.initialContent)) {
+      const absPath = path.join(repository.path, edit.ptr.nodeId, edit.ptr.entry || edit.name);
       const buffer = type.write(edit.parsedContent);
       await fs.writeFile(absPath, buffer);
 
@@ -147,12 +168,18 @@ export function save(closeAfter) {
       });
 
       if (currentEntry.ptr && currentEntry.ptr.equals(edit.ptr)) {
-        dispatch(readCurrentEntry(edit.parsedContent));
+        dispatch(current.read(edit.parsedContent));
+      } else if (!edit.ptr.entry) {
+        const newPtr = new EntryPtr(edit.ptr.nodeId, edit.name);
+        dispatch(createEntry(newPtr));
+        if (repository.selected === edit.ptr.nodeId) {
+          dispatch(current.select(newPtr));
+        }
       }
     }
 
     // rename
-    if (edit.name !== edit.ptr.entry) {
+    if (edit.ptr.entry && edit.name !== edit.ptr.entry) {
       dispatch(rename(edit.ptr, edit.name));
     }
 
@@ -182,6 +209,7 @@ export default function reducer(state = {}, action) {
       if (action.payload.ptr && action.payload.parsedContent) {
         return {
           ptr: action.payload.ptr,
+          typeId: action.payload.typeId,
           name: action.payload.name,
           initialContent: fromJS(action.payload.parsedContent),
           parsedContent: action.payload.parsedContent,

@@ -12,6 +12,7 @@ const CLOSE = 'repository/CLOSE';
 const SELECT = 'repository/SELECT';
 const RENAME_ENTRY = 'repository/RENAME_ENTRY';
 const DELETE_ENTRY = 'repository/DELETE_ENTRY';
+const CREATE_ENTRY = 'repository/CREATE_ENTRY';
 
 export function load(repoPath) {
   return async dispatch => {
@@ -159,6 +160,15 @@ export function deleteEntry(ptr) {
   };
 }
 
+export function createEntry(ptr) {
+  return {
+    type: CREATE_ENTRY,
+    payload: {
+      ptr
+    }
+  };
+}
+
 export const repositoryEvents = new EventEmitter();
 
 const MULTI_OPEN = false;
@@ -224,6 +234,17 @@ export default function reducer(state = { nodes: { }, open: new Set() }, action)
       if (node) {
         const newNode = { ...node };
         newNode.entries = node.entries.filter(e => e !== action.payload.ptr.entry);
+
+        const newNodes = { ...state.nodes, [action.payload.ptr.nodeId]: newNode };
+        return { ...state, nodes: newNodes };
+      }
+      return state;
+    }
+    case CREATE_ENTRY: {
+      const node = state.nodes[action.payload.ptr.nodeId];
+      if (node) {
+        const newNode = { ...node };
+        newNode.entries = alphanumSort([...newNode.entries, action.payload.ptr.entry]);
 
         const newNodes = { ...state.nodes, [action.payload.ptr.nodeId]: newNode };
         return { ...state, nodes: newNodes };
