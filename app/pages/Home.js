@@ -9,6 +9,7 @@ import EditPopup from '../containers/EditPopup';
 import DeletePopup from '../containers/DeletePopup';
 import DeleteNodePopup from '../containers/DeleteNodePopup';
 import CurrentFolder from '../containers/CurrentFolder';
+import ImportPopup from '../containers/ImportPopup';
 import styles from './Home.css';
 
 export default class Home extends Component {
@@ -18,6 +19,7 @@ export default class Home extends Component {
         <EditPopup />
         <DeletePopup />
         <DeleteNodePopup />
+        <ImportPopup />
         <div className={`bg-light ${styles.sidebar}`}>
           <p>
             <a className="text-dark" href="#"><i className="fa fa-star" />&nbsp;My favorites</a>

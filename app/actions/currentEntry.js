@@ -30,7 +30,7 @@ export function reselect(ptr: EntryPtr) {
   };
 }
 
-export function read(preParsedContent: any) {
+export function read(contentBuffer?: Buffer) {
   return async (dispatch, getState) => {
     const { currentEntry } = getState();
     if (!currentEntry.ptr) {
@@ -39,11 +39,11 @@ export function read(preParsedContent: any) {
 
     const type = typeFor(currentEntry.ptr.entry);
     if (type.parse) {
-      let parsedContent = preParsedContent;
-      if (!parsedContent) {
-        const content = await getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry);
-        parsedContent = type.parse(content);
+      let content = contentBuffer;
+      if (!content) {
+        content = await getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry);
       }
+      const parsedContent = type.parse(content);
       dispatch({
         type: READ,
         payload: parsedContent
@@ -84,10 +84,12 @@ export function cancelDelete() {
   };
 }
 
+// when a folder is deselected, clear item selection as well
 repositoryEvents.on('clearSelection', (dispatch, getState) => {
   dispatch(clear());
 });
 
+// when a selected entry is renamed, update selection
 repositoryEvents.on('rename', (dispatch, getState, ptr, newPtr) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
@@ -95,10 +97,27 @@ repositoryEvents.on('rename', (dispatch, getState, ptr, newPtr) => {
   }
 });
 
+// when a selected entry is deleted, clear selection
 repositoryEvents.on('delete', (dispatch, getState, ptr) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
     dispatch(clear());
+  }
+});
+
+// when an entry is created within the current folder, select it
+repositoryEvents.on('createEntry', (dispatch, getState, ptr) => {
+  const { currentNode } = getState();
+  if (currentNode.nodeId === ptr.nodeId) {
+    dispatch(select(ptr));
+  }
+});
+
+// when the current entry is updated, read new content
+repositoryEvents.on('updateEntry', (dispatch, getState, ptr, buffer) => {
+  const { currentEntry } = getState();
+  if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
+    dispatch(read(buffer));
   }
 });
 

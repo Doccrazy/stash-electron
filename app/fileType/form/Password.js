@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button, FormGroup, Label, Input, Row, Col } from 'reactstrap';
 import PwGenerateMenu from './PwGenerateMenu';
+import { typeById } from '../index';
 
 type Content = { username?: string, password?: string, url?: string, description?: string };
 type FormState = { mask: boolean, repeatPassword?: string };
@@ -16,7 +17,7 @@ type Props = {
 
 export default class PasswordForm extends React.Component<void, Props, void> {
   static initFormState: Content => FormState;
-  static validate: (Content, FormState) => string | boolean;
+  static validate: (string, Content, FormState) => string | boolean;
   nameInput: ?HTMLInputElement;
   passwordInput: ?HTMLInputElement;
 
@@ -66,8 +67,8 @@ export default class PasswordForm extends React.Component<void, Props, void> {
               getRef={c => { this.nameInput = c; }}
               id="name"
               placeholder="Title"
-              value={name.substr(0, name.length - 10)}
-              onChange={ev => onChangeName(`${ev.target.value}.pass.json`)}
+              value={typeById('password').toDisplayName(name)}
+              onChange={ev => onChangeName(typeById('password').toFileName(ev.target.value))}
             />
           </Col>
         </FormGroup>
@@ -141,7 +142,7 @@ export default class PasswordForm extends React.Component<void, Props, void> {
 PasswordForm.initFormState = content => ({ mask: true, repeatPassword: content ? content.password : '' });
 
 PasswordForm.validate = (name, content, formState) => {
-  if (name === '.pass.json') {
+  if (name === typeById('password').toFileName('')) {
     return 'Please enter a title.';
   }
   if (!content.username && !content.password) {

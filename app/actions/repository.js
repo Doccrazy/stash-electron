@@ -121,9 +121,30 @@ export function deleteNode(nodeId) {
 }
 
 export function createEntry(ptr) {
-  return {
-    type: CREATE_ENTRY,
-    payload: ptr
+  return (dispatch, getState) => {
+    dispatch({
+      type: CREATE_ENTRY,
+      payload: ptr
+    });
+    repositoryEvents.emit('createEntry', dispatch, getState, ptr);
+  };
+}
+
+export function writeEntry(ptr, buffer) {
+  return async (dispatch, getState) => {
+    const { repository } = getState();
+    const node = repository.nodes[ptr.nodeId];
+    if (!node) {
+      return;
+    }
+    const existing = node.entries && node.entries.indexOf(ptr.entry) >= 0;
+
+    await getRepo().writeFile(ptr.nodeId, ptr.entry, buffer);
+
+    if (!existing) {
+      dispatch(createEntry(ptr));
+    }
+    repositoryEvents.emit('updateEntry', dispatch, getState, ptr, buffer);
   };
 }
 

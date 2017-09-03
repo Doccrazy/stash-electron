@@ -2,8 +2,7 @@ import { shell } from 'electron';
 import { fromJS, is } from 'immutable';
 import { cleanFileName, EntryPtr, hasChildOrEntry, isValidFileName } from '../utils/repository';
 import typeFor, { typeById } from '../fileType';
-import * as current from './currentEntry';
-import { getRepo, rename, createEntry, repositoryEvents } from './repository';
+import { getRepo, rename, repositoryEvents, writeEntry } from './repository';
 
 const OPEN = 'edit/OPEN';
 const REPOINT_OPEN = 'edit/REPOINT_OPEN';
@@ -68,6 +67,15 @@ export function create(nodeId, typeId) {
       name: '',
       parsedContent,
       formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
+    }
+  };
+}
+
+export function createInCurrent(typeId) {
+  return (dispatch, getState) => {
+    const { currentNode } = getState();
+    if (currentNode.nodeId) {
+      return dispatch(create(currentNode.nodeId, typeId));
     }
   };
 }
@@ -150,21 +158,12 @@ export function save(closeAfter) {
     if (type.parse && !is(fromJS(edit.parsedContent), edit.initialContent)) {
       const fileName = edit.ptr.entry || newName;
       const buffer = type.write(edit.parsedContent);
-      await getRepo().writeFile(edit.ptr.nodeId, fileName, buffer);
+
+      dispatch(writeEntry(new EntryPtr(edit.ptr.nodeId, fileName), buffer));
 
       dispatch({
         type: SAVED
       });
-
-      if (currentEntry.ptr && currentEntry.ptr.equals(edit.ptr)) {
-        dispatch(current.read(edit.parsedContent));
-      } else if (!edit.ptr.entry) {
-        const newPtr = new EntryPtr(edit.ptr.nodeId, newName);
-        dispatch(createEntry(newPtr));
-        if (currentNode.nodeId === edit.ptr.nodeId) {
-          dispatch(current.select(newPtr));
-        }
-      }
     }
 
     // rename

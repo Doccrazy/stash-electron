@@ -16,13 +16,18 @@ export function isValidFileName(fn: string) {
   return fn && !/[/\\:*?"<>|]/.test(fn);
 }
 
-export function cleanFileName(fn: string) {
-  return fn ? fn.replace(/[/\\:*?"<>|]/g, '') : fn;
+export function cleanFileName(fn: string, replacement: string = '') {
+  return fn ? fn.replace(/[/\\:*?"<>|]/g, replacement) : fn;
 }
 
 export function hasChildOrEntry(allNodes, node, nameToCheck) {
   return (node.entries && node.entries.find(e => e === nameToCheck))
-    || (node.children && node.children.find(child => allNodes[child].name === nameToCheck));
+    || !!childNodeByName(allNodes, node, nameToCheck);
+}
+
+export function childNodeByName(allNodes, nodeOrId, childName) {
+  const n = typeof nodeOrId === 'string' ? allNodes[nodeOrId] : nodeOrId;
+  return n.children ? n.children.find(child => allNodes[child].name === childName) : null;
 }
 
 export class EntryPtr {

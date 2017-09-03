@@ -2,7 +2,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import FolderActionBar from '../components/FolderActionBar';
 import { prepareDelete, startRename, startCreate } from '../actions/currentNode';
-import { create } from '../actions/edit';
+import { createInCurrent } from '../actions/edit';
+import { open as openImport } from '../actions/fileImport';
 
 export default connect(state => ({
   editable: state.currentNode.nodeId !== '/'
@@ -10,8 +11,8 @@ export default connect(state => ({
   onRename: () => dispatch(startRename()),
   onDelete: () => dispatch(prepareDelete()),
   onCreateNode: () => dispatch(startCreate()),
-  onCreateItem: nodeId => dispatch(create(nodeId, 'password')),
+  onCreateItem: () => dispatch(createInCurrent('password')),
   onEditPermissions: () => 0,
   onAddExternal: () => 0,
-  onImport: () => 0
+  onImport: () => dispatch(openImport())
 }))(FolderActionBar);

@@ -4,7 +4,15 @@ const TYPES = [
   {
     id: 'password',
     test: fn => fn.endsWith('.pass.json'),
+    toDisplayName: fn => fn.substr(0, fn.length - 10),
+    toFileName: name => `${name}.pass.json`,
     initialize: () => ({}),
+    fromKdbxEntry: entry => ({
+      description: entry.fields.Notes,
+      username: entry.fields.UserName,
+      password: entry.fields.Password ? entry.fields.Password.getText() : undefined,
+      url: entry.fields.URL,
+    }),
     ...jsonParser
   },
   {

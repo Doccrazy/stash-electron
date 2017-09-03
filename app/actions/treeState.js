@@ -55,6 +55,14 @@ repositoryEvents.on('createNode', (dispatch, getState, parentNodeId) => {
   maybeExpand(dispatch, getState, parentNodeId);
 });
 
+repositoryEvents.on('deleteNode', (dispatch, getState, node) => {
+  dispatch(close(node.id));
+});
+
+repositoryEvents.on('moveNode', (dispatch, getState, nodeId, newId) => {
+  dispatch(close(nodeId));
+});
+
 export default function reducer(state = new Set(), action) {
   switch (action.type) {
     case EXPAND:
