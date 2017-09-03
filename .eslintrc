@@ -21,6 +21,9 @@
     "jsx-a11y/href-no-hash": "off",
     "max-len": "off",
     "no-console": "off",
+    "no-underscore-dangle": ["error", {
+      "allowAfterThis": true
+    }],
     "no-use-before-define": "off",
     "no-multi-assign": "off",
     "promise/param-names": "error",

@@ -1,8 +1,7 @@
-import fs from 'fs-extra';
-import path from 'path';
 import alphanumSort from 'alphanum-sort';
 import EventEmitter from 'events';
 import { toastr } from 'react-redux-toastr';
+import PlainRepository from '../repository/Plain';
 import { EntryPtr } from '../utils/repository';
 
 const LOAD = 'repository/LOAD';
@@ -15,14 +14,21 @@ const DELETE_NODE = 'repository/DELETE_NODE';
 const RENAME_NODE = 'repository/RENAME_NODE';
 const CREATE_NODE = 'repository/CREATE_NODE';
 
+let repo;
+
+export function getRepo() {
+  return repo;
+}
+
 export function load(repoPath) {
   return async (dispatch, getState) => {
     dispatch({
       type: RESET_DIRS
     });
+    repo = new PlainRepository(repoPath);
     dispatch({
       type: LOAD,
-      payload: repoPath
+      payload: repo.name
     });
     repositoryEvents.emit('initialize', dispatch, getState);
   };
@@ -30,31 +36,13 @@ export function load(repoPath) {
 
 export function readDir(subPath, recurse = true) {
   return async (dispatch, getState) => {
-    const { repository } = getState();
-    const dirPath = path.join(repository.path, subPath);
-
-    console.time('readdirSync');
-    // const files = fs.readdirSync(dirPath);
-    const files = await fs.readdir(dirPath);
-    console.timeEnd('readdirSync');
-    console.time(`stat x${files.length}`);
-    const fileStats = await Promise.all(files.map(fn => fs.stat(path.join(dirPath, fn))));
-    console.timeEnd(`stat x${files.length}`);
+    const dirContents = await repo.readdir(subPath);
 
     const result = {
       path: subPath,
-      entries: [],
-      children: []
+      entries: dirContents.get('entries').map(e => e.get('name')).toJS(),
+      children: dirContents.get('children').toJS()
     };
-    files.forEach((file, idx) => {
-      const stat = fileStats[idx];
-      // const stat = fs.statSync(path.join(dirPath, file));
-      if (stat.isFile()) {
-        result.entries.push(file);
-      } else if (stat.isDirectory()) {
-        result.children.push(file);
-      }
-    });
     dispatch({
       type: READ_DIR,
       payload: result
@@ -67,12 +55,8 @@ export function readDir(subPath, recurse = true) {
 
 export function rename(ptr, newName) {
   return async (dispatch, getState) => {
-    const { repository } = getState();
-
-    const absPath = path.join(repository.path, ptr.nodeId, ptr.entry);
-    const newPath = path.join(repository.path, ptr.nodeId, newName);
     try {
-      await fs.rename(absPath, newPath);
+      await repo.renameFile(ptr.nodeId, ptr.entry, newName);
 
       dispatch({
         type: RENAME_ENTRY,
@@ -93,12 +77,8 @@ export function rename(ptr, newName) {
 
 export function deleteEntry(ptr) {
   return async (dispatch, getState) => {
-    const { repository } = getState();
-
-    const absPath = path.join(repository.path, ptr.nodeId, ptr.entry);
-
     try {
-      await fs.unlink(absPath);
+      await repo.deleteFile(ptr.nodeId, ptr.entry);
 
       dispatch({
         type: DELETE_ENTRY,
@@ -124,10 +104,8 @@ export function deleteNode(nodeId) {
       return;
     }
 
-    const absPath = path.join(repository.path, nodeId);
-
     try {
-      await fs.remove(absPath);
+      await repo.deleteDir(nodeId);
 
       dispatch({
         type: DELETE_NODE,
@@ -161,11 +139,8 @@ export function renameNode(nodeId, newName) {
     }
     const parentNode = repository.nodes[node.parent];
 
-    const absPath = path.join(repository.path, parentNode.id, node.name);
-    const newPath = path.join(repository.path, parentNode.id, newName);
-
     try {
-      await fs.rename(absPath, newPath);
+      await repo.renameDir(parentNode.id, node.name, newName);
 
       dispatch({
         type: RENAME_NODE,
@@ -195,10 +170,8 @@ export function createChildNode(parentNodeId, name) {
       return;
     }
 
-    const absPath = path.join(repository.path, parentNode.id, name);
-
     try {
-      await fs.mkdir(absPath);
+      await repo.createDir(parentNode.id, name);
 
       dispatch({
         type: CREATE_NODE,
@@ -221,7 +194,7 @@ export const repositoryEvents = new EventEmitter();
 export default function reducer(state = { nodes: { } }, action) {
   switch (action.type) {
     case LOAD:
-      return { ...state, path: action.payload };
+      return { ...state, nodes: { '/': { id: '/', title: action.payload } }, name: action.payload };
     case RESET_DIRS:
       return { ...state, nodes: { '/': { id: '/', title: 'Root' } } };
     case READ_DIR: {

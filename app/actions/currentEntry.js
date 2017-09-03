@@ -1,8 +1,6 @@
 // @flow
-import fs from 'fs-extra';
-import path from 'path';
 import { EntryPtr } from '../utils/repository';
-import { deleteEntry, repositoryEvents } from './repository';
+import { getRepo, deleteEntry, repositoryEvents } from './repository';
 import typeFor from '../fileType';
 
 const SELECT = 'currentEntry/SELECT';
@@ -41,11 +39,9 @@ export function read(preParsedContent: any) {
 
     const type = typeFor(currentEntry.ptr.entry);
     if (type.parse) {
-      const { repository } = getState();
-
       let parsedContent = preParsedContent;
       if (!parsedContent) {
-        const content = await fs.readFile(path.join(repository.path, currentEntry.ptr.nodeId, currentEntry.ptr.entry));
+        const content = await getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry);
         parsedContent = type.parse(content);
       }
       dispatch({

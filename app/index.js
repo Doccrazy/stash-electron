@@ -16,7 +16,6 @@ document.addEventListener('drop', event => event.preventDefault());
 
 const store = configureStore();
 
-//store.dispatch(loadRepo('C:\\Dokumente'));
 store.dispatch(loadSettings());
 
 render(

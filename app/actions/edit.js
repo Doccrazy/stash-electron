@@ -1,11 +1,9 @@
-import fs from 'fs-extra';
-import path from 'path';
 import { shell } from 'electron';
 import { fromJS, is } from 'immutable';
 import { cleanFileName, EntryPtr, hasChildOrEntry, isValidFileName } from '../utils/repository';
 import typeFor, { typeById } from '../fileType';
 import * as current from './currentEntry';
-import { rename, createEntry, repositoryEvents } from './repository';
+import { getRepo, rename, createEntry, repositoryEvents } from './repository';
 
 const OPEN = 'edit/OPEN';
 const REPOINT_OPEN = 'edit/REPOINT_OPEN';
@@ -19,14 +17,11 @@ const CHANGE_NAME = 'edit/CHANGE_NAME';
 export function open(ptr, preParsedContent) {
   EntryPtr.assert(ptr);
   return async (dispatch, getState) => {
-    const { repository } = getState();
-    const absPath = path.join(repository.path, ptr.nodeId, ptr.entry);
-
     const type = typeFor(ptr.entry);
     if (type.parse) {
       let parsedContent = preParsedContent;
       if (!parsedContent) {
-        const content = await fs.readFile(absPath);
+        const content = await getRepo().readFile(ptr.nodeId, ptr.entry);
         parsedContent = type.parse(content);
       }
 
@@ -41,7 +36,9 @@ export function open(ptr, preParsedContent) {
         }
       });
     } else {
-      shell.openItem(absPath);
+      // const absPath = path.join(ptr.nodeId, ptr.entry);
+
+      // TODO shell.openItem(absPath);
     }
   };
 }
@@ -151,9 +148,9 @@ export function save(closeAfter) {
 
     // save content
     if (type.parse && !is(fromJS(edit.parsedContent), edit.initialContent)) {
-      const absPath = path.join(repository.path, edit.ptr.nodeId, edit.ptr.entry || newName);
+      const fileName = edit.ptr.entry || newName;
       const buffer = type.write(edit.parsedContent);
-      await fs.writeFile(absPath, buffer);
+      await getRepo().writeFile(edit.ptr.nodeId, fileName, buffer);
 
       dispatch({
         type: SAVED
