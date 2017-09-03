@@ -8,6 +8,7 @@ import edit from './edit';
 import favorites from './favorites';
 import repository from './repository';
 import settings from './settings';
+import treeState from './treeState';
 
 const rootReducer = combineReducers({
   currentEntry,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   favorites,
   repository,
   settings,
+  treeState,
 
   router,
   toastr

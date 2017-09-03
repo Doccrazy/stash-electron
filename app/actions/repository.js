@@ -3,13 +3,11 @@ import path from 'path';
 import alphanumSort from 'alphanum-sort';
 import EventEmitter from 'events';
 import { toastr } from 'react-redux-toastr';
-import { EntryPtr, hierarchy } from '../utils/repository';
+import { EntryPtr } from '../utils/repository';
 
 const LOAD = 'repository/LOAD';
 const RESET_DIRS = 'repository/RESET_DIRS';
 const READ_DIR = 'repository/READ_DIR';
-const EXPAND = 'repository/EXPAND';
-const CLOSE = 'repository/CLOSE';
 const RENAME_ENTRY = 'repository/RENAME_ENTRY';
 const DELETE_ENTRY = 'repository/DELETE_ENTRY';
 const CREATE_ENTRY = 'repository/CREATE_ENTRY';
@@ -36,7 +34,7 @@ export function readDir(subPath, recurse = true) {
     const dirPath = path.join(repository.path, subPath);
 
     console.time('readdirSync');
-    //const files = fs.readdirSync(dirPath);
+    // const files = fs.readdirSync(dirPath);
     const files = await fs.readdir(dirPath);
     console.timeEnd('readdirSync');
     console.time(`stat x${files.length}`);
@@ -50,7 +48,7 @@ export function readDir(subPath, recurse = true) {
     };
     files.forEach((file, idx) => {
       const stat = fileStats[idx];
-      //const stat = fs.statSync(path.join(dirPath, file));
+      // const stat = fs.statSync(path.join(dirPath, file));
       if (stat.isFile()) {
         result.entries.push(file);
       } else if (stat.isDirectory()) {
@@ -63,42 +61,6 @@ export function readDir(subPath, recurse = true) {
     });
     if (recurse) {
       result.children.forEach(childId => dispatch(readDir(`${subPath}${childId}/`, false)));
-    }
-  };
-}
-
-function maybeExpand(dispatch, getState, subPath) {
-  const { repository } = getState();
-  if (repository.nodes[subPath].children && repository.nodes[subPath].children.length && !repository.open.has(subPath)) {
-    dispatch({
-      type: EXPAND,
-      payload: subPath
-    });
-  }
-}
-
-export function expand(subPath) {
-  return async (dispatch, getState) => {
-    await dispatch(readDir(subPath));
-
-    maybeExpand(dispatch, getState, subPath);
-  };
-}
-
-export function close(subPath) {
-  return {
-    type: CLOSE,
-    payload: subPath
-  };
-}
-
-export function toggle(subPath) {
-  return (dispatch, getState) => {
-    const { repository } = getState();
-    if (repository.open.has(subPath)) {
-      dispatch(close(subPath));
-    } else {
-      dispatch(expand(subPath));
     }
   };
 }
@@ -246,25 +208,22 @@ export function createChildNode(parentNodeId, name) {
         }
       });
 
-      maybeExpand(dispatch, getState, parentNode.id);
       repositoryEvents.emit('createNode', dispatch, getState, parentNode.id, name);
     } catch (e) {
       // mkdir failed
-      toastr.error(`Failed to rename folder to ${newName}: ${e}`);
+      toastr.error(`Failed to create folder ${name}: ${e}`);
     }
   };
 }
 
 export const repositoryEvents = new EventEmitter();
 
-const MULTI_OPEN = false;
-
-export default function reducer(state = { nodes: { }, open: new Set() }, action) {
+export default function reducer(state = { nodes: { } }, action) {
   switch (action.type) {
     case LOAD:
       return { ...state, path: action.payload };
     case RESET_DIRS:
-      return { ...state, nodes: { '/': { id: '/', title: 'Root' } }, open: new Set(), selected: null };
+      return { ...state, nodes: { '/': { id: '/', title: 'Root' } } };
     case READ_DIR: {
       const newNodes = { ...state.nodes };
       const subPath = action.payload.path;
@@ -285,20 +244,6 @@ export default function reducer(state = { nodes: { }, open: new Set() }, action)
         };
       });
       return { ...state, nodes: newNodes };
-    }
-    case EXPAND: {
-      let newOpen;
-      if (MULTI_OPEN) {
-        newOpen = new Set(state.open).add(action.payload);
-      } else {
-        newOpen = new Set(hierarchy(state.nodes, action.payload).map(node => node.id));
-      }
-      return { ...state, open: newOpen };
-    }
-    case CLOSE: {
-      const newOpen = new Set(state.open);
-      newOpen.delete(action.payload);
-      return { ...state, open: newOpen };
     }
     case RENAME_ENTRY: {
       const node = state.nodes[action.payload.ptr.nodeId];

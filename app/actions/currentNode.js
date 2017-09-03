@@ -1,5 +1,6 @@
 import { toastr } from 'react-redux-toastr';
-import { expand, deleteNode, renameNode, repositoryEvents, createChildNode } from './repository';
+import { deleteNode, renameNode, repositoryEvents, createChildNode } from './repository';
+import { expand } from './treeState';
 import { cleanFileName, hasChildOrEntry } from '../utils/repository';
 
 const SELECT = 'currentNode/SELECT';
