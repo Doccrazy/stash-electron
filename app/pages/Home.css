@@ -15,6 +15,7 @@
 }
 
 .main {
+  width: 75%;
   height: 100%;
   flex-grow: 1;
   padding: 15px 15px 0;
@@ -23,6 +24,7 @@
 }
 
 .contentHeader {
+  margin-bottom: 0.5rem;
 }
 
 .contentBody {
@@ -31,6 +33,5 @@
 }
 
 .contentFooter {
-  margin-top: 5px;
-  padding: 5px;
+  margin: 10px 0 5px;
 }

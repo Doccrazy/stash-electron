@@ -1,5 +1,6 @@
 // @flow
 import React, { Component } from 'react';
+import { Col, Row } from 'reactstrap';
 import FolderActionBar from '../containers/FolderActionBar';
 import FileList from '../containers/FileList';
 import Folder from '../containers/Folder';
@@ -7,6 +8,7 @@ import FileDetails from '../containers/FileDetails';
 import EditPopup from '../containers/EditPopup';
 import DeletePopup from '../containers/DeletePopup';
 import DeleteNodePopup from '../containers/DeleteNodePopup';
+import CurrentFolder from '../containers/CurrentFolder';
 import styles from './Home.css';
 
 export default class Home extends Component {
@@ -24,7 +26,14 @@ export default class Home extends Component {
         </div>
         <div className={`${styles.main}`}>
           <div className={styles.contentHeader}>
-            <FolderActionBar />
+            <Row>
+              <Col>
+                <CurrentFolder />
+              </Col>
+              <Col xs="auto" className="text-right">
+                <FolderActionBar />
+              </Col>
+            </Row>
           </div>
           <div className={styles.contentBody}>
             <FileList />

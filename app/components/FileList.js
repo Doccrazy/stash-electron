@@ -32,7 +32,7 @@ export default ({ currentNode, selectedEntry, favorites, onSelect, onEdit, onTog
             }}
           /></td>
           <td>{type.format(entry)}</td>
-          <td className="text-right">{new Date().toLocaleString()}</td>
+          <td className="text-right" style={{ whiteSpace: 'nowrap' }}>{new Date().toLocaleString()}</td>
         </tr>);
       })}
     </tbody>

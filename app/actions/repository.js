@@ -185,6 +185,7 @@ export function createChildNode(parentNodeId, name) {
     } catch (e) {
       // mkdir failed
       toastr.error(`Failed to create folder ${name}: ${e}`);
+      throw e;
     }
   };
 }
@@ -203,8 +204,8 @@ export default function reducer(state = { nodes: { } }, action) {
 
       newNodes[subPath] = {
         ...newNodes[subPath],
-        children: alphanumSort(action.payload.children.map(dir => `${subPath}${dir}/`)),
-        entries: alphanumSort(action.payload.entries)
+        children: alphanumSort(action.payload.children.map(dir => `${subPath}${dir}/`), { insensitive: true }),
+        entries: alphanumSort(action.payload.entries, { insensitive: true })
       };
 
       action.payload.children.forEach(dir => {
@@ -224,7 +225,7 @@ export default function reducer(state = { nodes: { } }, action) {
         const newNode = { ...node };
         newNode.entries = node.entries.filter(e => e !== action.payload.ptr.entry);
         newNode.entries.push(action.payload.newName);
-        newNode.entries = alphanumSort(newNode.entries);
+        newNode.entries = alphanumSort(newNode.entries, { insensitive: true });
 
         const newNodes = { ...state.nodes, [action.payload.ptr.nodeId]: newNode };
         return { ...state, nodes: newNodes };
@@ -246,7 +247,7 @@ export default function reducer(state = { nodes: { } }, action) {
       const node = state.nodes[action.payload.nodeId];
       if (node) {
         const newNode = { ...node };
-        newNode.entries = alphanumSort([...newNode.entries, action.payload.entry]);
+        newNode.entries = newNode.entries ? alphanumSort([...newNode.entries, action.payload.entry], { insensitive: true }) : [action.payload.entry];
 
         const newNodes = { ...state.nodes, [action.payload.nodeId]: newNode };
         return { ...state, nodes: newNodes };
@@ -276,7 +277,7 @@ export default function reducer(state = { nodes: { } }, action) {
         };
         newParentNode.children = newParentNode.children.filter(childId => childId !== node.id);
         newParentNode.children.push(newNode.id);
-        newParentNode.children = alphanumSort(newParentNode.children);
+        newParentNode.children = alphanumSort(newParentNode.children, { insensitive: true });
 
         const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
         delete newNodes[node.id];
@@ -296,7 +297,7 @@ export default function reducer(state = { nodes: { } }, action) {
         };
 
         const newParentNode = { ...parentNode };
-        newParentNode.children = alphanumSort([...newParentNode.children, newNode.id]);
+        newParentNode.children = newParentNode.children ? alphanumSort([...newParentNode.children, newNode.id], { insensitive: true }) : [newNode.id];
 
         const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
         return { ...state, nodes: newNodes };
