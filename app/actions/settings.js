@@ -1,5 +1,6 @@
 import electronSettings from 'electron-settings';
 import { load as loadRepo } from './repository';
+import { afterAction } from '../store/eventMiddleware';
 
 const LOAD = 'settings/LOAD';
 
@@ -25,3 +26,7 @@ export default function reducer(state = { }, action) {
       return state;
   }
 }
+
+afterAction('currentNode/SELECT', (dispatch, getState, nodeId) => {
+  console.log('select', nodeId);
+});

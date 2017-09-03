@@ -2,7 +2,8 @@ import { shell } from 'electron';
 import { fromJS, is } from 'immutable';
 import { cleanFileName, EntryPtr, hasChildOrEntry, isValidFileName } from '../utils/repository';
 import typeFor, { typeById } from '../fileType';
-import { getRepo, rename, repositoryEvents, writeEntry } from './repository';
+import * as repoActions from './repository';
+import { afterAction } from '../store/eventMiddleware';
 
 const OPEN = 'edit/OPEN';
 const REPOINT_OPEN = 'edit/REPOINT_OPEN';
@@ -20,7 +21,7 @@ export function open(ptr, preParsedContent) {
     if (type.parse) {
       let parsedContent = preParsedContent;
       if (!parsedContent) {
-        const content = await getRepo().readFile(ptr.nodeId, ptr.entry);
+        const content = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
         parsedContent = type.parse(content);
       }
 
@@ -119,7 +120,7 @@ export function changeName(name) {
 
 export function save(closeAfter) {
   return async (dispatch, getState) => {
-    const { repository, edit, currentNode, currentEntry } = getState();
+    const { repository, edit } = getState();
     const node = repository.nodes[edit.ptr.nodeId];
 
     // validate new name
@@ -159,7 +160,7 @@ export function save(closeAfter) {
       const fileName = edit.ptr.entry || newName;
       const buffer = type.write(edit.parsedContent);
 
-      dispatch(writeEntry(new EntryPtr(edit.ptr.nodeId, fileName), buffer));
+      dispatch(repoActions.writeEntry(new EntryPtr(edit.ptr.nodeId, fileName), buffer));
 
       dispatch({
         type: SAVED
@@ -168,7 +169,7 @@ export function save(closeAfter) {
 
     // rename
     if (edit.ptr.entry && newName !== edit.ptr.entry) {
-      dispatch(rename(edit.ptr, newName));
+      dispatch(repoActions.rename(edit.ptr, newName));
     }
 
     if (closeAfter) {
@@ -177,14 +178,14 @@ export function save(closeAfter) {
   };
 }
 
-repositoryEvents.on('rename', (dispatch, getState, ptr, newPtr) => {
+afterAction(repoActions.RENAME_ENTRY, (dispatch, getState, { ptr, newName }) => {
   const { edit } = getState();
   if (edit.ptr && edit.ptr.equals(ptr)) {
-    dispatch(repointOpen(newPtr));
+    dispatch(repointOpen(new EntryPtr(ptr.nodeId, newName)));
   }
 });
 
-repositoryEvents.on('delete', (dispatch, getState, ptr) => {
+afterAction(repoActions.DELETE_ENTRY, (dispatch, getState, ptr) => {
   const { edit } = getState();
   if (edit.ptr && edit.ptr.equals(ptr)) {
     dispatch(close());

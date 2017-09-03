@@ -1,21 +1,20 @@
 import { toastr } from 'react-redux-toastr';
-import { deleteNode, renameNode, repositoryEvents, createChildNode } from './repository';
+import * as repoActions from './repository';
 import { expand } from './treeState';
-import { cleanFileName, hasChildOrEntry } from '../utils/repository';
+import { afterAction } from '../store/eventMiddleware';
+import { childNodeByName, cleanFileName, hasChildOrEntry } from '../utils/repository';
 
-const SELECT = 'currentNode/SELECT';
-const PREPARE_DELETE = 'currentNode/PREPARE_DELETE';
-const CANCEL_DELETE = 'currentNode/CANCEL_DELETE';
-const START_RENAME = 'currentNode/START_RENAME';
-const START_CREATE = 'currentNode/START_CREATE';
-const CHANGE_NAME = 'currentNode/CHANGE_NAME';
-const CLOSE_EDIT = 'currentNode/CLOSE_EDIT';
+export const SELECT = 'currentNode/SELECT';
+export const PREPARE_DELETE = 'currentNode/PREPARE_DELETE';
+export const CANCEL_DELETE = 'currentNode/CANCEL_DELETE';
+export const START_RENAME = 'currentNode/START_RENAME';
+export const START_CREATE = 'currentNode/START_CREATE';
+export const CHANGE_NAME = 'currentNode/CHANGE_NAME';
+export const CLOSE_EDIT = 'currentNode/CLOSE_EDIT';
 
 export function select(nodeId) {
   return async (dispatch, getState) => {
     await dispatch(expand(nodeId));
-    // TODO use separate emitter
-    repositoryEvents.emit('clearSelection', dispatch, getState);
     dispatch({
       type: SELECT,
       payload: nodeId
@@ -25,7 +24,6 @@ export function select(nodeId) {
 
 export function deselect() {
   return (dispatch, getState) => {
-    repositoryEvents.emit('clearSelection', dispatch, getState);
     dispatch({
       type: SELECT
     });
@@ -47,7 +45,7 @@ export function confirmDelete() {
   return async (dispatch, getState) => {
     const { currentNode } = getState();
     if (currentNode.nodeId) {
-      await dispatch(deleteNode(currentNode.nodeId));
+      await dispatch(repoActions.deleteNode(currentNode.nodeId));
     }
   };
 }
@@ -112,34 +110,36 @@ export function saveNode() {
       }
 
       if (currentNode.renaming) {
-        await dispatch(renameNode(currentNode.nodeId, newName));
+        await dispatch(repoActions.renameNode(currentNode.nodeId, newName));
       } else {
-        await dispatch(createChildNode(currentNode.nodeId, newName));
+        await dispatch(repoActions.createChildNode(currentNode.nodeId, newName));
         dispatch(closeEdit());
       }
     }
   };
 }
 
-repositoryEvents.on('initialize', async (dispatch, getState) => {
-  await dispatch(select('/'));
+afterAction(repoActions.LOAD, dispatch => {
+  dispatch(select('/'));
 });
 
-repositoryEvents.on('deleteNode', (dispatch, getState, node) => {
+afterAction(repoActions.DELETE_NODE, (dispatch, getState, nodeId, preActionState) => {
   const { currentNode } = getState();
-  if (currentNode.nodeId === node.id) {
+  if (currentNode.nodeId === nodeId) {
+    const node = preActionState.repository.nodes[nodeId];
     dispatch(select(node.parent));
   }
 });
 
-repositoryEvents.on('moveNode', (dispatch, getState, nodeId, newId) => {
-  const { currentNode } = getState();
+afterAction(repoActions.RENAME_NODE, (dispatch, getState, { nodeId, newParentId, newName }) => {
+  const { currentNode, repository } = getState();
   if (currentNode.nodeId === nodeId) {
+    const newId = childNodeByName(repository.nodes, newParentId, newName);
     dispatch(select(newId));
   }
 });
 
-repositoryEvents.on('createNode', (dispatch, getState) => {
+afterAction(repoActions.CREATE_NODE, (dispatch, getState, { parentNodeId, name }) => {
   const { currentNode } = getState();
   if (currentNode.creating) {
     dispatch(closeEdit());

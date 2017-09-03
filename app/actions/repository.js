@@ -1,18 +1,18 @@
 import alphanumSort from 'alphanum-sort';
-import EventEmitter from 'events';
 import { toastr } from 'react-redux-toastr';
 import PlainRepository from '../repository/Plain';
 import { EntryPtr } from '../utils/repository';
 
-const LOAD = 'repository/LOAD';
-const RESET_DIRS = 'repository/RESET_DIRS';
-const READ_DIR = 'repository/READ_DIR';
-const RENAME_ENTRY = 'repository/RENAME_ENTRY';
-const DELETE_ENTRY = 'repository/DELETE_ENTRY';
-const CREATE_ENTRY = 'repository/CREATE_ENTRY';
-const DELETE_NODE = 'repository/DELETE_NODE';
-const RENAME_NODE = 'repository/RENAME_NODE';
-const CREATE_NODE = 'repository/CREATE_NODE';
+export const LOAD = 'repository/LOAD';
+export const RESET_DIRS = 'repository/RESET_DIRS';
+export const READ_DIR = 'repository/READ_DIR';
+export const RENAME_ENTRY = 'repository/RENAME_ENTRY';
+export const DELETE_ENTRY = 'repository/DELETE_ENTRY';
+export const CREATE_ENTRY = 'repository/CREATE_ENTRY';
+export const UPDATE_ENTRY = 'repository/UPDATE_ENTRY';
+export const DELETE_NODE = 'repository/DELETE_NODE';
+export const RENAME_NODE = 'repository/RENAME_NODE';
+export const CREATE_NODE = 'repository/CREATE_NODE';
 
 let repo;
 
@@ -30,7 +30,6 @@ export function load(repoPath) {
       type: LOAD,
       payload: repo.name
     });
-    repositoryEvents.emit('initialize', dispatch, getState);
   };
 }
 
@@ -65,9 +64,6 @@ export function rename(ptr, newName) {
           newName
         }
       });
-
-      const newPtr = new EntryPtr(ptr.nodeId, newName);
-      repositoryEvents.emit('rename', dispatch, getState, ptr, newPtr);
     } catch (e) {
       // rename failed
       toastr.error(`Failed to rename entry ${ptr.entry} to ${newName}: ${e}`);
@@ -84,8 +80,6 @@ export function deleteEntry(ptr) {
         type: DELETE_ENTRY,
         payload: ptr
       });
-
-      repositoryEvents.emit('delete', dispatch, getState, ptr);
     } catch (e) {
       // delete failed
       toastr.error(`Failed to delete entry ${ptr.entry}: ${e}`);
@@ -111,8 +105,6 @@ export function deleteNode(nodeId) {
         type: DELETE_NODE,
         payload: nodeId
       });
-
-      repositoryEvents.emit('deleteNode', dispatch, getState, node);
     } catch (e) {
       // delete failed
       toastr.error(`Failed to delete folder ${node.name}: ${e}`);
@@ -120,13 +112,20 @@ export function deleteNode(nodeId) {
   };
 }
 
-export function createEntry(ptr) {
-  return (dispatch, getState) => {
-    dispatch({
-      type: CREATE_ENTRY,
-      payload: ptr
-    });
-    repositoryEvents.emit('createEntry', dispatch, getState, ptr);
+function createEntry(ptr) {
+  return {
+    type: CREATE_ENTRY,
+    payload: ptr
+  };
+}
+
+function updateEntry(ptr, buffer) {
+  return {
+    type: UPDATE_ENTRY,
+    payload: {
+      ptr,
+      buffer
+    }
   };
 }
 
@@ -144,7 +143,7 @@ export function writeEntry(ptr, buffer) {
     if (!existing) {
       dispatch(createEntry(ptr));
     }
-    repositoryEvents.emit('updateEntry', dispatch, getState, ptr, buffer);
+    dispatch(updateEntry(ptr, buffer));
   };
 }
 
@@ -167,12 +166,10 @@ export function renameNode(nodeId, newName) {
         type: RENAME_NODE,
         payload: {
           nodeId,
+          newParentId: parentNode.id,
           newName
         }
       });
-
-      const newId = `${parentNode.id}${newName}/`;
-      repositoryEvents.emit('moveNode', dispatch, getState, nodeId, newId);
     } catch (e) {
       // rename failed
       toastr.error(`Failed to rename folder to ${newName}: ${e}`);
@@ -201,8 +198,6 @@ export function createChildNode(parentNodeId, name) {
           name
         }
       });
-
-      repositoryEvents.emit('createNode', dispatch, getState, parentNode.id, name);
     } catch (e) {
       // mkdir failed
       toastr.error(`Failed to create folder ${name}: ${e}`);
@@ -210,8 +205,6 @@ export function createChildNode(parentNodeId, name) {
     }
   };
 }
-
-export const repositoryEvents = new EventEmitter();
 
 export default function reducer(state = { nodes: { } }, action) {
   switch (action.type) {

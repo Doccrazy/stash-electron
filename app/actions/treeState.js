@@ -1,6 +1,7 @@
 import { Set } from 'immutable';
-import { readDir, repositoryEvents } from './repository';
+import * as repoActions from './repository';
 import { hierarchy } from '../utils/repository';
+import { afterAction } from '../store/eventMiddleware';
 
 const EXPAND = 'treeState/EXPAND';
 const SET_EXPAND = 'treeState/SET_EXPAND';
@@ -27,7 +28,7 @@ function maybeExpand(dispatch, getState, nodeId) {
 
 export function expand(nodeId) {
   return async (dispatch, getState) => {
-    await dispatch(readDir(nodeId));
+    await dispatch(repoActions.readDir(nodeId));
 
     maybeExpand(dispatch, getState, nodeId);
   };
@@ -51,15 +52,15 @@ export function toggle(nodeId) {
   };
 }
 
-repositoryEvents.on('createNode', (dispatch, getState, parentNodeId) => {
+afterAction(repoActions.CREATE_NODE, (dispatch, getState, { parentNodeId, name }) => {
   maybeExpand(dispatch, getState, parentNodeId);
 });
 
-repositoryEvents.on('deleteNode', (dispatch, getState, node) => {
-  dispatch(close(node.id));
+afterAction(repoActions.DELETE_NODE, (dispatch, getState, nodeId) => {
+  dispatch(close(nodeId));
 });
 
-repositoryEvents.on('moveNode', (dispatch, getState, nodeId, newId) => {
+afterAction(repoActions.RENAME_NODE, (dispatch, getState, { nodeId, newParentId, newName }) => {
   dispatch(close(nodeId));
 });
 

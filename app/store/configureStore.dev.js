@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import { createHashHistory } from 'history';
 import { routerMiddleware, routerActions } from 'react-router-redux';
 import { createLogger } from 'redux-logger';
+import eventMiddleware from './eventMiddleware';
 import rootReducer from '../actions/index';
 
 const history = createHashHistory();
@@ -14,6 +15,8 @@ const configureStore = (initialState?: void) => {
 
   // Thunk Middleware
   middleware.push(thunk);
+
+  middleware.push(eventMiddleware);
 
   // Logging Middleware
   const logger = createLogger({

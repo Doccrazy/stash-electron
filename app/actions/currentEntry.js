@@ -1,6 +1,8 @@
 // @flow
 import { EntryPtr } from '../utils/repository';
-import { getRepo, deleteEntry, repositoryEvents } from './repository';
+import * as repoActions from './repository';
+import * as curNodeActions from './currentNode';
+import { afterAction } from '../store/eventMiddleware';
 import typeFor from '../fileType';
 
 const SELECT = 'currentEntry/SELECT';
@@ -41,7 +43,7 @@ export function read(contentBuffer?: Buffer) {
     if (type.parse) {
       let content = contentBuffer;
       if (!content) {
-        content = await getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry);
+        content = await repoActions.getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry);
       }
       const parsedContent = type.parse(content);
       dispatch({
@@ -73,7 +75,7 @@ export function confirmDelete() {
   return async (dispatch, getState) => {
     const { currentEntry } = getState();
     if (currentEntry.ptr) {
-      await dispatch(deleteEntry(currentEntry.ptr));
+      await dispatch(repoActions.deleteEntry(currentEntry.ptr));
     }
   };
 }
@@ -85,20 +87,20 @@ export function cancelDelete() {
 }
 
 // when a folder is deselected, clear item selection as well
-repositoryEvents.on('clearSelection', (dispatch, getState) => {
+afterAction(curNodeActions.SELECT, (dispatch, getState) => {
   dispatch(clear());
 });
 
 // when a selected entry is renamed, update selection
-repositoryEvents.on('rename', (dispatch, getState, ptr, newPtr) => {
+afterAction(repoActions.RENAME_ENTRY, (dispatch, getState, { ptr, newName }) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
-    dispatch(reselect(newPtr));
+    dispatch(reselect(new EntryPtr(ptr.nodeId, newName)));
   }
 });
 
 // when a selected entry is deleted, clear selection
-repositoryEvents.on('delete', (dispatch, getState, ptr) => {
+afterAction(repoActions.DELETE_ENTRY, (dispatch, getState, ptr) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
     dispatch(clear());
@@ -106,7 +108,7 @@ repositoryEvents.on('delete', (dispatch, getState, ptr) => {
 });
 
 // when an entry is created within the current folder, select it
-repositoryEvents.on('createEntry', (dispatch, getState, ptr) => {
+afterAction(repoActions.CREATE_ENTRY, (dispatch, getState, ptr) => {
   const { currentNode } = getState();
   if (currentNode.nodeId === ptr.nodeId) {
     dispatch(select(ptr));
@@ -114,7 +116,7 @@ repositoryEvents.on('createEntry', (dispatch, getState, ptr) => {
 });
 
 // when the current entry is updated, read new content
-repositoryEvents.on('updateEntry', (dispatch, getState, ptr, buffer) => {
+afterAction(repoActions.UPDATE_ENTRY, (dispatch, getState, { ptr, buffer }) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
     dispatch(read(buffer));
