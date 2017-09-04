@@ -3,6 +3,7 @@ import { fromJS, is } from 'immutable';
 import { cleanFileName, EntryPtr, hasChildOrEntry, isValidFileName } from '../utils/repository';
 import typeFor, { typeById } from '../fileType';
 import * as repoActions from './repository';
+import * as extActions from './external';
 import { afterAction } from '../store/eventMiddleware';
 
 const OPEN = 'edit/OPEN';
@@ -36,9 +37,7 @@ export function open(ptr, preParsedContent) {
         }
       });
     } else {
-      // const absPath = path.join(ptr.nodeId, ptr.entry);
-
-      // TODO shell.openItem(absPath);
+      dispatch(extActions.open(ptr));
     }
   };
 }

@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
+import os from 'os';
 import path from 'path';
-import { remote } from 'electron';
+import { remote, shell } from 'electron';
 import { toastr } from 'react-redux-toastr';
 import { childNodeByName, EntryPtr } from '../utils/repository';
 import * as repoActions from './repository';
@@ -59,8 +60,56 @@ export function addFiles(files) {
 export function open(ptr) {
   EntryPtr.assert(ptr);
   return async (dispatch, getState) => {
+    const buffer = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
+
+    let absPath = path.join(tempDir, ptr.entry);
+    let ctr = 0;
+    while (fs.existsSync(absPath)) {
+      absPath = path.join(tempDir, `${path.parse(ptr.entry).name}_${ctr}${path.parse(ptr.entry).ext}`);
+      ctr += 1;
+    }
+
+    await fs.writeFile(absPath, buffer);
+    // TODO mark file for erase, wait for app to close, then a) check for changes, prompt to update b) rm after little delay
+    shell.openItem(absPath);
   };
 }
+
+export function browseForSaveAs(ptr) {
+  EntryPtr.assert(ptr);
+  return async (dispatch, getState) => {
+    const targetPath = remote.dialog.showSaveDialog({
+      title: 'Save as *UNENCRYPTED*',
+      defaultPath: ptr.entry
+    });
+    if (targetPath) {
+      dispatch(saveAs(ptr, targetPath));
+    }
+  };
+}
+
+function saveAs(ptr, targetPath) {
+  EntryPtr.assert(ptr);
+  return async (dispatch, getState) => {
+    try {
+      const buffer = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
+
+      await fs.writeFile(targetPath, buffer);
+      toastr.success(`${ptr.entry} saved successfully.`);
+    } catch (e) {
+      toastr.error(`Save failed: ${e}.`);
+    }
+  };
+}
+
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'stash-'));
+window.addEventListener('beforeunload', ev => {
+  if (tempDir && fs.existsSync(tempDir)) {
+    ev.returnValue = false;   // eslint-disable-line no-param-reassign
+    // TODO secure overwrite
+    fs.remove(tempDir).then(() => remote.getCurrentWindow().destroy()).catch(() => remote.getCurrentWindow().destroy());
+  }
+});
 
 export default function reducer(state = {}, action) {
   switch (action.type) {
