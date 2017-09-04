@@ -10,6 +10,7 @@ import DeletePopup from '../containers/DeletePopup';
 import DeleteNodePopup from '../containers/DeleteNodePopup';
 import CurrentFolder from '../containers/CurrentFolder';
 import ImportPopup from '../containers/ImportPopup';
+import AddFileDropAcceptor from '../containers/AddFileDropAcceptor';
 import styles from './Home.css';
 
 export default class Home extends Component {
@@ -37,9 +38,9 @@ export default class Home extends Component {
               </Col>
             </Row>
           </div>
-          <div className={styles.contentBody}>
+          <AddFileDropAcceptor className={styles.contentBody}>
             <FileList />
-          </div>
+          </AddFileDropAcceptor>
           <div className={styles.contentFooter}>
             <FileDetails />
           </div>

@@ -5,6 +5,7 @@ import { reducer as toastr } from 'react-redux-toastr';
 import currentEntry from './currentEntry';
 import currentNode from './currentNode';
 import edit from './edit';
+import external from './external';
 import favorites from './favorites';
 import fileImport from './fileImport';
 import repository from './repository';
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   currentEntry,
   currentNode,
   edit,
+  external,
   favorites,
   fileImport,
   repository,

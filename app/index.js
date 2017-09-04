@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
+import './utils/electronNoDrop';
 import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';
@@ -10,9 +11,6 @@ import './app.global.scss';
 global.jQuery = require('jquery');
 global.Popper = require('popper.js').default;
 require('bootstrap/js/src/dropdown');
-
-document.addEventListener('dragover', event => event.preventDefault());
-document.addEventListener('drop', event => event.preventDefault());
 
 const store = configureStore();
 
