@@ -19,26 +19,24 @@ export function open(ptr, preParsedContent) {
   EntryPtr.assert(ptr);
   return async (dispatch, getState) => {
     const type = typeFor(ptr.entry);
+    let parsedContent;
     if (type.parse) {
-      let parsedContent = preParsedContent;
+      parsedContent = preParsedContent;
       if (!parsedContent) {
         const content = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
         parsedContent = type.parse(content);
       }
-
-      dispatch({
-        type: OPEN,
-        payload: {
-          ptr,
-          typeId: type.id,
-          name: ptr.entry,
-          parsedContent,
-          formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
-        }
-      });
-    } else {
-      dispatch(extActions.open(ptr));
     }
+
+    dispatch({
+      type: OPEN,
+      payload: {
+        ptr,
+        typeId: type.id,
+        parsedContent,
+        formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
+      }
+    });
   };
 }
 
@@ -194,12 +192,12 @@ afterAction(repoActions.DELETE_ENTRY, (dispatch, getState, ptr) => {
 export default function reducer(state = {}, action) {
   switch (action.type) {
     case OPEN:
-      if (action.payload.ptr && action.payload.parsedContent) {
+      if (action.payload.ptr) {
         return {
           ptr: action.payload.ptr,
           typeId: action.payload.typeId,
-          name: action.payload.name,
-          initialContent: fromJS(action.payload.parsedContent),
+          name: action.payload.ptr.entry,
+          initialContent: action.payload.parsedContent ? fromJS(action.payload.parsedContent) : undefined,
           parsedContent: action.payload.parsedContent,
           formState: action.payload.formState
         };

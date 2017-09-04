@@ -103,11 +103,10 @@ function saveAs(ptr, targetPath) {
 }
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'stash-'));
-window.addEventListener('beforeunload', ev => {
+window.addEventListener('beforeunload', () => {
   if (tempDir && fs.existsSync(tempDir)) {
-    ev.returnValue = false;   // eslint-disable-line no-param-reassign
     // TODO secure overwrite
-    fs.remove(tempDir).then(() => remote.getCurrentWindow().destroy()).catch(() => remote.getCurrentWindow().destroy());
+    fs.removeSync(tempDir);
   }
 });
 

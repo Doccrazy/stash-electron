@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reacts
 import { typeById } from '../fileType';
 
 export default ({ open, isNew, typeId, name, parsedContent, formState, validationError, onChangeName, onChange, onChangeState, onSave, onClose }) => {
-  const TypeForm = typeId && typeById(typeId).form;
+  const TypeForm = open && typeById(typeId).form;
   return (<Modal size="lg" isOpen={open} toggle={onClose}>
     <ModalHeader toggle={onClose}>{isNew ? 'Create new entry' : 'Edit entry'}</ModalHeader>
     <ModalBody>
