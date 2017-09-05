@@ -5,7 +5,7 @@ import { EntryPtr } from '../utils/repository';
 
 export const LOAD = 'repository/LOAD';
 export const RESET_DIRS = 'repository/RESET_DIRS';
-export const READ_DIR = 'repository/READ_DIR';
+export const READ_NODE = 'repository/READ_NODE';
 export const RENAME_ENTRY = 'repository/RENAME_ENTRY';
 export const DELETE_ENTRY = 'repository/DELETE_ENTRY';
 export const CREATE_ENTRY = 'repository/CREATE_ENTRY';
@@ -33,21 +33,22 @@ export function load(repoPath) {
   };
 }
 
-export function readDir(subPath, recurse = true) {
+export function readNode(nodeId, recurse = true) {
   return async (dispatch, getState) => {
-    const dirContents = await repo.readdir(subPath);
+    const dirContents = await repo.readdir(nodeId);
 
     const result = {
-      path: subPath,
+      nodeId,
       entries: dirContents.get('entries').map(e => e.get('name')).toJS(),
       children: dirContents.get('children').toJS()
     };
     dispatch({
-      type: READ_DIR,
+      type: READ_NODE,
       payload: result
     });
-    if (recurse) {
-      result.children.forEach(childId => dispatch(readDir(`${subPath}${childId}/`, false)));
+    const newNode = getState().repository.nodes[nodeId];
+    if (recurse && newNode && newNode.children) {
+      await Promise.all(newNode.children.map(childId => dispatch(readNode(childId, false))));
     }
   };
 }
@@ -88,7 +89,7 @@ export function deleteEntry(ptr) {
 }
 
 export function deleteNode(nodeId) {
-  if (!nodeId || nodeId === '/') {
+  if (!nodeId || nodeId === ROOT_ID) {
     return;
   }
   return async (dispatch, getState) => {
@@ -148,7 +149,7 @@ export function writeEntry(ptr, buffer) {
 }
 
 export function renameNode(nodeId, newName) {
-  if (!nodeId || nodeId === '/') {
+  if (!nodeId || nodeId === ROOT_ID) {
     return;
   }
   return async (dispatch, getState) => {
@@ -206,29 +207,34 @@ export function createChildNode(parentNodeId, name) {
   };
 }
 
+const ROOT_ID = '/';
+function makeId(parentNodeId, childName) {
+  return `${parentNodeId}${childName}/`;
+}
+
 export default function reducer(state = { nodes: { } }, action) {
   switch (action.type) {
     case LOAD:
-      return { ...state, nodes: { '/': { id: '/', title: action.payload } }, name: action.payload };
+      return { ...state, nodes: { [ROOT_ID]: { id: ROOT_ID, title: action.payload } }, name: action.payload };
     case RESET_DIRS:
-      return { ...state, nodes: { '/': { id: '/', title: 'Root' } } };
-    case READ_DIR: {
+      return { ...state, nodes: { [ROOT_ID]: { id: ROOT_ID, title: 'Root' } } };
+    case READ_NODE: {
       const newNodes = { ...state.nodes };
-      const subPath = action.payload.path;
+      const nodeId = action.payload.nodeId;
 
-      newNodes[subPath] = {
-        ...newNodes[subPath],
-        children: alphanumSort(action.payload.children.map(dir => `${subPath}${dir}/`), { insensitive: true }),
+      newNodes[nodeId] = {
+        ...newNodes[nodeId],
+        children: alphanumSort(action.payload.children.map(dir => makeId(nodeId, dir)), { insensitive: true }),
         entries: alphanumSort(action.payload.entries, { insensitive: true })
       };
 
       action.payload.children.forEach(dir => {
-        newNodes[`${subPath}${dir}/`] = {
-          ...newNodes[`${subPath}${dir}/`],
-          id: `${subPath}${dir}/`,
+        newNodes[makeId(nodeId, dir)] = {
+          ...newNodes[makeId(nodeId, dir)],
+          id: makeId(nodeId, dir),
           name: dir,
           title: dir,
-          parent: subPath
+          parent: nodeId
         };
       });
       return { ...state, nodes: newNodes };
@@ -285,7 +291,7 @@ export default function reducer(state = { nodes: { } }, action) {
 
         const newNode = {
           ...node,
-          id: `${newParentNode.id}${newName}/`,
+          id: makeId(newParentNode.id, newName),
           name: newName,
           title: newName
         };
@@ -304,7 +310,7 @@ export default function reducer(state = { nodes: { } }, action) {
       const name = action.payload.name;
       if (parentNode) {
         const newNode = {
-          id: `${parentNode.id}${name}/`,
+          id: makeId(parentNode.id, name),
           name,
           title: name,
           parent: parentNode.id

@@ -62,7 +62,6 @@ export function create(nodeId, typeId) {
     payload: {
       ptr: new EntryPtr(nodeId),
       typeId,
-      name: '',
       parsedContent,
       formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
     }
@@ -196,7 +195,7 @@ export default function reducer(state = {}, action) {
         return {
           ptr: action.payload.ptr,
           typeId: action.payload.typeId,
-          name: action.payload.ptr.entry,
+          name: action.payload.ptr.entry || '',
           initialContent: action.payload.parsedContent ? fromJS(action.payload.parsedContent) : undefined,
           parsedContent: action.payload.parsedContent,
           formState: action.payload.formState

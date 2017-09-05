@@ -78,7 +78,7 @@ export default class PasswordForm extends React.Component<void, Props, void> {
             <Input
               id="username"
               placeholder="Username"
-              value={value.username}
+              value={value.username || ''}
               onChange={ev => onChange({ ...value, username: ev.target.value })}
             />
           </Col>
@@ -92,7 +92,7 @@ export default class PasswordForm extends React.Component<void, Props, void> {
                 type={this.props.formState.mask ? 'password' : 'text'}
                 id="password"
                 placeholder="Password"
-                value={value.password}
+                value={value.password || ''}
                 onChange={ev => onChange({ ...value, password: ev.target.value })}
               /></Col>
               <Col xs="auto"><Button title="Toggle password masking" active={this.props.formState.mask} onClick={this.toggleMask}><i className="fa fa-ellipsis-h" /></Button></Col>
@@ -108,7 +108,7 @@ export default class PasswordForm extends React.Component<void, Props, void> {
                 id="repeatPassword"
                 placeholder={this.props.formState.mask ? 'Repeat password' : ''}
                 disabled={!this.props.formState.mask}
-                value={this.props.formState.mask ? this.props.formState.repeatPassword : ''}
+                value={this.props.formState.mask ? this.props.formState.repeatPassword || '' : ''}
                 onChange={this.changeRepeatPassword}
               /></Col>
               <Col xs="auto"><PwGenerateMenu onGenerate={this.setPassword} /></Col>
@@ -118,7 +118,7 @@ export default class PasswordForm extends React.Component<void, Props, void> {
         <FormGroup row>
           <Label sm={2} for="url">URL</Label>
           <Col sm={10}>
-            <Input id="url" placeholder="URL" value={value.url} onChange={ev => onChange({ ...value, url: ev.target.value })} />
+            <Input id="url" placeholder="URL" value={value.url || ''} onChange={ev => onChange({ ...value, url: ev.target.value })} />
           </Col>
         </FormGroup>
         <FormGroup row>
@@ -129,7 +129,7 @@ export default class PasswordForm extends React.Component<void, Props, void> {
               id="description"
               placeholder="Description"
               style={{ height: 150 }}
-              value={value.description}
+              value={value.description || ''}
               onChange={ev => onChange({ ...value, description: ev.target.value })}
             />
           </Col>
