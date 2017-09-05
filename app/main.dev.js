@@ -17,6 +17,29 @@ import MenuBuilder from './menu';
 
 let mainWindow = null;
 
+function processCommandLine(argv) {
+  const lastArg = argv.pop();
+  if (lastArg.startsWith('stash:')) {
+    mainWindow.webContents.send('stashLink', lastArg);
+  }
+}
+
+if (process.env.NODE_ENV === 'production') {
+  app.setAsDefaultProtocolClient('stash');
+}
+const isSecondInstance = app.makeSingleInstance(commandLine => {
+  // Someone tried to run a second instance, we should focus our window.
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+
+    processCommandLine(commandLine);
+  }
+});
+if (isSecondInstance) {
+  app.quit();
+}
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -92,6 +115,8 @@ app.on('ready', async () => {
     }
     mainWindow.show();
     mainWindow.focus();
+
+    processCommandLine(process.argv);
   });
 
   // prevent internal navigation, open external links in default browser

@@ -1,3 +1,5 @@
+import path from 'path';
+import { URL } from 'url';
 import { hash } from 'immutable';
 
 export function hierarchy(nodes, nodeId) {
@@ -52,5 +54,25 @@ export class EntryPtr {
 
   hashCode() {
     return hash(`${this.nodeId}/${this.entry}`);
+  }
+
+  toHref() {
+    const fullPath = path.posix.join(this.nodeId, this.entry);
+    return `stash:${encodeURI(fullPath)}`;
+  }
+
+  static fromHref(href) {
+    const url = new URL(href);
+    if (url.protocol !== 'stash:' || url.host || url.port) {
+      throw new Error('Not a Stash URL');
+    } else if (!url.pathname || url.pathname === '/') {
+      throw new Error('Missing entry path');
+    }
+
+    const parts = path.posix.parse(decodeURI(url.pathname));
+    if (!parts.dir) {
+      throw new Error('Missing node');
+    }
+    return new EntryPtr(`${parts.dir}/`, parts.base);
   }
 }

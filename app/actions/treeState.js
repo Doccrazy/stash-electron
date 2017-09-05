@@ -28,7 +28,12 @@ function maybeExpand(dispatch, getState, nodeId) {
 
 export function expand(nodeId) {
   return async (dispatch, getState) => {
-    await dispatch(repoActions.readDir(nodeId));
+    const { repository } = getState();
+    if (!repository.nodes[nodeId]) {
+      return;
+    }
+
+    await dispatch(repoActions.readNode(nodeId));
 
     maybeExpand(dispatch, getState, nodeId);
   };

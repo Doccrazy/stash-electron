@@ -15,6 +15,12 @@ const CANCEL_DELETE = 'currentEntry/CANCEL_DELETE';
 export function select(ptr: EntryPtr) {
   EntryPtr.assert(ptr);
   return async (dispatch, getState) => {
+    const { repository } = getState();
+    const node = repository.nodes[ptr.nodeId];
+    if (!node || !node.entries || !node.entries.includes(ptr.entry)) {
+      return;
+    }
+
     dispatch({
       type: SELECT,
       payload: ptr

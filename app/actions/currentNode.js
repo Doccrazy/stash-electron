@@ -14,6 +14,11 @@ export const CLOSE_EDIT = 'currentNode/CLOSE_EDIT';
 
 export function select(nodeId) {
   return async (dispatch, getState) => {
+    const { repository } = getState();
+    if (!repository.nodes[nodeId]) {
+      return;
+    }
+
     await dispatch(expand(nodeId));
     dispatch({
       type: SELECT,

@@ -5,6 +5,7 @@ import './utils/electronNoDrop';
 import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';
+import installLinkHandler from './store/stashLinkHandler';
 import './app.global.scss';
 
 // TODO remove when reactstrap dropdowns are fixed
@@ -13,8 +14,8 @@ global.Popper = require('popper.js').default;
 require('bootstrap/js/src/dropdown');
 
 const store = configureStore();
-
 store.dispatch(loadSettings());
+installLinkHandler(store.dispatch);
 
 render(
   <AppContainer>
