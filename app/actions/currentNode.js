@@ -5,6 +5,7 @@ import { afterAction } from '../store/eventMiddleware';
 import { childNodeByName, cleanFileName, hasChildOrEntry } from '../utils/repository';
 
 export const SELECT = 'currentNode/SELECT';
+export const SELECT_SPECIAL = 'currentNode/SELECT_SPECIAL';
 export const PREPARE_DELETE = 'currentNode/PREPARE_DELETE';
 export const CANCEL_DELETE = 'currentNode/CANCEL_DELETE';
 export const START_RENAME = 'currentNode/START_RENAME';
@@ -24,6 +25,13 @@ export function select(nodeId) {
       type: SELECT,
       payload: nodeId
     });
+  };
+}
+
+export function selectSpecial(specialId) {
+  return {
+    type: SELECT_SPECIAL,
+    payload: specialId
   };
 }
 
@@ -155,6 +163,8 @@ export default function reducer(state = {}, action) {
   switch (action.type) {
     case SELECT:
       return { nodeId: action.payload };
+    case SELECT_SPECIAL:
+      return { specialId: action.payload };
     case PREPARE_DELETE:
       return { ...state, deleting: true };
     case CANCEL_DELETE:

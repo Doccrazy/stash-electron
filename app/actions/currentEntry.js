@@ -96,6 +96,9 @@ export function cancelDelete() {
 afterAction(curNodeActions.SELECT, (dispatch, getState) => {
   dispatch(clear());
 });
+afterAction(curNodeActions.SELECT_SPECIAL, (dispatch, getState) => {
+  dispatch(clear());
+});
 
 // when a selected entry is renamed, update selection
 afterAction(repoActions.RENAME_ENTRY, (dispatch, getState, { ptr, newName }) => {

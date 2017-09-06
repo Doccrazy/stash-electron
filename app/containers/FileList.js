@@ -5,13 +5,24 @@ import { EntryPtr } from '../utils/repository';
 import { select } from '../actions/currentEntry';
 import { open } from '../actions/edit';
 import { toggle as toggleFavorite } from '../actions/favorites';
+import specialFolders from '../utils/specialFolders';
+
+function entryList(state) {
+  if (state.currentNode.specialId) {
+    const selector = specialFolders[state.currentNode.specialId].selector;
+    return selector(state);
+  } else if (state.currentNode.nodeId) {
+    return (state.repository.nodes[state.currentNode.nodeId].entries || []).map(entry => new EntryPtr(state.currentNode.nodeId, entry));
+  }
+  return [];
+}
 
 export default connect(state => ({
-  currentNode: state.repository.nodes[state.currentNode.nodeId],
-  selectedEntry: state.currentEntry.ptr && state.currentEntry.ptr.nodeId === state.currentNode.nodeId && state.currentEntry.ptr.entry,
-  favorites: state.favorites.filter(ptr => ptr.nodeId === state.currentNode.nodeId).map(ptr => ptr.entry)
+  entries: entryList(state),
+  selectedEntry: state.currentEntry.ptr,
+  favorites: state.favorites
 }), dispatch => ({
-  onSelect: (node, entry) => dispatch(select(new EntryPtr(node, entry))),
-  onEdit: (node, entry) => dispatch(open(new EntryPtr(node, entry))),
-  onToggleFavorite: (node, entry) => dispatch(toggleFavorite(new EntryPtr(node, entry)))
+  onSelect: ptr => dispatch(select(ptr)),
+  onEdit: ptr => dispatch(open(ptr)),
+  onToggleFavorite: ptr => dispatch(toggleFavorite(ptr))
 }))(FileList);

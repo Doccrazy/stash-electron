@@ -29,7 +29,7 @@ export function toggle(ptr: EntryPtr) {
   };
 }
 
-export default function reducer(state: Set<string> = new Set(), action: { type: string, payload: any }) {
+export default function reducer(state: Set<EntryPtr> = new Set(), action: { type: string, payload: any }) {
   switch (action.type) {
     case ADD:
       return state.add(action.payload);

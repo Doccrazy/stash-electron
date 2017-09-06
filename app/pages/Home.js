@@ -11,6 +11,7 @@ import DeleteNodePopup from '../containers/DeleteNodePopup';
 import CurrentFolder from '../containers/CurrentFolder';
 import ImportPopup from '../containers/ImportPopup';
 import AddFileDropAcceptor from '../containers/AddFileDropAcceptor';
+import SpecialFolderLink from '../containers/SpecialFolderLink';
 import styles from './Home.css';
 
 export default class Home extends Component {
@@ -23,7 +24,7 @@ export default class Home extends Component {
         <ImportPopup />
         <div className={`bg-light ${styles.sidebar}`}>
           <p>
-            <a className="text-dark" href="#"><i className="fa fa-star" />&nbsp;My favorites</a>
+            <SpecialFolderLink id="favorites" />
           </p>
           <Folder nodeId="/" />
         </div>

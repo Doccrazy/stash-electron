@@ -1,10 +1,22 @@
+// @flow
 import React from 'react';
 import { Table } from 'reactstrap';
 import cx from 'classnames';
+import { Set } from 'immutable';
 import typeFor from '../fileType';
 import utils from '../utils/styles.css';
+import { EntryPtr } from '../utils/repository';
 
-export default ({ currentNode, selectedEntry, favorites, onSelect, onEdit, onToggleFavorite }) => (<div>
+type Props = {
+  entries: EntryPtr[],
+  selectedEntry: ?EntryPtr,
+  favorites: Set<EntryPtr>,
+  onSelect: (EntryPtr) => void,
+  onEdit: (EntryPtr) => void,
+  onToggleFavorite: (EntryPtr) => void
+};
+
+export default ({ entries, selectedEntry, favorites, onSelect, onEdit, onToggleFavorite }: Props) => (<div>
   <Table hover className={`table-sm ${utils.stickyTable}`}>
     <thead>
       <tr>
@@ -14,24 +26,24 @@ export default ({ currentNode, selectedEntry, favorites, onSelect, onEdit, onTog
       </tr>
     </thead>
     <tbody>
-      {currentNode && currentNode.entries && currentNode.entries.map((entry, idx) => {
-        const type = typeFor(entry);
+      {entries.map(ptr => {
+        const type = typeFor(ptr.entry);
         return (<tr
-          key={entry}
-          className={cx(utils.clickable, selectedEntry === entry && 'table-active')}
-          onClick={ev => { if (ev.detail === 1) { onSelect(currentNode, entry); } }}
+          key={ptr.toString()}
+          className={cx(utils.clickable, ptr.equals(selectedEntry) && 'table-active')}
+          onClick={ev => { if (ev.detail === 1) { onSelect(ptr); } }}
           onMouseDown={ev => { if (ev.detail > 1) { ev.preventDefault(); } }}
-          onDoubleClick={() => onEdit(currentNode, entry)}
+          onDoubleClick={() => onEdit(ptr)}
           onKeyDown={ev => console.log(ev)}
         >
           <td><i
-            className={cx('fa', favorites.has(entry) ? 'fa-star' : 'fa-star-o')}
+            className={cx('fa', favorites.has(ptr) ? 'fa-star' : 'fa-star-o')}
             onClick={ev => {
-              onToggleFavorite(currentNode, entry);
+              onToggleFavorite(ptr);
               ev.stopPropagation();
             }}
           /></td>
-          <td>{type.format(entry)}</td>
+          <td>{type.format(ptr.entry)}</td>
           <td className="text-right" style={{ whiteSpace: 'nowrap' }}>{new Date().toLocaleString()}</td>
         </tr>);
       })}

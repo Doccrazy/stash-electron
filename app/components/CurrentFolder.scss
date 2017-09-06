@@ -17,3 +17,7 @@
     margin-right: 0.333em;
   }
 }
+
+.icon-star > li:first-child::before {
+  content: $fa-var-star !important;
+}

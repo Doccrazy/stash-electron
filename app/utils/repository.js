@@ -52,8 +52,12 @@ export class EntryPtr {
     return other instanceof EntryPtr && other.nodeId === this.nodeId && other.entry === this.entry;
   }
 
+  toString() {
+    return `${this.nodeId}:${this.entry}`;
+  }
+
   hashCode() {
-    return hash(`${this.nodeId}/${this.entry}`);
+    return hash(this.toString());
   }
 
   toHref() {
