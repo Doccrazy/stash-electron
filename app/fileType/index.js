@@ -7,11 +7,13 @@ const TYPES = [
     toDisplayName: fn => fn.substr(0, fn.length - 10),
     toFileName: name => `${name}.pass.json`,
     initialize: () => ({}),
+    matches: (content, filterLC) => (content.username && content.username.toLowerCase().includes(filterLC))
+      || (content.description && content.description.toLowerCase().includes(filterLC)),
     fromKdbxEntry: entry => ({
       description: entry.fields.Notes,
       username: entry.fields.UserName,
       password: entry.fields.Password ? entry.fields.Password.getText() : undefined,
-      url: entry.fields.URL,
+      url: entry.fields.URL
     }),
     ...jsonParser
   },

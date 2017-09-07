@@ -164,7 +164,7 @@ export default function reducer(state = {}, action) {
     case SELECT:
       return { nodeId: action.payload };
     case SELECT_SPECIAL:
-      return { specialId: action.payload };
+      return { nodeId: state.nodeId, specialId: action.payload };
     case PREPARE_DELETE:
       return { ...state, deleting: true };
     case CANCEL_DELETE:

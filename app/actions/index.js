@@ -9,6 +9,7 @@ import external from './external';
 import favorites from './favorites';
 import fileImport from './fileImport';
 import repository from './repository';
+import search from './search';
 import settings from './settings';
 import treeState from './treeState';
 
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   favorites,
   fileImport,
   repository,
+  search,
   settings,
   treeState,
 

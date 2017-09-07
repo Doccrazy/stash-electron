@@ -5,7 +5,7 @@ import { select, closeEdit, changeName, saveNode } from '../actions/currentNode'
 
 export default connect(state => ({
   nodes: state.repository.nodes,
-  currentNodeId: state.currentNode.nodeId,
+  currentNodeId: !state.currentNode.specialId && state.currentNode.nodeId,
   currentSpecialId: state.currentNode.specialId,
   editing: state.currentNode.renaming || state.currentNode.creating,
   currentName: state.currentNode.name

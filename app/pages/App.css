@@ -12,7 +12,7 @@
   width: 50%;
 }
 
-.search {
+.form > :global(.input-group) {
   flex-grow: 1;
 }
 

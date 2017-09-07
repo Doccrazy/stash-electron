@@ -5,6 +5,7 @@ import { Navbar, NavbarBrand, Nav, NavItem, Form, Input, InputGroup, InputGroupB
 import { NavLink } from 'react-router-dom';
 import ReduxToastr from 'react-redux-toastr';
 import GitStatus from '../components/GitStatus';
+import SearchField from '../containers/SearchField';
 import styles from './App.css';
 
 export default class App extends Component {
@@ -29,14 +30,7 @@ export default class App extends Component {
               <NavLink to="/settings" exact className="nav-link">Settings</NavLink>
             </NavItem>
           </Nav>
-          <Form inline className={`mr-3 ${styles.form}`}>
-            <InputGroup className={styles.search}>
-              <Input placeholder="Type to search, enter for fulltext" />
-              <InputGroupButton>
-                <Button>everywhere</Button>
-              </InputGroupButton>
-            </InputGroup>
-          </Form>
+          <SearchField className={`mr-3 ${styles.form}`} />
           <span className="navbar-text">
             <GitStatus ahead="2" />
           </span>

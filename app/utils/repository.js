@@ -14,6 +14,15 @@ export function hierarchy(nodes, nodeId) {
   return result;
 }
 
+export function recursiveChildIds(nodes, parentId) {
+  let result = [parentId];
+  const children = nodes[parentId].children || [];
+  children.forEach(childId => {
+    result = result.concat(recursiveChildIds(nodes, childId));
+  });
+  return result;
+}
+
 export function isValidFileName(fn: string) {
   return fn && !/[/\\:*?"<>|]/.test(fn);
 }
