@@ -132,7 +132,7 @@ export function saveNode() {
   };
 }
 
-afterAction(repoActions.LOAD, dispatch => {
+afterAction(repoActions.FINISH_LOAD, dispatch => {
   dispatch(select('/'));
 });
 

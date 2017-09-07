@@ -9,6 +9,69 @@ function assertSubPath(parent, child) {
   }
 }
 
+function readAsyncCb(dir, callback, subPath = '/', name, parent) {
+  const fileList = [];
+  const subDirList = [];
+  const dirMap = { [subPath]: { name, parent, files: fileList, dirs: subDirList } };
+  const dirPath = path.join(dir, subPath);
+
+  fs.readdir(dirPath, (err, files) => {
+    if (err) {
+      return callback(err);
+    }
+
+    let pending = files.length;
+    if (!pending) {
+      // we are done, woop woop
+      return callback(null, dirMap);
+    }
+
+    files.forEach((file) => {
+      const filePath = path.join(dirPath, file);
+      fs.stat(filePath, (_err, stats) => {
+        if (_err) {
+          return callback(_err);
+        }
+
+        if (stats.isDirectory()) {
+          const dirId = `${subPath}${file}/`;
+          subDirList.push(dirId);
+          readAsyncCb(dir, (__err, resDirs) => {
+            if (__err) {
+              return callback(__err);
+            }
+
+            Object.assign(dirMap, resDirs);
+
+            pending -= 1;
+            if (!pending) {
+              return callback(null, dirMap);
+            }
+          }, dirId, file, subPath);
+        } else {
+          fileList.push(file);
+          pending -= 1;
+          if (!pending) {
+            return callback(null, dirMap);
+          }
+        }
+      });
+    });
+  });
+}
+
+function readAsync(dir) {
+  return new Promise((resolve, reject) => {
+    readAsyncCb(dir, (err, dirList) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(dirList);
+      }
+    });
+  });
+}
+
 /**
  * Plain, unencrypted repository using a file system folder. Use only for development!
  */
@@ -59,6 +122,17 @@ export default class PlainRepository {
       entries,
       children
     });
+  }
+
+  async readdirRecursive(subPath) {
+    const dirPath = path.join(this._rootPath, subPath);
+    assertSubPath(this._rootPath, dirPath);
+
+    console.time('readdirRecurse');
+    const dirMap = await readAsync(dirPath);
+    console.timeEnd('readdirRecurse');
+
+    return dirMap;
   }
 
   async renameFile(subPath, oldName, newName) {

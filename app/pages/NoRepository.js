@@ -2,8 +2,8 @@
 import React from 'react';
 import styles from './NoRepository.css';
 
-export default () => (
+export default ({ loading }) => (
   <div className={styles.main}>
-    <h1>No repository loaded, check settings.</h1>
+    {loading ? <h1>Loading repository...</h1> : <h1>No repository loaded, check settings.</h1>}
   </div>
 );

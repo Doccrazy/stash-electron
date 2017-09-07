@@ -7,6 +7,7 @@ export default function (Component, Alternate) {
   );
 
   return connect(state => ({
-    hideComponent: !state.repository.path
+    hideComponent: !state.repository.path || state.repository.loading,
+    loading: state.repository.loading
   }))(Switch);
 }

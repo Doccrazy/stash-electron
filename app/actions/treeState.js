@@ -33,7 +33,7 @@ export function expand(nodeId) {
       return;
     }
 
-    await dispatch(repoActions.readNode(nodeId));
+    //await dispatch(repoActions.readNode(nodeId));
 
     maybeExpand(dispatch, getState, nodeId);
   };

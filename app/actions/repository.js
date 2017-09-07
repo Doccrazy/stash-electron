@@ -7,8 +7,10 @@ import { EntryPtr } from '../utils/repository';
 import { afterAction } from '../store/eventMiddleware';
 
 export const LOAD = 'repository/LOAD';
+export const FINISH_LOAD = 'repository/FINISH_LOAD';
 export const UNLOAD = 'repository/UNLOAD';
 export const READ_NODE = 'repository/READ_NODE';
+export const READ_FULL = 'repository/READ_FULL';
 export const RENAME_ENTRY = 'repository/RENAME_ENTRY';
 export const DELETE_ENTRY = 'repository/DELETE_ENTRY';
 export const CREATE_ENTRY = 'repository/CREATE_ENTRY';
@@ -45,6 +47,10 @@ export function load(repoPath) {
         path: repoPath
       }
     });
+    await dispatch(readFull());
+    dispatch({
+      type: FINISH_LOAD
+    });
   };
 }
 
@@ -62,9 +68,20 @@ export function readNode(nodeId, recurse = true) {
       payload: result
     });
     const newNode = getState().repository.nodes[nodeId];
-    if (recurse && newNode && newNode.children) {
+    if (recurse && newNode && newNode.children && newNode.children.length) {
       await Promise.all(newNode.children.map(childId => dispatch(readNode(childId, false))));
     }
+  };
+}
+
+export function readFull() {
+  return async (dispatch, getState) => {
+    const nodeMap = await repo.readdirRecursive('/');
+
+    dispatch({
+      type: READ_FULL,
+      payload: nodeMap
+    });
   };
 }
 
@@ -237,7 +254,9 @@ function makeId(parentNodeId, childName) {
 export default function reducer(state = { nodes: { } }, action) {
   switch (action.type) {
     case LOAD:
-      return { ...state, nodes: { [ROOT_ID]: { id: ROOT_ID, title: action.payload.name } }, name: action.payload.name, path: action.payload.path };
+      return { ...state, nodes: { [ROOT_ID]: { id: ROOT_ID, title: action.payload.name } }, name: action.payload.name, path: action.payload.path, loading: true };
+    case FINISH_LOAD:
+      return { ...state, loading: false };
     case UNLOAD:
       return { ...state, nodes: { }, name: null, path: null };
     case READ_NODE: {
@@ -257,6 +276,25 @@ export default function reducer(state = { nodes: { } }, action) {
           name: dir,
           title: dir,
           parent: nodeId
+        };
+      });
+      return { ...state, nodes: newNodes };
+    }
+    case READ_FULL: {
+      const nodeMap = action.payload;
+
+      const newNodes = {};
+
+      Object.keys(nodeMap).forEach(nodeId => {
+        const node = nodeMap[nodeId];
+        const name = nodeId === ROOT_ID ? state.name : node.name;
+        newNodes[nodeId] = {
+          id: nodeId,
+          name,
+          title: name,
+          children: alphanumSort(node.dirs, { insensitive: true }),
+          entries: alphanumSort(node.files, { insensitive: true }),
+          parent: node.parent
         };
       });
       return { ...state, nodes: newNodes };
