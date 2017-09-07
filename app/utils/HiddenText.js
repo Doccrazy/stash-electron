@@ -5,6 +5,13 @@ export default class HiddenText extends React.Component {
     visible: false
   };
 
+  componentWillUnmount() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+  }
+
   show = () => {
     if (this.timeout) {
       clearTimeout(this.timeout);
