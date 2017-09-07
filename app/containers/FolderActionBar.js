@@ -7,8 +7,8 @@ import { open as openImport } from '../actions/fileImport';
 import { browseForAdd } from '../actions/external';
 
 export default connect(state => ({
-  nodeEditable: state.currentNode.nodeId !== '/' && !state.currentNode.specialId,
-  contentsEditable: !state.currentNode.specialId
+  nodeEditable: state.currentNode.nodeId && state.currentNode.nodeId !== '/' && !state.currentNode.specialId,
+  contentsEditable: state.currentNode.nodeId && !state.currentNode.specialId
 }), dispatch => ({
   onRename: () => dispatch(startRename()),
   onDelete: () => dispatch(prepareDelete()),

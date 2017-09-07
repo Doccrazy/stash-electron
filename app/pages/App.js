@@ -18,7 +18,7 @@ export default class App extends Component {
       <div className={styles.root}>
         <ReduxToastr timeOut={2000} preventDuplicates position="top-right" transitionIn="fadeIn" transitionOut="fadeOut" />
         <Navbar color="dark" className={`navbar-dark navbar-expand-md ${styles.nav}`}>
-          <NavbarBrand href="/"><span className={styles.logo} /> Stash</NavbarBrand>
+          <NavLink to="/" className="navbar-brand"><span className={styles.logo} /> Stash</NavLink>
           <Nav className="mr-auto" navbar>
             <NavItem>
               <NavLink to="/" exact className="nav-link">Browser</NavLink>

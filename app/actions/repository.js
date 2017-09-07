@@ -1,10 +1,13 @@
+import fs from 'fs';
 import alphanumSort from 'alphanum-sort';
 import { toastr } from 'react-redux-toastr';
+import * as settingsActions from './settings';
 import PlainRepository from '../repository/Plain';
 import { EntryPtr } from '../utils/repository';
+import { afterAction } from '../store/eventMiddleware';
 
 export const LOAD = 'repository/LOAD';
-export const RESET_DIRS = 'repository/RESET_DIRS';
+export const UNLOAD = 'repository/UNLOAD';
 export const READ_NODE = 'repository/READ_NODE';
 export const RENAME_ENTRY = 'repository/RENAME_ENTRY';
 export const DELETE_ENTRY = 'repository/DELETE_ENTRY';
@@ -23,12 +26,24 @@ export function getRepo() {
 export function load(repoPath) {
   return async (dispatch, getState) => {
     dispatch({
-      type: RESET_DIRS
+      type: UNLOAD
     });
+
+    if (!fs.existsSync(repoPath)) {
+      return;
+    }
+    const stat = fs.statSync(repoPath);
+    if (!stat.isDirectory()) {
+      return;
+    }
+
     repo = new PlainRepository(repoPath);
     dispatch({
       type: LOAD,
-      payload: repo.name
+      payload: {
+        name: repo.name,
+        path: repoPath
+      }
     });
   };
 }
@@ -207,6 +222,13 @@ export function createChildNode(parentNodeId, name) {
   };
 }
 
+afterAction([settingsActions.LOAD, settingsActions.SAVE], (dispatch, getState) => {
+  const { settings } = getState();
+  if (settings.current.repositoryPath !== settings.previous.repositoryPath) {
+    dispatch(load(settings.current.repositoryPath));
+  }
+});
+
 const ROOT_ID = '/';
 function makeId(parentNodeId, childName) {
   return `${parentNodeId}${childName}/`;
@@ -215,9 +237,9 @@ function makeId(parentNodeId, childName) {
 export default function reducer(state = { nodes: { } }, action) {
   switch (action.type) {
     case LOAD:
-      return { ...state, nodes: { [ROOT_ID]: { id: ROOT_ID, title: action.payload } }, name: action.payload };
-    case RESET_DIRS:
-      return { ...state, nodes: { [ROOT_ID]: { id: ROOT_ID, title: 'Root' } } };
+      return { ...state, nodes: { [ROOT_ID]: { id: ROOT_ID, title: action.payload.name } }, name: action.payload.name, path: action.payload.path };
+    case UNLOAD:
+      return { ...state, nodes: { }, name: null, path: null };
     case READ_NODE: {
       const newNodes = { ...state.nodes };
       const nodeId = action.payload.nodeId;

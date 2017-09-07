@@ -15,5 +15,9 @@ export default ({ dispatch, getState }) => next => action => {
 };
 
 export function afterAction(actionType, listener) {
-  storeEvents.on(actionType, listener);
+  if (Array.isArray(actionType)) {
+    actionType.forEach(type => storeEvents.on(type, listener));
+  } else {
+    storeEvents.on(actionType, listener);
+  }
 }

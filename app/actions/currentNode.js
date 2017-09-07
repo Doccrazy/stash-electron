@@ -136,6 +136,10 @@ afterAction(repoActions.LOAD, dispatch => {
   dispatch(select('/'));
 });
 
+afterAction(repoActions.UNLOAD, dispatch => {
+  dispatch(deselect());
+});
+
 afterAction(repoActions.DELETE_NODE, (dispatch, getState, nodeId, preActionState) => {
   const { currentNode } = getState();
   if (currentNode.nodeId === nodeId) {
