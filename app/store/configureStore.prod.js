@@ -6,7 +6,9 @@ import { routerMiddleware } from 'react-router-redux';
 import eventMiddleware from './eventMiddleware';
 import rootReducer from '../actions/index';
 
-const history = createBrowserHistory();
+const history = createBrowserHistory({
+  basename: window.location.pathname
+});
 const router = routerMiddleware(history);
 const enhancer = applyMiddleware(thunk, eventMiddleware, router);
 

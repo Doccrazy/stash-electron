@@ -33,7 +33,7 @@ function readAsyncCb(dir, callback, subPath = '/', name, parent) {
           return callback(_err);
         }
 
-        if (stats.isDirectory()) {
+        if (stats.isDirectory() && !file.endsWith('.asar')) {
           const dirId = `${subPath}${file}/`;
           subDirList.push(dirId);
           readAsyncCb(dir, (__err, resDirs) => {

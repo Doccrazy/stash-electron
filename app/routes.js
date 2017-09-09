@@ -8,12 +8,15 @@ import UsersPage from './pages/Users';
 import NoRepository from './pages/NoRepository';
 import noRepoSwitch from './containers/noRepoSwitch';
 
+const HomeWithOverlay = noRepoSwitch(HomePage, NoRepository);
+const UsersWithOverlay = noRepoSwitch(UsersPage, NoRepository);
+
 export default () => (
   <App>
     <Switch>
       <Route path="/settings" component={SettingsPage} />
-      <Route path="/users" component={noRepoSwitch(UsersPage, NoRepository)} />
-      <Route path="/" component={noRepoSwitch(HomePage, NoRepository)} />
+      <Route path="/users" component={UsersWithOverlay} />
+      <Route component={HomeWithOverlay} />
     </Switch>
   </App>
 );
