@@ -12,7 +12,7 @@ export interface Props {
   currentSpecialId?: string,
   editing: boolean,
   currentName: string,
-  onSelectFolder: () => void,
+  onSelectFolder: (nodeId: string) => void,
   onChangeName: (name: string) => void,
   onCancelEdit: () => void,
   onConfirmEdit: () => void

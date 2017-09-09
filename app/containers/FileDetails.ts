@@ -1,7 +1,5 @@
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import FileDetails from '../components/FileDetails';
-import { EntryPtr } from '../utils/repository';
 import { openCurrent } from '../actions/edit';
 import { prepareDelete } from '../actions/currentEntry';
 

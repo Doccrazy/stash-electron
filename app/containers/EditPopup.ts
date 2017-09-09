@@ -1,7 +1,5 @@
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import EditPopup from '../components/EditPopup';
-import { EntryPtr } from '../utils/repository';
 import { change, changeState, changeName, save, close } from '../actions/edit';
 
 export default connect(state => ({
@@ -13,9 +11,9 @@ export default connect(state => ({
   formState: state.edit.formState || {},
   validationError: state.edit.validationError
 }), dispatch => ({
-  onChangeName: value => dispatch(changeName(value)),
-  onChange: value => dispatch(change(value)),
-  onChangeState: value => dispatch(changeState(value)),
+  onChangeName: (value: string) => dispatch(changeName(value)),
+  onChange: (value: any) => dispatch(change(value)),
+  onChangeState: (value: any) => dispatch(changeState(value)),
   onSave: () => dispatch(save(true)),
   onClose: () => dispatch(close())
 }))(EditPopup);

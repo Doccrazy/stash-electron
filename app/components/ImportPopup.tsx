@@ -7,7 +7,7 @@ const STATUS_COLOR = {
   error: 'text-danger'
 };
 
-interface Settings {
+export interface Settings {
   filePath?: string,
   masterKey: string,
   keyFile: string

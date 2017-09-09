@@ -1,5 +1,4 @@
-import React from 'react';
-import { bindActionCreators } from 'redux';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import ConfirmPopup from '../components/ConfirmPopup';
 import { confirmDelete, cancelDelete } from '../actions/currentNode';

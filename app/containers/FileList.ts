@@ -1,4 +1,3 @@
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import FileList from '../components/FileList';
 import { EntryPtr } from '../utils/repository';
@@ -7,12 +6,12 @@ import { open } from '../actions/edit';
 import { toggle as toggleFavorite } from '../actions/favorites';
 import specialFolders from '../utils/specialFolders';
 
-function entryList(state) {
+function entryList(state: any): EntryPtr[] {
   if (state.currentNode.specialId) {
     const selector = specialFolders[state.currentNode.specialId].selector;
     return selector(state);
   } else if (state.currentNode.nodeId) {
-    return (state.repository.nodes[state.currentNode.nodeId].entries || []).map(entry => new EntryPtr(state.currentNode.nodeId, entry));
+    return (state.repository.nodes[state.currentNode.nodeId].entries || []).map((entry: string) => new EntryPtr(state.currentNode.nodeId, entry));
   }
   return [];
 }
@@ -22,7 +21,7 @@ export default connect(state => ({
   selectedEntry: state.currentEntry.ptr,
   favorites: state.favorites
 }), dispatch => ({
-  onSelect: ptr => dispatch(select(ptr)),
-  onEdit: ptr => dispatch(open(ptr)),
-  onToggleFavorite: ptr => dispatch(toggleFavorite(ptr))
+  onSelect: (ptr: EntryPtr) => dispatch(select(ptr)),
+  onEdit: (ptr: EntryPtr) => dispatch(open(ptr)),
+  onToggleFavorite: (ptr: EntryPtr) => dispatch(toggleFavorite(ptr))
 }))(FileList);

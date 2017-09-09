@@ -1,7 +1,6 @@
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { changeSettings, close as closeImport, performImport } from '../actions/fileImport';
-import ImportPopup from '../components/ImportPopup';
+import ImportPopup, { Settings } from '../components/ImportPopup';
 
 export default connect(state => ({
   open: state.fileImport.open,
@@ -9,7 +8,7 @@ export default connect(state => ({
   status: state.fileImport.status,
   statusMessage: state.fileImport.statusMessage
 }), dispatch => ({
-  onChangeSettings: settings => dispatch(changeSettings(settings)),
+  onChangeSettings: (settings: Settings) => dispatch(changeSettings(settings)),
   onImport: () => dispatch(performImport()),
   onClose: () => dispatch(closeImport())
 }))(ImportPopup);
