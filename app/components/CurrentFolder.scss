@@ -18,10 +18,10 @@
   }
 }
 
-.icon-star > li:first-child::before {
+:global(.icon-star) > li:first-child::before {
   content: $fa-var-star !important;
 }
 
-.icon-search > li:first-child::before {
+:global(.icon-search) > li:first-child::before {
   content: $fa-var-search !important;
 }

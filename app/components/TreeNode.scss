@@ -1,12 +1,10 @@
 @import "~font-awesome/scss/mixins";
 @import "~font-awesome/scss/variables";
-@import "~bootstrap/scss/bootstrap";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
 
 .label {
   white-space: nowrap;
-}
-
-.labelOpen {
 }
 
 .labelSelected {

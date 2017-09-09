@@ -43,6 +43,8 @@ app/renderer.prod.js
 app/renderer.prod.js.map
 app/style.css
 app/style.css.map
+app/**/*.css.d.ts
+app/**/*.scss.d.ts
 dist
 dll
 main.js
