@@ -64,11 +64,18 @@
       "target": [
         "deb",
         "AppImage"
-      ]
+      ],
+      "category": "Utility"
     },
     "directories": {
       "buildResources": "resources",
       "output": "release"
+    },
+    "protocols": {
+      "name": "Stash URL",
+      "schemes": [
+        "stash"
+      ]
     }
   },
   "repository": {
