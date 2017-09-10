@@ -1,4 +1,3 @@
-// @flow
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { createBrowserHistory } from 'history';
@@ -10,9 +9,9 @@ const history = createBrowserHistory({
   basename: window.location.pathname
 });
 const router = routerMiddleware(history);
-const enhancer = applyMiddleware(thunk, eventMiddleware, router);
+const enhancer = applyMiddleware(thunk, eventMiddleware as any, router);
 
-function configureStore(initialState?: void) {
+function configureStore(initialState?: any) {
   return createStore(rootReducer, initialState, enhancer);
 }
 

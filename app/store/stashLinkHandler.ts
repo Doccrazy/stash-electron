@@ -1,10 +1,11 @@
 import { ipcRenderer } from 'electron';
-import EntryPtr from '../domain/EntryPtr.ts';
+import EntryPtr from '../domain/EntryPtr';
 import { select as selectNode } from '../actions/currentNode';
 import { select as selectEntry } from '../actions/currentEntry';
 import { expand } from '../actions/treeState';
+import {Dispatch} from '../actions/types/index';
 
-function genPartialIds(nodeId) {
+function genPartialIds(nodeId: string) {
   let idx = -1;
   const result = [];
   while ((idx = nodeId.indexOf('/', idx + 1)) >= 0) {
@@ -13,8 +14,8 @@ function genPartialIds(nodeId) {
   return result;
 }
 
-export default function (dispatch) {
-  ipcRenderer.on('stashLink', async (event, message) => {
+export default function(dispatch: Dispatch) {
+  ipcRenderer.on('stashLink', async (event: string, message: string) => {
     try {
       const ptr = EntryPtr.fromHref(message);
       for (const partialId of genPartialIds(ptr.nodeId).slice(0, -1)) {

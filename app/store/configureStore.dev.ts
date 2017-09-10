@@ -8,9 +8,9 @@ import rootReducer from '../actions/index';
 
 const history = createHashHistory();
 
-const configureStore = (initialState?: void) => {
+const configureStore = (initialState?: any) => {
   // Redux Configuration
-  const middleware = [];
+  const middleware: any[] = [];
   const enhancers = [];
 
   // Thunk Middleware
@@ -31,14 +31,14 @@ const configureStore = (initialState?: void) => {
 
   // Redux DevTools Configuration
   const actionCreators = {
-    ...routerActions,
+    ...routerActions
   };
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose
   /* eslint-disable no-underscore-dangle */
-  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+  const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
       // Options: http://zalmoxisus.github.io/redux-devtools-extension/API/Arguments.html
-      actionCreators,
+      actionCreators
     })
     : compose;
   /* eslint-enable no-underscore-dangle */
@@ -50,8 +50,8 @@ const configureStore = (initialState?: void) => {
   // Create Store
   const store = createStore(rootReducer, initialState, enhancer);
 
-  if (module.hot) {
-    module.hot.accept('../actions', () =>
+  if ((module as any).hot) {
+    (module as any).hot.accept('../actions', () =>
       store.replaceReducer(require('../actions/index')) // eslint-disable-line global-require
     );
   }

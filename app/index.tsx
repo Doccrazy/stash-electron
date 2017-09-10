@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import './utils/electronNoDrop';
@@ -9,8 +9,8 @@ import installLinkHandler from './store/stashLinkHandler';
 import './app.global.scss';
 
 // TODO remove when reactstrap dropdowns are fixed
-global.jQuery = require('jquery');
-global.Popper = require('popper.js').default;
+(global as any).jQuery = require('jquery');
+(global as any).Popper = require('popper.js').default;
 require('bootstrap/js/src/dropdown');
 
 const store = configureStore();
@@ -24,9 +24,9 @@ render(
   document.getElementById('root')
 );
 
-if (module.hot) {
-  module.hot.accept('./containers/Root', () => {
-    const NextRoot = require('./containers/Root'); // eslint-disable-line global-require
+if ((module as any).hot) {
+  (module as any).hot.accept('./containers/Root', () => {
+    const NextRoot = require('./containers/Root').default; // eslint-disable-line global-require
     render(
       <AppContainer>
         <NextRoot store={store} history={history} />
