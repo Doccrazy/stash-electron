@@ -95,10 +95,16 @@ export function cancelDelete() {
 
 // when a folder is deselected, clear item selection as well
 afterAction(curNodeActions.SELECT, (dispatch, getState: GetState) => {
-  dispatch(clear());
+  const { currentEntry } = getState();
+  if (currentEntry.ptr) {
+    dispatch(clear());
+  }
 });
 afterAction(curNodeActions.SELECT_SPECIAL, (dispatch, getState: GetState) => {
-  dispatch(clear());
+  const { currentEntry } = getState();
+  if (currentEntry.ptr) {
+    dispatch(clear());
+  }
 });
 
 // when a selected entry is renamed, update selection

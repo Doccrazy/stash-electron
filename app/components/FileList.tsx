@@ -7,7 +7,7 @@ import EntryPtr from '../domain/EntryPtr';
 
 export interface Props {
   entries: EntryPtr[],
-  selectedEntry: EntryPtr,
+  selectedEntry?: EntryPtr,
   favorites: Set<EntryPtr>,
   onSelect: (ptr: EntryPtr) => void,
   onEdit: (ptr: EntryPtr) => void,

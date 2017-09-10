@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import "redux-thunk";
+import 'redux-thunk';
 import Folder from '../components/Folder';
 import { toggle } from '../actions/treeState';
 import { select } from '../actions/currentNode';

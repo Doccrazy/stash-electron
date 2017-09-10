@@ -1,23 +1,24 @@
 import EntryPtr from '../domain/EntryPtr';
+import {RootState} from '../actions/types/index';
 
 export type SpecialFolderId = 'favorites' | 'searchResults';
 
-interface SpecialFolder {
+export interface SpecialFolder {
   title: string,
   icon: string,
-  selector: (state: any) => EntryPtr[]
+  selector: (state: RootState) => EntryPtr[]
 }
 
 const SPECIAL_FOLDERS: { [id in SpecialFolderId]: SpecialFolder } = {
   favorites: {
     title: 'My Favorites',
     icon: 'star',
-    selector: (state: any) => state.favorites.sortBy((ptr: EntryPtr) => ptr.entry).toArray()
+    selector: (state: RootState) => state.favorites.toArray()
   },
   searchResults: {
     title: 'Search results',
     icon: 'search',
-    selector: (state: any) => state.search.results.sortBy((ptr: EntryPtr) => ptr.entry).toArray()
+    selector: (state: RootState) => state.search.results.toArray()
   }
 };
 

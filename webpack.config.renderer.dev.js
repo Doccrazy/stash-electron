@@ -71,6 +71,11 @@ export default merge.smart(baseConfig, {
         }
       },
       {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        loader: ['react-hot-loader/webpack', 'ts-loader']
+      },
+      {
         test: /\.global\.css$/,
         use: [
           {
