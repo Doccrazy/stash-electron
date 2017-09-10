@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
 import LinkWithIcon from '../components/LinkWithIcon';
 import { selectSpecial } from '../actions/currentNode';
-import specialFolders from '../utils/specialFolders';
+import specialFolders, { SpecialFolderId } from '../utils/specialFolders';
 
 export interface Props {
-  id: string
+  id: SpecialFolderId
 }
 
 export default connect((state, props: Props) => ({

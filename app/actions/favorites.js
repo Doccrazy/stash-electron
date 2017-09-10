@@ -1,6 +1,6 @@
 // @flow
 import { Set } from 'immutable';
-import { EntryPtr } from '../utils/repository';
+import EntryPtr from '../domain/EntryPtr.ts';
 
 const ADD = 'favorites/ADD';
 const REMOVE = 'favorites/REMOVE';

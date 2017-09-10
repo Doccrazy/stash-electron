@@ -3,7 +3,7 @@ import { Button } from 'reactstrap';
 import { clipboard } from 'electron';
 import { toastr } from 'react-redux-toastr';
 import BarsMenu from './BarsMenu';
-import { EntryPtr } from '../utils/repository';
+import EntryPtr from '../domain/EntryPtr';
 
 function copyEntryUrl(node: { id: string }, entry: string) {
   clipboard.writeText(new EntryPtr(node.id, entry).toHref());

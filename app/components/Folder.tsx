@@ -1,9 +1,10 @@
 import * as React from 'react';
 import TreeNode from './TreeNode';
 import ConnectedFolder from '../containers/Folder';
+import Node from '../domain/Node';
 
 export interface Props {
-  node: { title: string, children: string[] },
+  node: Node,
   expanded: boolean,
   selected: boolean,
   marked: boolean,
@@ -12,10 +13,10 @@ export interface Props {
 }
 
 export default ({ node, expanded, selected, marked, onClickIcon, onClickLabel }: Props): any => {
-  if (node && node.title) {
+  if (node && node.name) {
     return (
-      <TreeNode label={node.title} canExpand={node.children && !!node.children.length} {...{ expanded, selected, marked, onClickIcon, onClickLabel }}>
-        {expanded && node.children && node.children.map(childId => <ConnectedFolder key={childId} nodeId={childId} />)}
+      <TreeNode label={node.name} canExpand={!!node.childIds.size} {...{ expanded, selected, marked, onClickIcon, onClickLabel }}>
+        {expanded && node.childIds.map(childId => childId && <ConnectedFolder key={childId} nodeId={childId} />).toArray()}
       </TreeNode>
     );
   }

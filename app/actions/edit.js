@@ -1,6 +1,7 @@
 import { shell } from 'electron';
 import { fromJS, is } from 'immutable';
-import { cleanFileName, EntryPtr, hasChildOrEntry, isValidFileName } from '../utils/repository';
+import { cleanFileName, hasChildOrEntry, isValidFileName } from '../utils/repository';
+import EntryPtr from '../domain/EntryPtr.ts';
 import typeFor, { typeById } from '../fileType';
 import * as repoActions from './repository';
 import * as extActions from './external';

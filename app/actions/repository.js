@@ -2,8 +2,9 @@ import fs from 'fs';
 import alphanumSort from 'alphanum-sort';
 import { toastr } from 'react-redux-toastr';
 import * as settingsActions from './settings';
-import PlainRepository from '../repository/Plain';
-import { EntryPtr } from '../utils/repository';
+import PlainRepository from '../repository/Plain.ts';
+import EntryPtr from '../domain/EntryPtr.ts';
+import Node from '../domain/Node.ts';
 import { afterAction } from '../store/eventMiddleware';
 
 export const LOAD = 'repository/LOAD';
@@ -76,11 +77,11 @@ export function readNode(nodeId, recurse = true) {
 
 export function readFull() {
   return async (dispatch, getState) => {
-    const nodeMap = await repo.readdirRecursive('/');
+    const nodeList = await repo.readNodeRecursive('/');
 
     dispatch({
       type: READ_FULL,
-      payload: nodeMap
+      payload: nodeList
     });
   };
 }
@@ -132,7 +133,7 @@ export function deleteNode(nodeId) {
     }
 
     try {
-      await repo.deleteDir(nodeId);
+      await repo.deleteNode(nodeId);
 
       dispatch({
         type: DELETE_NODE,
@@ -193,7 +194,7 @@ export function renameNode(nodeId, newName) {
     const parentNode = repository.nodes[node.parent];
 
     try {
-      await repo.renameDir(parentNode.id, node.name, newName);
+      await repo.renameNode(node.id, newName);
 
       dispatch({
         type: RENAME_NODE,
@@ -222,14 +223,11 @@ export function createChildNode(parentNodeId, name) {
     }
 
     try {
-      await repo.createDir(parentNode.id, name);
+      const newNode = await repo.createNode(parentNode.id, name);
 
       dispatch({
         type: CREATE_NODE,
-        payload: {
-          parentNodeId,
-          name
-        }
+        payload: newNode
       });
     } catch (e) {
       // mkdir failed
@@ -254,48 +252,39 @@ function makeId(parentNodeId, childName) {
 export default function reducer(state = { nodes: { } }, action) {
   switch (action.type) {
     case LOAD:
-      return { ...state, nodes: { [ROOT_ID]: { id: ROOT_ID, title: action.payload.name } }, name: action.payload.name, path: action.payload.path, loading: true };
+      return { ...state, nodes: { [ROOT_ID]: new Node({ id: ROOT_ID, name: action.payload.name, parentId: null }) }, name: action.payload.name, path: action.payload.path, loading: true };
     case FINISH_LOAD:
       return { ...state, loading: false };
     case UNLOAD:
       return { ...state, nodes: { }, name: null, path: null };
-    case READ_NODE: {
-      const newNodes = { ...state.nodes };
-      const nodeId = action.payload.nodeId;
-
-      newNodes[nodeId] = {
-        ...newNodes[nodeId],
-        children: alphanumSort(action.payload.children.map(dir => makeId(nodeId, dir)), { insensitive: true }),
-        entries: alphanumSort(action.payload.entries, { insensitive: true })
-      };
-
-      action.payload.children.forEach(dir => {
-        newNodes[makeId(nodeId, dir)] = {
-          ...newNodes[makeId(nodeId, dir)],
-          id: makeId(nodeId, dir),
-          name: dir,
-          title: dir,
-          parent: nodeId
-        };
-      });
-      return { ...state, nodes: newNodes };
-    }
+    // case READ_NODE: {
+    //   const newNodes = { ...state.nodes };
+    //   const nodeId = action.payload.nodeId;
+    //
+    //   newNodes[nodeId] = {
+    //     ...newNodes[nodeId],
+    //     children: alphanumSort(action.payload.children.map(dir => makeId(nodeId, dir)), { insensitive: true }),
+    //     entries: alphanumSort(action.payload.entries, { insensitive: true })
+    //   };
+    //
+    //   action.payload.children.forEach(dir => {
+    //     newNodes[makeId(nodeId, dir)] = {
+    //       ...newNodes[makeId(nodeId, dir)],
+    //       id: makeId(nodeId, dir),
+    //       name: dir,
+    //       title: dir,
+    //       parent: nodeId
+    //     };
+    //   });
+    //   return { ...state, nodes: newNodes };
+    // }
     case READ_FULL: {
-      const nodeMap = action.payload;
+      const nodeList = action.payload;
 
       const newNodes = {};
 
-      Object.keys(nodeMap).forEach(nodeId => {
-        const node = nodeMap[nodeId];
-        const name = nodeId === ROOT_ID ? state.name : node.name;
-        newNodes[nodeId] = {
-          id: nodeId,
-          name,
-          title: name,
-          children: alphanumSort(node.dirs, { insensitive: true }),
-          entries: alphanumSort(node.files, { insensitive: true }),
-          parent: node.parent
-        };
+      nodeList.forEach(node => {
+        newNodes[node.id] = node;
       });
       return { ...state, nodes: newNodes };
     }
@@ -366,18 +355,10 @@ export default function reducer(state = { nodes: { } }, action) {
       return state;
     }
     case CREATE_NODE: {
-      const parentNode = state.nodes[action.payload.parentNodeId];
-      const name = action.payload.name;
+      const newNode = action.payload;
+      const parentNode = state.nodes[newNode.parentId];
       if (parentNode) {
-        const newNode = {
-          id: makeId(parentNode.id, name),
-          name,
-          title: name,
-          parent: parentNode.id
-        };
-
-        const newParentNode = { ...parentNode };
-        newParentNode.children = newParentNode.children ? alphanumSort([...newParentNode.children, newNode.id], { insensitive: true }) : [newNode.id];
+        const newParentNode = parentNode.withNewChild(newNode.id);
 
         const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
         return { ...state, nodes: newNodes };

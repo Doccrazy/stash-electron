@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Button } from 'reactstrap';
 import { connect } from 'react-redux';
-import { PanelProps } from "../index";
-import { EntryPtr } from '../../utils/repository';
+import { PanelProps } from '../index';
+import EntryPtr from '../../domain/EntryPtr';
 import { browseForSaveAs, open as openExternal } from '../../actions/external';
 
 interface InnerProps {

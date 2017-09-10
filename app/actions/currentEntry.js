@@ -1,5 +1,5 @@
 // @flow
-import { EntryPtr } from '../utils/repository';
+import EntryPtr from '../domain/EntryPtr.ts';
 import * as repoActions from './repository';
 import * as curNodeActions from './currentNode';
 import { afterAction } from '../store/eventMiddleware';

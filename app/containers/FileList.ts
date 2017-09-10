@@ -1,14 +1,14 @@
 import { connect } from 'react-redux';
 import FileList from '../components/FileList';
-import { EntryPtr } from '../utils/repository';
+import EntryPtr from '../domain/EntryPtr';
 import { select } from '../actions/currentEntry';
 import { open } from '../actions/edit';
 import { toggle as toggleFavorite } from '../actions/favorites';
-import specialFolders from '../utils/specialFolders';
+import specialFolders, {SpecialFolderId} from '../utils/specialFolders';
 
 function entryList(state: any): EntryPtr[] {
   if (state.currentNode.specialId) {
-    const selector = specialFolders[state.currentNode.specialId].selector;
+    const selector = specialFolders[state.currentNode.specialId as SpecialFolderId].selector;
     return selector(state);
   } else if (state.currentNode.nodeId) {
     return (state.repository.nodes[state.currentNode.nodeId].entries || []).map((entry: string) => new EntryPtr(state.currentNode.nodeId, entry));

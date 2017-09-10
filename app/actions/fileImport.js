@@ -1,7 +1,8 @@
 /* eslint-disable no-await-in-loop,no-restricted-syntax,no-plusplus */
 import fs from 'fs-extra';
 import kdbxweb from 'kdbxweb';
-import { childNodeByName, cleanFileName, EntryPtr } from '../utils/repository';
+import { childNodeByName, cleanFileName } from '../utils/repository';
+import EntryPtr from '../domain/EntryPtr.ts';
 import { createChildNode, writeEntry } from './repository';
 import { typeById } from '../fileType/index';
 

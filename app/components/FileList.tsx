@@ -3,7 +3,7 @@ import { Table } from 'reactstrap';
 import * as cx from 'classnames';
 import { Set } from 'immutable';
 import typeFor from '../fileType';
-import { EntryPtr } from '../utils/repository';
+import EntryPtr from '../domain/EntryPtr';
 
 export interface Props {
   entries: EntryPtr[],

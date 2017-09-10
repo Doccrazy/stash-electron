@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { EntryPtr } from '../utils/repository';
+import EntryPtr from '../domain/EntryPtr.ts';
 import { select as selectNode } from '../actions/currentNode';
 import { select as selectEntry } from '../actions/currentEntry';
 import { expand } from '../actions/treeState';

@@ -11,7 +11,7 @@ const MULTI_OPEN = false;
 
 function maybeExpand(dispatch, getState, nodeId) {
   const { repository, treeState } = getState();
-  if (repository.nodes[nodeId].children && repository.nodes[nodeId].children.length && !treeState.has(nodeId)) {
+  if (repository.nodes[nodeId] && repository.nodes[nodeId].childIds.size && !treeState.has(nodeId)) {
     if (MULTI_OPEN) {
       dispatch({
         type: EXPAND,

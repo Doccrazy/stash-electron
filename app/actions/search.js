@@ -4,7 +4,8 @@ import debounce from 'lodash.debounce';
 import { getRepo } from './repository';
 import { selectSpecial } from './currentNode';
 import { afterAction } from '../store/eventMiddleware';
-import { EntryPtr, hierarchy, recursiveChildIds } from '../utils/repository';
+import { hierarchy, recursiveChildIds } from '../utils/repository';
+import EntryPtr from '../domain/EntryPtr.ts';
 import typeFor from '../fileType/index';
 
 const CHANGE_FILTER = 'search/CHANGE_FILTER';
