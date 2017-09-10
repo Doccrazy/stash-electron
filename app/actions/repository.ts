@@ -1,11 +1,13 @@
-import fs from 'fs';
-import alphanumSort from 'alphanum-sort';
+import * as fs from 'fs';
 import { toastr } from 'react-redux-toastr';
 import * as settingsActions from './settings';
-import PlainRepository from '../repository/Plain.ts';
-import EntryPtr from '../domain/EntryPtr.ts';
-import Node from '../domain/Node.ts';
+import PlainRepository from '../repository/Plain';
+import EntryPtr from '../domain/EntryPtr';
+import Node, {ROOT_ID} from '../domain/Node';
 import { afterAction } from '../store/eventMiddleware';
+import {State} from './types/repository';
+import {Action, GetState, Thunk} from './types/index';
+import Repository from '../repository/Repository';
 
 export const LOAD = 'repository/LOAD';
 export const FINISH_LOAD = 'repository/FINISH_LOAD';
@@ -20,19 +22,19 @@ export const DELETE_NODE = 'repository/DELETE_NODE';
 export const RENAME_NODE = 'repository/RENAME_NODE';
 export const CREATE_NODE = 'repository/CREATE_NODE';
 
-let repo;
+let repo: Repository;
 
-export function getRepo() {
+export function getRepo(): Repository {
   return repo;
 }
 
-export function load(repoPath) {
+export function load(repoPath?: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     dispatch({
       type: UNLOAD
     });
 
-    if (!fs.existsSync(repoPath)) {
+    if (!repoPath || !fs.existsSync(repoPath)) {
       return;
     }
     const stat = fs.statSync(repoPath);
@@ -55,27 +57,18 @@ export function load(repoPath) {
   };
 }
 
-export function readNode(nodeId, recurse = true) {
+export function readNode(nodeId: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const dirContents = await repo.readdir(nodeId);
+    const newNode = await repo.readNode(nodeId);
 
-    const result = {
-      nodeId,
-      entries: dirContents.get('entries').map(e => e.get('name')).toJS(),
-      children: dirContents.get('children').toJS()
-    };
     dispatch({
       type: READ_NODE,
-      payload: result
+      payload: newNode
     });
-    const newNode = getState().repository.nodes[nodeId];
-    if (recurse && newNode && newNode.children && newNode.children.length) {
-      await Promise.all(newNode.children.map(childId => dispatch(readNode(childId, false))));
-    }
   };
 }
 
-export function readFull() {
+export function readFull(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const nodeList = await repo.readNodeRecursive('/');
 
@@ -86,7 +79,7 @@ export function readFull() {
   };
 }
 
-export function rename(ptr, newName) {
+export function rename(ptr: EntryPtr, newName: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     try {
       await repo.renameFile(ptr.nodeId, ptr.entry, newName);
@@ -100,12 +93,12 @@ export function rename(ptr, newName) {
       });
     } catch (e) {
       // rename failed
-      toastr.error(`Failed to rename entry ${ptr.entry} to ${newName}: ${e}`);
+      toastr.error('', `Failed to rename entry ${ptr.entry} to ${newName}: ${e}`);
     }
   };
 }
 
-export function deleteEntry(ptr) {
+export function deleteEntry(ptr: EntryPtr): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     try {
       await repo.deleteFile(ptr.nodeId, ptr.entry);
@@ -116,14 +109,14 @@ export function deleteEntry(ptr) {
       });
     } catch (e) {
       // delete failed
-      toastr.error(`Failed to delete entry ${ptr.entry}: ${e}`);
+      toastr.error('', `Failed to delete entry ${ptr.entry}: ${e}`);
     }
   };
 }
 
-export function deleteNode(nodeId) {
+export function deleteNode(nodeId: string): Thunk<Promise<void>> {
   if (!nodeId || nodeId === ROOT_ID) {
-    return;
+    throw new Error(`Invalid node ${nodeId}`);
   }
   return async (dispatch, getState) => {
     const { repository } = getState();
@@ -141,19 +134,19 @@ export function deleteNode(nodeId) {
       });
     } catch (e) {
       // delete failed
-      toastr.error(`Failed to delete folder ${node.name}: ${e}`);
+      toastr.error('', `Failed to delete folder ${node.name}: ${e}`);
     }
   };
 }
 
-function createEntry(ptr) {
+function createEntry(ptr: EntryPtr): Action<EntryPtr> {
   return {
     type: CREATE_ENTRY,
     payload: ptr
   };
 }
 
-function updateEntry(ptr, buffer) {
+function updateEntry(ptr: EntryPtr, buffer: Buffer): Action<{ptr: EntryPtr, buffer: Buffer}> {
   return {
     type: UPDATE_ENTRY,
     payload: {
@@ -163,14 +156,14 @@ function updateEntry(ptr, buffer) {
   };
 }
 
-export function writeEntry(ptr, buffer) {
+export function writeEntry(ptr: EntryPtr, buffer: Buffer): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { repository } = getState();
     const node = repository.nodes[ptr.nodeId];
     if (!node) {
       return;
     }
-    const existing = node.entries && node.entries.indexOf(ptr.entry) >= 0;
+    const existing = node.entries && node.entries.includes(ptr.entry);
 
     await getRepo().writeFile(ptr.nodeId, ptr.entry, buffer);
 
@@ -181,17 +174,17 @@ export function writeEntry(ptr, buffer) {
   };
 }
 
-export function renameNode(nodeId, newName) {
+export function renameNode(nodeId: string, newName: string): Thunk<Promise<void>> {
   if (!nodeId || nodeId === ROOT_ID) {
-    return;
+    throw new Error(`Invalid node ${nodeId}`);
   }
   return async (dispatch, getState) => {
     const { repository } = getState();
     const node = repository.nodes[nodeId];
-    if (!node) {
+    if (!node || !node.parentId) {
       return;
     }
-    const parentNode = repository.nodes[node.parent];
+    const parentNode = repository.nodes[node.parentId];
 
     try {
       await repo.renameNode(node.id, newName);
@@ -206,14 +199,14 @@ export function renameNode(nodeId, newName) {
       });
     } catch (e) {
       // rename failed
-      toastr.error(`Failed to rename folder to ${newName}: ${e}`);
+      toastr.error('', `Failed to rename folder to ${newName}: ${e}`);
     }
   };
 }
 
-export function createChildNode(parentNodeId, name) {
+export function createChildNode(parentNodeId: string, name: string): Thunk<Promise<void>> {
   if (!parentNodeId) {
-    return;
+    throw new Error('Missing parentId');
   }
   return async (dispatch, getState) => {
     const { repository } = getState();
@@ -231,32 +224,33 @@ export function createChildNode(parentNodeId, name) {
       });
     } catch (e) {
       // mkdir failed
-      toastr.error(`Failed to create folder ${name}: ${e}`);
+      toastr.error('', `Failed to create folder ${name}: ${e}`);
       throw e;
     }
   };
 }
 
-afterAction([settingsActions.LOAD, settingsActions.SAVE], (dispatch, getState) => {
+afterAction([settingsActions.LOAD, settingsActions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
   if (settings.current.repositoryPath !== settings.previous.repositoryPath) {
     dispatch(load(settings.current.repositoryPath));
   }
 });
 
-const ROOT_ID = '/';
-function makeId(parentNodeId, childName) {
-  return `${parentNodeId}${childName}/`;
-}
-
-export default function reducer(state = { nodes: { } }, action) {
+export default function reducer(state: State = { nodes: { } }, action: Action<any>): State {
   switch (action.type) {
     case LOAD:
-      return { ...state, nodes: { [ROOT_ID]: new Node({ id: ROOT_ID, name: action.payload.name, parentId: null }) }, name: action.payload.name, path: action.payload.path, loading: true };
+      return {
+        ...state,
+        nodes: {[ROOT_ID]: new Node({id: ROOT_ID, name: action.payload.name})},
+        name: action.payload.name,
+        path: action.payload.path,
+        loading: true
+      };
     case FINISH_LOAD:
       return { ...state, loading: false };
     case UNLOAD:
-      return { ...state, nodes: { }, name: null, path: null };
+      return { ...state, nodes: { }, name: undefined, path: undefined };
     // case READ_NODE: {
     //   const newNodes = { ...state.nodes };
     //   const nodeId = action.payload.nodeId;
@@ -279,50 +273,26 @@ export default function reducer(state = { nodes: { } }, action) {
     //   return { ...state, nodes: newNodes };
     // }
     case READ_FULL: {
-      const nodeList = action.payload;
+      const nodeList: Node[] = action.payload;
 
-      const newNodes = {};
+      const newNodes: State['nodes'] = {};
 
       nodeList.forEach(node => {
         newNodes[node.id] = node;
       });
       return { ...state, nodes: newNodes };
     }
-    case RENAME_ENTRY: {
-      const node = state.nodes[action.payload.ptr.nodeId];
-      if (node) {
-        const newNode = { ...node };
-        newNode.entries = node.entries.filter(e => e !== action.payload.ptr.entry);
-        newNode.entries.push(action.payload.newName);
-        newNode.entries = alphanumSort(newNode.entries, { insensitive: true });
 
-        const newNodes = { ...state.nodes, [action.payload.ptr.nodeId]: newNode };
-        return { ...state, nodes: newNodes };
-      }
-      return state;
-    }
-    case DELETE_ENTRY: {
-      const node = state.nodes[action.payload.nodeId];
-      if (node) {
-        const newNode = { ...node };
-        newNode.entries = node.entries.filter(e => e !== action.payload.entry);
+    case RENAME_ENTRY:
+      return updatingNode(state, action.payload.ptr.nodeId, node =>
+        node.withEntryRenamed(action.payload.ptr.entry, action.payload.newName));
+    case DELETE_ENTRY:
+      return updatingNode(state, action.payload.ptr.nodeId, node =>
+        node.withEntryDeleted(action.payload.entry));
+    case CREATE_ENTRY:
+      return updatingNode(state, action.payload.ptr.nodeId, node =>
+        node.withNewEntry(action.payload.entry));
 
-        const newNodes = { ...state.nodes, [action.payload.nodeId]: newNode };
-        return { ...state, nodes: newNodes };
-      }
-      return state;
-    }
-    case CREATE_ENTRY: {
-      const node = state.nodes[action.payload.nodeId];
-      if (node) {
-        const newNode = { ...node };
-        newNode.entries = newNode.entries ? alphanumSort([...newNode.entries, action.payload.entry], { insensitive: true }) : [action.payload.entry];
-
-        const newNodes = { ...state.nodes, [action.payload.nodeId]: newNode };
-        return { ...state, nodes: newNodes };
-      }
-      return state;
-    }
     case DELETE_NODE: {
       const node = state.nodes[action.payload];
       if (node) {
@@ -333,25 +303,25 @@ export default function reducer(state = { nodes: { } }, action) {
       return state;
     }
     case RENAME_NODE: {
-      const node = state.nodes[action.payload.nodeId];
-      const newName = action.payload.newName;
-      if (node) {
-        const newParentNode = { ...state.nodes[node.parent] };
-
-        const newNode = {
-          ...node,
-          id: makeId(newParentNode.id, newName),
-          name: newName,
-          title: newName
-        };
-        newParentNode.children = newParentNode.children.filter(childId => childId !== node.id);
-        newParentNode.children.push(newNode.id);
-        newParentNode.children = alphanumSort(newParentNode.children, { insensitive: true });
-
-        const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
-        delete newNodes[node.id];
-        return { ...state, nodes: newNodes };
-      }
+      // const node = state.nodes[action.payload.nodeId];
+      // const newName = action.payload.newName;
+      // if (node) {
+      //   const newParentNode = { ...state.nodes[node.parent] };
+      //
+      //   const newNode = {
+      //     ...node,
+      //     id: makeId(newParentNode.id, newName),
+      //     name: newName,
+      //     title: newName
+      //   };
+      //   newParentNode.children = newParentNode.children.filter(childId => childId !== node.id);
+      //   newParentNode.children.push(newNode.id);
+      //   newParentNode.children = alphanumSort(newParentNode.children, { insensitive: true });
+      //
+      //   const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
+      //   delete newNodes[node.id];
+      //   return { ...state, nodes: newNodes };
+      // }
       return state;
     }
     case CREATE_NODE: {
@@ -368,4 +338,15 @@ export default function reducer(state = { nodes: { } }, action) {
     default:
       return state;
   }
+}
+
+function updatingNode(state: State, nodeId: string, updater: (node: Node) => Node): State {
+  const node = state.nodes[nodeId];
+  if (node) {
+    const newNode = updater(node);
+
+    const newNodes = { ...state.nodes, [nodeId]: newNode };
+    return { ...state, nodes: newNodes };
+  }
+  return state;
 }

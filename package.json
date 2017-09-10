@@ -198,7 +198,9 @@
   },
   "dependencies": {
     "@types/classnames": "^2.2.3",
+    "@types/electron-settings": "^3.0.0",
     "@types/fs-extra": "^4.0.1",
+    "@types/lodash-es": "^4.14.6",
     "@types/react": "^15.6.1",
     "@types/react-dom": "^15.5.4",
     "@types/react-redux": "^5.0.7",
@@ -221,7 +223,7 @@
     "immutable": "^3.8.1",
     "jquery": "^3.2.1",
     "kdbxweb": "^1.0.1",
-    "lodash.debounce": "^4.0.8",
+    "lodash-es": "^4.17.4",
     "popper.js": "^1.12.3",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",

@@ -1,11 +1,11 @@
-import { shell } from 'electron';
 import { fromJS, is } from 'immutable';
 import { cleanFileName, hasChildOrEntry, isValidFileName } from '../utils/repository';
-import EntryPtr from '../domain/EntryPtr.ts';
+import EntryPtr from '../domain/EntryPtr';
 import typeFor, { typeById } from '../fileType';
 import * as repoActions from './repository';
-import * as extActions from './external';
 import { afterAction } from '../store/eventMiddleware';
+import {State} from './types/edit';
+import {Action, GetState, Thunk} from './types/index';
 
 const OPEN = 'edit/OPEN';
 const REPOINT_OPEN = 'edit/REPOINT_OPEN';
@@ -16,7 +16,7 @@ const CHANGE = 'edit/CHANGE';
 const CHANGE_STATE = 'edit/CHANGE_STATE';
 const CHANGE_NAME = 'edit/CHANGE_NAME';
 
-export function open(ptr, preParsedContent) {
+export function open(ptr: EntryPtr, preParsedContent?: any): Thunk<Promise<void>> {
   EntryPtr.assert(ptr);
   return async (dispatch, getState) => {
     const type = typeFor(ptr.entry);
@@ -41,7 +41,7 @@ export function open(ptr, preParsedContent) {
   };
 }
 
-export function openCurrent() {
+export function openCurrent(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentEntry } = getState();
     if (currentEntry.ptr) {
@@ -50,10 +50,10 @@ export function openCurrent() {
   };
 }
 
-export function create(nodeId, typeId) {
+export function create(nodeId: string, typeId: string): Action<any> {
   const type = typeById(typeId);
-  if (!type) {
-    return;
+  if (!type || !type.initialize) {
+    throw new Error(`invalid type ${typeId} passed to create`);
   }
 
   const parsedContent = type.initialize();
@@ -61,7 +61,7 @@ export function create(nodeId, typeId) {
   return {
     type: OPEN,
     payload: {
-      ptr: new EntryPtr(nodeId),
+      ptr: new EntryPtr(nodeId, ''),
       typeId,
       parsedContent,
       formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
@@ -69,22 +69,20 @@ export function create(nodeId, typeId) {
   };
 }
 
-export function createInCurrent(typeId) {
+export function createInCurrent(typeId: string): Thunk<void> {
   return (dispatch, getState) => {
     const { currentNode } = getState();
     if (currentNode.nodeId) {
-      return dispatch(create(currentNode.nodeId, typeId));
+      dispatch(create(currentNode.nodeId, typeId));
     }
   };
 }
 
-export function repointOpen(ptr) {
+export function repointOpen(ptr: EntryPtr): Action<EntryPtr> {
   EntryPtr.assert(ptr);
   return {
     type: REPOINT_OPEN,
-    payload: {
-      ptr,
-    }
+    payload: ptr
   };
 }
 
@@ -94,30 +92,33 @@ export function close() {
   };
 }
 
-export function change(updatedContent) {
+export function change(updatedContent: any): Action<any> {
   return {
     type: CHANGE,
     payload: updatedContent
   };
 }
 
-export function changeState(newState) {
+export function changeState(newState: any): Action<any> {
   return {
     type: CHANGE_STATE,
     payload: newState
   };
 }
 
-export function changeName(name) {
+export function changeName(name: string): Action<string> {
   return {
     type: CHANGE_NAME,
     payload: cleanFileName(name)
   };
 }
 
-export function save(closeAfter) {
+export function save(closeAfter: boolean): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { repository, edit } = getState();
+    if (!edit.ptr) {
+      return;
+    }
     const node = repository.nodes[edit.ptr.nodeId];
 
     // validate new name
@@ -153,7 +154,7 @@ export function save(closeAfter) {
     }
 
     // save content
-    if (type.parse && !is(fromJS(edit.parsedContent), edit.initialContent)) {
+    if (type.write && !is(fromJS(edit.parsedContent), edit.initialContent)) {
       const fileName = edit.ptr.entry || newName;
       const buffer = type.write(edit.parsedContent);
 
@@ -175,21 +176,21 @@ export function save(closeAfter) {
   };
 }
 
-afterAction(repoActions.RENAME_ENTRY, (dispatch, getState, { ptr, newName }) => {
+afterAction(repoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }) => {
   const { edit } = getState();
   if (edit.ptr && edit.ptr.equals(ptr)) {
     dispatch(repointOpen(new EntryPtr(ptr.nodeId, newName)));
   }
 });
 
-afterAction(repoActions.DELETE_ENTRY, (dispatch, getState, ptr) => {
+afterAction(repoActions.DELETE_ENTRY, (dispatch, getState: GetState, ptr) => {
   const { edit } = getState();
   if (edit.ptr && edit.ptr.equals(ptr)) {
     dispatch(close());
   }
 });
 
-export default function reducer(state = {}, action) {
+export default function reducer(state: State = {}, action: Action<any>): State {
   switch (action.type) {
     case OPEN:
       if (action.payload.ptr) {
@@ -204,8 +205,8 @@ export default function reducer(state = {}, action) {
       }
       return state;
     case REPOINT_OPEN:
-      if (action.payload.ptr) {
-        return { ...state, ptr: action.payload.ptr };
+      if (action.payload) {
+        return { ...state, ptr: action.payload };
       }
       return state;
     case CHANGE:

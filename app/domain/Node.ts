@@ -43,6 +43,11 @@ export default class Node implements NodeLike {
     return new Node({ ...(this as NodeLike), entries: newEntries });
   }
 
+  withNewEntry(entry: string): Node {
+    const newEntries = this.entries.add(entry);
+    return new Node({ ...(this as NodeLike), entries: newEntries });
+  }
+
   withNewChild(childId: string): Node {
     const newChildIds = this.childIds.add(childId);
     return new Node({ ...(this as NodeLike), childIds: newChildIds });

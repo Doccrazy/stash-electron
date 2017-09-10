@@ -1,9 +1,10 @@
-// @flow
-import EntryPtr from '../domain/EntryPtr.ts';
+import EntryPtr from '../domain/EntryPtr';
 import * as repoActions from './repository';
 import * as curNodeActions from './currentNode';
 import { afterAction } from '../store/eventMiddleware';
 import typeFor from '../fileType';
+import {State} from './types/currentEntry';
+import {Action, GetState, Thunk} from './types/index';
 
 const SELECT = 'currentEntry/SELECT';
 const RESELECT = 'currentEntry/RESELECT';
@@ -12,7 +13,7 @@ const CLEAR = 'currentEntry/CLEAR';
 const PREPARE_DELETE = 'currentEntry/PREPARE_DELETE';
 const CANCEL_DELETE = 'currentEntry/CANCEL_DELETE';
 
-export function select(ptr: EntryPtr) {
+export function select(ptr: EntryPtr): Thunk<Promise<void>> {
   EntryPtr.assert(ptr);
   return async (dispatch, getState) => {
     const { repository } = getState();
@@ -30,7 +31,7 @@ export function select(ptr: EntryPtr) {
   };
 }
 
-export function reselect(ptr: EntryPtr) {
+export function reselect(ptr: EntryPtr): Action<EntryPtr> {
   EntryPtr.assert(ptr);
   return {
     type: RESELECT,
@@ -38,7 +39,7 @@ export function reselect(ptr: EntryPtr) {
   };
 }
 
-export function read(contentBuffer?: Buffer) {
+export function read(contentBuffer?: Buffer): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentEntry } = getState();
     if (!currentEntry.ptr) {
@@ -51,7 +52,7 @@ export function read(contentBuffer?: Buffer) {
       if (!content) {
         content = await repoActions.getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry);
       }
-      const parsedContent = type.parse(content);
+      const parsedContent = type.parse(content as Buffer);
       dispatch({
         type: READ,
         payload: parsedContent
@@ -60,13 +61,13 @@ export function read(contentBuffer?: Buffer) {
   };
 }
 
-export function clear() {
+export function clear(): Action<void> {
   return {
     type: CLEAR
   };
 }
 
-export function prepareDelete() {
+export function prepareDelete(): Thunk<void> {
   return (dispatch, getState) => {
     const { currentEntry } = getState();
     if (currentEntry.ptr) {
@@ -77,7 +78,7 @@ export function prepareDelete() {
   };
 }
 
-export function confirmDelete() {
+export function confirmDelete(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentEntry } = getState();
     if (currentEntry.ptr) {
@@ -93,15 +94,15 @@ export function cancelDelete() {
 }
 
 // when a folder is deselected, clear item selection as well
-afterAction(curNodeActions.SELECT, (dispatch, getState) => {
+afterAction(curNodeActions.SELECT, (dispatch, getState: GetState) => {
   dispatch(clear());
 });
-afterAction(curNodeActions.SELECT_SPECIAL, (dispatch, getState) => {
+afterAction(curNodeActions.SELECT_SPECIAL, (dispatch, getState: GetState) => {
   dispatch(clear());
 });
 
 // when a selected entry is renamed, update selection
-afterAction(repoActions.RENAME_ENTRY, (dispatch, getState, { ptr, newName }) => {
+afterAction(repoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
     dispatch(reselect(new EntryPtr(ptr.nodeId, newName)));
@@ -109,7 +110,7 @@ afterAction(repoActions.RENAME_ENTRY, (dispatch, getState, { ptr, newName }) => 
 });
 
 // when a selected entry is deleted, clear selection
-afterAction(repoActions.DELETE_ENTRY, (dispatch, getState, ptr) => {
+afterAction(repoActions.DELETE_ENTRY, (dispatch, getState: GetState, ptr) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
     dispatch(clear());
@@ -117,7 +118,7 @@ afterAction(repoActions.DELETE_ENTRY, (dispatch, getState, ptr) => {
 });
 
 // when an entry is created within the current folder, select it
-afterAction(repoActions.CREATE_ENTRY, (dispatch, getState, ptr) => {
+afterAction(repoActions.CREATE_ENTRY, (dispatch, getState: GetState, ptr) => {
   const { currentNode } = getState();
   if (currentNode.nodeId === ptr.nodeId) {
     dispatch(select(ptr));
@@ -125,14 +126,14 @@ afterAction(repoActions.CREATE_ENTRY, (dispatch, getState, ptr) => {
 });
 
 // when the current entry is updated, read new content
-afterAction(repoActions.UPDATE_ENTRY, (dispatch, getState, { ptr, buffer }) => {
+afterAction(repoActions.UPDATE_ENTRY, (dispatch, getState: GetState, { ptr, buffer }) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
     dispatch(read(buffer));
   }
 });
 
-export default function reducer(state: { ptr?: EntryPtr, parsedContent?: any } = {}, action: { type: string, payload: any }) {
+export default function reducer(state: State = {}, action: Action<any>): State {
   switch (action.type) {
     case SELECT:
       if (action.payload instanceof EntryPtr) {

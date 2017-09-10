@@ -63,5 +63,5 @@ const UsersPage = (({ loggedIn, onToggle }: InnerProps) => (<div className="cont
 export default connect(state => ({
   loggedIn: !state.settings.edited.foobar
 }), dispatch => ({
-  onToggle: () => dispatch((dispatch, getState) => dispatch(changeSetting('foobar', !getState().settings.edited.foobar)))
+  onToggle: () => dispatch((dispatch, getState) => dispatch(changeSetting('foobar' as any, !getState().settings.edited.foobar)))
 }))(UsersPage);

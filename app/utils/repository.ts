@@ -23,8 +23,8 @@ export function recursiveChildIds(nodes: { [nodeId: string]: Node }, parentId: s
   return result;
 }
 
-export function isValidFileName(fn: string) {
-  return fn && !/[/\\:*?"<>|]/.test(fn);
+export function isValidFileName(fn?: string): fn is string {
+  return !!fn && !/[/\\:*?"<>|]/.test(fn);
 }
 
 export function cleanFileName(fn: string, replacement: string = '') {

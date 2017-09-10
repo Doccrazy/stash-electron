@@ -1,17 +1,18 @@
-import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import { remote, shell } from 'electron';
 import { toastr } from 'react-redux-toastr';
 import { childNodeByName } from '../utils/repository';
-import EntryPtr from '../domain/EntryPtr.ts';
+import EntryPtr from '../domain/EntryPtr';
 import * as repoActions from './repository';
-import { afterAction } from '../store/eventMiddleware';
 import typeFor from '../fileType/index';
+import {State} from './types/external';
+import {Action, Thunk} from './types/index';
 
 const OPEN = 'external/OPEN';
 
-export function browseForAdd() {
+export function browseForAdd(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const files = remote.dialog.showOpenDialog({
       title: 'Select file(s) to encrypt into Stash',
@@ -23,7 +24,7 @@ export function browseForAdd() {
   };
 }
 
-export function addFiles(files) {
+export function addFiles(files: string[]): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { repository, currentNode } = getState();
     if (!currentNode.nodeId) {
@@ -37,12 +38,12 @@ export function addFiles(files) {
       const stat = await fs.stat(fileName);
 
       if (typeFor(fileName).parse) {
-        toastr.error(`Failed to add ${baseName}: Reserved file extension.`);
+        toastr.error('', `Failed to add ${baseName}: Reserved file extension.`);
       } else if (childNodeByName(repository.nodes, node, baseName)) {
-        toastr.error(`Failed to add ${baseName}: A folder with the same name already exists.`);
+        toastr.error('', `Failed to add ${baseName}: A folder with the same name already exists.`);
       } else if (stat.isFile()) {
         if (stat.size > 1024 * 1024 * 10) {
-          toastr.warning(`File size of ${baseName} exceeds recommended 10MiB.`);
+          toastr.warning('', `File size of ${baseName} exceeds recommended 10MiB.`);
         }
 
         const buffer = await fs.readFile(fileName);
@@ -53,13 +54,12 @@ export function addFiles(files) {
     }
 
     if (count) {
-      toastr.success(`${count} file(s) have been successfully added.`);
+      toastr.success('', `${count} file(s) have been successfully added.`);
     }
   };
 }
 
-export function open(ptr) {
-  EntryPtr.assert(ptr);
+export function open(ptr: EntryPtr): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const buffer = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
 
@@ -76,8 +76,7 @@ export function open(ptr) {
   };
 }
 
-export function browseForSaveAs(ptr) {
-  EntryPtr.assert(ptr);
+export function browseForSaveAs(ptr: EntryPtr): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const targetPath = remote.dialog.showSaveDialog({
       title: 'Save as *UNENCRYPTED*',
@@ -89,16 +88,15 @@ export function browseForSaveAs(ptr) {
   };
 }
 
-function saveAs(ptr, targetPath) {
-  EntryPtr.assert(ptr);
+function saveAs(ptr: EntryPtr, targetPath: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     try {
       const buffer = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
 
       await fs.writeFile(targetPath, buffer);
-      toastr.success(`${ptr.entry} saved successfully.`);
+      toastr.success('', `${ptr.entry} saved successfully.`);
     } catch (e) {
-      toastr.error(`Save failed: ${e}.`);
+      toastr.error('', `Save failed: ${e}.`);
     }
   };
 }
@@ -111,7 +109,7 @@ window.addEventListener('beforeunload', () => {
   }
 });
 
-export default function reducer(state = {}, action) {
+export default function reducer(state: State = {}, action: Action<any>): State {
   switch (action.type) {
     case OPEN:
     default:

@@ -16,10 +16,15 @@ export interface FormProps<C, S> {
   onChangeState: (newState: S) => void
 }
 
+export interface StaticFormMethods<C, S> {
+  initFormState?: (content: C) => S;
+  validate?: (name: string, content: C, formState: S) => string | boolean;
+}
+
 export interface ReactTypeExt {
   format?: (name: string) => React.ReactNode
   panel?: React.ComponentType<PanelProps<any>>,
-  form?: React.ComponentType<FormProps<any, any>>
+  form?: React.ComponentType<FormProps<any, any>> & StaticFormMethods<any, any>
 }
 
 export interface Type<C> extends ReactTypeExt {
@@ -33,6 +38,8 @@ export interface Type<C> extends ReactTypeExt {
   parse?: (buf: Buffer) => C,
   write?: (content: C) => Buffer
 }
+
+export type InternalType<C> = Type<C> & { matches: any, fromKdbxEntry: any, parse: any, write: any };
 
 const DEFAULT_TYPE: Type<void> = {
   test: () => true,
@@ -62,6 +69,10 @@ const TYPES: Type<any>[] = [
 
 export default function typeFor(entry: string) {
   return TYPES.find(type => type.test(entry)) || DEFAULT_TYPE;
+}
+
+export function typeForInt(entry: string) {
+  return typeFor(entry) as InternalType<any>;
 }
 
 export function typeById(id: string | undefined) {

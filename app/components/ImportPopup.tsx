@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
+import {ImportSettings, StatusType} from '../actions/types/fileImport';
 
 const STATUS_COLOR = {
   progress: '',
@@ -7,18 +8,12 @@ const STATUS_COLOR = {
   error: 'text-danger'
 };
 
-export interface Settings {
-  filePath?: string,
-  masterKey: string,
-  keyFile: string
-}
-
 export interface Props {
   open: boolean,
-  settings: Settings,
-  status: 'progress' | 'success' | 'error' | null | undefined,
-  statusMessage: string | null,
-  onChangeSettings: (settings: Settings) => void,
+  settings: ImportSettings,
+  status?: StatusType,
+  statusMessage?: string,
+  onChangeSettings: (settings: ImportSettings) => void,
   onImport: () => void,
   onClose: () => void
 }

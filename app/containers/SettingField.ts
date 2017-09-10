@@ -2,9 +2,10 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Input } from 'reactstrap';
 import { changeSetting } from '../actions/settings';
+import {SettingsKeys} from '../actions/types/settings';
 
 export interface Props {
-  field: string
+  field: SettingsKeys
 }
 
 export default connect((state, props: Props) => ({

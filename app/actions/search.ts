@@ -1,25 +1,26 @@
-// @flow
 import { List } from 'immutable';
-import debounce from 'lodash.debounce';
+import { debounce } from 'lodash-es';
 import { getRepo } from './repository';
-import { selectSpecial } from './currentNode';
-import { afterAction } from '../store/eventMiddleware';
+import {deselectSpecial, selectSpecial} from './currentNode';
 import { hierarchy, recursiveChildIds } from '../utils/repository';
-import EntryPtr from '../domain/EntryPtr.ts';
-import typeFor from '../fileType/index';
+import EntryPtr from '../domain/EntryPtr';
+import typeFor, {typeForInt} from '../fileType/index';
+import {Dispatch, Thunk} from './types/index';
+import {State} from './types/search';
+import {State as RepositoryState} from './types/repository';
 
 const CHANGE_FILTER = 'search/CHANGE_FILTER';
 const START = 'search/START';
 const RESULTS = 'search/RESULTS';
 const SET_OPTIONS = 'search/SET_OPTIONS';
 
-function quickFilter() {
+function quickFilter(): Thunk<void> {
   return (dispatch, getState) => {
     const { repository, search, currentNode } = getState();
 
     if (!search.filter || search.filter.length < 2) {
       if (currentNode.specialId === 'searchResults') {
-        dispatch(selectSpecial());
+        dispatch(deselectSpecial());
       }
       return;
     }
@@ -39,11 +40,11 @@ function quickFilter() {
   };
 }
 
-const quickFilterDelayed = debounce(dispatch => {
+const quickFilterDelayed = debounce((dispatch: Dispatch) => {
   dispatch(quickFilter());
 }, 0);
 
-export function changeFilter(filter: string) {
+export function changeFilter(filter: string): Thunk<void> {
   return (dispatch, getState) => {
     dispatch({
       type: CHANGE_FILTER,
@@ -56,50 +57,57 @@ export function changeFilter(filter: string) {
 
 function matches(ptr: EntryPtr, content: any, filterLC: string) {
   return ptr.entry.toLowerCase().includes(filterLC)
-    || typeFor(ptr.entry).matches(content, filterLC);
+    || typeForInt(ptr.entry).matches(content, filterLC);
 }
 
-async function filterByContent(nodes, rootNodeId: string = '/', filter: string) {
+type PtrWithBuffer = { ptr: EntryPtr, buffer: Buffer };
+type PtrWithContent = { ptr: EntryPtr, content: any };
+
+function readContentBuffer(ptr: EntryPtr): Promise<PtrWithBuffer> {
+  return getRepo().readFile(ptr.nodeId, ptr.entry).then((buffer: Buffer) => ({ ptr, buffer }));
+}
+
+async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId: string = '/', filter: string) {
   console.time('resolve');
-  const allSupportedEntries = new List(recursiveChildIds(nodes, rootNodeId))
-    .flatMap(nodeId => (nodes[nodeId].entries || []).map(entry => new EntryPtr(nodeId, entry)))
-    .filter(ptr => typeFor(ptr.entry).parse);
+  const allSupportedEntries = List(recursiveChildIds(nodes, rootNodeId))
+    .flatMap((nodeId: string) => (nodes[nodeId].entries).map((entry: string) => new EntryPtr(nodeId, entry)))
+    .filter(ptr => !!typeFor((ptr as EntryPtr).entry).parse);
   console.timeEnd('resolve');
   console.log('# supported items: ', allSupportedEntries.size);
 
   console.time('readAll');
-  const buffers = new List(await Promise.all(allSupportedEntries.map(ptr => getRepo().readFile(ptr.nodeId, ptr.entry).then(buffer => ({ ptr, buffer }))).toArray()));
+  const buffers = List(await Promise.all(allSupportedEntries.map(readContentBuffer).toArray()));
   console.timeEnd('readAll');
   console.time('parse');
-  const parsed = buffers.map(({ ptr, buffer }) => ({ ptr, content: typeFor(ptr.entry).parse(buffer) }));
+  const parsed = buffers.map(({ ptr, buffer }: PtrWithBuffer) => ({ ptr, content: typeForInt(ptr.entry).parse(buffer) }));
   console.timeEnd('parse');
 
   console.time('filter');
   const filterLC = filter.toLowerCase();
-  const results = parsed.filter(({ ptr, content }) => matches(ptr, content, filterLC))
-    .map(item => item.ptr);
+  const results = parsed.filter(({ ptr, content }: PtrWithContent) => matches(ptr, content, filterLC))
+    .map((item: PtrWithContent) => item.ptr);
   console.timeEnd('filter');
 
   return results;
 }
 
-function filterByName(nodes, rootNodeId: string = '/', filter: string, matchPath: boolean = false) {
+function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/', filter: string, matchPath: boolean = false) {
   console.time('resolve');
-  const allEntries = new List(recursiveChildIds(nodes, rootNodeId))
-    .flatMap(nodeId => (nodes[nodeId].entries || []).map(entry => new EntryPtr(nodeId, entry)));
+  const allEntries = List(recursiveChildIds(nodes, rootNodeId))
+    .flatMap((nodeId: string) => (nodes[nodeId].entries || []).map((entry: string) => new EntryPtr(nodeId, entry)));
   console.timeEnd('resolve');
   console.log('# items: ', allEntries.size);
 
   console.time('filter');
   const filterLC = filter.toLowerCase();
-  const results = allEntries.filter(ptr => ptr.entry.toLowerCase().includes(filterLC)
-    || (matchPath && hierarchy(nodes, ptr.nodeId).find(node => node.id !== '/' && node.name.toLowerCase().includes(filterLC))));
+  const results = allEntries.filter((ptr: EntryPtr) => ptr.entry.toLowerCase().includes(filterLC)
+    || (matchPath && !!hierarchy(nodes, ptr.nodeId).find(node => node.id !== '/' && node.name.toLowerCase().includes(filterLC))));
   console.timeEnd('filter');
 
   return results;
 }
 
-export function startSearch() {
+export function startSearch(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { repository, search, currentNode } = getState();
 
@@ -124,7 +132,7 @@ export function startSearch() {
   };
 }
 
-export function toggleScope() {
+export function toggleScope(): Thunk<void> {
   return (dispatch, getState) => {
     const { search, currentNode } = getState();
 
@@ -141,20 +149,14 @@ export function toggleScope() {
   };
 }
 
-type StateType = {
-  filter: string,
-  results: List<EntryPtr>,
-  options: {}
-};
-
-export default function reducer(state: StateType = { filter: '', results: new List(), options: {} }, action: { type: string, payload: any }) {
+export default function reducer(state: State = { filter: '', results: List(), options: {} }, action: { type: string, payload: any }): State {
   switch (action.type) {
     case CHANGE_FILTER:
       return { ...state, filter: action.payload || '' };
     case SET_OPTIONS:
       return { ...state, options: { ...state.options, ...action.payload } };
     case START:
-      return { ...state, running: true, results: new List() };
+      return { ...state, running: true, results: List() };
     case RESULTS:
       return { ...state, running: false, results: action.payload.results, quick: action.payload.quick };
     default:

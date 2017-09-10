@@ -3,6 +3,8 @@ import * as repoActions from './repository';
 import { expand } from './treeState';
 import { afterAction } from '../store/eventMiddleware';
 import { childNodeByName, cleanFileName, hasChildOrEntry } from '../utils/repository';
+import {State} from './types/currentNode';
+import {Action, GetState, Thunk} from './types/index';
 
 export const SELECT = 'currentNode/SELECT';
 export const SELECT_SPECIAL = 'currentNode/SELECT_SPECIAL';
@@ -13,7 +15,7 @@ export const START_CREATE = 'currentNode/START_CREATE';
 export const CHANGE_NAME = 'currentNode/CHANGE_NAME';
 export const CLOSE_EDIT = 'currentNode/CLOSE_EDIT';
 
-export function select(nodeId) {
+export function select(nodeId: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { repository } = getState();
     if (!repository.nodes[nodeId]) {
@@ -28,22 +30,26 @@ export function select(nodeId) {
   };
 }
 
-export function selectSpecial(specialId) {
+export function selectSpecial(specialId: string): Action<string> {
   return {
     type: SELECT_SPECIAL,
     payload: specialId
   };
 }
 
-export function deselect() {
-  return (dispatch, getState) => {
-    dispatch({
-      type: SELECT
-    });
+export function deselect(): Action<void> {
+  return {
+    type: SELECT
   };
 }
 
-export function prepareDelete() {
+export function deselectSpecial(): Action<void> {
+  return {
+    type: SELECT_SPECIAL
+  };
+}
+
+export function prepareDelete(): Thunk<void> {
   return (dispatch, getState) => {
     const { currentNode } = getState();
     if (currentNode.nodeId) {
@@ -54,7 +60,7 @@ export function prepareDelete() {
   };
 }
 
-export function confirmDelete() {
+export function confirmDelete(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentNode } = getState();
     if (currentNode.nodeId) {
@@ -63,13 +69,13 @@ export function confirmDelete() {
   };
 }
 
-export function cancelDelete() {
+export function cancelDelete(): Action<void> {
   return {
     type: CANCEL_DELETE
   };
 }
 
-export function startRename() {
+export function startRename(): Thunk<void> {
   return (dispatch, getState) => {
     const { currentNode, repository } = getState();
     if (currentNode.nodeId) {
@@ -81,7 +87,7 @@ export function startRename() {
   };
 }
 
-export function startCreate() {
+export function startCreate(): Thunk<void> {
   return (dispatch, getState) => {
     const { currentNode } = getState();
     if (currentNode.nodeId) {
@@ -92,20 +98,20 @@ export function startCreate() {
   };
 }
 
-export function changeName(name) {
+export function changeName(name: string): Action<string> {
   return {
     type: CHANGE_NAME,
     payload: cleanFileName(name)
   };
 }
 
-export function closeEdit() {
+export function closeEdit(): Action<void> {
   return {
     type: CLOSE_EDIT
   };
 }
 
-export function saveNode() {
+export function saveNode(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentNode, repository } = getState();
     if (currentNode.nodeId && (currentNode.renaming || currentNode.creating)) {
@@ -116,9 +122,9 @@ export function saveNode() {
       }
 
       const node = repository.nodes[currentNode.nodeId];
-      const parentNode = repository.nodes[node.parent];
+      const parentNode = repository.nodes[node.parentId as string];
       if (hasChildOrEntry(repository.nodes, currentNode.renaming ? parentNode : node, newName)) {
-        toastr.error(`An entry named '${newName}' already exists.`);
+        toastr.error('', `An entry named '${newName}' already exists.`);
         return;
       }
 
@@ -140,30 +146,34 @@ afterAction(repoActions.UNLOAD, dispatch => {
   dispatch(deselect());
 });
 
-afterAction(repoActions.DELETE_NODE, (dispatch, getState, nodeId, preActionState) => {
+afterAction(repoActions.DELETE_NODE, (dispatch, getState: GetState, nodeId, preActionState) => {
   const { currentNode } = getState();
   if (currentNode.nodeId === nodeId) {
     const node = preActionState.repository.nodes[nodeId];
-    dispatch(select(node.parent));
+    if (node.parentId) {
+      dispatch(select(node.parentId));
+    }
   }
 });
 
-afterAction(repoActions.RENAME_NODE, (dispatch, getState, { nodeId, newParentId, newName }) => {
+afterAction(repoActions.RENAME_NODE, (dispatch, getState: GetState, { nodeId, newParentId, newName }) => {
   const { currentNode, repository } = getState();
   if (currentNode.nodeId === nodeId) {
     const newId = childNodeByName(repository.nodes, newParentId, newName);
-    dispatch(select(newId));
+    if (newId) {
+      dispatch(select(newId));
+    }
   }
 });
 
-afterAction(repoActions.CREATE_NODE, (dispatch, getState, { parentNodeId, name }) => {
+afterAction(repoActions.CREATE_NODE, (dispatch, getState: GetState, { parentNodeId, name }) => {
   const { currentNode } = getState();
   if (currentNode.creating) {
     dispatch(closeEdit());
   }
 });
 
-export default function reducer(state = {}, action) {
+export default function reducer(state: State = {}, action: Action<any>): State {
   switch (action.type) {
     case SELECT:
       return { nodeId: action.payload };
@@ -180,7 +190,7 @@ export default function reducer(state = {}, action) {
     case CHANGE_NAME:
       return { ...state, name: action.payload };
     case CLOSE_EDIT:
-      return { ...state, renaming: false, creating: false, initialName: null, name: null };
+      return { ...state, renaming: false, creating: false, initialName: undefined, name: undefined };
     default:
       return state;
   }

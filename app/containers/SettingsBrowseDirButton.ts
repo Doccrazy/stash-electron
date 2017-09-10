@@ -1,9 +1,10 @@
 import { connect } from 'react-redux';
 import { Button } from 'reactstrap';
 import { browseForFolder } from '../actions/settings';
+import {SettingsKeys} from '../actions/types/settings';
 
 export interface Props {
-  field: string,
+  field: SettingsKeys,
   title: string
 }
 

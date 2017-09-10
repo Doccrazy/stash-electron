@@ -1,10 +1,12 @@
 /* eslint-disable no-await-in-loop,no-restricted-syntax,no-plusplus */
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import kdbxweb from 'kdbxweb';
+import {State, ImportSettings, StatusType} from './types/fileImport';
 import { childNodeByName, cleanFileName } from '../utils/repository';
-import EntryPtr from '../domain/EntryPtr.ts';
+import EntryPtr from '../domain/EntryPtr';
 import { createChildNode, writeEntry } from './repository';
-import { typeById } from '../fileType/index';
+import {InternalType, typeById} from '../fileType/index';
+import {Action, Thunk} from './types/index';
 
 const OPEN = 'fileImport/OPEN';
 const CLOSE = 'fileImport/CLOSE';
@@ -17,24 +19,24 @@ export function open() {
   };
 }
 
-export function close() {
+export function close(): Action<void> {
   return {
     type: CLOSE
   };
 }
 
-export function changeSettings(settings) {
+export function changeSettings(settings: ImportSettings): Action<ImportSettings> {
   return {
     type: CHANGE_SETTINGS,
     payload: settings
   };
 }
 
-export function performImport() {
-  const passwordType = typeById('password');
-
+export function performImport(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    function status(type, message) {
+    const passwordType = typeById('password') as InternalType<any>;
+
+    function status(type: StatusType, message: string) {
       dispatch({
         type: STATUS,
         payload: {
@@ -47,7 +49,7 @@ export function performImport() {
     let groupCount = 0;
     let entryCount = 0;
 
-    async function importGroup(group, nodeId) {
+    async function importGroup(group: any, nodeId: string) {
       groupCount++;
       status('progress', `Importing group ${group.name}`);
 
@@ -55,7 +57,7 @@ export function performImport() {
       for (const childGroup of group.groups) {
         // sanitize / de-conflict name
         let safeName = cleanFileName(childGroup.name, '_').trim();
-        while (targetNode.entries && targetNode.entries.indexOf(safeName) >= 0) {
+        while (targetNode.entries && targetNode.entries.includes(safeName)) {
           // conflict
           safeName += '_';
         }
@@ -126,12 +128,12 @@ export function performImport() {
   };
 }
 
-export default function reducer(state = {}, action) {
+export default function reducer(state: State = { open: false, settings: {} }, action: Action<any>): State {
   switch (action.type) {
     case OPEN:
       return { open: true, settings: {} };
     case CLOSE:
-      return { open: false };
+      return { open: false, settings: {} };
     case CHANGE_SETTINGS:
       return { ...state, settings: action.payload };
     case STATUS:
