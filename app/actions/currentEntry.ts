@@ -14,7 +14,6 @@ const PREPARE_DELETE = 'currentEntry/PREPARE_DELETE';
 const CANCEL_DELETE = 'currentEntry/CANCEL_DELETE';
 
 export function select(ptr: EntryPtr): Thunk<Promise<void>> {
-  EntryPtr.assert(ptr);
   return async (dispatch, getState) => {
     const { repository } = getState();
     const node = repository.nodes[ptr.nodeId];
@@ -32,7 +31,6 @@ export function select(ptr: EntryPtr): Thunk<Promise<void>> {
 }
 
 export function reselect(ptr: EntryPtr): Action<EntryPtr> {
-  EntryPtr.assert(ptr);
   return {
     type: RESELECT,
     payload: ptr

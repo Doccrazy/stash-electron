@@ -12,12 +12,6 @@ export default class EntryPtr {
     this.entry = entry;
   }
 
-  static assert(obj: any) {
-    if (!(obj instanceof EntryPtr)) {
-      throw new Error('expected EntryPtr');
-    }
-  }
-
   static fromHref(href: string) {
     const url = new URL(href);
     if (url.protocol !== 'stash:' || url.host || url.port) {

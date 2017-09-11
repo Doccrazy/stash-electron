@@ -17,7 +17,6 @@ const CHANGE_STATE = 'edit/CHANGE_STATE';
 const CHANGE_NAME = 'edit/CHANGE_NAME';
 
 export function open(ptr: EntryPtr, preParsedContent?: any): Thunk<Promise<void>> {
-  EntryPtr.assert(ptr);
   return async (dispatch, getState) => {
     const type = typeFor(ptr.entry);
     let parsedContent;
@@ -79,7 +78,6 @@ export function createInCurrent(typeId: string): Thunk<void> {
 }
 
 export function repointOpen(ptr: EntryPtr): Action<EntryPtr> {
-  EntryPtr.assert(ptr);
   return {
     type: REPOINT_OPEN,
     payload: ptr
