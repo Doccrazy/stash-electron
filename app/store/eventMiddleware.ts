@@ -24,3 +24,7 @@ export function afterAction<S>(actionType: string | string[], listener: ActionLi
     storeEvents.on(actionType, listener);
   }
 }
+
+export function onceAfterAction<S>(actionType: string, listener: ActionListener<S>) {
+  storeEvents.once(actionType, listener);
+}
