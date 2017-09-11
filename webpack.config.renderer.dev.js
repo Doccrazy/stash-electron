@@ -278,7 +278,7 @@ export default merge.smart(baseConfig, {
         console.log('Staring Main Process...');
         spawn(
           'npm',
-          ['run', 'start-main-dev'],
+          ['run', 'start-main-dev', '--', process.env.MAIN_ARGS],
           { shell: true, env: process.env, stdio: 'inherit' }
         )
         .on('close', code => process.exit(code))
