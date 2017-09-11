@@ -1,7 +1,8 @@
 import { remote } from 'electron';
 import * as electronSettings from 'electron-settings';
 import {SettingsKeys, SettingsMap, State} from './types/settings';
-import {Action, Thunk} from './types/index';
+import {Action, GetState, Thunk} from './types/index';
+import {afterAction} from '../store/eventMiddleware';
 
 export const LOAD = 'settings/LOAD';
 export const CHANGE = 'settings/CHANGE';
@@ -49,14 +50,27 @@ export function browseForFolder(key: SettingsKeys, title: string): Thunk<void> {
   };
 }
 
+afterAction([LOAD, SAVE], (dispatch, getState: GetState) => {
+  const { settings } = getState();
+
+  document.documentElement.style.fontSize = `${settings.current.rootFontSize}px`;
+});
+
+function applyDefaults(settings: SettingsMap): SettingsMap {
+  return {
+    ...settings,
+    rootFontSize: settings.rootFontSize || 16
+  };
+}
+
 export default function reducer(state: State = { current: {}, edited: {}, previous: {} }, action: Action<any>): State {
   switch (action.type) {
     case LOAD:
-      return { current: action.payload, edited: action.payload, previous: {} };
+      return { current: applyDefaults(action.payload), edited: applyDefaults(action.payload), previous: {} };
     case CHANGE:
       return { ...state, edited: { ...state.edited, [action.payload.key]: action.payload.value }};
     case SAVE:
-      return { ...state, current: state.edited, previous: state.current };
+      return { ...state, current: applyDefaults(state.edited), previous: state.current };
     default:
       return state;
   }

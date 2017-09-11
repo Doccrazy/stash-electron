@@ -17,6 +17,10 @@ export default () => (<div className="container">
         </InputGroupButton>
       </InputGroup>
     </FormGroup>
+    <FormGroup>
+      <Label>UI scale / root font size</Label>
+      <SettingField field="rootFontSize" />
+    </FormGroup>
     <FormGroup className="text-right">
       <SaveSettingsButton color="success">Save</SaveSettingsButton>
     </FormGroup>
