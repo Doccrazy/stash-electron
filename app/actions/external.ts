@@ -54,7 +54,7 @@ export function addFiles(files: string[]): Thunk<Promise<void>> {
     }
 
     if (count) {
-      toastr.success('', `${count} file(s) have been successfully added.`);
+      toastr.success('', `${count} file(s) have been successfully added.`, { timeOut: 2000 });
     }
   };
 }
@@ -94,7 +94,7 @@ function saveAs(ptr: EntryPtr, targetPath: string): Thunk<Promise<void>> {
       const buffer = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
 
       await fs.writeFile(targetPath, buffer);
-      toastr.success('', `${ptr.entry} saved successfully.`);
+      toastr.success('', `${ptr.entry} saved successfully.`, { timeOut: 2000 });
     } catch (e) {
       toastr.error('', `Save failed: ${e}.`);
     }

@@ -50,10 +50,20 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
         path: repoPath
       }
     });
-    await dispatch(readFull());
-    dispatch({
-      type: FINISH_LOAD
-    });
+    try {
+      await dispatch(readFull());
+
+      dispatch({
+        type: FINISH_LOAD
+      });
+    } catch (e) {
+      dispatch({
+        type: UNLOAD
+      });
+
+      console.error(e);
+      toastr.error('Failed to open repository', e.message || e);
+    }
   };
 }
 
@@ -250,7 +260,7 @@ export default function reducer(state: State = { nodes: { } }, action: Action<an
     case FINISH_LOAD:
       return { ...state, loading: false };
     case UNLOAD:
-      return { ...state, nodes: { }, name: undefined, path: undefined };
+      return { ...state, nodes: { }, name: undefined, path: undefined, loading: false };
     // case READ_NODE: {
     //   const newNodes = { ...state.nodes };
     //   const nodeId = action.payload.nodeId;

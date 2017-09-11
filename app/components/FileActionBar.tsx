@@ -7,7 +7,7 @@ import EntryPtr from '../domain/EntryPtr';
 
 function copyEntryUrl(node: { id: string }, entry: string) {
   clipboard.writeText(new EntryPtr(node.id, entry).toHref());
-  toastr.success('', 'Stash link to entry copied');
+  toastr.success('', 'Stash link to entry copied', { timeOut: 2000 });
 }
 
 export interface Props {

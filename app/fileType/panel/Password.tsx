@@ -17,7 +17,7 @@ function sanitizeUrl(url: string) {
 
 function copyToClip(name: string, text: string) {
   clipboard.writeText(text);
-  toastr.success('', `${name} copied`);
+  toastr.success('', `${name} copied`, { timeOut: 2000 });
 }
 
 interface FieldProps {

@@ -14,7 +14,7 @@ export default class App extends React.Component<Props, {}> {
   render() {
     return (
       <div className={styles.root}>
-        <ReduxToastr timeOut={2000} preventDuplicates position="top-right" transitionIn="fadeIn" transitionOut="fadeOut" />
+        <ReduxToastr timeOut={4000} preventDuplicates position="top-right" transitionIn="fadeIn" transitionOut="fadeOut" />
         <Navbar color="dark" className={`navbar-dark navbar-expand-md ${styles.nav}`}>
           <NavLink to="/" className="navbar-brand"><span className={styles.logo} /> Stash</NavLink>
           <Nav className="mr-auto" navbar>
