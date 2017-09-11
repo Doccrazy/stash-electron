@@ -6,7 +6,7 @@ interface SwitchProps {
   [propName: string]: any;
 }
 
-export default function (Component: React.ComponentClass<any>, Alternate: React.ComponentClass<any>): React.ComponentClass<any> {
+export default function(Component: React.ComponentType<any>, Alternate: React.ComponentType<any>): React.ComponentType<any> {
   const Switch = ({ hideComponent, ...props }: SwitchProps) => (
     hideComponent ? <Alternate {...props} /> : <Component {...props} />
   );

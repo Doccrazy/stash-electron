@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Store } from "redux";
+import { Store } from 'redux';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
-import { History } from "history";
+import { History } from 'history';
 import Routes from '../routes';
 import '../fileType/registerComponents';
 
