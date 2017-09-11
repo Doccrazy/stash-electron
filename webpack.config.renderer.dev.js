@@ -14,6 +14,7 @@ import chalk from 'chalk';
 import merge from 'webpack-merge';
 import { spawn, execSync } from 'child_process';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
 
@@ -73,7 +74,14 @@ export default merge.smart(baseConfig, {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: ['react-hot-loader/webpack', 'ts-loader']
+        use: ['react-hot-loader/webpack', {
+          loader: 'ts-loader',
+          options: {
+            // disable type checker - we will use it in fork plugin
+            transpileOnly: true
+          }
+        }],
+        options: null
       },
       {
         test: /\.global\.css$/,
@@ -246,6 +254,8 @@ export default merge.smart(baseConfig, {
     new ExtractTextPlugin({
       filename: '[name].css'
     }),
+
+    new ForkTsCheckerWebpackPlugin(),
   ],
 
   node: {

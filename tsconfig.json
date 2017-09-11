@@ -21,6 +21,9 @@
     "noUnusedLocals": true,
     "strictNullChecks": true
   },
+  "include": [
+    "app/**/*"
+  ],
   "exclude": [
     "node_modules"
   ]

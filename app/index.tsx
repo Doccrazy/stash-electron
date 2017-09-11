@@ -14,8 +14,10 @@ import './app.global.scss';
 require('bootstrap/js/src/dropdown');
 
 const store = configureStore();
-store.dispatch(loadSettings());
-installLinkHandler(store.dispatch);
+setTimeout(() => {
+  store.dispatch(loadSettings());
+  installLinkHandler(store.dispatch);
+});
 
 render(
   <AppContainer>

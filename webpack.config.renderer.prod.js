@@ -5,6 +5,7 @@
 import path from 'path';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import merge from 'webpack-merge';
 import BabiliPlugin from 'babili-webpack-plugin';
@@ -164,5 +165,7 @@ export default merge.smart(baseConfig, {
       analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
       openAnalyzer: process.env.OPEN_ANALYZER === 'true'
     }),
+
+    new ForkTsCheckerWebpackPlugin(),
   ],
 });

@@ -22,7 +22,13 @@ export default {
     }, {
       test: /\.tsx?$/,
       exclude: /node_modules/,
-      loader: 'ts-loader'
+      use: {
+        loader: 'ts-loader',
+        options: {
+          // disable type checker - we will use it in fork plugin
+          transpileOnly: true
+        }
+      }
     }]
   },
 
