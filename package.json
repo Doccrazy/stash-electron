@@ -217,6 +217,7 @@
     "jquery": "^3.2.1",
     "kdbxweb": "^1.0.1",
     "lodash-es": "^4.17.4",
+    "moment": "^2.18.1",
     "natural-compare": "^1.4.0",
     "popper.js": "^1.12.3",
     "react": "^15.6.1",

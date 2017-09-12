@@ -7,8 +7,11 @@ import { open } from '../actions/edit';
 import { toggle as toggleFavorite } from '../actions/favorites';
 import specialFolders, {SpecialFolderId} from '../utils/specialFolders';
 import {RootState} from '../actions/types/index';
+import FileListEntry from '../domain/FileListEntry';
+import {hierarchy} from '../utils/repository';
+import {hashString} from '../utils/hash';
 
-function entryList(state: RootState): EntryPtr[] {
+function createFileList(state: RootState): FileListEntry[] {
   let result: EntryPtr[] = [];
   if (state.currentNode.specialId) {
     const selector = specialFolders[state.currentNode.specialId as SpecialFolderId].selector;
@@ -19,13 +22,15 @@ function entryList(state: RootState): EntryPtr[] {
       .toArray();
   }
   result.sort((a, b) => naturalCompare(a.entry.toLowerCase(), b.entry.toLowerCase()));
-  return result;
+  return result.map(ptr => new FileListEntry(ptr,
+    hierarchy(state.repository.nodes, ptr.nodeId).map(node => node.name), new Date(1505249965000 - (hashString(ptr.entry) >>> 0) * 5)));
 }
 
 export default connect((state: RootState) => ({
-  entries: entryList(state),
+  files: createFileList(state),
   selectedEntry: state.currentEntry.ptr,
-  favorites: state.favorites
+  favorites: state.favorites,
+  showPath: !!state.currentNode.specialId
 }), dispatch => ({
   onSelect: (ptr: EntryPtr) => dispatch(select(ptr)),
   onEdit: (ptr: EntryPtr) => dispatch(open(ptr)),
