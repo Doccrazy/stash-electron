@@ -25,7 +25,7 @@ function quickFilter(): Thunk<void> {
       return;
     }
 
-    const results = filterByName(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/', search.filter);
+    const results: List<EntryPtr> = filterByName(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/', search.filter);
 
     dispatch({
       type: RESULTS,
@@ -67,16 +67,21 @@ function readContentBuffer(ptr: EntryPtr): Promise<PtrWithBuffer> {
   return getRepo().readFile(ptr.nodeId, ptr.entry).then((buffer: Buffer) => ({ ptr, buffer }));
 }
 
+function allEntriesBelow(nodes: RepositoryState['nodes'], rootNodeId: string): EntryPtr[] {
+  return recursiveChildIds(nodes, rootNodeId)
+    .map(nodeId => nodes[nodeId].entries.toArray().map(entry => new EntryPtr(nodeId, entry)))
+    .reduce((acc, ptrs) => { acc.push(...ptrs); return acc; }, []);
+}
+
 async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId: string = '/', filter: string) {
   console.time('resolve');
-  const allSupportedEntries = List(recursiveChildIds(nodes, rootNodeId))
-    .flatMap((nodeId: string) => (nodes[nodeId].entries).map((entry: string) => new EntryPtr(nodeId, entry)))
+  const allSupportedEntries = allEntriesBelow(nodes, rootNodeId)
     .filter(ptr => !!typeFor((ptr as EntryPtr).entry).parse);
   console.timeEnd('resolve');
-  console.log('# supported items: ', allSupportedEntries.size);
+  console.log('# supported items: ', allSupportedEntries.length);
 
   console.time('readAll');
-  const buffers = List(await Promise.all(allSupportedEntries.map(readContentBuffer).toArray()));
+  const buffers = await Promise.all(allSupportedEntries.map(readContentBuffer));
   console.timeEnd('readAll');
   console.time('parse');
   const parsed = buffers.map(({ ptr, buffer }: PtrWithBuffer) => ({ ptr, content: typeForInt(ptr.entry).parse(buffer) }));
@@ -88,15 +93,14 @@ async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId: stri
     .map((item: PtrWithContent) => item.ptr);
   console.timeEnd('filter');
 
-  return results;
+  return List(results);
 }
 
 function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/', filter: string, matchPath: boolean = false) {
   console.time('resolve');
-  const allEntries = List(recursiveChildIds(nodes, rootNodeId))
-    .flatMap((nodeId: string) => (nodes[nodeId].entries || []).map((entry: string) => new EntryPtr(nodeId, entry)));
+  const allEntries = allEntriesBelow(nodes, rootNodeId);
   console.timeEnd('resolve');
-  console.log('# items: ', allEntries.size);
+  console.log('# items: ', allEntries.length);
 
   console.time('filter');
   const filterLC = filter.toLowerCase();
@@ -104,7 +108,7 @@ function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/',
     || (matchPath && !!hierarchy(nodes, ptr.nodeId).find(node => node.id !== '/' && node.name.toLowerCase().includes(filterLC))));
   console.timeEnd('filter');
 
-  return results;
+  return List(results);
 }
 
 export function startSearch(): Thunk<Promise<void>> {
@@ -120,7 +124,7 @@ export function startSearch(): Thunk<Promise<void>> {
       type: START
     });
 
-    const results = await filterByContent(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/', search.filter);
+    const results: List<EntryPtr> = await filterByContent(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/', search.filter);
 
     dispatch({
       type: RESULTS,

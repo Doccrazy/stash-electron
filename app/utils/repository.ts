@@ -13,14 +13,17 @@ export function hierarchy(nodes: { [nodeId: string]: Node }, nodeId: string): No
 }
 
 export function recursiveChildIds(nodes: { [nodeId: string]: Node }, parentId: string) {
-  let result = [parentId];
-  const children = nodes[parentId].childIds || [];
-  children.forEach(childId => {
-    if (childId) {
-      result = result.concat(recursiveChildIds(nodes, childId));
-    }
-  });
+  const result = [parentId];
+  pushChildren(result, nodes, parentId);
   return result;
+}
+
+function pushChildren(result: string[], nodes: { [nodeId: string]: Node }, parentId: string) {
+  const items = nodes[parentId].childIds.toArray();
+  result.push(...items);
+  for (const cid of items) {
+    pushChildren(result, nodes, cid);
+  }
 }
 
 export function isValidFileName(fn?: string): fn is string {
