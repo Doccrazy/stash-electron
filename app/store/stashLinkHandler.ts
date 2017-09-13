@@ -6,14 +6,14 @@ import { expand } from '../actions/treeState';
 import {Dispatch, Thunk} from '../actions/types/index';
 import {toastr} from 'react-redux-toastr';
 import {onceAfterAction} from './eventMiddleware';
-import * as repoActions from '../actions/repository';
+import * as Repository from '../actions/repository';
 import {hierarchy} from '../utils/repository';
 
 function openStashLink(link: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { repository } = getState();
     if (repository.loading) {
-      onceAfterAction(repoActions.FINISH_LOAD, () => dispatch(openStashLink(link)));
+      onceAfterAction(Repository.Actions.FINISH_LOAD, () => dispatch(openStashLink(link)));
       return;
     }
 

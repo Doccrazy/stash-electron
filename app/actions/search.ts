@@ -5,14 +5,18 @@ import {deselectSpecial, selectSpecial} from './currentNode';
 import { hierarchy, recursiveChildIds } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import typeFor, {typeForInt} from '../fileType/index';
-import {Dispatch, Thunk} from './types/index';
-import {State} from './types/search';
+import {Dispatch, OptionalAction, TypedAction, TypedThunk} from './types/index';
+import {SearchOptions, State} from './types/search';
 import {State as RepositoryState} from './types/repository';
 
-const CHANGE_FILTER = 'search/CHANGE_FILTER';
-const START = 'search/START';
-const RESULTS = 'search/RESULTS';
-const SET_OPTIONS = 'search/SET_OPTIONS';
+export enum Actions {
+  CHANGE_FILTER = 'search/CHANGE_FILTER',
+  START = 'search/START',
+  RESULTS = 'search/RESULTS',
+  SET_OPTIONS = 'search/SET_OPTIONS'
+}
+
+// TODO refactor 'as any' dispatches
 
 function quickFilter(): Thunk<void> {
   return (dispatch, getState) => {
@@ -20,7 +24,7 @@ function quickFilter(): Thunk<void> {
 
     if (!search.filter || search.filter.length < 2) {
       if (currentNode.specialId === 'searchResults') {
-        dispatch(deselectSpecial());
+        dispatch(deselectSpecial() as any);
       }
       return;
     }
@@ -28,14 +32,14 @@ function quickFilter(): Thunk<void> {
     const results: List<EntryPtr> = filterByName(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/', search.filter);
 
     dispatch({
-      type: RESULTS,
+      type: Actions.RESULTS,
       payload: {
         quick: true,
         results
       }
     });
     if (currentNode.specialId !== 'searchResults') {
-      dispatch(selectSpecial('searchResults'));
+      dispatch(selectSpecial('searchResults') as any);
     }
   };
 }
@@ -47,7 +51,7 @@ const quickFilterDelayed = debounce((dispatch: Dispatch) => {
 export function changeFilter(filter: string): Thunk<void> {
   return (dispatch, getState) => {
     dispatch({
-      type: CHANGE_FILTER,
+      type: Actions.CHANGE_FILTER,
       payload: filter
     });
 
@@ -121,18 +125,18 @@ export function startSearch(): Thunk<Promise<void>> {
 
     quickFilterDelayed.cancel();
     dispatch({
-      type: START
+      type: Actions.START
     });
 
     const results: List<EntryPtr> = await filterByContent(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/', search.filter);
 
     dispatch({
-      type: RESULTS,
+      type: Actions.RESULTS,
       payload: {
         results
       }
     });
-    dispatch(selectSpecial('searchResults'));
+    dispatch(selectSpecial('searchResults') as any);
   };
 }
 
@@ -141,7 +145,7 @@ export function toggleScope(): Thunk<void> {
     const { search, currentNode } = getState();
 
     dispatch({
-      type: SET_OPTIONS,
+      type: Actions.SET_OPTIONS,
       payload: {
         limitedScope: !getState().search.options.limitedScope
       }
@@ -153,15 +157,23 @@ export function toggleScope(): Thunk<void> {
   };
 }
 
-export default function reducer(state: State = { filter: '', results: List(), options: {} }, action: { type: string, payload: any }): State {
+type Action =
+  TypedAction<Actions.CHANGE_FILTER, string>
+  | OptionalAction<Actions.START>
+  | TypedAction<Actions.RESULTS, { quick?: boolean, results: List<EntryPtr> }>
+  | TypedAction<Actions.SET_OPTIONS, SearchOptions>;
+
+type Thunk<R> = TypedThunk<Action, R>;
+
+export default function reducer(state: State = { filter: '', results: List(), options: {} }, action: Action): State {
   switch (action.type) {
-    case CHANGE_FILTER:
+    case Actions.CHANGE_FILTER:
       return { ...state, filter: action.payload || '' };
-    case SET_OPTIONS:
+    case Actions.SET_OPTIONS:
       return { ...state, options: { ...state.options, ...action.payload } };
-    case START:
+    case Actions.START:
       return { ...state, running: true, results: List() };
-    case RESULTS:
+    case Actions.RESULTS:
       return { ...state, running: false, results: action.payload.results, quick: action.payload.quick };
     default:
       return state;

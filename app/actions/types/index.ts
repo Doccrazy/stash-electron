@@ -41,3 +41,19 @@ export interface Action<P> extends ReduxAction {
 export type Dispatch = ReduxDispatch<RootState>;
 
 export type GetState = () => RootState;
+
+interface GenericAction<T extends string, P> extends Action<P> {
+  // add a type that is never used, to enforce a 'default' case
+  type: T | '__unfug__'
+}
+export interface TypedAction<T extends string, P> extends GenericAction<T, P> {
+  payload: P;
+}
+export type OptionalAction<T extends string, P = void> = GenericAction<T, P>;
+
+export interface TypedDispatch<T> {
+  <A extends T>(action: A): A;
+  <R>(asyncAction: Thunk<R>): R;
+}
+
+export type TypedThunk<T, R> = (dispatch: TypedDispatch<T>, getState: GetState) => R;

@@ -1,26 +1,29 @@
 import * as fs from 'fs';
 import { toastr } from 'react-redux-toastr';
-import * as settingsActions from './settings';
+import {List} from 'immutable';
+import * as Settings from './settings';
 import PlainRepository from '../repository/Plain';
 import EntryPtr from '../domain/EntryPtr';
 import Node, {ROOT_ID} from '../domain/Node';
 import { afterAction } from '../store/eventMiddleware';
 import {State} from './types/repository';
-import {Action, GetState, Thunk} from './types/index';
+import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
 import Repository from '../repository/Repository';
 
-export const LOAD = 'repository/LOAD';
-export const FINISH_LOAD = 'repository/FINISH_LOAD';
-export const UNLOAD = 'repository/UNLOAD';
-export const READ_NODE = 'repository/READ_NODE';
-export const READ_FULL = 'repository/READ_FULL';
-export const RENAME_ENTRY = 'repository/RENAME_ENTRY';
-export const DELETE_ENTRY = 'repository/DELETE_ENTRY';
-export const CREATE_ENTRY = 'repository/CREATE_ENTRY';
-export const UPDATE_ENTRY = 'repository/UPDATE_ENTRY';
-export const DELETE_NODE = 'repository/DELETE_NODE';
-export const RENAME_NODE = 'repository/RENAME_NODE';
-export const CREATE_NODE = 'repository/CREATE_NODE';
+export enum Actions {
+  LOAD = 'repository/LOAD',
+  FINISH_LOAD = 'repository/FINISH_LOAD',
+  UNLOAD = 'repository/UNLOAD',
+  READ_NODE = 'repository/READ_NODE',
+  READ_FULL = 'repository/READ_FULL',
+  RENAME_ENTRY = 'repository/RENAME_ENTRY',
+  DELETE_ENTRY = 'repository/DELETE_ENTRY',
+  CREATE_ENTRY = 'repository/CREATE_ENTRY',
+  UPDATE_ENTRY = 'repository/UPDATE_ENTRY',
+  DELETE_NODE = 'repository/DELETE_NODE',
+  RENAME_NODE = 'repository/RENAME_NODE',
+  CREATE_NODE = 'repository/CREATE_NODE'
+}
 
 let repo: Repository;
 
@@ -31,7 +34,7 @@ export function getRepo(): Repository {
 export function load(repoPath?: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     dispatch({
-      type: UNLOAD
+      type: Actions.UNLOAD
     });
 
     if (!repoPath || !fs.existsSync(repoPath)) {
@@ -44,7 +47,7 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
 
     repo = new PlainRepository(repoPath);
     dispatch({
-      type: LOAD,
+      type: Actions.LOAD,
       payload: {
         name: repo.name,
         path: repoPath
@@ -54,11 +57,11 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
       await dispatch(readFull());
 
       dispatch({
-        type: FINISH_LOAD
+        type: Actions.FINISH_LOAD
       });
     } catch (e) {
       dispatch({
-        type: UNLOAD
+        type: Actions.UNLOAD
       });
 
       console.error(e);
@@ -72,7 +75,7 @@ export function readNode(nodeId: string): Thunk<Promise<void>> {
     const newNode = await repo.readNode(nodeId);
 
     dispatch({
-      type: READ_NODE,
+      type: Actions.READ_NODE,
       payload: newNode
     });
   };
@@ -83,7 +86,7 @@ export function readFull(): Thunk<Promise<void>> {
     const nodeList = await repo.readNodeRecursive('/');
 
     dispatch({
-      type: READ_FULL,
+      type: Actions.READ_FULL,
       payload: nodeList
     });
   };
@@ -95,7 +98,7 @@ export function rename(ptr: EntryPtr, newName: string): Thunk<Promise<void>> {
       await repo.renameFile(ptr.nodeId, ptr.entry, newName);
 
       dispatch({
-        type: RENAME_ENTRY,
+        type: Actions.RENAME_ENTRY,
         payload: {
           ptr,
           newName
@@ -115,7 +118,7 @@ export function deleteEntry(ptr: EntryPtr): Thunk<Promise<void>> {
       await repo.deleteFile(ptr.nodeId, ptr.entry);
 
       dispatch({
-        type: DELETE_ENTRY,
+        type: Actions.DELETE_ENTRY,
         payload: ptr
       });
     } catch (e) {
@@ -141,7 +144,7 @@ export function deleteNode(nodeId: string): Thunk<Promise<void>> {
       await repo.deleteNode(nodeId);
 
       dispatch({
-        type: DELETE_NODE,
+        type: Actions.DELETE_NODE,
         payload: nodeId
       });
     } catch (e) {
@@ -152,16 +155,16 @@ export function deleteNode(nodeId: string): Thunk<Promise<void>> {
   };
 }
 
-function createEntry(ptr: EntryPtr): Action<EntryPtr> {
+function createEntry(ptr: EntryPtr): Action {
   return {
-    type: CREATE_ENTRY,
+    type: Actions.CREATE_ENTRY,
     payload: ptr
   };
 }
 
-function updateEntry(ptr: EntryPtr, buffer: Buffer): Action<{ptr: EntryPtr, buffer: Buffer}> {
+function updateEntry(ptr: EntryPtr, buffer: Buffer): Action {
   return {
-    type: UPDATE_ENTRY,
+    type: Actions.UPDATE_ENTRY,
     payload: {
       ptr,
       buffer
@@ -203,7 +206,7 @@ export function renameNode(nodeId: string, newName: string): Thunk<Promise<void>
       await repo.renameNode(node.id, newName);
 
       dispatch({
-        type: RENAME_NODE,
+        type: Actions.RENAME_NODE,
         payload: {
           nodeId,
           newParentId: parentNode.id,
@@ -232,7 +235,7 @@ export function createChildNode(parentNodeId: string, name: string): Thunk<Promi
       const newNode = await repo.createNode(parentNode.id, name);
 
       dispatch({
-        type: CREATE_NODE,
+        type: Actions.CREATE_NODE,
         payload: newNode
       });
     } catch (e) {
@@ -243,16 +246,32 @@ export function createChildNode(parentNodeId: string, name: string): Thunk<Promi
   };
 }
 
-afterAction([settingsActions.LOAD, settingsActions.SAVE], (dispatch, getState: GetState) => {
+afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
   if (settings.current.repositoryPath !== settings.previous.repositoryPath) {
     dispatch(load(settings.current.repositoryPath));
   }
 });
 
-export default function reducer(state: State = { nodes: { } }, action: Action<any>): State {
+type Action =
+  TypedAction<Actions.LOAD, { name: string, path: string }>
+  | OptionalAction<Actions.FINISH_LOAD>
+  | OptionalAction<Actions.UNLOAD>
+  | TypedAction<Actions.READ_NODE, Node>
+  | TypedAction<Actions.READ_FULL, List<Node>>
+  | TypedAction<Actions.RENAME_ENTRY, { ptr: EntryPtr, newName: string }>
+  | TypedAction<Actions.DELETE_ENTRY, EntryPtr>
+  | TypedAction<Actions.CREATE_ENTRY, EntryPtr>
+  | TypedAction<Actions.UPDATE_ENTRY, { ptr: EntryPtr, buffer: Buffer }>
+  | TypedAction<Actions.DELETE_NODE, string>
+  | TypedAction<Actions.RENAME_NODE, { nodeId: string, newParentId: string, newName: string }>
+  | TypedAction<Actions.CREATE_NODE, Node>;
+
+type Thunk<R> = TypedThunk<Action, R>;
+
+export default function reducer(state: State = { nodes: { } }, action: Action): State {
   switch (action.type) {
-    case LOAD:
+    case Actions.LOAD:
       return {
         ...state,
         nodes: {[ROOT_ID]: new Node({id: ROOT_ID, name: action.payload.name})},
@@ -260,9 +279,9 @@ export default function reducer(state: State = { nodes: { } }, action: Action<an
         path: action.payload.path,
         loading: true
       };
-    case FINISH_LOAD:
+    case Actions.FINISH_LOAD:
       return { ...state, loading: false };
-    case UNLOAD:
+    case Actions.UNLOAD:
       return { ...state, nodes: { }, name: undefined, path: undefined, loading: false };
     // case READ_NODE: {
     //   const newNodes = { ...state.nodes };
@@ -285,28 +304,28 @@ export default function reducer(state: State = { nodes: { } }, action: Action<an
     //   });
     //   return { ...state, nodes: newNodes };
     // }
-    case READ_FULL: {
-      const nodeList: Node[] = action.payload;
+    case Actions.READ_FULL: {
+      const nodeList = action.payload;
 
       const newNodes: State['nodes'] = {};
 
-      nodeList.forEach(node => {
+      nodeList.forEach((node: Node) => {
         newNodes[node.id] = node;
       });
       return { ...state, nodes: newNodes };
     }
 
-    case RENAME_ENTRY:
+    case Actions.RENAME_ENTRY:
       return updatingNode(state, action.payload.ptr.nodeId, node =>
         node.withEntryRenamed(action.payload.ptr.entry, action.payload.newName));
-    case DELETE_ENTRY:
+    case Actions.DELETE_ENTRY:
       return updatingNode(state, action.payload.nodeId, node =>
         node.withEntryDeleted(action.payload.entry));
-    case CREATE_ENTRY:
+    case Actions.CREATE_ENTRY:
       return updatingNode(state, action.payload.nodeId, node =>
         node.withNewEntry(action.payload.entry));
 
-    case DELETE_NODE: {
+    case Actions.DELETE_NODE: {
       const node = state.nodes[action.payload];
       if (node) {
         const newNodes = { ...state.nodes };
@@ -315,7 +334,7 @@ export default function reducer(state: State = { nodes: { } }, action: Action<an
       }
       return state;
     }
-    case RENAME_NODE: {
+    case Actions.RENAME_NODE: {
       // const node = state.nodes[action.payload.nodeId];
       // const newName = action.payload.newName;
       // if (node) {
@@ -337,9 +356,9 @@ export default function reducer(state: State = { nodes: { } }, action: Action<an
       // }
       return state;
     }
-    case CREATE_NODE: {
+    case Actions.CREATE_NODE: {
       const newNode = action.payload;
-      const parentNode = state.nodes[newNode.parentId];
+      const parentNode = state.nodes[newNode.parentId as string];
       if (parentNode) {
         const newParentNode = parentNode.withNewChild(newNode.id);
 

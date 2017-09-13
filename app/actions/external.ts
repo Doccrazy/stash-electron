@@ -8,9 +8,7 @@ import EntryPtr from '../domain/EntryPtr';
 import * as repoActions from './repository';
 import typeFor from '../fileType/index';
 import {State} from './types/external';
-import {Action, Thunk} from './types/index';
-
-const OPEN = 'external/OPEN';
+import {TypedAction, TypedThunk} from './types/index';
 
 export function browseForAdd(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
@@ -109,9 +107,12 @@ window.addEventListener('beforeunload', () => {
   }
 });
 
-export default function reducer(state: State = {}, action: Action<any>): State {
+type Action = TypedAction<never, void>;
+
+type Thunk<R> = TypedThunk<Action, R>;
+
+export default function reducer(state: State = {}, action: Action): State {
   switch (action.type) {
-    case OPEN:
     default:
       return state;
   }

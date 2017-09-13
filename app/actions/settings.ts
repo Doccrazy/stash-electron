@@ -1,25 +1,27 @@
 import { remote } from 'electron';
 import * as electronSettings from 'electron-settings';
 import {SettingsKeys, SettingsMap, State} from './types/settings';
-import {Action, GetState, Thunk} from './types/index';
+import {TypedAction, GetState, TypedThunk, OptionalAction} from './types/index';
 import {afterAction} from '../store/eventMiddleware';
 
-export const LOAD = 'settings/LOAD';
-export const CHANGE = 'settings/CHANGE';
-export const SAVE = 'settings/SAVE';
+export enum Actions {
+  LOAD = 'settings/LOAD',
+  CHANGE = 'settings/CHANGE',
+  SAVE = 'settings/SAVE'
+}
 
 export function load(): Thunk<void> {
   return (dispatch, getState) => {
     dispatch({
-      type: LOAD,
-      payload: electronSettings.getAll()
+      type: Actions.LOAD,
+      payload: electronSettings.getAll() as SettingsMap
     });
   };
 }
 
-export function changeSetting<K extends SettingsKeys>(key: K, value: SettingsMap[K]): Action<{ key: K, value: SettingsMap[K]}> {
+export function changeSetting<K extends SettingsKeys>(key: K, value: SettingsMap[K]): ChangeSettingAction<K> {
   return {
-    type: CHANGE,
+    type: Actions.CHANGE,
     payload: {
       key,
       value
@@ -30,7 +32,7 @@ export function changeSetting<K extends SettingsKeys>(key: K, value: SettingsMap
 export function save(): Thunk<void> {
   return (dispatch, getState) => {
     dispatch({
-      type: SAVE
+      type: Actions.SAVE
     });
 
     electronSettings.setAll(getState().settings.current as any);
@@ -50,7 +52,7 @@ export function browseForFolder(key: SettingsKeys, title: string): Thunk<void> {
   };
 }
 
-afterAction([LOAD, SAVE], (dispatch, getState: GetState) => {
+afterAction([Actions.LOAD, Actions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
 
   document.documentElement.style.fontSize = `${settings.current.rootFontSize}px`;
@@ -63,13 +65,22 @@ function applyDefaults(settings: SettingsMap): SettingsMap {
   };
 }
 
-export default function reducer(state: State = { current: {}, edited: {}, previous: {} }, action: Action<any>): State {
+type ChangeSettingAction<K extends SettingsKeys> = TypedAction<Actions.CHANGE, { key: K, value: SettingsMap[K] }>;
+
+type Action =
+  TypedAction<Actions.LOAD, SettingsMap>
+  | ChangeSettingAction<SettingsKeys>
+  | OptionalAction<Actions.SAVE>;
+
+type Thunk<R> = TypedThunk<Action, R>;
+
+export default function reducer(state: State = { current: {}, edited: {}, previous: {} }, action: Action): State {
   switch (action.type) {
-    case LOAD:
+    case Actions.LOAD:
       return { current: applyDefaults(action.payload), edited: applyDefaults(action.payload), previous: {} };
-    case CHANGE:
+    case Actions.CHANGE:
       return { ...state, edited: { ...state.edited, [action.payload.key]: action.payload.value }};
-    case SAVE:
+    case Actions.SAVE:
       return { ...state, current: applyDefaults(state.edited), previous: state.current };
     default:
       return state;

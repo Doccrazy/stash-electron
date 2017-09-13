@@ -6,28 +6,30 @@ import { childNodeByName, cleanFileName } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import { createChildNode, writeEntry } from './repository';
 import {InternalType, typeById} from '../fileType/index';
-import {Action, Thunk} from './types/index';
+import {OptionalAction, TypedAction, TypedThunk} from './types/index';
 
-const OPEN = 'fileImport/OPEN';
-const CLOSE = 'fileImport/CLOSE';
-const CHANGE_SETTINGS = 'fileImport/CHANGE_SETTINGS';
-const STATUS = 'fileImport/STATUS';
+export enum Actions {
+  OPEN = 'fileImport/OPEN',
+  CLOSE = 'fileImport/CLOSE',
+  CHANGE_SETTINGS = 'fileImport/CHANGE_SETTINGS',
+  STATUS = 'fileImport/STATUS'
+}
 
-export function open() {
+export function open(): Action {
   return {
-    type: OPEN
+    type: Actions.OPEN
   };
 }
 
-export function close(): Action<void> {
+export function close(): Action {
   return {
-    type: CLOSE
+    type: Actions.CLOSE
   };
 }
 
-export function changeSettings(settings: ImportSettings): Action<ImportSettings> {
+export function changeSettings(settings: ImportSettings): Action {
   return {
-    type: CHANGE_SETTINGS,
+    type: Actions.CHANGE_SETTINGS,
     payload: settings
   };
 }
@@ -38,7 +40,7 @@ export function performImport(): Thunk<Promise<void>> {
 
     function status(type: StatusType, message: string) {
       dispatch({
-        type: STATUS,
+        type: Actions.STATUS,
         payload: {
           type,
           message
@@ -128,15 +130,23 @@ export function performImport(): Thunk<Promise<void>> {
   };
 }
 
-export default function reducer(state: State = { open: false, settings: {} }, action: Action<any>): State {
+type Action =
+  OptionalAction<Actions.OPEN, EntryPtr>
+  | OptionalAction<Actions.CLOSE, EntryPtr>
+  | TypedAction<Actions.CHANGE_SETTINGS, ImportSettings>
+  | TypedAction<Actions.STATUS, { type: StatusType, message: string }>;
+
+type Thunk<R> = TypedThunk<Action, R>;
+
+export default function reducer(state: State = { open: false, settings: {} }, action: Action): State {
   switch (action.type) {
-    case OPEN:
+    case Actions.OPEN:
       return { open: true, settings: {} };
-    case CLOSE:
+    case Actions.CLOSE:
       return { open: false, settings: {} };
-    case CHANGE_SETTINGS:
+    case Actions.CHANGE_SETTINGS:
       return { ...state, settings: action.payload };
-    case STATUS:
+    case Actions.STATUS:
       return { ...state, status: action.payload.type, statusMessage: action.payload.message };
     default:
       return state;

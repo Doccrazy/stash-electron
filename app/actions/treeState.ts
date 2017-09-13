@@ -1,27 +1,29 @@
 import { Set } from 'immutable';
-import { Action, Thunk, Dispatch, GetState } from './types';
+import { TypedAction, TypedThunk, TypedDispatch, GetState } from './types';
 import { State } from './types/treeState';
-import * as repoActions from './repository';
+import * as Repository from './repository';
 import { hierarchy } from '../utils/repository';
 import { afterAction } from '../store/eventMiddleware';
 
-const EXPAND = 'treeState/EXPAND';
-const SET_EXPAND = 'treeState/SET_EXPAND';
-const CLOSE = 'treeState/CLOSE';
+export enum Actions {
+  EXPAND = 'treeState/EXPAND',
+  SET_EXPAND = 'treeState/SET_EXPAND',
+  CLOSE = 'treeState/CLOSE'
+}
 
 const MULTI_OPEN = false;
 
-function maybeExpand(dispatch: Dispatch, getState: GetState, nodeId: string) {
+function maybeExpand(dispatch: TypedDispatch<Action>, getState: GetState, nodeId: string) {
   const { repository, treeState } = getState();
   if (repository.nodes[nodeId] && repository.nodes[nodeId].childIds.size && !treeState.has(nodeId)) {
     if (MULTI_OPEN) {
       dispatch({
-        type: EXPAND,
+        type: Actions.EXPAND,
         payload: nodeId
       });
     } else {
       dispatch({
-        type: SET_EXPAND,
+        type: Actions.SET_EXPAND,
         payload: hierarchy(repository.nodes, nodeId).map(node => node.id)
       });
     }
@@ -41,9 +43,9 @@ export function expand(nodeId: string): Thunk<Promise<void>> {
   };
 }
 
-export function close(nodeId: string): Action<string> {
+export function close(nodeId: string): Action {
   return {
-    type: CLOSE,
+    type: Actions.CLOSE,
     payload: nodeId
   };
 }
@@ -59,25 +61,32 @@ export function toggle(nodeId: string): Thunk<void> {
   };
 }
 
-afterAction(repoActions.CREATE_NODE, (dispatch, getState: GetState, { parentNodeId, name }) => {
+afterAction(Repository.Actions.CREATE_NODE, (dispatch, getState: GetState, { parentNodeId, name }) => {
   maybeExpand(dispatch, getState, parentNodeId);
 });
 
-afterAction(repoActions.DELETE_NODE, (dispatch, getState: GetState, nodeId) => {
+afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, nodeId) => {
   dispatch(close(nodeId));
 });
 
-afterAction(repoActions.RENAME_NODE, (dispatch, getState: GetState, { nodeId, newParentId, newName }) => {
+afterAction(Repository.Actions.RENAME_NODE, (dispatch, getState: GetState, { nodeId, newParentId, newName }) => {
   dispatch(close(nodeId));
 });
 
-export default function reducer(state: State = Set(), action: Action<any>): State {
+type Action =
+  TypedAction<Actions.EXPAND, string>
+  | TypedAction<Actions.SET_EXPAND, string[]>
+  | TypedAction<Actions.CLOSE, string>;
+
+type Thunk<R> = TypedThunk<Action, R>;
+
+export default function reducer(state: State = Set(), action: Action): State {
   switch (action.type) {
-    case EXPAND:
+    case Actions.EXPAND:
       return state.add(action.payload);
-    case SET_EXPAND:
+    case Actions.SET_EXPAND:
       return Set(action.payload);
-    case CLOSE:
+    case Actions.CLOSE:
       return state.delete(action.payload);
     default:
       return state;

@@ -2,19 +2,21 @@ import { fromJS, is } from 'immutable';
 import { cleanFileName, hasChildOrEntry, isValidFileName } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import typeFor, { typeById } from '../fileType';
-import * as repoActions from './repository';
+import * as Repository from './repository';
 import { afterAction } from '../store/eventMiddleware';
 import {State} from './types/edit';
-import {Action, GetState, Thunk} from './types/index';
+import {GetState, OptionalAction, TypedAction, TypedThunk} from './types/index';
 
-const OPEN = 'edit/OPEN';
-const REPOINT_OPEN = 'edit/REPOINT_OPEN';
-const CLOSE = 'edit/CLOSE';
-const VALIDATE = 'edit/VALIDATE';
-const SAVED = 'edit/SAVED';
-const CHANGE = 'edit/CHANGE';
-const CHANGE_STATE = 'edit/CHANGE_STATE';
-const CHANGE_NAME = 'edit/CHANGE_NAME';
+export enum Actions {
+  OPEN = 'edit/OPEN',
+  REPOINT_OPEN = 'edit/REPOINT_OPEN',
+  CLOSE = 'edit/CLOSE',
+  VALIDATE = 'edit/VALIDATE',
+  SAVED = 'edit/SAVED',
+  CHANGE = 'edit/CHANGE',
+  CHANGE_STATE = 'edit/CHANGE_STATE',
+  CHANGE_NAME = 'edit/CHANGE_NAME'
+}
 
 export function open(ptr: EntryPtr, preParsedContent?: any): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
@@ -23,13 +25,13 @@ export function open(ptr: EntryPtr, preParsedContent?: any): Thunk<Promise<void>
     if (type.parse) {
       parsedContent = preParsedContent;
       if (!parsedContent) {
-        const content = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
+        const content = await Repository.getRepo().readFile(ptr.nodeId, ptr.entry);
         parsedContent = type.parse(content);
       }
     }
 
     dispatch({
-      type: OPEN,
+      type: Actions.OPEN,
       payload: {
         ptr,
         typeId: type.id,
@@ -49,7 +51,7 @@ export function openCurrent(): Thunk<Promise<void>> {
   };
 }
 
-export function create(nodeId: string, typeId: string): Action<any> {
+export function create(nodeId: string, typeId: string): Action {
   const type = typeById(typeId);
   if (!type || !type.initialize) {
     throw new Error(`invalid type ${typeId} passed to create`);
@@ -58,7 +60,7 @@ export function create(nodeId: string, typeId: string): Action<any> {
   const parsedContent = type.initialize();
 
   return {
-    type: OPEN,
+    type: Actions.OPEN,
     payload: {
       ptr: new EntryPtr(nodeId, ''),
       typeId,
@@ -77,36 +79,36 @@ export function createInCurrent(typeId: string): Thunk<void> {
   };
 }
 
-export function repointOpen(ptr: EntryPtr): Action<EntryPtr> {
+export function repointOpen(ptr: EntryPtr): Action {
   return {
-    type: REPOINT_OPEN,
+    type: Actions.REPOINT_OPEN,
     payload: ptr
   };
 }
 
-export function close() {
+export function close(): Action {
   return {
-    type: CLOSE
+    type: Actions.CLOSE
   };
 }
 
-export function change(updatedContent: any): Action<any> {
+export function change(updatedContent: any): Action {
   return {
-    type: CHANGE,
+    type: Actions.CHANGE,
     payload: updatedContent
   };
 }
 
-export function changeState(newState: any): Action<any> {
+export function changeState(newState: any): Action {
   return {
-    type: CHANGE_STATE,
+    type: Actions.CHANGE_STATE,
     payload: newState
   };
 }
 
-export function changeName(name: string): Action<string> {
+export function changeName(name: string): Action {
   return {
-    type: CHANGE_NAME,
+    type: Actions.CHANGE_NAME,
     payload: cleanFileName(name)
   };
 }
@@ -124,14 +126,14 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
     if (!edit.ptr.entry || newName !== edit.ptr.entry) {
       if (!isValidFileName(newName)) {
         dispatch({
-          type: VALIDATE,
+          type: Actions.VALIDATE,
           payload: 'Name must be provided and cannot contain / \\ : * ? " < > |.'
         });
         return;
       }
       if (hasChildOrEntry(repository.nodes, node, newName)) {
         dispatch({
-          type: VALIDATE,
+          type: Actions.VALIDATE,
           payload: 'An entry with this name already exists.'
         });
         return;
@@ -143,7 +145,7 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
     if (type.form && type.form.validate) {
       const validationError = type.form.validate(newName, edit.parsedContent, edit.formState);
       dispatch({
-        type: VALIDATE,
+        type: Actions.VALIDATE,
         payload: validationError
       });
       if (validationError) {
@@ -156,16 +158,16 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
       const fileName = edit.ptr.entry || newName;
       const buffer = type.write(edit.parsedContent);
 
-      dispatch(repoActions.writeEntry(new EntryPtr(edit.ptr.nodeId, fileName), buffer));
+      dispatch(Repository.writeEntry(new EntryPtr(edit.ptr.nodeId, fileName), buffer));
 
       dispatch({
-        type: SAVED
+        type: Actions.SAVED
       });
     }
 
     // rename
     if (edit.ptr.entry && newName !== edit.ptr.entry) {
-      dispatch(repoActions.rename(edit.ptr, newName));
+      dispatch(Repository.rename(edit.ptr, newName));
     }
 
     if (closeAfter) {
@@ -174,23 +176,35 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
   };
 }
 
-afterAction(repoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }) => {
+afterAction(Repository.Actions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }) => {
   const { edit } = getState();
   if (edit.ptr && edit.ptr.equals(ptr)) {
     dispatch(repointOpen(new EntryPtr(ptr.nodeId, newName)));
   }
 });
 
-afterAction(repoActions.DELETE_ENTRY, (dispatch, getState: GetState, ptr) => {
+afterAction(Repository.Actions.DELETE_ENTRY, (dispatch, getState: GetState, ptr) => {
   const { edit } = getState();
   if (edit.ptr && edit.ptr.equals(ptr)) {
     dispatch(close());
   }
 });
 
-export default function reducer(state: State = {}, action: Action<any>): State {
+type Action =
+  TypedAction<Actions.OPEN, { ptr: EntryPtr, typeId?: string, parsedContent?: any, formState?: any }>
+  | TypedAction<Actions.REPOINT_OPEN, EntryPtr>
+  | OptionalAction<Actions.CLOSE>
+  | TypedAction<Actions.VALIDATE, string | boolean>
+  | OptionalAction<Actions.SAVED>
+  | TypedAction<Actions.CHANGE, any>
+  | TypedAction<Actions.CHANGE_STATE, any>
+  | TypedAction<Actions.CHANGE_NAME, string>;
+
+type Thunk<R> = TypedThunk<Action, R>;
+
+export default function reducer(state: State = {}, action: Action): State {
   switch (action.type) {
-    case OPEN:
+    case Actions.OPEN:
       if (action.payload.ptr) {
         return {
           ptr: action.payload.ptr,
@@ -202,26 +216,26 @@ export default function reducer(state: State = {}, action: Action<any>): State {
         };
       }
       return state;
-    case REPOINT_OPEN:
+    case Actions.REPOINT_OPEN:
       if (action.payload) {
         return { ...state, ptr: action.payload };
       }
       return state;
-    case CHANGE:
+    case Actions.CHANGE:
       if (action.payload) {
         return { ...state, parsedContent: action.payload };
       }
       return state;
-    case CHANGE_STATE:
+    case Actions.CHANGE_STATE:
       if (action.payload) {
         return { ...state, formState: action.payload };
       }
       return state;
-    case CHANGE_NAME:
+    case Actions.CHANGE_NAME:
       return { ...state, name: action.payload };
-    case VALIDATE:
-      return { ...state, validationError: action.payload };
-    case CLOSE:
+    case Actions.VALIDATE:
+      return { ...state, validationError: typeof action.payload === 'boolean' ? 'Validation failed.' : action.payload };
+    case Actions.CLOSE:
       return {};
     default:
       return state;
