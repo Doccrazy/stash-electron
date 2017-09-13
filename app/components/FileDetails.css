@@ -1,0 +1,16 @@
+.animateContainer {
+  transition: height 0.15s ease-in-out 0.05s;
+  width: 100%;
+}
+
+.headerWithButtons {
+  display: flex;
+}
+
+.headerWithButtons > *:first-child {
+  flex-grow: 1;
+}
+
+.headerWithButtons > *:last-child {
+  flex-shrink: 0;
+}

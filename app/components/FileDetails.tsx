@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Row, Col } from 'reactstrap';
 import FileActionBar from './FileActionBar';
 import typeFor from '../fileType';
+import AnimateHeight from './tools/AnimateHeight';
+import * as styles from './FileDetails.css';
 
 export interface Props {
   node: { id: string },
@@ -12,20 +13,23 @@ export interface Props {
 }
 
 export default ({ node, entry, parsedContent, onEdit, onDelete }: Props) => {
+  let TypePanel;
+  let type;
   if (node && entry) {
-    const type = typeFor(entry);
-    const TypePanel = type.panel;
-    return TypePanel ? (<div>
-      <Row>
-        <Col>
-          <h4>{type.format ? type.format(entry): entry}</h4>
-        </Col>
-        <Col xs="auto">
-          <FileActionBar node={node} entry={entry} onEdit={onEdit} onDelete={onDelete} />
-        </Col>
-      </Row>
-      <TypePanel node={node} entry={entry} parsedContent={parsedContent} />
-    </div>) : <div />;
+    type = typeFor(entry);
+    TypePanel = type.panel;
   }
-  return <div />;
+  return (<AnimateHeight className={styles.animateContainer}>
+    {type && TypePanel ? (<div>
+      <div className={styles.headerWithButtons}>
+        <div>
+          <h4>{type.format ? type.format(entry) : entry}</h4>
+        </div>
+        <div>
+          <FileActionBar node={node} entry={entry} onEdit={onEdit} onDelete={onDelete} />
+        </div>
+      </div>
+      <TypePanel node={node} entry={entry} parsedContent={parsedContent} />
+    </div>) : <div />}
+  </AnimateHeight>);
 };
