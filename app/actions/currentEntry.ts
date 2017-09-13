@@ -5,6 +5,7 @@ import { afterAction } from '../store/eventMiddleware';
 import typeFor from '../fileType';
 import {State} from './types/currentEntry';
 import {Action, GetState, Thunk} from './types/index';
+import {toastr} from 'react-redux-toastr';
 
 const SELECT = 'currentEntry/SELECT';
 const RESELECT = 'currentEntry/RESELECT';
@@ -46,15 +47,17 @@ export function read(contentBuffer?: Buffer): Thunk<Promise<void>> {
 
     const type = typeFor(currentEntry.ptr.entry);
     if (type.parse) {
-      let content = contentBuffer;
-      if (!content) {
-        content = await repoActions.getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry);
+      try {
+        const content = contentBuffer || await repoActions.getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry);
+        const parsedContent = type.parse(content as Buffer);
+        dispatch({
+          type: READ,
+          payload: parsedContent
+        });
+      } catch (e) {
+        console.error(e);
+        toastr.error('Read failed', e.message);
       }
-      const parsedContent = type.parse(content as Buffer);
-      dispatch({
-        type: READ,
-        payload: parsedContent
-      });
     }
   };
 }

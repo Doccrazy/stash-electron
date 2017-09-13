@@ -103,6 +103,7 @@ export function rename(ptr: EntryPtr, newName: string): Thunk<Promise<void>> {
       });
     } catch (e) {
       // rename failed
+      console.error(e);
       toastr.error('', `Failed to rename entry ${ptr.entry} to ${newName}: ${e}`);
     }
   };
@@ -119,6 +120,7 @@ export function deleteEntry(ptr: EntryPtr): Thunk<Promise<void>> {
       });
     } catch (e) {
       // delete failed
+      console.error(e);
       toastr.error('', `Failed to delete entry ${ptr.entry}: ${e}`);
     }
   };
@@ -144,6 +146,7 @@ export function deleteNode(nodeId: string): Thunk<Promise<void>> {
       });
     } catch (e) {
       // delete failed
+      console.error(e);
       toastr.error('', `Failed to delete folder ${node.name}: ${e}`);
     }
   };
@@ -297,10 +300,10 @@ export default function reducer(state: State = { nodes: { } }, action: Action<an
       return updatingNode(state, action.payload.ptr.nodeId, node =>
         node.withEntryRenamed(action.payload.ptr.entry, action.payload.newName));
     case DELETE_ENTRY:
-      return updatingNode(state, action.payload.ptr.nodeId, node =>
+      return updatingNode(state, action.payload.nodeId, node =>
         node.withEntryDeleted(action.payload.entry));
     case CREATE_ENTRY:
-      return updatingNode(state, action.payload.ptr.nodeId, node =>
+      return updatingNode(state, action.payload.nodeId, node =>
         node.withNewEntry(action.payload.entry));
 
     case DELETE_NODE: {
