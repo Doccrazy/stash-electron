@@ -1,11 +1,11 @@
 import EntryPtr from '../../domain/EntryPtr';
 
 export interface State {
-  ptr?: EntryPtr,
-  typeId?: string,
-  name?: string,
-  initialContent?: any,
-  parsedContent?: any,
-  formState?: any,
-  validationError?: string
+  readonly ptr?: EntryPtr,
+  readonly typeId?: string,
+  readonly name?: string,
+  readonly initialContent?: any,
+  readonly parsedContent?: any,
+  readonly formState?: any,
+  readonly validationError?: string
 }

@@ -6,7 +6,7 @@ export type SettingsMap = {
 };
 
 export interface State {
-  current: SettingsMap,
-  edited: SettingsMap,
-  previous: SettingsMap
+  readonly current: SettingsMap,
+  readonly edited: SettingsMap,
+  readonly previous: SettingsMap
 }

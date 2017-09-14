@@ -7,8 +7,8 @@ export interface ImportSettings {
 }
 
 export interface State {
-  open: boolean,
-  settings: ImportSettings,
-  status?: StatusType,
-  statusMessage?: string
+  readonly open: boolean,
+  readonly settings: ImportSettings,
+  readonly status?: StatusType,
+  readonly statusMessage?: string
 }

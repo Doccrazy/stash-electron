@@ -1,8 +1,8 @@
 import Node from '../../domain/Node';
 
 export interface State {
-  nodes: { [nodeId: string]: Node },
-  name?: string,
-  path?: string,
-  loading?: boolean
+  readonly nodes: { [nodeId: string]: Node },
+  readonly name?: string,
+  readonly path?: string,
+  readonly loading?: boolean
 }

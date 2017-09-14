@@ -1,9 +1,9 @@
 export interface State {
-  nodeId?: string,
-  specialId?: string,
-  renaming?: boolean,
-  creating?: boolean,
-  deleting?: boolean,
-  initialName?: string,
-  name?: string
+  readonly nodeId?: string,
+  readonly specialId?: string,
+  readonly renaming?: boolean,
+  readonly creating?: boolean,
+  readonly deleting?: boolean,
+  readonly initialName?: string,
+  readonly name?: string
 }

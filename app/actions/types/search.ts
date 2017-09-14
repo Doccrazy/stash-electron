@@ -6,9 +6,9 @@ export interface SearchOptions {
 }
 
 export interface State {
-  filter: string,
-  results: List<EntryPtr>,
-  options: SearchOptions,
-  running?: boolean,
-  quick?: boolean
+  readonly filter: string,
+  readonly results: List<EntryPtr>,
+  readonly options: SearchOptions,
+  readonly running?: boolean,
+  readonly quick?: boolean
 }
