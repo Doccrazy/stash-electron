@@ -1,10 +1,12 @@
 import { toastr } from 'react-redux-toastr';
+import {List} from 'immutable';
 import * as Repository from './repository';
 import { expand } from './treeState';
 import { afterAction } from '../store/eventMiddleware';
-import { childNodeByName, cleanFileName, hasChildOrEntry } from '../utils/repository';
+import { cleanFileName, hasChildOrEntry } from '../utils/repository';
 import {State} from './types/currentNode';
 import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
+import Node from '../domain/Node';
 
 export enum Actions {
   SELECT = 'currentNode/SELECT',
@@ -158,20 +160,29 @@ afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, nodeI
   }
 });
 
-afterAction(Repository.Actions.RENAME_NODE, (dispatch, getState: GetState, { nodeId, newParentId, newName }) => {
-  const { currentNode, repository } = getState();
+afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { nodeId, newNode }) => {
+  const { currentNode } = getState();
   if (currentNode.nodeId === nodeId) {
-    const newId = childNodeByName(repository.nodes, newParentId, newName);
-    if (newId) {
-      dispatch(select(newId));
-    }
+    dispatch(select(newNode.id));
   }
 });
 
-afterAction(Repository.Actions.CREATE_NODE, (dispatch, getState: GetState, { parentNodeId, name }) => {
+afterAction(Repository.Actions.CREATE_NODE, (dispatch, getState: GetState, newNode: Node) => {
   const { currentNode } = getState();
   if (currentNode.creating) {
     dispatch(closeEdit());
+  }
+});
+
+// when a currently selected node, that is not expanded, is re-read from disk, try to expand it
+// Note: this is mainly used when renaming nodes
+afterAction(Repository.Actions.READ_NODE_LIST, (dispatch, getState: GetState, nodes: List<Node>) => {
+  const { currentNode, treeState } = getState();
+  if (currentNode.nodeId && !treeState.includes(currentNode.nodeId)) {
+    const nodeFromList = nodes.find((n: Node) => n.id === currentNode.nodeId);
+    if (nodeFromList && nodeFromList.childIds.size) {
+      dispatch(expand(currentNode.nodeId));
+    }
   }
 });
 

@@ -9,19 +9,19 @@ import { afterAction } from '../store/eventMiddleware';
 import {State} from './types/repository';
 import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
 import Repository from '../repository/Repository';
+import {recursiveChildIds} from '../utils/repository';
 
 export enum Actions {
   LOAD = 'repository/LOAD',
   FINISH_LOAD = 'repository/FINISH_LOAD',
   UNLOAD = 'repository/UNLOAD',
-  READ_NODE = 'repository/READ_NODE',
-  READ_FULL = 'repository/READ_FULL',
+  READ_NODE_LIST = 'repository/READ_NODE_LIST',
   RENAME_ENTRY = 'repository/RENAME_ENTRY',
   DELETE_ENTRY = 'repository/DELETE_ENTRY',
   CREATE_ENTRY = 'repository/CREATE_ENTRY',
   UPDATE_ENTRY = 'repository/UPDATE_ENTRY',
   DELETE_NODE = 'repository/DELETE_NODE',
-  RENAME_NODE = 'repository/RENAME_NODE',
+  MOVE_NODE = 'repository/MOVE_NODE',
   CREATE_NODE = 'repository/CREATE_NODE'
 }
 
@@ -54,7 +54,7 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
       }
     });
     try {
-      await dispatch(readFull());
+      await dispatch(readRecursive(ROOT_ID));
 
       dispatch({
         type: Actions.FINISH_LOAD
@@ -75,18 +75,18 @@ export function readNode(nodeId: string): Thunk<Promise<void>> {
     const newNode = await repo.readNode(nodeId);
 
     dispatch({
-      type: Actions.READ_NODE,
-      payload: newNode
+      type: Actions.READ_NODE_LIST,
+      payload: List([newNode])
     });
   };
 }
 
-export function readFull(): Thunk<Promise<void>> {
+export function readRecursive(nodeId: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const nodeList = await repo.readNodeRecursive('/');
+    const nodeList = await repo.readNodeRecursive(nodeId);
 
     dispatch({
-      type: Actions.READ_FULL,
+      type: Actions.READ_NODE_LIST,
       payload: nodeList
     });
   };
@@ -200,21 +200,21 @@ export function renameNode(nodeId: string, newName: string): Thunk<Promise<void>
     if (!node || !node.parentId) {
       return;
     }
-    const parentNode = repository.nodes[node.parentId];
 
     try {
-      await repo.renameNode(node.id, newName);
+      const newId = await repo.renameNode(node.id, newName);
 
       dispatch({
-        type: Actions.RENAME_NODE,
+        type: Actions.MOVE_NODE,
         payload: {
-          nodeId,
-          newParentId: parentNode.id,
-          newName
+          nodeId: node.id,
+          newNode: new Node({ id: newId, name: newName, parentId: node.parentId })
         }
       });
+      dispatch(readRecursive(newId));
     } catch (e) {
       // rename failed
+      console.error(e);
       toastr.error('', `Failed to rename folder to ${newName}: ${e}`);
     }
   };
@@ -257,14 +257,13 @@ type Action =
   TypedAction<Actions.LOAD, { name: string, path: string }>
   | OptionalAction<Actions.FINISH_LOAD>
   | OptionalAction<Actions.UNLOAD>
-  | TypedAction<Actions.READ_NODE, Node>
-  | TypedAction<Actions.READ_FULL, List<Node>>
+  | TypedAction<Actions.READ_NODE_LIST, List<Node>>
   | TypedAction<Actions.RENAME_ENTRY, { ptr: EntryPtr, newName: string }>
   | TypedAction<Actions.DELETE_ENTRY, EntryPtr>
   | TypedAction<Actions.CREATE_ENTRY, EntryPtr>
   | TypedAction<Actions.UPDATE_ENTRY, { ptr: EntryPtr, buffer: Buffer }>
   | TypedAction<Actions.DELETE_NODE, string>
-  | TypedAction<Actions.RENAME_NODE, { nodeId: string, newParentId: string, newName: string }>
+  | TypedAction<Actions.MOVE_NODE, { nodeId: string, newNode: Node }>
   | TypedAction<Actions.CREATE_NODE, Node>;
 
 type Thunk<R> = TypedThunk<Action, R>;
@@ -283,31 +282,10 @@ export default function reducer(state: State = { nodes: { } }, action: Action): 
       return { ...state, loading: false };
     case Actions.UNLOAD:
       return { ...state, nodes: { }, name: undefined, path: undefined, loading: false };
-    // case READ_NODE: {
-    //   const newNodes = { ...state.nodes };
-    //   const nodeId = action.payload.nodeId;
-    //
-    //   newNodes[nodeId] = {
-    //     ...newNodes[nodeId],
-    //     children: alphanumSort(action.payload.children.map(dir => makeId(nodeId, dir)), { insensitive: true }),
-    //     entries: alphanumSort(action.payload.entries, { insensitive: true })
-    //   };
-    //
-    //   action.payload.children.forEach(dir => {
-    //     newNodes[makeId(nodeId, dir)] = {
-    //       ...newNodes[makeId(nodeId, dir)],
-    //       id: makeId(nodeId, dir),
-    //       name: dir,
-    //       title: dir,
-    //       parent: nodeId
-    //     };
-    //   });
-    //   return { ...state, nodes: newNodes };
-    // }
-    case Actions.READ_FULL: {
+    case Actions.READ_NODE_LIST: {
       const nodeList = action.payload;
 
-      const newNodes: State['nodes'] = {};
+      const newNodes: State['nodes'] = { ...state.nodes };
 
       nodeList.forEach((node: Node) => {
         newNodes[node.id] = node;
@@ -327,41 +305,29 @@ export default function reducer(state: State = { nodes: { } }, action: Action): 
 
     case Actions.DELETE_NODE: {
       const node = state.nodes[action.payload];
-      if (node) {
-        const newNodes = { ...state.nodes };
-        delete newNodes[action.payload];
+      if (node && node.parentId) {
+        // remove node from parent
+        const newParentNode = state.nodes[node.parentId].withChildDeleted(node.id);
+
+        // remove all children of old node
+        const allChildIds = recursiveChildIds(state.nodes, node.id);
+        const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode };
+        allChildIds.forEach(childId => { delete newNodes[childId]; });
         return { ...state, nodes: newNodes };
       }
       return state;
     }
-    case Actions.RENAME_NODE: {
-      // const node = state.nodes[action.payload.nodeId];
-      // const newName = action.payload.newName;
-      // if (node) {
-      //   const newParentNode = { ...state.nodes[node.parent] };
-      //
-      //   const newNode = {
-      //     ...node,
-      //     id: makeId(newParentNode.id, newName),
-      //     name: newName,
-      //     title: newName
-      //   };
-      //   newParentNode.children = newParentNode.children.filter(childId => childId !== node.id);
-      //   newParentNode.children.push(newNode.id);
-      //   newParentNode.children = alphanumSort(newParentNode.children, { insensitive: true });
-      //
-      //   const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
-      //   delete newNodes[node.id];
-      //   return { ...state, nodes: newNodes };
-      // }
-      return state;
-    }
+    case Actions.MOVE_NODE:
+      const intermediate = reducer(state, { type: Actions.DELETE_NODE, payload: action.payload.nodeId });
+      return reducer(intermediate, { type: Actions.CREATE_NODE, payload: action.payload.newNode });
     case Actions.CREATE_NODE: {
       const newNode = action.payload;
       const parentNode = state.nodes[newNode.parentId as string];
       if (parentNode) {
+        // insert new node into parent
         const newParentNode = parentNode.withNewChild(newNode.id);
 
+        // add to node list
         const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode, [newNode.id]: newNode };
         return { ...state, nodes: newNodes };
       }

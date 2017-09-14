@@ -4,6 +4,7 @@ import { State } from './types/treeState';
 import * as Repository from './repository';
 import { hierarchy } from '../utils/repository';
 import { afterAction } from '../store/eventMiddleware';
+import Node from '../domain/Node';
 
 export enum Actions {
   EXPAND = 'treeState/EXPAND',
@@ -61,15 +62,17 @@ export function toggle(nodeId: string): Thunk<void> {
   };
 }
 
-afterAction(Repository.Actions.CREATE_NODE, (dispatch, getState: GetState, { parentNodeId, name }) => {
-  maybeExpand(dispatch, getState, parentNodeId);
+afterAction(Repository.Actions.CREATE_NODE, (dispatch, getState: GetState, newNode: Node) => {
+  if (newNode.parentId) {
+    maybeExpand(dispatch, getState, newNode.parentId);
+  }
 });
 
 afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, nodeId) => {
   dispatch(close(nodeId));
 });
 
-afterAction(Repository.Actions.RENAME_NODE, (dispatch, getState: GetState, { nodeId, newParentId, newName }) => {
+afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { nodeId, newNode }) => {
   dispatch(close(nodeId));
 });
 
