@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, Form, Input, InputGroup, InputGroupButton } from 'reactstrap';
 
 export interface Props {
+  placeholder?: string,
   value: string,
   onChange: (value: string) => void,
   onConfirm: () => void,
@@ -30,11 +31,17 @@ export default class TextEditBox extends React.Component<Props, {}> {
   };
 
   render() {
-    const { value, onChange, onConfirm, onCancel } = this.props;
+    const { placeholder, value, onChange, onConfirm, onCancel } = this.props;
     return (
       <Form onSubmit={onConfirm}>
         <InputGroup>
-          <Input getRef={input => { this.input = input; }} value={value} onChange={ev => onChange(ev.target.value)} onKeyDown={this.inputKeyDown} />
+          <Input
+            placeholder={placeholder}
+            getRef={input => { this.input = input; }}
+            value={value}
+            onChange={ev => onChange(ev.target.value)}
+            onKeyDown={this.inputKeyDown}
+          />
           <InputGroupButton><Button type="submit" color="success"><i className="fa fa-check" /></Button></InputGroupButton>
           <InputGroupButton><Button color="danger" onClick={onCancel}><i className="fa fa-times" /></Button></InputGroupButton>
         </InputGroup>

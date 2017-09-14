@@ -17,7 +17,7 @@ let mainWindow = null;
 
 function processCommandLine(argv) {
   const lastArg = argv.pop();
-  if (lastArg.startsWith('stash:')) {
+  if (lastArg && lastArg.startsWith('stash:')) {
     mainWindow.webContents.send('stashLink', lastArg);
   }
 }

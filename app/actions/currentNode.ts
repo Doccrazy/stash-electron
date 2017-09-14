@@ -6,7 +6,7 @@ import { afterAction } from '../store/eventMiddleware';
 import { cleanFileName, hasChildOrEntry } from '../utils/repository';
 import {State} from './types/currentNode';
 import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
-import Node from '../domain/Node';
+import Node, {ROOT_ID} from '../domain/Node';
 
 export enum Actions {
   SELECT = 'currentNode/SELECT',
@@ -82,7 +82,7 @@ export function cancelDelete(): Action {
 export function startRename(): Thunk<void> {
   return (dispatch, getState) => {
     const { currentNode, repository } = getState();
-    if (currentNode.nodeId) {
+    if (currentNode.nodeId && currentNode.nodeId !== ROOT_ID) {
       dispatch({
         type: Actions.START_RENAME,
         payload: repository.nodes[currentNode.nodeId].name

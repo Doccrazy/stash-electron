@@ -27,6 +27,12 @@ export default ({ nodes, currentNodeId, currentSpecialId, editing, currentName, 
       nodes={[{ id: currentSpecialId, name: specialFolders[currentSpecialId].title }]}
     />}
     {currentNodeId && !editing && <Breadcrumb className={styles.breadcrumb} nodes={nodeHierarchy} onClick={onSelectFolder} />}
-    {currentNodeId && editing && <TextEditBox value={currentName} onChange={onChangeName} onConfirm={onConfirmEdit} onCancel={onCancelEdit} />}
+    {currentNodeId && editing && <TextEditBox
+      placeholder="Enter folder name"
+      value={currentName}
+      onChange={onChangeName}
+      onConfirm={onConfirmEdit}
+      onCancel={onCancelEdit}
+    />}
   </div>);
 };

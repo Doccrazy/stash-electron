@@ -9,7 +9,7 @@ import {onceAfterAction} from './eventMiddleware';
 import * as Repository from '../actions/repository';
 import {hierarchy} from '../utils/repository';
 
-function openStashLink(link: string): Thunk<Promise<void>> {
+export function openStashLink(link: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { repository } = getState();
     if (repository.loading) {

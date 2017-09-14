@@ -6,6 +6,7 @@ import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';
 import installLinkHandler from './store/stashLinkHandler';
+import registerHotkeys from './store/hotkeyHandlers';
 import './app.global.scss';
 
 // TODO remove when reactstrap dropdowns are fixed
@@ -17,6 +18,7 @@ const store = configureStore();
 setTimeout(() => {
   store.dispatch(loadSettings());
   installLinkHandler(store.dispatch);
+  registerHotkeys(store.dispatch, store.getState);
 });
 
 render(
