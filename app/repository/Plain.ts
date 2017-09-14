@@ -59,6 +59,8 @@ export default class PlainRepository implements Repository {
 
   async readNodeRecursive(nodeId: string): Promise<List<Node>> {
     console.time('readNodeRecursive');
+    (process as any).noAsar = true;
+
     let result: Node[] = [];
     let readQueue = [nodeId];
 
@@ -67,6 +69,8 @@ export default class PlainRepository implements Repository {
       result = result.concat(readNodes);
       readQueue = readNodes.reduce((acc: string[], n: Node) => acc.concat(n.childIds.toArray()), []);
     }
+
+    (process as any).noAsar = false;
 
     console.timeEnd('readNodeRecursive');
     console.log(result.length);
