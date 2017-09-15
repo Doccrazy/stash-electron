@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { List } from 'immutable';
 import { isValidFileName } from '../utils/repository';
 import Node, { ROOT_ID } from '../domain/Node';
 import Repository from './Repository';
@@ -55,26 +54,6 @@ export default class PlainRepository implements Repository {
     });
 
     return new Node({ id: nodeId, name, parentId, childIds: children, entries });
-  }
-
-  async readNodeRecursive(nodeId: string): Promise<List<Node>> {
-    console.time('readNodeRecursive');
-    (process as any).noAsar = true;
-
-    let result: Node[] = [];
-    let readQueue = [nodeId];
-
-    while (readQueue.length) {
-      const readNodes = await Promise.all(readQueue.map(n => this.readNode(n)));
-      result = result.concat(readNodes);
-      readQueue = readNodes.reduce((acc: string[], n: Node) => acc.concat(n.childIds.toArray()), []);
-    }
-
-    (process as any).noAsar = false;
-
-    console.timeEnd('readNodeRecursive');
-    console.log(result.length);
-    return List(result);
   }
 
   async createNode(parentNodeId: string, newNodeName: string) {

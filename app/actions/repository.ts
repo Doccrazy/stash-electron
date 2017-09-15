@@ -9,7 +9,7 @@ import { afterAction } from '../store/eventMiddleware';
 import {State} from './types/repository';
 import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
 import Repository from '../repository/Repository';
-import {recursiveChildIds} from '../utils/repository';
+import {readNodeRecursive, recursiveChildIds} from '../utils/repository';
 
 export enum Actions {
   LOAD = 'repository/LOAD',
@@ -83,7 +83,7 @@ export function readNode(nodeId: string): Thunk<Promise<void>> {
 
 export function readRecursive(nodeId: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const nodeList = await repo.readNodeRecursive(nodeId);
+    const nodeList = await readNodeRecursive(id => repo.readNode(id), nodeId);
 
     dispatch({
       type: Actions.READ_NODE_LIST,

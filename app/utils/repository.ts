@@ -1,3 +1,4 @@
+import {List} from 'immutable';
 import Node from '../domain/Node';
 
 export function hierarchy(nodes: { [nodeId: string]: Node }, nodeId: string): Node[] {
@@ -42,4 +43,24 @@ export function hasChildOrEntry(allNodes: { [nodeId: string]: Node }, node: Node
 export function childNodeByName(allNodes: { [nodeId: string]: Node }, nodeOrId: Node | string, childName: string) {
   const n = typeof nodeOrId === 'string' ? allNodes[nodeOrId] : nodeOrId;
   return n.childIds ? n.childIds.find(child => !!child && allNodes[child].name === childName) : null;
+}
+
+export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<Node>, nodeId: string): Promise<List<Node>> {
+  console.time('readNodeRecursive');
+  (process as any).noAsar = true;
+
+  let result: Node[] = [];
+  let readQueue = [nodeId];
+
+  while (readQueue.length) {
+    const readNodes = await Promise.all(readQueue.map(n => nodeReader(n)));
+    result = result.concat(readNodes);
+    readQueue = readNodes.reduce((acc: string[], n: Node) => acc.concat(n.childIds.toArray()), []);
+  }
+
+  (process as any).noAsar = false;
+
+  console.timeEnd('readNodeRecursive');
+  console.log(result.length);
+  return List(result);
 }

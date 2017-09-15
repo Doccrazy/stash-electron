@@ -1,4 +1,3 @@
-import {List} from 'immutable';
 import Node from '../domain/Node';
 
 export default interface Repository {
@@ -6,7 +5,6 @@ export default interface Repository {
   readonly name: string;
 
   readNode(nodeId: string): Promise<Node>;
-  readNodeRecursive(nodeId: string): Promise<List<Node>>;
 
   createNode(parentId: string, newNodeName: string): Promise<Node>;
   renameNode(nodeId: string, newName: string): Promise<string>;
