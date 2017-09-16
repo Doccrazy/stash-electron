@@ -131,7 +131,7 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
         });
         return;
       }
-      if (hasChildOrEntry(repository.nodes, node, newName)) {
+      if (newName.toLowerCase() !== edit.ptr.entry.toLowerCase() && hasChildOrEntry(repository.nodes, node, newName)) {
         dispatch({
           type: Actions.VALIDATE,
           payload: 'An entry with this name already exists.'

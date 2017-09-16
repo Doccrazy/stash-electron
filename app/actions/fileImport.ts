@@ -59,7 +59,7 @@ export function performImport(): Thunk<Promise<void>> {
       for (const childGroup of group.groups) {
         // sanitize / de-conflict name
         let safeName = cleanFileName(childGroup.name, '_').trim();
-        while (targetNode.entries && targetNode.entries.includes(safeName)) {
+        while (targetNode.entryByName(safeName)) {
           // conflict
           safeName += '_';
         }

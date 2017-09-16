@@ -35,14 +35,13 @@ export function cleanFileName(fn: string, replacement: string = '') {
   return fn ? fn.replace(/[/\\:*?"<>|]/g, replacement) : fn;
 }
 
-export function hasChildOrEntry(allNodes: { [nodeId: string]: Node }, node: Node, nameToCheck: string) {
-  return (node.entries && node.entries.find(e => e === nameToCheck))
-    || !!childNodeByName(allNodes, node, nameToCheck);
+export function hasChildOrEntry(allNodes: { [nodeId: string]: Node }, node: Node, nameToCheck: string): boolean {
+  return !!node.entryByName(nameToCheck) || !!childNodeByName(allNodes, node, nameToCheck);
 }
 
 export function childNodeByName(allNodes: { [nodeId: string]: Node }, nodeOrId: Node | string, childName: string) {
   const n = typeof nodeOrId === 'string' ? allNodes[nodeOrId] : nodeOrId;
-  return n.childIds ? n.childIds.find(child => !!child && allNodes[child].name === childName) : null;
+  return n.childIds.find((child: string) => allNodes[child] && (allNodes[child].name.toLowerCase() === childName.toLowerCase()));
 }
 
 export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<Node>, nodeId: string): Promise<List<Node>> {

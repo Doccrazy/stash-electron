@@ -128,7 +128,8 @@ export function saveNode(): Thunk<Promise<void>> {
 
       const node = repository.nodes[currentNode.nodeId];
       const parentNode = repository.nodes[node.parentId as string];
-      if (hasChildOrEntry(repository.nodes, currentNode.renaming ? parentNode : node, newName)) {
+      if ((!currentNode.renaming || newName.toLowerCase() !== (currentNode.initialName || '').toLowerCase())
+        && hasChildOrEntry(repository.nodes, currentNode.renaming ? parentNode : node, newName)) {
         toastr.error('', `An entry named '${newName}' already exists.`);
         return;
       }

@@ -33,6 +33,13 @@ export default class Node implements NodeLike {
     return this.id === ROOT_ID;
   }
 
+  /**
+   * Case-insensitive search
+   */
+  entryByName(entry: string): string | undefined {
+    return entry ? this.entries.find((e: string) => e.toLowerCase() === entry.toLowerCase()) : undefined;
+  }
+
   withEntryRenamed(oldName: string, newName: string): Node {
     const newEntries = this.entries.remove(oldName).add(newName);
     return new Node({ ...(this as NodeLike), entries: newEntries });
