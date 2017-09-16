@@ -23,7 +23,7 @@ export default ({ open, isNew, typeId, name, parsedContent, formState, validatio
     <ModalHeader toggle={onClose}>{isNew ? 'Create new entry' : 'Edit entry'}</ModalHeader>
     <ModalBody>
       <Form id="editForm" onSubmit={onSave}>
-        {TypeForm && name && <TypeForm name={name} onChangeName={onChangeName} value={parsedContent} onChange={onChange} formState={formState} onChangeState={onChangeState} />}
+        {TypeForm && <TypeForm name={name || ''} onChangeName={onChangeName} value={parsedContent} onChange={onChange} formState={formState} onChangeState={onChangeState} />}
       </Form>
     </ModalBody>
     <ModalFooter>
