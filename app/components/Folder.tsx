@@ -17,7 +17,9 @@ export default ({ node, expanded, selected, marked, onClickIcon, onClickLabel }:
   if (node && node.name) {
     return (
       <TreeNode label={node.name} canExpand={!!node.childIds.size} {...{ expanded, selected, marked, onClickIcon, onClickLabel }}>
-        {expanded && node.childIds.sort(naturalCompare).map(childId => childId && <ConnectedFolder key={childId} nodeId={childId} />).toArray()}
+        {expanded && node.childIds.sort((a, b) => naturalCompare(a.toLowerCase(), b.toLowerCase()))
+          .map((childId: string) => <ConnectedFolder key={childId} nodeId={childId} />)
+          .toArray()}
       </TreeNode>
     );
   }
