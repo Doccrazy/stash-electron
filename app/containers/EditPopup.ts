@@ -1,8 +1,9 @@
 import { connect } from 'react-redux';
 import EditPopup from '../components/EditPopup';
 import { change, changeState, changeName, save, close } from '../actions/edit';
+import {RootState} from '../actions/types/index';
 
-export default connect(state => ({
+export default connect((state: RootState) => ({
   open: !!state.edit.ptr,
   isNew: state.edit.ptr && !state.edit.ptr.entry,
   typeId: state.edit.typeId,

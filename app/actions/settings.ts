@@ -31,6 +31,18 @@ export function changeSetting<K extends SettingsKeys>(key: K, value: SettingsMap
   };
 }
 
+export function changeAndSave<K extends SettingsKeys>(key: K, value: SettingsMap[K]): Thunk<void> {
+  return (dispatch, getState) => {
+    dispatch(changeSetting(key, value));
+
+    dispatch({
+      type: Actions.SAVE
+    });
+
+    electronSettings.set(key, getState().settings.current[key] as any);
+  };
+}
+
 export function save(): Thunk<void> {
   return (dispatch, getState) => {
     dispatch({

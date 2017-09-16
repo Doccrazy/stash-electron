@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import {RootState} from '../actions/types/index';
 
 interface SwitchProps {
-  hideComponent: boolean,
+  hideComponent?: boolean,
   [propName: string]: any;
 }
 
@@ -11,7 +12,7 @@ export default function(Component: React.ComponentType<any>, Alternate: React.Co
     hideComponent ? <Alternate {...props} /> : <Component {...props} />
   );
 
-  return connect(state => ({
+  return connect((state: RootState) => ({
     hideComponent: !state.repository.path || state.repository.loading,
     loading: state.repository.loading
   }))(Switch);

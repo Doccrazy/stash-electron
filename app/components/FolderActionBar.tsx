@@ -3,8 +3,8 @@ import { Button } from 'reactstrap';
 import BarsMenu from './BarsMenu';
 
 export interface Props {
-  nodeEditable: boolean,
-  contentsEditable: boolean,
+  nodeEditable?: boolean,
+  contentsEditable?: boolean,
   onRename: () => void,
   onDelete: () => void,
   onCreateNode: () => void,

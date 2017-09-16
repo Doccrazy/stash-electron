@@ -9,10 +9,10 @@ import Node from '../domain/Node';
 
 export interface Props {
   nodes: {[nodeId: string]: Node},
-  currentNodeId: string,
+  currentNodeId?: string,
   currentSpecialId?: SpecialFolderId,
-  editing: boolean,
-  currentName: string,
+  editing?: boolean,
+  currentName?: string,
   onSelectFolder: (nodeId: string) => void,
   onChangeName: (name: string) => void,
   onCancelEdit: () => void,
@@ -29,7 +29,7 @@ export default ({ nodes, currentNodeId, currentSpecialId, editing, currentName, 
     {currentNodeId && !editing && <Breadcrumb className={styles.breadcrumb} nodes={nodeHierarchy} onClick={onSelectFolder} />}
     {currentNodeId && editing && <TextEditBox
       placeholder="Enter folder name"
-      value={currentName}
+      value={currentName || ''}
       onChange={onChangeName}
       onConfirm={onConfirmEdit}
       onCancel={onCancelEdit}

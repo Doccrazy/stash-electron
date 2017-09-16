@@ -57,8 +57,7 @@ export function acceptCredentials(): Thunk<Promise<void>> {
     if (formState.savePassword && formState.username && formState.password) {
       await keytar.setPassword(KEYTAR_SERVICE, formState.username, formState.password);
 
-      dispatch(Settings.changeSetting('storedLogins', [...(getState().settings.current.storedLogins || []), formState.username]) as any);
-      dispatch(Settings.save());
+      dispatch(Settings.changeAndSave('storedLogins', [...(getState().settings.current.storedLogins || []), formState.username]) as any);
     }
     dispatch({
       type: Actions.CLOSE
@@ -72,8 +71,7 @@ export function rejectCredentials(error: string): Thunk<Promise<void>> {
     if (formState.username) {
       await keytar.deletePassword(KEYTAR_SERVICE, formState.username);
 
-      dispatch(Settings.changeSetting('storedLogins', (getState().settings.current.storedLogins || []).filter(un => un !== formState.username)) as any);
-      dispatch(Settings.save());
+      dispatch(Settings.changeAndSave('storedLogins', (getState().settings.current.storedLogins || []).filter(un => un !== formState.username)) as any);
     }
     dispatch({
       type: Actions.ERROR,

@@ -7,6 +7,7 @@ import { cleanFileName, hasChildOrEntry } from '../utils/repository';
 import {State} from './types/currentNode';
 import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
 import Node, {ROOT_ID} from '../domain/Node';
+import {SpecialFolderId} from '../utils/specialFolders';
 
 export enum Actions {
   SELECT = 'currentNode/SELECT',
@@ -34,7 +35,7 @@ export function select(nodeId: string): Thunk<Promise<void>> {
   };
 }
 
-export function selectSpecial(specialId: string): Action {
+export function selectSpecial(specialId: SpecialFolderId): Action {
   return {
     type: Actions.SELECT_SPECIAL,
     payload: specialId
@@ -188,7 +189,7 @@ afterAction(Repository.Actions.READ_NODE_LIST, (dispatch, getState: GetState, no
 
 type Action =
   OptionalAction<Actions.SELECT, string>
-  | OptionalAction<Actions.SELECT_SPECIAL, string>
+  | OptionalAction<Actions.SELECT_SPECIAL, SpecialFolderId>
   | OptionalAction<Actions.PREPARE_DELETE>
   | OptionalAction<Actions.CANCEL_DELETE>
   | TypedAction<Actions.START_RENAME, string>

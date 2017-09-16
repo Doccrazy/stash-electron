@@ -1,7 +1,7 @@
 import {List} from 'immutable';
 import Node from '../domain/Node';
 
-export function hierarchy(nodes: { [nodeId: string]: Node }, nodeId: string): Node[] {
+export function hierarchy(nodes: { [nodeId: string]: Node }, nodeId?: string): Node[] {
   const result = [];
   if (nodeId) {
     let n: Node | null = nodes[nodeId];

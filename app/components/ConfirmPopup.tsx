@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 
 export interface Props {
-  open: boolean,
+  open?: boolean,
   title: string,
   feedback?: string,
   valid?: boolean,

@@ -3,13 +3,14 @@ import { connect } from 'react-redux';
 import ConfirmPopup from '../components/ConfirmPopup';
 import { confirmDelete, cancelDelete } from '../actions/currentEntry';
 import typeFor from '../fileType';
+import {RootState} from '../actions/types/index';
 
 function fmt(entry: string) {
   const type = typeFor(entry);
   return type.format ? type.format(entry) : entry
 }
 
-export default connect(state => ({
+export default connect((state: RootState) => ({
   open: state.currentEntry.deleting,
   entry: state.currentEntry.ptr && state.currentEntry.ptr.entry
 }), dispatch => ({

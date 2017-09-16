@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import "redux-thunk";
+import 'redux-thunk';
 import { addFiles } from '../actions/external';
 import FileDropAcceptor from '../components/FileDropAcceptor';
 

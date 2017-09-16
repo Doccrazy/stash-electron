@@ -3,10 +3,10 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reacts
 import { typeById } from '../fileType';
 
 export interface Props {
-  open: boolean,
-  isNew: boolean,
-  typeId: string,
-  name: string,
+  open?: boolean,
+  isNew?: boolean,
+  typeId?: string,
+  name?: string,
   parsedContent: any,
   formState: any,
   validationError?: string,
@@ -23,7 +23,7 @@ export default ({ open, isNew, typeId, name, parsedContent, formState, validatio
     <ModalHeader toggle={onClose}>{isNew ? 'Create new entry' : 'Edit entry'}</ModalHeader>
     <ModalBody>
       <Form id="editForm" onSubmit={onSave}>
-        {TypeForm && <TypeForm name={name} onChangeName={onChangeName} value={parsedContent} onChange={onChange} formState={formState} onChangeState={onChangeState} />}
+        {TypeForm && name && <TypeForm name={name} onChangeName={onChangeName} value={parsedContent} onChange={onChange} formState={formState} onChangeState={onChangeState} />}
       </Form>
     </ModalBody>
     <ModalFooter>

@@ -1,6 +1,8 @@
+import {SpecialFolderId} from '../../utils/specialFolders';
+
 export interface State {
   readonly nodeId?: string,
-  readonly specialId?: string,
+  readonly specialId?: SpecialFolderId,
   readonly renaming?: boolean,
   readonly creating?: boolean,
   readonly deleting?: boolean,

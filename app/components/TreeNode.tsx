@@ -4,10 +4,10 @@ import * as styles from './TreeNode.scss';
 export interface Props {
   label: string,
   children?: any,
-  canExpand: boolean,
-  expanded: boolean,
-  selected: boolean,
-  marked: boolean,
+  canExpand?: boolean,
+  expanded?: boolean,
+  selected?: boolean,
+  marked?: boolean,
   onClickIcon: () => void,
   onClickLabel: () => void
 }

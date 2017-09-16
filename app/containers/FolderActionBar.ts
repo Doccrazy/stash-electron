@@ -5,8 +5,9 @@ import { createInCurrent } from '../actions/edit';
 import { open as openImport } from '../actions/fileImport';
 import { browseForAdd } from '../actions/external';
 import {ROOT_ID} from '../domain/Node';
+import {RootState} from '../actions/types/index';
 
-export default connect(state => ({
+export default connect((state: RootState) => ({
   nodeEditable: state.currentNode.nodeId && state.currentNode.nodeId !== ROOT_ID && !state.currentNode.specialId,
   contentsEditable: state.currentNode.nodeId && !state.currentNode.specialId
 }), dispatch => ({

@@ -2,10 +2,11 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import ConfirmPopup from '../components/ConfirmPopup';
 import { confirmDelete, cancelDelete } from '../actions/currentNode';
+import {RootState} from '../actions/types/index';
 
-export default connect(state => ({
+export default connect((state: RootState) => ({
   open: state.currentNode.deleting,
-  title: state.currentNode.nodeId && state.repository.nodes[state.currentNode.nodeId] && state.repository.nodes[state.currentNode.nodeId].title
+  title: state.currentNode.nodeId && state.repository.nodes[state.currentNode.nodeId] && state.repository.nodes[state.currentNode.nodeId].name
 }), dispatch => ({
   onDelete: () => dispatch(confirmDelete()),
   onClose: () => dispatch(cancelDelete())

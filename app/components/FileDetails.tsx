@@ -5,8 +5,8 @@ import AnimateHeight from './tools/AnimateHeight';
 import * as styles from './FileDetails.css';
 
 export interface Props {
-  node: { id: string },
-  entry: string,
+  node?: { id: string },
+  entry?: string,
   parsedContent: any,
   onEdit: () => void,
   onDelete: () => void
@@ -20,7 +20,7 @@ export default ({ node, entry, parsedContent, onEdit, onDelete }: Props) => {
     TypePanel = type.panel;
   }
   return (<AnimateHeight className={styles.animateContainer}>
-    {type && TypePanel ? (<div>
+    {type && TypePanel && node && entry ? (<div>
       <div className={styles.headerWithButtons}>
         <div>
           <h4>{type.format ? type.format(entry) : entry}</h4>

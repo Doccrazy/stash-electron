@@ -6,9 +6,9 @@ import Node from '../domain/Node';
 
 export interface Props {
   node: Node,
-  expanded: boolean,
-  selected: boolean,
-  marked: boolean,
+  expanded?: boolean,
+  selected?: boolean,
+  marked?: boolean,
   onClickIcon: () => void,
   onClickLabel: () => void
 }

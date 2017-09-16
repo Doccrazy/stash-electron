@@ -1,8 +1,9 @@
 import { connect } from 'react-redux';
 import SearchField from '../components/SearchField';
 import { changeFilter, startSearch, toggleScope } from '../actions/search';
+import {RootState} from '../actions/types/index';
 
-export default connect(state => ({
+export default connect((state: RootState) => ({
   value: state.search.filter,
   limitedScope: state.search.options.limitedScope
 }), dispatch => ({

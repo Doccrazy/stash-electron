@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import * as cx from 'classnames';
 import {KeyError} from '../actions/types/privateKey';
+import {RootState} from '../actions/types/index';
 
 export interface Props {
 }
@@ -13,7 +14,7 @@ const ERRORS = {
   [KeyError.CANCELLED]: 'Cancelled by user.'
 };
 
-export default connect((state, props: Props) => ({
+export default connect((state: RootState, props: Props) => ({
   error: state.privateKey.error,
   keySize: state.privateKey.key && state.privateKey.key.toPublic().size
 }))(({ error, keySize }: { error: KeyError, keySize: number }) => (<span className={cx(typeof error === 'number' && 'text-danger', keySize && 'text-success')}>
