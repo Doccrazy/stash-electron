@@ -57,7 +57,7 @@ export function deselectSpecial(): Action {
 export function prepareDelete(): Thunk<void> {
   return (dispatch, getState) => {
     const { currentNode } = getState();
-    if (currentNode.nodeId) {
+    if (currentNode.nodeId && currentNode.nodeId !== ROOT_ID) {
       dispatch({
         type: Actions.PREPARE_DELETE
       });

@@ -4,6 +4,7 @@ import EntryPtr from '../domain/EntryPtr';
 import {openStashLink} from './stashLinkHandler';
 import * as Edit from '../actions/edit';
 import * as CurrentNode from '../actions/currentNode';
+import * as CurrentEntry from '../actions/currentEntry';
 
 export default function registerHotkeys(dispatch: Dispatch, getState: GetState) {
   document.documentElement.addEventListener('paste', ev => {
@@ -29,6 +30,18 @@ export default function registerHotkeys(dispatch: Dispatch, getState: GetState) 
       dispatch(Edit.open(currentEntry.ptr));
     } else if (currentNode.nodeId && !currentNode.specialId) {
       dispatch(CurrentNode.startRename());
+    }
+  });
+
+  Mousetrap.bind('del', () => {
+    const { currentNode, currentEntry, edit } = getState();
+    if (edit.ptr || currentNode.renaming) {
+      return;
+    }
+    if (currentEntry.ptr) {
+      dispatch(CurrentEntry.prepareDelete());
+    } else if (currentNode.nodeId && !currentNode.specialId) {
+      dispatch(CurrentNode.prepareDelete());
     }
   });
 
