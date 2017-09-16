@@ -13,5 +13,7 @@
     "postinstall": "npm rebuild --runtime=electron --target=1.7.5 --disturl=https://atom.io/download/atom-shell --build-from-source"
   },
   "license": "GPL-3.0",
-  "dependencies": {}
+  "dependencies": {
+    "keytar": "^4.0.4"
+  }
 }

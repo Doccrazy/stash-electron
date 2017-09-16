@@ -10,6 +10,8 @@ import { State as EditState } from './edit';
 import { State as ExternalState } from './external';
 import { State as FavoritesState } from './favorites';
 import { State as FileImportState } from './fileImport';
+import { State as LoginState } from './login';
+import { State as PrivateKeyState } from './privateKey';
 import { State as RepositoryState } from './repository';
 import { State as SearchState } from './search';
 import { State as SettingsState } from './settings';
@@ -22,6 +24,8 @@ export interface RootState {
   external: ExternalState,
   favorites: FavoritesState,
   fileImport: FileImportState,
+  login: LoginState,
+  privateKey: PrivateKeyState,
   repository: RepositoryState,
   search: SearchState,
   settings: SettingsState,

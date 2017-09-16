@@ -193,6 +193,7 @@
     "@types/classnames": "^2.2.3",
     "@types/electron-settings": "^3.0.0",
     "@types/fs-extra": "^4.0.1",
+    "@types/keytar": "^4.0.1",
     "@types/lodash-es": "^4.14.6",
     "@types/mousetrap": "^1.5.34",
     "@types/react": "^15.6.1",
@@ -204,6 +205,7 @@
     "@types/react-router-redux": "^5.0.8",
     "@types/reactstrap": "^4.3.13",
     "@types/redux-logger": "^3.0.3",
+    "@types/sshpk": "^1.10.3",
     "bootstrap": "^4.0.0-beta",
     "classnames": "^2.2.5",
     "devtron": "^1.4.0",
@@ -234,7 +236,8 @@
     "reactstrap": "^4.8.0",
     "redux": "^3.7.1",
     "redux-thunk": "^2.2.0",
-    "source-map-support": "^0.4.15"
+    "source-map-support": "^0.4.15",
+    "sshpk": "^1.13.1"
   },
   "devEngines": {
     "node": ">=7.x",

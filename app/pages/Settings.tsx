@@ -3,6 +3,8 @@ import { Form, FormGroup, InputGroup, InputGroupButton, Label } from 'reactstrap
 import SettingField from '../containers/SettingField';
 import SaveSettingsButton from '../containers/SaveSettingsButton';
 import SettingsBrowseDirButton from '../containers/SettingsBrowseDirButton';
+import SettingsBrowseFileButton from '../containers/SettingsBrowseFileButton';
+import PrivateKeyStatus from '../containers/PrivateKeyStatus';
 
 export default () => (<div className="container">
   <h1 className="my-4">Application settings</h1>
@@ -16,6 +18,16 @@ export default () => (<div className="container">
           <SettingsBrowseDirButton field="repositoryPath" title="Select repository path"><i className="fa fa-folder" /></SettingsBrowseDirButton>
         </InputGroupButton>
       </InputGroup>
+    </FormGroup>
+    <FormGroup>
+      <Label>Private key file</Label>
+      <InputGroup>
+        <SettingField field="privateKeyFile" />
+        <InputGroupButton>
+          <SettingsBrowseFileButton field="privateKeyFile" title="Select private key"><i className="fa fa-folder-open" /></SettingsBrowseFileButton>
+        </InputGroupButton>
+      </InputGroup>
+      <div className="form-text"><PrivateKeyStatus /></div>
     </FormGroup>
     <FormGroup>
       <Label>UI scale / root font size</Label>

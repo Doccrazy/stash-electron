@@ -7,6 +7,7 @@ import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';
 import installLinkHandler from './store/stashLinkHandler';
 import registerHotkeys from './store/hotkeyHandlers';
+import './utils/sshpk-key-deriv-patch.js';
 import './app.global.scss';
 
 // TODO remove when reactstrap dropdowns are fixed

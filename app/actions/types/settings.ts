@@ -2,7 +2,9 @@ export type SettingsKeys = keyof SettingsMap;
 
 export type SettingsMap = {
   repositoryPath?: string,
-  rootFontSize?: number
+  rootFontSize?: number,
+  privateKeyFile?: string,
+  storedLogins?: string[]
 };
 
 export interface State {

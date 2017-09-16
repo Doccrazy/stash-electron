@@ -1,8 +1,10 @@
+import * as os from 'os';
 import { remote } from 'electron';
 import * as electronSettings from 'electron-settings';
 import {SettingsKeys, SettingsMap, State} from './types/settings';
 import {TypedAction, GetState, TypedThunk, OptionalAction} from './types/index';
 import {afterAction} from '../store/eventMiddleware';
+import * as path from 'path';
 
 export enum Actions {
   LOAD = 'settings/LOAD',
@@ -52,6 +54,20 @@ export function browseForFolder(key: SettingsKeys, title: string): Thunk<void> {
   };
 }
 
+export function browseForFile(key: SettingsKeys, title: string, filters?: { extensions: string[], name: string }[]): Thunk<void> {
+  return (dispatch, getState) => {
+    const file = remote.dialog.showOpenDialog({
+      title,
+      filters,
+      properties: ['openFile', 'showHiddenFiles']
+    });
+
+    if (file && file[0]) {
+      dispatch(changeSetting(key, file[0]));
+    }
+  };
+}
+
 afterAction([Actions.LOAD, Actions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
 
@@ -61,7 +77,8 @@ afterAction([Actions.LOAD, Actions.SAVE], (dispatch, getState: GetState) => {
 function applyDefaults(settings: SettingsMap): SettingsMap {
   return {
     ...settings,
-    rootFontSize: settings.rootFontSize || 16
+    rootFontSize: settings.rootFontSize || 16,
+    ...(os.platform() === 'linux' ? { privateKeyFile: path.join(os.homedir(), '.ssh/id_rsa') } : {})
   };
 }
 

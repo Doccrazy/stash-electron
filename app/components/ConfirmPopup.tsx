@@ -1,21 +1,32 @@
 import * as React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 
 export interface Props {
   open: boolean,
   title: string,
+  feedback?: string,
+  valid?: boolean,
   children: any,
   onConfirm: () => void,
   onClose: () => void
 }
 
-export default ({ open, title, children, onConfirm, onClose }: Props) => (<Modal isOpen={open} toggle={onClose}>
+function doFocus(ref: HTMLButtonElement) {
+  if (ref) {
+    setTimeout(() => ref.focus());
+  }
+}
+
+export default ({ open, title, feedback, valid = true, children, onConfirm, onClose }: Props) => (<Modal isOpen={open} toggle={onClose}>
   <ModalHeader toggle={onClose}>{title}</ModalHeader>
   <ModalBody>
-    {children}
+    <Form id="editForm" onSubmit={onConfirm}>
+      {children}
+    </Form>
   </ModalBody>
   <ModalFooter>
-    <Button getRef={btn => btn && setTimeout(() => btn.focus())} color="primary" onClick={onConfirm}>Confirm</Button>{' '}
+    <div className="text-danger" style={{ flexGrow: 1 }}>{feedback}</div>
+    <Button type="submit" form="editForm" getRef={doFocus} color="primary" disabled={!valid}>Confirm</Button>{' '}
     <Button color="secondary" onClick={onClose}>Cancel</Button>
   </ModalFooter>
 </Modal>);

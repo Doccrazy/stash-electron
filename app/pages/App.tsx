@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import ReduxToastr from 'react-redux-toastr';
 import GitStatus from '../components/GitStatus';
 import SearchField from '../containers/SearchField';
+import LoginPopup from '../containers/LoginPopup';
 import * as styles from './App.css';
 
 export interface Props {
@@ -15,6 +16,7 @@ export default class App extends React.Component<Props, {}> {
     return (
       <div className={styles.root}>
         <ReduxToastr timeOut={4000} preventDuplicates position="top-right" transitionIn="fadeIn" transitionOut="fadeOut" />
+        <LoginPopup />
         <Navbar color="dark" className={`navbar-dark navbar-expand-md ${styles.nav}`}>
           <NavLink to="/" className="navbar-brand"><span className={styles.logo} /> Stash</NavLink>
           <Nav className="mr-auto" navbar>
