@@ -86,7 +86,7 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
                 value={value.password || ''}
                 onChange={ev => onChange({ ...value, password: ev.target.value })}
               /></Col>
-              <Col xs="auto"><Button title="Toggle password masking" active={this.props.formState.mask} onClick={this.toggleMask}><i className="fa fa-ellipsis-h" /></Button></Col>
+              <Col xs="auto"><Button title="Toggle password masking" tabIndex={-1} active={this.props.formState.mask} onClick={this.toggleMask}><i className="fa fa-ellipsis-h" /></Button></Col>
             </Row>
           </Col>
         </FormGroup>
@@ -97,6 +97,7 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
               <Col><Input
                 type="password"
                 id="repeatPassword"
+                className={this.props.formState.mask && (this.props.formState.repeatPassword || '') !== (value.password || '') ? 'is-invalid' : undefined}
                 placeholder={this.props.formState.mask ? 'Repeat password' : ''}
                 disabled={!this.props.formState.mask}
                 value={this.props.formState.mask ? this.props.formState.repeatPassword || '' : ''}

@@ -30,7 +30,7 @@ export interface Props {
 
 export default ({ onGenerate }: Props) => (
   <div className="dropdown" style={{ display: 'inline-block' }}>
-    <button type="button" className="btn btn-secondary" data-toggle="dropdown" title="Generate password">
+    <button type="button" className="btn btn-secondary" data-toggle="dropdown" title="Generate password" tabIndex={-1}>
       <i className="fa fa-cog" />
     </button>
     <div className="dropdown-menu dropdown-menu-right">
