@@ -205,6 +205,7 @@
     "@types/react-router-redux": "^5.0.8",
     "@types/reactstrap": "^4.3.13",
     "@types/redux-logger": "^3.0.3",
+    "@types/ssh2-streams": "^0.1.2",
     "@types/sshpk": "^1.10.3",
     "bootstrap": "^4.0.0-beta",
     "classnames": "^2.2.5",
@@ -237,6 +238,7 @@
     "redux": "^3.7.1",
     "redux-thunk": "^2.2.0",
     "source-map-support": "^0.4.15",
+    "ssh2-streams": "^0.1.19",
     "sshpk": "^1.13.1"
   },
   "devEngines": {

@@ -20,7 +20,7 @@ export default () => (<div className="container">
       </InputGroup>
     </FormGroup>
     <FormGroup>
-      <Label>Private key file</Label>
+      <Label>Private key file (SSH / PEM / PPK)</Label>
       <InputGroup>
         <SettingField field="privateKeyFile" />
         <InputGroupButton>

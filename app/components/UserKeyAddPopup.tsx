@@ -29,7 +29,7 @@ export default ({ open, feedback, valid = true, value, onChange, onLoadKey, onCo
       </FormGroup>
       <FormGroup>
         <Button size="sm" className="pull-right" onClick={onLoadKey}>Load file</Button>
-        <Label>Public key (SSH / PEM)</Label>
+        <Label>Public key (SSH / PEM / PPK)</Label>
         <Input type="textarea" value={value.publicKey || ''} onChange={ev => onChange({ ...value, publicKey: ev.target.value })} style={{ height: 160 }} />
       </FormGroup>
       <FormGroup>
