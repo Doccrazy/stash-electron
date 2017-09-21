@@ -1,0 +1,11 @@
+.table {
+  width: 100%;
+}
+
+.keyCell {
+  max-width: 0;
+  width: 60%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

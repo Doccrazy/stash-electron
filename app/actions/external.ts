@@ -17,7 +17,7 @@ export function browseForAdd(): Thunk<Promise<void>> {
       properties: ['openFile', 'multiSelections']
     });
     if (files) {
-      dispatch(addFiles(files));
+      await dispatch(addFiles(files));
     }
   };
 }

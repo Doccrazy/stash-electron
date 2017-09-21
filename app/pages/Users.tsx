@@ -1,14 +1,11 @@
 import * as React from 'react';
-import { Alert, Button } from 'reactstrap';
-import { connect } from 'react-redux';
-import { changeSetting } from '../actions/settings';
+import UserKeyTable from '../containers/UserKeyTable';
+import UserKeyActionBar from '../containers/UserKeyActionBar';
+import NoKeyAlert from '../containers/NoKeyAlert';
+import UserKeyAddPopup from '../containers/UserKeyAddPopup';
 
-interface InnerProps {
-  loggedIn: boolean,
-  onToggle: () => void
-}
-
-const UsersPage = (({ loggedIn, onToggle }: InnerProps) => (<div className="container">
+export default (({}) => (<div className="container">
+  <UserKeyAddPopup />
   <h1 className="my-4">Known users and keys</h1>
 
   <p>
@@ -17,51 +14,11 @@ const UsersPage = (({ loggedIn, onToggle }: InnerProps) => (<div className="cont
     granted access on one or more folders.
   </p>
 
-  {!loggedIn && <Alert color="warning">
-    You do not currently have access to the selected repository. You may either add yourself to the list of
-    known users and ask someone else to authorize you, or load a different key.
-  </Alert>}
+  <NoKeyAlert />
 
   <div className="text-right mb-3">
-    <Button onClick={onToggle}><i className="fa fa-key" /> {loggedIn ? 'Update my private key' : 'Load private key'}</Button>&nbsp;
-    <Button><i className="fa fa-plus-circle" /> Add user</Button>&nbsp;
-    <Button color="success"><i className="fa fa-save" /> Save changes</Button>
+    <UserKeyActionBar />
   </div>
 
-  <table className="table table-sm">
-    <thead>
-      <tr>
-        <th>Username</th>
-        <th>Public key</th>
-        <th>Key name</th>
-        <th />
-      </tr>
-    </thead>
-    <tbody>
-      <tr className={loggedIn ? 'table-success' : ''}>
-        <td>matthiasp</td>
-        <td>AAAAB3NzaC1yc2EAAAABJQAAAIEAsaUBMPTQYbsdQw7kY4ixF4PTJW0...</td>
-        <td>matthias.piepkorn@proxora.com</td>
-        <td><a href="#" className="text-danger"><i className="fa fa-trash-o" /></a></td>
-      </tr>
-      <tr>
-        <td>user_1</td>
-        <td>AAAAB3NzaC1yc2EAAAADAQABAAABAQC68WnNksuJYljixZrDHgLlPaj...</td>
-        <td>rsa-key-20040429</td>
-        <td><a href="#" className="text-danger"><i className="fa fa-trash-o" /></a></td>
-      </tr>
-      <tr>
-        <td>...</td>
-        <td>...</td>
-        <td>...</td>
-        <td><a href="#" className="text-danger"><i className="fa fa-trash-o" /></a></td>
-      </tr>
-    </tbody>
-  </table>
+  <UserKeyTable />
 </div>));
-
-export default connect(state => ({
-  loggedIn: !state.settings.edited.foobar
-}), dispatch => ({
-  onToggle: () => dispatch((dispatch, getState) => dispatch(changeSetting('foobar' as any, !getState().settings.edited.foobar)))
-}))(UsersPage);

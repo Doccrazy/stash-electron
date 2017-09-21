@@ -7,6 +7,7 @@ import {KeyError, State} from './types/privateKey';
 import {afterAction} from '../store/eventMiddleware';
 import * as Settings from './settings';
 import {requestCredentials, acceptCredentials, rejectCredentials} from './login';
+import {parsePrivateKey} from '../utils/rsa';
 
 export enum Actions {
   LOAD = 'privateKey/LOAD',
@@ -52,10 +53,7 @@ export function load(filename: string, passphrase?: string): Thunk<Promise<void>
     }
 
     try {
-      const privateKey = sshpk.parsePrivateKey(keyData, 'auto', {
-        filename,
-        passphrase
-      });
+      const privateKey = parsePrivateKey(keyData, passphrase);
       console.log('key size => %d bits', privateKey.toPublic().size);
 
       dispatch({

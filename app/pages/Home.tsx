@@ -12,6 +12,7 @@ import ImportPopup from '../containers/ImportPopup';
 import AddFileDropAcceptor from '../containers/AddFileDropAcceptor';
 import SpecialFolderLink from '../containers/SpecialFolderLink';
 import * as styles from './Home.css';
+import NoKeyAlert from '../containers/NoKeyAlert';
 
 export default class Home extends React.Component<{}, {}> {
   render() {
@@ -28,6 +29,7 @@ export default class Home extends React.Component<{}, {}> {
           <Folder nodeId="/" />
         </div>
         <div className={`${styles.main}`}>
+          <NoKeyAlert />
           <div className={styles.contentHeader}>
             <Row>
               <Col>

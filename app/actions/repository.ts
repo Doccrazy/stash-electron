@@ -10,6 +10,8 @@ import {State} from './types/repository';
 import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
 import Repository from '../repository/Repository';
 import {readNodeRecursive, recursiveChildIds} from '../utils/repository';
+import KeyProvider from '../repository/KeyProvider';
+import KeyFileKeyProvider from '../repository/KeyFileKeyProvider';
 
 export enum Actions {
   LOAD = 'repository/LOAD',
@@ -26,9 +28,14 @@ export enum Actions {
 }
 
 let repo: Repository;
+let keyProvider: KeyProvider;
 
 export function getRepo(): Repository {
   return repo;
+}
+
+export function getKeyProvider(): KeyProvider {
+  return keyProvider;
 }
 
 export function load(repoPath?: string): Thunk<Promise<void>> {
@@ -45,6 +52,7 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
       return;
     }
 
+    keyProvider = new KeyFileKeyProvider(repoPath);
     repo = new PlainRepository(repoPath);
     dispatch({
       type: Actions.LOAD,

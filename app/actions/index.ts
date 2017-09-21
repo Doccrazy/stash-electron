@@ -9,6 +9,7 @@ import edit from './edit';
 import external from './external';
 import favorites from './favorites';
 import fileImport from './fileImport';
+import keys from './keys';
 import login from './login';
 import privateKey from './privateKey';
 import repository from './repository';
@@ -23,6 +24,7 @@ const rootReducer = combineReducers<RootState>({
   external,
   favorites,
   fileImport,
+  keys,
   login,
   privateKey,
   repository,
