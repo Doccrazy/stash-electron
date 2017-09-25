@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { remote, shell } from 'electron';
 import { toastr } from 'react-redux-toastr';
-import { childNodeByName } from '../utils/repository';
+import {childNodeByName, isAccessible} from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import * as repoActions from './repository';
 import typeFor from '../fileType/index';
@@ -26,6 +26,9 @@ export function addFiles(files: string[]): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { repository, currentNode } = getState();
     if (!currentNode.nodeId) {
+      return;
+    }
+    if (!isAccessible(getState().repository.nodes, currentNode.nodeId, getState().privateKey.username)) {
       return;
     }
     const node = repository.nodes[currentNode.nodeId];

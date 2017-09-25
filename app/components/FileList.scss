@@ -1,0 +1,15 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+.pathSeg ~ .pathSeg::before {
+  content: ' / ';
+}
+
+.pathEllipsis::before {
+  content: '… ';
+}
+
+.inaccessible {
+  font-style: italic;
+  color: theme-color('secondary');
+}

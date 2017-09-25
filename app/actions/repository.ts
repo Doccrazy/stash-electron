@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { toastr } from 'react-redux-toastr';
 import {List} from 'immutable';
 import * as Settings from './settings';
-import PlainRepository from '../repository/Plain';
+import EncryptedRepository from '../repository/Encrypted';
 import EntryPtr from '../domain/EntryPtr';
 import Node, {ROOT_ID} from '../domain/Node';
 import { afterAction } from '../store/eventMiddleware';
@@ -53,7 +53,7 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
     }
 
     keyProvider = new KeyFileKeyProvider(repoPath);
-    repo = new PlainRepository(repoPath);
+    repo = new EncryptedRepository(repoPath);
     dispatch({
       type: Actions.LOAD,
       payload: {

@@ -13,14 +13,15 @@ function copyEntryUrl(node: { id: string }, entry: string) {
 export interface Props {
   node: { id: string },
   entry: string,
+  accessible?: boolean,
   onEdit: () => void,
   onDelete: () => void
 }
 
-export default ({ node, entry, onEdit, onDelete }: Props) => (<div>
-  <Button size="sm" title="Edit" onClick={onEdit}><i className="fa fa-pencil" /></Button>&nbsp;
+export default ({ node, entry, accessible, onEdit, onDelete }: Props) => (<div>
+  {accessible && <Button size="sm" title="Edit" onClick={onEdit}><i className="fa fa-pencil" /></Button>}&nbsp;
   <Button size="sm" title="Share link" onClick={() => copyEntryUrl(node, entry)}><i className="fa fa-share" /></Button>&nbsp;
-  <BarsMenu up right size="sm">
+  {accessible && <BarsMenu up right size="sm">
     <a className="dropdown-item" href="#" onClick={onDelete}><i className="fa fa-trash-o" /> Delete</a>
-  </BarsMenu>
+  </BarsMenu>}
 </div>);

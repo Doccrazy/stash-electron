@@ -1,5 +1,5 @@
 import { fromJS, is } from 'immutable';
-import { cleanFileName, hasChildOrEntry, isValidFileName } from '../utils/repository';
+import {cleanFileName, hasChildOrEntry, isAccessible, isValidFileName} from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import typeFor, { typeById } from '../fileType';
 import * as Repository from './repository';
@@ -20,6 +20,10 @@ export enum Actions {
 
 export function open(ptr: EntryPtr, preParsedContent?: any): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
+    if (!isAccessible(getState().repository.nodes, ptr.nodeId, getState().privateKey.username)) {
+      return;
+    }
+
     const type = typeFor(ptr.entry);
     let parsedContent;
     if (type.parse) {
@@ -51,23 +55,29 @@ export function openCurrent(): Thunk<Promise<void>> {
   };
 }
 
-export function create(nodeId: string, typeId: string): Action {
-  const type = typeById(typeId);
-  if (!type || !type.initialize) {
-    throw new Error(`invalid type ${typeId} passed to create`);
-  }
-
-  const parsedContent = type.initialize();
-
-  return {
-    type: Actions.OPEN,
-    payload: {
-      ptr: new EntryPtr(nodeId, ''),
-      typeId,
-      parsedContent,
-      formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
+export function create(nodeId: string, typeId: string): Thunk<void> {
+  return (dispatch, getState) => {
+    const type = typeById(typeId);
+    if (!type || !type.initialize) {
+      throw new Error(`invalid type ${typeId} passed to create`);
     }
-  };
+
+    if (!isAccessible(getState().repository.nodes, nodeId, getState().privateKey.username)) {
+      return;
+    }
+
+    const parsedContent = type.initialize();
+
+    dispatch({
+      type: Actions.OPEN,
+      payload: {
+        ptr: new EntryPtr(nodeId, ''),
+        typeId,
+        parsedContent,
+        formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
+      }
+    });
+  }
 }
 
 export function createInCurrent(typeId: string): Thunk<void> {

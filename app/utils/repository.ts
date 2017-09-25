@@ -63,3 +63,16 @@ export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<
   console.log(result.length);
   return List(result);
 }
+
+export function findAuthParent(nodes: { [id: string]: Node }, nodeId: string) {
+  let result = nodes[nodeId];
+  while (!result.authorizedUsers && result.parentId) {
+    result = nodes[result.parentId];
+  }
+  return result;
+}
+
+export function isAccessible(nodes: { [id: string]: Node }, nodeId: string, username?: string) {
+  const authParent = findAuthParent(nodes, nodeId);
+  return !authParent.authorizedUsers || (!!username && authParent.authorizedUsers.includes(username));
+}

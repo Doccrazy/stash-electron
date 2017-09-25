@@ -8,8 +8,9 @@ import { toggle as toggleFavorite } from '../actions/favorites';
 import specialFolders, {SpecialFolderId} from '../utils/specialFolders';
 import {RootState} from '../actions/types/index';
 import FileListEntry from '../domain/FileListEntry';
-import {hierarchy} from '../utils/repository';
+import {hierarchy, isAccessible} from '../utils/repository';
 import {hashString} from '../utils/hash';
+import {Set} from 'immutable';
 
 function createFileList(state: RootState): FileListEntry[] {
   let result: EntryPtr[] = [];
@@ -22,8 +23,12 @@ function createFileList(state: RootState): FileListEntry[] {
       .toArray();
   }
   result.sort((a, b) => naturalCompare(a.entry.toLowerCase(), b.entry.toLowerCase()));
+
+  const accessibleByNode: { [nodeId: string]: boolean } = Set(result.map(ptr => ptr.nodeId))
+    .reduce((acc, id: string) => ({ ...acc, [id]: isAccessible(state.repository.nodes, id, state.privateKey.username)}), {});
   return result.map(ptr => new FileListEntry(ptr,
-    hierarchy(state.repository.nodes, ptr.nodeId).map(node => node.name), new Date(1505249965000 - (hashString(ptr.entry) >>> 0) * 5)));
+    hierarchy(state.repository.nodes, ptr.nodeId).map(node => node.name), new Date(1505249965000 - (hashString(ptr.entry) >>> 0) * 5),
+    accessibleByNode[ptr.nodeId]));
 }
 
 export default connect((state: RootState) => ({

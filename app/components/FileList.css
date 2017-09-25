@@ -1,7 +1,0 @@
-.pathSeg ~ .pathSeg::before {
-  content: ' / ';
-}
-
-.pathEllipsis::before {
-  content: '… ';
-}

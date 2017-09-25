@@ -6,6 +6,7 @@ import { toggle } from '../actions/treeState';
 import { select } from '../actions/currentNode';
 import {RootState} from '../actions/types/index';
 import Node from '../domain/Node';
+import {isAccessible} from '../utils/repository';
 
 export interface Props {
   nodeId: string
@@ -17,13 +18,18 @@ function sortedChildIds(nodes: { [id: string]: Node }, nodeId: string) {
     .toArray();
 }
 
-export default connect((state: RootState, props: Props) => ({
-  label: state.repository.nodes[props.nodeId].name,
-  childIds: sortedChildIds(state.repository.nodes, props.nodeId),
-  expanded: state.treeState.has(props.nodeId),
-  selected: !state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,
-  marked: !!state.currentNode.specialId && state.currentNode.nodeId === props.nodeId
-}), (dispatch, props) => ({
+export default connect((state: RootState, props: Props) => {
+  const node = state.repository.nodes[props.nodeId];
+  return ({
+    label: node.name,
+    childIds: sortedChildIds(state.repository.nodes, props.nodeId),
+    expanded: state.treeState.has(props.nodeId),
+    selected: !state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,
+    marked: !!state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,
+    accessible: isAccessible(state.repository.nodes, props.nodeId, state.privateKey.username),
+    hasAuthorization: !!node.authorizedUsers
+  });
+}, (dispatch, props) => ({
    onClickIcon: () => dispatch(toggle(props.nodeId)),
    onClickLabel: () => dispatch(select(props.nodeId))
 }))(Folder);

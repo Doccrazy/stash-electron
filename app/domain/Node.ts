@@ -5,7 +5,8 @@ export interface NodeLike {
   name: string,
   parentId?: string,
   childIds?: Iterable.Set<string> | Iterable.Indexed<string> | string[],
-  entries?: Iterable.Set<string> | Iterable.Indexed<string> | string[]
+  entries?: Iterable.Set<string> | Iterable.Indexed<string> | string[],
+  authorizedUsers?: Iterable.Set<string> | Iterable.Indexed<string> | string[]
 }
 
 export const ROOT_ID = '/';
@@ -16,8 +17,9 @@ export default class Node implements NodeLike {
   readonly parentId?: string;
   readonly childIds: Set<string> = Set();
   readonly entries: Set<string> = Set();
+  readonly authorizedUsers?: Set<string>;
 
-  constructor({ id, name, parentId, childIds, entries}: NodeLike) {
+  constructor({ id, name, parentId, childIds, entries, authorizedUsers}: NodeLike) {
     this.id = id;
     this.name = name;
     this.parentId = parentId;
@@ -26,6 +28,9 @@ export default class Node implements NodeLike {
     }
     if (entries) {
       this.entries = Set(entries);
+    }
+    if (authorizedUsers) {
+      this.authorizedUsers = Set(authorizedUsers);
     }
   }
 

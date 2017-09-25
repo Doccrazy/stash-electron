@@ -2,17 +2,32 @@
 @import "~font-awesome/scss/variables";
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins/hover";
 
 .label {
   white-space: nowrap;
+  color: theme-color('dark');
+
+  @include hover-focus {
+    color: darken(theme-color('dark'), 10%);
+  }
 }
 
-.labelSelected {
+.labelSelected .name {
   background-color: $yellow;
 }
 
-.labelMarked {
+.labelMarked .name {
   background-color: $gray-400;
+}
+
+.labelInaccessible {
+  font-style: italic;
+  color: theme-color('secondary');
+
+  @include hover-focus {
+    color: darken(theme-color('secondary'), 10%);
+  }
 }
 
 .icon::before {
@@ -29,6 +44,13 @@
 
 .iconOpen::before {
   content: $fa-var-caret-down;
+}
+
+.authIcon::before {
+  @include fa-icon();
+
+  content: $fa-var-users;
+  margin-left: 0.333em;
 }
 
 .children {

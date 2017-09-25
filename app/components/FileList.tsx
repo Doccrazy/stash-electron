@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import typeFor from '../fileType';
 import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';
-import * as styles from './FileList.css';
+import * as styles from './FileList.scss';
 
 export interface Props {
   files: FileListEntry[],
@@ -37,7 +37,7 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
         const type = typeFor(file.ptr.entry);
         return (<tr
           key={file.ptr.toString()}
-          className={cx('clickable', file.ptr.equals(selectedEntry) && 'table-active')}
+          className={cx('clickable', file.ptr.equals(selectedEntry) && 'table-active', !file.accessible && styles.inaccessible)}
           onClick={(ev: ChromeMouseEvent) => { if (ev.detail === 1) { onSelect(file.ptr); } }}
           onMouseDown={(ev: ChromeMouseEvent) => { if (ev.detail > 1) { ev.preventDefault(); } }}
           onDoubleClick={() => onEdit(file.ptr)}

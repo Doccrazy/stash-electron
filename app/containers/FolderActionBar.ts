@@ -6,10 +6,13 @@ import { open as openImport } from '../actions/fileImport';
 import { browseForAdd } from '../actions/external';
 import {ROOT_ID} from '../domain/Node';
 import {RootState} from '../actions/types/index';
+import {isAccessible} from '../utils/repository';
 
 export default connect((state: RootState) => ({
   nodeEditable: state.currentNode.nodeId && state.currentNode.nodeId !== ROOT_ID && !state.currentNode.specialId,
-  contentsEditable: state.currentNode.nodeId && !state.currentNode.specialId
+  contentsEditable: state.currentNode.nodeId && !state.currentNode.specialId,
+  accessible: state.currentNode.nodeId && !state.currentNode.specialId
+    && isAccessible(state.repository.nodes, state.currentNode.nodeId, state.privateKey.username)
 }), dispatch => ({
   onRename: () => dispatch(startRename()),
   onDelete: () => dispatch(prepareDelete()),
