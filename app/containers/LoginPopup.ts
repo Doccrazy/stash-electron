@@ -1,16 +1,16 @@
 import { connect } from 'react-redux';
-import { close, confirm, change } from '../actions/login';
-import {FormState} from '../actions/types/login';
+import { close, confirm, change } from '../actions/credentials';
+import {FormState} from '../actions/types/credentials';
 import {RootState} from '../actions/types/index';
 import LoginPopup from '../components/LoginPopup';
 
 export default connect((state: RootState) => ({
-  open: state.login.open,
-  askUsername: state.login.askUsername,
-  title: state.login.title,
-  text: state.login.text,
-  value: state.login.state,
-  error: state.login.error
+  open: state.credentials.open,
+  askUsername: state.credentials.askUsername,
+  title: state.credentials.title,
+  text: state.credentials.text,
+  value: state.credentials.state,
+  error: state.credentials.error
 }), dispatch => ({
   onConfirm: () => dispatch(confirm()),
   onClose: () => dispatch(close()),

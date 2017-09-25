@@ -1,19 +1,19 @@
 import { EventEmitter } from 'events';
 import * as keytar from 'keytar';
 import {OptionalAction, TypedAction, TypedThunk} from './types/index';
-import {Credentials, State, FormState} from './types/login';
+import {Credentials, State, FormState} from './types/credentials';
 import * as Settings from './settings';
 
 export enum Actions {
-  OPEN = 'login/OPEN',
-  CLOSE = 'login/CLOSE',
-  CHANGE = 'login/CHANGE',
-  ERROR = 'login/ERROR'
+  OPEN = 'credentials/OPEN',
+  CLOSE = 'credentials/CLOSE',
+  CHANGE = 'credentials/CHANGE',
+  ERROR = 'credentials/ERROR'
 }
 
 const KEYTAR_SERVICE = 'de.doccrazy.Stash';
 
-const loginEvents = new EventEmitter();
+const credentialsEvents = new EventEmitter();
 
 export function requestCredentials(title: string, text: string, username?: string, askUsername?: boolean): Thunk<Promise<Credentials>> {
   return async (dispatch, getState) => {
@@ -25,7 +25,7 @@ export function requestCredentials(title: string, text: string, username?: strin
       }
     }
 
-    if (!getState().login.open) {
+    if (!getState().credentials.open) {
       dispatch({
         type: Actions.OPEN,
         payload: {
@@ -38,8 +38,8 @@ export function requestCredentials(title: string, text: string, username?: strin
     }
 
     return await new Promise<Credentials>((resolve, reject) => {
-      loginEvents.once('close', (success: boolean) => {
-        const formState = getState().login.state;
+      credentialsEvents.once('close', (success: boolean) => {
+        const formState = getState().credentials.state;
         if (formState && formState.username && formState.password) {
           const result: Credentials = { username: formState.username, password: formState.password };
           resolve(result);
@@ -53,7 +53,7 @@ export function requestCredentials(title: string, text: string, username?: strin
 
 export function acceptCredentials(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const formState = getState().login.state;
+    const formState = getState().credentials.state;
     if (formState.savePassword && formState.username && formState.password) {
       await keytar.setPassword(KEYTAR_SERVICE, formState.username, formState.password);
 
@@ -67,7 +67,7 @@ export function acceptCredentials(): Thunk<Promise<void>> {
 
 export function rejectCredentials(error: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const formState = getState().login.state;
+    const formState = getState().credentials.state;
     if (formState.username) {
       await keytar.deletePassword(KEYTAR_SERVICE, formState.username);
 
@@ -85,13 +85,13 @@ export function close(): Thunk<void> {
     dispatch({
       type: Actions.CLOSE
     });
-    loginEvents.emit('close');
+    credentialsEvents.emit('close');
   };
 }
 
 export function confirm(): Thunk<void> {
   return (dispatch, getState) => {
-    loginEvents.emit('close', true);
+    credentialsEvents.emit('close', true);
   };
 }
 

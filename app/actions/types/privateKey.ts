@@ -8,6 +8,7 @@ export enum KeyError {
 }
 
 export interface State {
-  key?: sshpk.PrivateKey;
-  error?: KeyError
+  readonly key?: sshpk.PrivateKey;
+  readonly error?: KeyError,
+  readonly username?: string
 }

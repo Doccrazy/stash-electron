@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FormGroup, Label, Input } from 'reactstrap';
 import ConfirmPopup from '../components/ConfirmPopup';
-import {FormState} from '../actions/types/login';
+import {FormState} from '../actions/types/credentials';
 
 export interface Props {
   open?: boolean,

@@ -2,16 +2,19 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as sshpk from 'sshpk';
 import {toastr} from 'react-redux-toastr';
-import {GetState, TypedAction, TypedThunk} from './types/index';
+import {GetState, OptionalAction, TypedAction, TypedThunk} from './types/index';
 import {KeyError, State} from './types/privateKey';
 import {afterAction} from '../store/eventMiddleware';
 import * as Settings from './settings';
-import {requestCredentials, acceptCredentials, rejectCredentials} from './login';
+import {requestCredentials, acceptCredentials, rejectCredentials} from './credentials';
 import {parsePrivateKey} from '../utils/rsa';
+import * as Keys from './keys';
+import {findUser} from '../repository/KeyProvider';
 
 export enum Actions {
   LOAD = 'privateKey/LOAD',
-  ERROR = 'privateKey/ERROR'
+  ERROR = 'privateKey/ERROR',
+  LOGIN = 'privateKey/LOGIN'
 }
 
 export function loadWithFeedback(filename: string): Thunk<Promise<void>> {
@@ -89,9 +92,21 @@ afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState:
   }
 });
 
+afterAction([Keys.Actions.LOAD, Keys.Actions.SAVED, Actions.LOAD], (dispatch, getState: GetState) => {
+  const { keys, privateKey } = getState();
+  const currentUser = privateKey.key ? findUser(keys.byUser, privateKey.key) : undefined;
+  if (currentUser !== privateKey.username) {
+    dispatch({
+      type: Actions.LOGIN,
+      payload: currentUser
+    });
+  }
+});
+
 type Action =
   TypedAction<Actions.LOAD, sshpk.PrivateKey>
-  | TypedAction<Actions.ERROR, KeyError>;
+  | TypedAction<Actions.ERROR, KeyError>
+  | OptionalAction<Actions.LOGIN, string>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 
@@ -101,6 +116,8 @@ export default function reducer(state: State = {}, action: Action): State {
       return { key: action.payload };
     case Actions.ERROR:
       return { error: action.payload };
+    case Actions.LOGIN:
+      return { ...state, username: action.payload };
     default:
       return state;
   }

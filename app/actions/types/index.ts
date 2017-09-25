@@ -4,6 +4,7 @@ import {Action as ReduxAction, Dispatch as ReduxDispatch} from 'redux';
 import {RouterState} from 'react-router-redux';
 import {ToastrState} from 'react-redux-toastr';
 
+import { State as CredentialsState } from './credentials';
 import { State as CurrentEntryState } from './currentEntry';
 import { State as CurrentNodeState } from './currentNode';
 import { State as EditState } from './edit';
@@ -11,7 +12,6 @@ import { State as ExternalState } from './external';
 import { State as FavoritesState } from './favorites';
 import { State as FileImportState } from './fileImport';
 import { State as KeysState } from './keys';
-import { State as LoginState } from './login';
 import { State as PrivateKeyState } from './privateKey';
 import { State as RepositoryState } from './repository';
 import { State as SearchState } from './search';
@@ -19,6 +19,7 @@ import { State as SettingsState } from './settings';
 import { State as TreeStateState } from './treeState';
 
 export interface RootState {
+  credentials: CredentialsState,
   currentEntry: CurrentEntryState,
   currentNode: CurrentNodeState,
   edit: EditState,
@@ -26,7 +27,6 @@ export interface RootState {
   favorites: FavoritesState,
   fileImport: FileImportState,
   keys: KeysState,
-  login: LoginState,
   privateKey: PrivateKeyState,
   repository: RepositoryState,
   search: SearchState,

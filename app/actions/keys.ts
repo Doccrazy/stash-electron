@@ -38,10 +38,10 @@ export function save(): Thunk<Promise<void>> {
     const provider = Repository.getKeyProvider();
 
     const usersInRepo = provider.listUsers();
-    usersInRepo.filter(username => !Object.keys(keys.byUser).includes(username))
+    usersInRepo.filter(username => !Object.keys(keys.edited).includes(username))
       .forEach(username => provider.deleteKey(username));
-    Object.keys(keys.byUser).filter(username => !provider.listUsers().includes(username))
-      .forEach(username => provider.addKey(username, keys.byUser[username]));
+    Object.keys(keys.edited).filter(username => !provider.listUsers().includes(username))
+      .forEach(username => provider.addKey(username, keys.edited[username]));
 
     try {
       await provider.save();
@@ -94,7 +94,7 @@ export function confirmAdd(): Thunk<void> {
       return;
     }
 
-    if (Object.keys(keys.byUser).includes(keys.formState.username)) {
+    if (Object.keys(keys.edited).includes(keys.formState.username)) {
       dispatch({ type: Actions.VALIDATE, payload: { valid: false, message: 'Duplicate username.' } });
       return;
     }
@@ -106,7 +106,7 @@ export function confirmAdd(): Thunk<void> {
         key.comment = keys.formState.keyName;
       }
 
-      const existingUser = findUser(keys.byUser, key);
+      const existingUser = findUser(keys.edited, key);
       if (existingUser) {
         dispatch({ type: Actions.VALIDATE, payload: { valid: false, message: `Duplicate key: Already used by ${existingUser}.` } });
         return;
@@ -193,20 +193,20 @@ type Action =
 
 type Thunk<R> = TypedThunk<Action, R>;
 
-export default function reducer(state: State = { byUser: {}, formState: {} }, action: Action): State {
+export default function reducer(state: State = { byUser: {}, edited: {}, formState: {} }, action: Action): State {
   switch (action.type) {
     case Actions.LOAD:
-      return { byUser: { ...action.payload }, formState: {} };
+      return { byUser: { ...action.payload }, edited: { ...action.payload }, formState: {} };
     case Actions.SAVED:
-      return { ...state, modified: false, valid: true };
+      return { ...state, byUser: { ...state.edited }, modified: false, valid: true };
     case Actions.ADD: {
-      const newKeysByUser = {...state.byUser, [action.payload.username]: action.payload.key};
-      return { ...state, byUser: newKeysByUser, modified: true };
+      const newKeysByUser = {...state.edited, [action.payload.username]: action.payload.key};
+      return { ...state, edited: newKeysByUser, modified: true };
     }
     case Actions.DELETE: {
-      const newKeysByUser = {...state.byUser};
+      const newKeysByUser = {...state.edited};
       delete newKeysByUser[action.payload];
-      return { ...state, byUser: newKeysByUser, modified: true };
+      return { ...state, edited: newKeysByUser, modified: true };
     }
     case Actions.OPEN_ADD:
       return { ...state, addOpen: true, formState: {}, valid: false };

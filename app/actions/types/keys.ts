@@ -8,6 +8,7 @@ export interface FormState {
 
 export interface State {
   readonly byUser: { [username: string]: sshpk.Key },
+  readonly edited: { [username: string]: sshpk.Key },
   readonly modified?: boolean,
   readonly addOpen?: boolean,
   readonly formState: FormState,

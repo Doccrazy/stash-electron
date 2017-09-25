@@ -3,11 +3,10 @@ import { connect } from 'react-redux';
 import { Alert } from 'reactstrap';
 import { deleteUser } from '../actions/keys';
 import {RootState} from '../actions/types/index';
-import {findUser} from '../repository/KeyProvider';
 
 export default connect((state: RootState, props: void) => ({
   keyLoaded: !!state.privateKey.key,
-  loggedIn: state.privateKey.key && !!findUser(state.keys.byUser, state.privateKey.key)
+  loggedIn: !!state.privateKey.username
 }), (dispatch, props) => ({
   onDelete: (username: string) => dispatch(deleteUser(username))
 }))(({ keyLoaded, loggedIn }) => {
