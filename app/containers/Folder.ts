@@ -7,6 +7,7 @@ import { select } from '../actions/currentNode';
 import {RootState} from '../actions/types/index';
 import Node from '../domain/Node';
 import {isAccessible} from '../utils/repository';
+import {formatUserList} from '../utils/format';
 
 export interface Props {
   nodeId: string
@@ -27,7 +28,7 @@ export default connect((state: RootState, props: Props) => {
     selected: !state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,
     marked: !!state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,
     accessible: isAccessible(state.repository.nodes, props.nodeId, state.privateKey.username),
-    hasAuthorization: !!node.authorizedUsers
+    authInfo: node.authorizedUsers && formatUserList('Accessible to ', node.authorizedUsers, state.privateKey.username)
   });
 }, (dispatch, props) => ({
    onClickIcon: () => dispatch(toggle(props.nodeId)),

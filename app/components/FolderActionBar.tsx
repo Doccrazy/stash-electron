@@ -17,7 +17,7 @@ export interface Props {
 
 export default ({ nodeEditable, contentsEditable, accessible, onRename, onDelete, onCreateNode, onCreateItem, onEditPermissions, onAddExternal, onImport }: Props) => (<div>
   {(nodeEditable || contentsEditable) && <BarsMenu>
-    {contentsEditable && <a className="dropdown-item" href="#" onClick={onEditPermissions}><i className="fa fa-user" /> Permissions</a>}
+    {contentsEditable && <a className="dropdown-item" href="#" onClick={onEditPermissions}><i className="fa fa-users" /> Permissions</a>}
     {contentsEditable && accessible && <a className="dropdown-item" href="#" onClick={onAddExternal}><i className="fa fa-file-o" /> Add external files</a>}
     {contentsEditable && accessible && <a className="dropdown-item" href="#" onClick={onImport}><i className="fa fa-download" /> KeePass Import</a>}
     {nodeEditable && contentsEditable && <div className="dropdown-divider" />}

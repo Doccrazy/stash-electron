@@ -10,6 +10,7 @@ export interface Props {
   parsedContent: any,
   formState: any,
   validationError?: string,
+  authInfo?: string,
   onChangeName: (name: string) => void,
   onChange: (content: any) => void,
   onChangeState: (state: any) => void,
@@ -17,10 +18,13 @@ export interface Props {
   onClose: () => void
 }
 
-export default ({ open, isNew, typeId, name, parsedContent, formState, validationError, onChangeName, onChange, onChangeState, onSave, onClose }: Props) => {
+export default ({ open, isNew, typeId, name, parsedContent, formState, validationError, authInfo, onChangeName, onChange, onChangeState, onSave, onClose }: Props) => {
   const TypeForm = open && (typeById(typeId)).form;
   return (<Modal size="lg" isOpen={open} toggle={onClose}>
-    <ModalHeader toggle={onClose}>{isNew ? 'Create new entry' : 'Edit entry'}</ModalHeader>
+    <ModalHeader toggle={onClose}>
+      {isNew ? 'Create new entry' : 'Edit entry'}
+      {authInfo && <div style={{ fontWeight: 'normal', fontSize: 'medium' }}>{authInfo}</div>}
+    </ModalHeader>
     <ModalBody>
       <Form id="editForm" onSubmit={onSave}>
         {TypeForm && <TypeForm name={name || ''} onChangeName={onChangeName} value={parsedContent} onChange={onChange} formState={formState} onChangeState={onChangeState} />}

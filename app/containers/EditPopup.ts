@@ -2,16 +2,22 @@ import { connect } from 'react-redux';
 import EditPopup from '../components/EditPopup';
 import { change, changeState, changeName, save, close } from '../actions/edit';
 import {RootState} from '../actions/types/index';
+import {formatUserList} from '../utils/format';
+import {findAuthParent} from '../utils/repository';
 
-export default connect((state: RootState) => ({
-  open: !!state.edit.ptr,
-  isNew: state.edit.ptr && !state.edit.ptr.entry,
-  typeId: state.edit.typeId,
-  name: state.edit.name,
-  parsedContent: state.edit.parsedContent,
-  formState: state.edit.formState || {},
-  validationError: state.edit.validationError
-}), dispatch => ({
+export default connect((state: RootState) => {
+  const authParent = state.edit.ptr && findAuthParent(state.repository.nodes, state.edit.ptr.nodeId);
+  return ({
+    open: !!state.edit.ptr,
+    isNew: state.edit.ptr && !state.edit.ptr.entry,
+    typeId: state.edit.typeId,
+    name: state.edit.name,
+    parsedContent: state.edit.parsedContent,
+    formState: state.edit.formState || {},
+    validationError: state.edit.validationError,
+    authInfo: authParent && authParent.authorizedUsers && formatUserList('Accessible to ', authParent.authorizedUsers, state.privateKey.username)
+  });
+}, dispatch => ({
   onChangeName: (value: string) => dispatch(changeName(value)),
   onChange: (value: any) => dispatch(change(value)),
   onChangeState: (value: any) => dispatch(changeState(value)),

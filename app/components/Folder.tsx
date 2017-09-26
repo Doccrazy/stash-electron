@@ -9,15 +9,15 @@ export interface Props {
   selected?: boolean,
   marked?: boolean,
   accessible?: boolean,
-  hasAuthorization?: boolean,
+  authInfo?: string,
   onClickIcon: () => void,
   onClickLabel: () => void
 }
 
-export default ({ label, childIds, expanded, selected, marked, accessible, hasAuthorization, onClickIcon, onClickLabel }: Props): any => {
+export default ({ label, childIds, expanded, selected, marked, accessible, authInfo, onClickIcon, onClickLabel }: Props): any => {
   if (label) {
     return (
-      <TreeNode label={label} canExpand={!!childIds.length} {...{ expanded, selected, marked, accessible, hasAuthorization, onClickIcon, onClickLabel }}>
+      <TreeNode label={label} canExpand={!!childIds.length} {...{ expanded, selected, marked, accessible, authInfo, onClickIcon, onClickLabel }}>
         {expanded && childIds.map((childId: string) => <ConnectedFolder key={childId} nodeId={childId} />)}
       </TreeNode>
     );
