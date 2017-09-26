@@ -12,10 +12,11 @@ export interface Props {
   accessible?: boolean,
   authInfo?: string,
   onClickIcon: () => void,
-  onClickLabel: () => void
+  onClickLabel: () => void,
+  onClickAuth: () => void
 }
 
-export default ({ label, children, canExpand, expanded, selected, marked, accessible, authInfo, onClickIcon, onClickLabel }: Props) => (<div>
+export default ({ label, children, canExpand, expanded, selected, marked, accessible, authInfo, onClickIcon, onClickLabel, onClickAuth }: Props) => (<div>
   <a href="" className={cx(styles.label, selected && styles.labelSelected, marked && styles.labelMarked, !accessible && styles.labelInaccessible)} onClick={onClickLabel}>
     <span
       className={cx(styles.icon, canExpand && styles.iconWithChildren, expanded && styles.iconOpen)}
@@ -27,7 +28,7 @@ export default ({ label, children, canExpand, expanded, selected, marked, access
     <span
       className={cx(authInfo && styles.authIcon)}
       title={authInfo}
-      onClick={ev => { if (ev.shiftKey) { ev.stopPropagation(); /* onClickAuth(); */ } }}
+      onClick={ev => { if (ev.shiftKey) { ev.stopPropagation(); onClickAuth(); } }}
     />
   </a>
   <div className={cx(styles.children, expanded && styles.childrenOpen)}>

@@ -3,6 +3,7 @@ import { routerReducer as router } from 'react-router-redux';
 import { reducer as toastr } from 'react-redux-toastr';
 import { RootState } from './types/index';
 
+import authorizedUsers from './authorizedUsers';
 import credentials from './credentials';
 import currentEntry from './currentEntry';
 import currentNode from './currentNode';
@@ -18,6 +19,7 @@ import settings from './settings';
 import treeState from './treeState';
 
 const rootReducer = combineReducers<RootState>({
+  authorizedUsers,
   credentials,
   currentEntry,
   currentNode,

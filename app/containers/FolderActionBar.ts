@@ -3,6 +3,7 @@ import FolderActionBar from '../components/FolderActionBar';
 import { prepareDelete, startRename, startCreate } from '../actions/currentNode';
 import { createInCurrent } from '../actions/edit';
 import { open as openImport } from '../actions/fileImport';
+import { openCurrent as openPermissions } from '../actions/authorizedUsers';
 import { browseForAdd } from '../actions/external';
 import {ROOT_ID} from '../domain/Node';
 import {RootState} from '../actions/types/index';
@@ -18,7 +19,7 @@ export default connect((state: RootState) => ({
   onDelete: () => dispatch(prepareDelete()),
   onCreateNode: () => dispatch(startCreate()),
   onCreateItem: () => dispatch(createInCurrent('password')),
-  onEditPermissions: () => 0,
+  onEditPermissions: () => dispatch(openPermissions()),
   onAddExternal: () => dispatch(browseForAdd()),
   onImport: () => dispatch(openImport())
 }))(FolderActionBar);

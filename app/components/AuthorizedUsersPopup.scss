@@ -1,0 +1,39 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~font-awesome/scss/variables";
+@import "~font-awesome/scss/mixins";
+
+.usersTable {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 5px -5px;
+
+  & > div {
+    padding: 5px 10px 5px 5px;
+    margin: 5px;
+  }
+}
+
+.selected {
+  background-color: theme-color-level('success', -10);
+
+  &::before {
+    @include fa-icon();
+
+    content: $fa-var-check;
+    color: theme-color('success');
+    width: 1.5em;
+  }
+}
+
+.unselected {
+  background-color: theme-color-level('danger', -10);
+
+  &::before {
+    @include fa-icon();
+
+    content: $fa-var-times;
+    color: theme-color('danger');
+    width: 1.5em;
+  }
+}

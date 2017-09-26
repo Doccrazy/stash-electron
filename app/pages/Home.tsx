@@ -13,6 +13,7 @@ import AddFileDropAcceptor from '../containers/AddFileDropAcceptor';
 import SpecialFolderLink from '../containers/SpecialFolderLink';
 import * as styles from './Home.css';
 import NoKeyAlert from '../containers/NoKeyAlert';
+import AuthorizedUsersPopup from '../containers/AuthorizedUsersPopup';
 
 export default class Home extends React.Component<{}, {}> {
   render() {
@@ -22,6 +23,7 @@ export default class Home extends React.Component<{}, {}> {
         <DeletePopup />
         <DeleteNodePopup />
         <ImportPopup />
+        <AuthorizedUsersPopup />
         <div className={`bg-light ${styles.sidebar}`}>
           <p>
             <SpecialFolderLink id="favorites" />

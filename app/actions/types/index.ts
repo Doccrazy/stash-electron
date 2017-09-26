@@ -4,6 +4,7 @@ import {Action as ReduxAction, Dispatch as ReduxDispatch} from 'redux';
 import {RouterState} from 'react-router-redux';
 import {ToastrState} from 'react-redux-toastr';
 
+import { State as AuthorizedUsersState } from './authorizedUsers';
 import { State as CredentialsState } from './credentials';
 import { State as CurrentEntryState } from './currentEntry';
 import { State as CurrentNodeState } from './currentNode';
@@ -19,6 +20,7 @@ import { State as SettingsState } from './settings';
 import { State as TreeStateState } from './treeState';
 
 export interface RootState {
+  authorizedUsers: AuthorizedUsersState,
   credentials: CredentialsState,
   currentEntry: CurrentEntryState,
   currentNode: CurrentNodeState,

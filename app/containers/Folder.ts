@@ -4,6 +4,7 @@ import naturalCompare from 'natural-compare';
 import Folder from '../components/Folder';
 import { toggle } from '../actions/treeState';
 import { select } from '../actions/currentNode';
+import { open as openPermissions } from '../actions/authorizedUsers';
 import {RootState} from '../actions/types/index';
 import Node from '../domain/Node';
 import {isAccessible} from '../utils/repository';
@@ -31,6 +32,7 @@ export default connect((state: RootState, props: Props) => {
     authInfo: node.authorizedUsers && formatUserList('Accessible to ', node.authorizedUsers, state.privateKey.username)
   });
 }, (dispatch, props) => ({
-   onClickIcon: () => dispatch(toggle(props.nodeId)),
-   onClickLabel: () => dispatch(select(props.nodeId))
+  onClickIcon: () => dispatch(toggle(props.nodeId)),
+  onClickLabel: () => dispatch(select(props.nodeId)),
+  onClickAuth: () => dispatch(openPermissions(props.nodeId))
 }))(Folder);
