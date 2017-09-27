@@ -37,7 +37,7 @@ export default class TextEditBox extends React.Component<Props, {}> {
         <InputGroup>
           <Input
             placeholder={placeholder}
-            getRef={input => { this.input = input; }}
+            innerRef={input => { this.input = input; }}
             value={value}
             onChange={ev => onChange(ev.target.value)}
             onKeyDown={this.inputKeyDown}

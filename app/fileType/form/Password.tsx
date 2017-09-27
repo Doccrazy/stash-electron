@@ -55,7 +55,7 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
           <Label sm={2} for="name">Title</Label>
           <Col sm={10}>
             <Input
-              getRef={c => { this.nameInput = c; }}
+              innerRef={c => { this.nameInput = c; }}
               id="name"
               placeholder="Title"
               value={typeById('password').toDisplayName(name)}
@@ -79,7 +79,7 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
           <Col sm={10}>
             <Row>
               <Col><Input
-                getRef={c => { this.passwordInput = c; }}
+                innerRef={c => { this.passwordInput = c; }}
                 type={this.props.formState.mask ? 'password' : 'text'}
                 id="password"
                 placeholder="Password"

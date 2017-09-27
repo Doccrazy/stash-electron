@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button } from 'reactstrap';
+import { Button, UncontrolledDropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 import generatePassword from '../../utils/generatePassword';
 
 const LENGTHS = [8, 12, 16, 20, 24];
@@ -29,11 +29,11 @@ export interface Props {
 }
 
 export default ({ onGenerate }: Props) => (
-  <div className="dropdown" style={{ display: 'inline-block' }}>
-    <button type="button" className="btn btn-secondary" data-toggle="dropdown" title="Generate password" tabIndex={-1}>
+  <UncontrolledDropdown tag="span">
+    <DropdownToggle title="Generate password" tabIndex={-1}>
       <i className="fa fa-cog" />
-    </button>
-    <div className="dropdown-menu dropdown-menu-right">
+    </DropdownToggle>
+    <DropdownMenu right>
       <table>
         <thead>
           <tr>
@@ -52,6 +52,6 @@ export default ({ onGenerate }: Props) => (
           </tr>))}
         </tbody>
       </table>
-    </div>
-  </div>
+    </DropdownMenu>
+  </UncontrolledDropdown>
 );

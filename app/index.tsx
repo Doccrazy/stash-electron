@@ -10,11 +10,6 @@ import registerHotkeys from './store/hotkeyHandlers';
 import './utils/sshpk-key-deriv-patch.js';
 import './app.global.scss';
 
-// TODO remove when reactstrap dropdowns are fixed
-(global as any).jQuery = require('jquery');
-(global as any).Popper = require('popper.js').default;
-require('bootstrap/js/src/dropdown');
-
 const store = configureStore();
 setTimeout(() => {
   store.dispatch(loadSettings());

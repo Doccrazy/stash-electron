@@ -25,7 +25,7 @@ export default ({ open, feedback, valid = true, value, onChange, onLoadKey, onCo
     <Form id="editForm" onSubmit={onConfirm}>
       <FormGroup>
         <Label>Username</Label>
-        <Input getRef={value.username ? undefined : focusOnRender} value={value.username || ''} onChange={ev => onChange({ ...value, username: ev.target.value })} />
+        <Input innerRef={value.username ? undefined : focusOnRender} value={value.username || ''} onChange={ev => onChange({ ...value, username: ev.target.value })} />
       </FormGroup>
       <FormGroup>
         <Button size="sm" className="pull-right" onClick={onLoadKey}>Load file</Button>

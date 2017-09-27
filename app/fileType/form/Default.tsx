@@ -21,7 +21,7 @@ export default class DefaultForm extends React.Component<FormProps<void, void>, 
           <Label sm={2} for="name">Filename</Label>
           <Col sm={10}>
             <Input
-              getRef={c => { this.nameInput = c; }}
+              innerRef={c => { this.nameInput = c; }}
               id="name"
               placeholder="Filename"
               value={name}

@@ -26,7 +26,7 @@ export default ({ open, title, feedback, valid = true, children, onConfirm, onCl
   </ModalBody>
   <ModalFooter>
     <div className="text-danger" style={{ flexGrow: 1 }}>{feedback}</div>
-    <Button type="submit" form="editForm" getRef={doFocus} color="primary" disabled={!valid}>Confirm</Button>{' '}
+    <Button type="submit" form="editForm" innerRef={doFocus} color="primary" disabled={!valid}>Confirm</Button>{' '}
     <Button color="secondary" onClick={onClose}>Cancel</Button>
   </ModalFooter>
 </Modal>);

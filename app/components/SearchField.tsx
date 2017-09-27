@@ -44,7 +44,7 @@ export default class SearchField extends React.Component<Props, {}> {
     return (<Form inline className={className}>
       <InputGroup>
         <Input
-          getRef={input => { this.input = input; }}
+          innerRef={input => { this.input = input; }}
           placeholder="Type to search, enter for fulltext"
           value={value}
           onChange={ev => onChange(ev.target.value)}

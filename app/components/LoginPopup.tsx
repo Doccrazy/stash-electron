@@ -26,11 +26,11 @@ export default ({ open, askUsername, title, text, error, value, onChange, onConf
     {text || 'Please enter your credentials below.'}
     {askUsername && <FormGroup>
       <Label>Username</Label>
-      <Input getRef={value.username ? undefined : focusOnRender} value={value.username || ''} onChange={ev => onChange({ ...value, username: ev.target.value })} />
+      <Input innerRef={value.username ? undefined : focusOnRender} value={value.username || ''} onChange={ev => onChange({ ...value, username: ev.target.value })} />
     </FormGroup>}
     <FormGroup>
       <Label>Password</Label>
-      <Input getRef={!askUsername || value.username ? focusOnRender : undefined} type="password" value={value.password || ''} onChange={ev => onChange({ ...value, password: ev.target.value })} />
+      <Input innerRef={!askUsername || value.username ? focusOnRender : undefined} type="password" value={value.password || ''} onChange={ev => onChange({ ...value, password: ev.target.value })} />
     </FormGroup>
     <FormGroup>
       <Label check>

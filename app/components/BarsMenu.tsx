@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { UncontrolledDropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 
 export interface Props {
   size?: string,
@@ -8,12 +9,12 @@ export interface Props {
 }
 
 export default ({ size, up = false, right = false, children }: Props) => (
-  <div className={`dropdown ${up ? 'dropup' : ''}`} style={{ display: 'inline-block' }}>
-    <button type="button" className={`btn btn-secondary ${size ? `btn-${size}` : ''}`} data-toggle="dropdown">
+  <UncontrolledDropdown tag="span" dropup={up} size={size}>
+    <DropdownToggle>
       <i className="fa fa-bars" />
-    </button>
-    <div className={`dropdown-menu ${right ? 'dropdown-menu-right' : ''}`}>
+    </DropdownToggle>
+    <DropdownMenu right={right}>
       {children}
-    </div>
-  </div>
+    </DropdownMenu>
+  </UncontrolledDropdown>
 );
