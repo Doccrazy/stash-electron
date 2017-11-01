@@ -27,6 +27,10 @@ function mayInherit(authParent?: Node, inherited?: boolean, currentUser?: string
   return inherited || (authParent && authParent.authorizedUsers && currentUser && authParent.authorizedUsers.includes(currentUser));
 }
 
+function mayToggle(username: string, currentUser: string | undefined, users: Set<string>) {
+  return username !== currentUser || (currentUser && !users.includes(currentUser));
+}
+
 export default ({ open, nodeName, inherited, editable, modified, currentUser, users = Set(), allUsers, authParent, validationError, onChange, onToggleInherit, onSave, onClose }: Props) => {
   const resolvedUsers = ((inherited && authParent ? authParent.authorizedUsers : users) || Set()).sort() as Set<string>;
   return (<Modal size="lg" isOpen={open} toggle={onClose}>
@@ -38,8 +42,8 @@ export default ({ open, nodeName, inherited, editable, modified, currentUser, us
           {editable && !inherited && allUsers.sort().map((username: string) => (
             <div
               key={username}
-              className={cx(username !== currentUser && 'clickable', users.includes(username) ? styles.selected : styles.unselected)}
-              onClick={() => username !== currentUser && onChange(users.includes(username) ? users.delete(username) : users.add(username))}
+              className={cx(mayToggle(username, currentUser, users) && 'clickable', users.includes(username) ? styles.selected : styles.unselected)}
+              onClick={() => mayToggle(username, currentUser, users) && onChange(users.includes(username) ? users.delete(username) : users.add(username))}
             >
               {username}
             </div>

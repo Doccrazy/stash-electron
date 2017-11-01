@@ -1,11 +1,13 @@
 import EntryPtr from '../domain/EntryPtr';
 import * as Repository from './repository';
 import * as CurrentNode from './currentNode';
+import * as PrivateKey from './privateKey';
 import { afterAction } from '../store/eventMiddleware';
 import typeFor from '../fileType';
 import {State} from './types/currentEntry';
 import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
 import {toastr} from 'react-redux-toastr';
+import {isAccessible} from '../utils/repository';
 
 export enum Actions {
   SELECT = 'currentEntry/SELECT',
@@ -42,8 +44,8 @@ export function reselect(ptr: EntryPtr): Action {
 
 export function read(contentBuffer?: Buffer): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const { currentEntry } = getState();
-    if (!currentEntry.ptr) {
+    const { currentEntry, repository, privateKey } = getState();
+    if (!currentEntry.ptr || !isAccessible(repository.nodes, currentEntry.ptr.nodeId, privateKey.username)) {
       return;
     }
 
@@ -139,6 +141,14 @@ afterAction(Repository.Actions.UPDATE_ENTRY, (dispatch, getState: GetState, { pt
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
     dispatch(read(buffer));
+  }
+});
+
+// when the login state changes, re-read current entry
+afterAction(PrivateKey.Actions.LOGIN, (dispatch, getState: GetState) => {
+  const { currentEntry } = getState();
+  if (currentEntry.ptr) {
+    dispatch(read());
   }
 });
 

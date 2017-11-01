@@ -6,7 +6,8 @@ import {RootState} from '../actions/types/index';
 import {findAuthParent, isAccessible} from '../utils/repository';
 
 export default connect((state: RootState) => {
-  const authParent = state.authorizedUsers.nodeId && findAuthParent(state.repository.nodes, state.authorizedUsers.nodeId);
+  const parentNodeId = !!state.authorizedUsers.nodeId && state.repository.nodes[state.authorizedUsers.nodeId].parentId;
+  const authParent = parentNodeId ? findAuthParent(state.repository.nodes, parentNodeId) : undefined;
   return ({
     open: !!state.authorizedUsers.nodeId,
     nodeName: state.authorizedUsers.nodeId && state.repository.nodes[state.authorizedUsers.nodeId].name,
@@ -17,7 +18,7 @@ export default connect((state: RootState) => {
     currentUser: state.privateKey.username,
     users: state.authorizedUsers.users,
     allUsers: Set(Object.keys(state.keys.byUser)),
-    authParent: authParent && authParent.id !== state.authorizedUsers.nodeId ? authParent : undefined,
+    authParent,
     validationError: ''
   });
 }, dispatch => ({

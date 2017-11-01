@@ -98,6 +98,10 @@ export default class PlainRepository implements Repository {
     await fs.remove(absPath);
   }
 
+  async setAuthorizedUsers(nodeId: string, users?: string[]): Promise<void> {
+    // not supported
+  }
+
   async renameFile(nodeId: string, oldName: string, newName: string): Promise<void> {
     await this.rename(path.join(nodeId, oldName), path.join(nodeId, newName));
   }

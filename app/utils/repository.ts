@@ -44,7 +44,7 @@ export function childNodeByName(allNodes: { [nodeId: string]: Node }, nodeOrId: 
   return n.childIds.find((child: string) => allNodes[child] && (allNodes[child].name.toLowerCase() === childName.toLowerCase()));
 }
 
-export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<Node>, nodeId: string): Promise<List<Node>> {
+export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<Node>, nodeId: string, filter?: (node: Node) => boolean): Promise<List<Node>> {
   console.time('readNodeRecursive');
   (process as any).noAsar = true;
 
@@ -52,7 +52,10 @@ export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<
   let readQueue = [nodeId];
 
   while (readQueue.length) {
-    const readNodes = await Promise.all(readQueue.map(n => nodeReader(n)));
+    let readNodes = await Promise.all(readQueue.map(n => nodeReader(n)));
+    if (filter) {
+      readNodes = readNodes.filter(filter);
+    }
     result = result.concat(readNodes);
     readQueue = readNodes.reduce((acc: string[], n: Node) => acc.concat(n.childIds.toArray()), []);
   }
@@ -73,6 +76,9 @@ export function findAuthParent(nodes: { [id: string]: Node }, nodeId: string) {
 }
 
 export function isAccessible(nodes: { [id: string]: Node }, nodeId: string, username?: string) {
+  if (!nodes[nodeId]) {
+    return false;
+  }
   const authParent = findAuthParent(nodes, nodeId);
   return !authParent.authorizedUsers || (!!username && authParent.authorizedUsers.includes(username));
 }

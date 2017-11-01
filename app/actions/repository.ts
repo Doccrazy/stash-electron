@@ -12,6 +12,8 @@ import Repository from '../repository/Repository';
 import {readNodeRecursive, recursiveChildIds} from '../utils/repository';
 import KeyProvider from '../repository/KeyProvider';
 import KeyFileKeyProvider from '../repository/KeyFileKeyProvider';
+import UsersFileAuthorizationProvider from '../repository/UsersFileAuthorizationProvider';
+import AuthorizationProvider from '../repository/AuthorizationProvider';
 
 export enum Actions {
   LOAD = 'repository/LOAD',
@@ -29,6 +31,7 @@ export enum Actions {
 
 let repo: Repository;
 let keyProvider: KeyProvider;
+let authProvider: AuthorizationProvider;
 
 export function getRepo(): Repository {
   return repo;
@@ -36,6 +39,10 @@ export function getRepo(): Repository {
 
 export function getKeyProvider(): KeyProvider {
   return keyProvider;
+}
+
+export function getAuthProvider(): AuthorizationProvider {
+  return authProvider;
 }
 
 export function load(repoPath?: string): Thunk<Promise<void>> {
@@ -53,7 +60,8 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
     }
 
     keyProvider = new KeyFileKeyProvider(repoPath);
-    repo = new EncryptedRepository(repoPath);
+    authProvider = new UsersFileAuthorizationProvider(repoPath, keyProvider);
+    repo = new EncryptedRepository(repoPath, authProvider);
     dispatch({
       type: Actions.LOAD,
       payload: {

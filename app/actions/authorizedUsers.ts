@@ -3,6 +3,7 @@ import {OptionalAction, TypedAction, TypedThunk} from './types/index';
 import {State} from './types/authorizedUsers';
 import Node from '../domain/Node';
 import {findAuthParent} from '../utils/repository';
+import {getRepo, readNode} from './repository';
 
 export enum Actions {
   OPEN = 'authorizedUsers/OPEN',
@@ -40,7 +41,14 @@ export function close(): Action {
 }
 
 export function save(): Thunk<void> {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
+    const { authorizedUsers } = getState();
+    if (authorizedUsers.nodeId) {
+      const repo = getRepo();
+      await repo.setAuthorizedUsers(authorizedUsers.nodeId, authorizedUsers.users ? authorizedUsers.users.toArray() : undefined);
+      dispatch(readNode(authorizedUsers.nodeId));
+    }
+
     dispatch(close());
   };
 }
@@ -83,7 +91,11 @@ type Thunk<R> = TypedThunk<Action, R>;
 export default function reducer(state: State = {}, action: Action): State {
   switch (action.type) {
     case Actions.OPEN:
-      const newState = { nodeId: action.payload.node.id, inherited: !action.payload.node.authorizedUsers, users: action.payload.node.authorizedUsers || Set() };
+      const newState = {
+        nodeId: action.payload.node.id,
+        inherited: !action.payload.node.authorizedUsers && !!action.payload.node.parentId,
+        users: action.payload.node.authorizedUsers || Set()
+      };
       return { ...newState, initialInherited: newState.inherited, initialUsers: newState.users };
     case Actions.CLOSE:
       return {};

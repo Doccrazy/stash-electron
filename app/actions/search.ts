@@ -2,7 +2,7 @@ import { List } from 'immutable';
 import { debounce } from 'lodash-es';
 import { getRepo } from './repository';
 import {deselectSpecial, selectSpecial} from './currentNode';
-import { hierarchy, recursiveChildIds } from '../utils/repository';
+import {hierarchy, isAccessible, recursiveChildIds} from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import typeFor, {typeForInt} from '../fileType/index';
 import {Dispatch, OptionalAction, TypedAction, TypedThunk} from './types/index';
@@ -71,15 +71,19 @@ function readContentBuffer(ptr: EntryPtr): Promise<PtrWithBuffer> {
   return getRepo().readFile(ptr.nodeId, ptr.entry).then((buffer: Buffer) => ({ ptr, buffer }));
 }
 
-function allEntriesBelow(nodes: RepositoryState['nodes'], rootNodeId: string): EntryPtr[] {
-  return recursiveChildIds(nodes, rootNodeId)
+function allEntriesBelow(nodes: RepositoryState['nodes'], rootNodeId: string, nodeFilter?: (nodeId: string) => boolean): EntryPtr[] {
+  let allChildIds = recursiveChildIds(nodes, rootNodeId);
+  if (nodeFilter) {
+    allChildIds = allChildIds.filter(nodeFilter);
+  }
+  return allChildIds
     .map(nodeId => nodes[nodeId].entries.toArray().map(entry => new EntryPtr(nodeId, entry)))
     .reduce((acc, ptrs) => { acc.push(...ptrs); return acc; }, []);
 }
 
-async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId: string = '/', filter: string) {
+async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId: string = '/', filter: string, currentUser?: string) {
   console.time('resolve');
-  const allSupportedEntries = allEntriesBelow(nodes, rootNodeId)
+  const allSupportedEntries = allEntriesBelow(nodes, rootNodeId, (nodeId) => isAccessible(nodes, nodeId, currentUser))
     .filter(ptr => !!typeFor((ptr as EntryPtr).entry).parse);
   console.timeEnd('resolve');
   console.log('# supported items: ', allSupportedEntries.length);
@@ -117,7 +121,7 @@ function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/',
 
 export function startSearch(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const { repository, search, currentNode } = getState();
+    const { repository, search, currentNode, privateKey } = getState();
 
     if (!search.filter || search.filter.length < 2) {
       return;
@@ -128,7 +132,8 @@ export function startSearch(): Thunk<Promise<void>> {
       type: Actions.START
     });
 
-    const results: List<EntryPtr> = await filterByContent(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/', search.filter);
+    const results: List<EntryPtr> = await filterByContent(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/',
+      search.filter, privateKey.username);
 
     dispatch({
       type: Actions.RESULTS,

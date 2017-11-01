@@ -9,6 +9,7 @@ import * as Settings from './settings';
 import {requestCredentials, acceptCredentials, rejectCredentials} from './credentials';
 import {parsePrivateKey} from '../utils/rsa';
 import * as Keys from './keys';
+import * as Repository from './repository';
 import {findUser} from '../repository/KeyProvider';
 
 export enum Actions {
@@ -85,6 +86,7 @@ export function cancelLoad() {
   };
 }
 
+// when the private key setting changes, reload the private key
 afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
   if (settings.current.privateKeyFile && settings.current.privateKeyFile !== settings.previous.privateKeyFile) {
@@ -92,6 +94,7 @@ afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState:
   }
 });
 
+// on any changes to the private key, dispatch a LOGIN action to notify other components
 afterAction([Keys.Actions.LOAD, Keys.Actions.SAVED, Actions.LOAD], (dispatch, getState: GetState) => {
   const { keys, privateKey } = getState();
   const currentUser = privateKey.key ? findUser(keys.byUser, privateKey.key) : undefined;
@@ -100,6 +103,15 @@ afterAction([Keys.Actions.LOAD, Keys.Actions.SAVED, Actions.LOAD], (dispatch, ge
       type: Actions.LOGIN,
       payload: currentUser
     });
+  }
+});
+
+// after the repository is loaded, forward current user to new authorization provider
+afterAction([Repository.Actions.FINISH_LOAD, Actions.LOGIN], (dispatch, getState: GetState) => {
+  const { privateKey } = getState();
+  const authProvider = Repository.getAuthProvider();
+  if (authProvider) {
+    authProvider.setCurrentUser(privateKey.key);
   }
 });
 
