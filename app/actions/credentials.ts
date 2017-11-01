@@ -37,7 +37,7 @@ export function requestCredentials(title: string, text: string, username?: strin
       });
     }
 
-    return await new Promise<Credentials>((resolve, reject) => {
+    return new Promise<Credentials>((resolve, reject) => {
       credentialsEvents.once('close', (success: boolean) => {
         const formState = getState().credentials.state;
         if (formState && formState.username && formState.password) {
@@ -125,7 +125,7 @@ export default function reducer(state: State = { state: {} }, action: Action): S
     case Actions.CHANGE:
       return { ...state, state: action.payload };
     case Actions.ERROR:
-      return { ...state, error: action.payload };
+      return { ...state, error: action.payload, state: { ...state.state, password: undefined } };
     default:
       return state;
   }
