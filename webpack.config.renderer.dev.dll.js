@@ -20,7 +20,7 @@ export default merge.smart(baseConfig, {
 
   target: 'electron-renderer',
 
-  externals: ['fsevents', 'crypto-browserify'],
+  externals: ['fsevents', 'crypto-browserify', '../build/Debug/nodegit.node'],
 
   /**
    * @HACK: Copy and pasted from renderer dev config. Consider merging these
@@ -151,6 +151,10 @@ export default merge.smart(baseConfig, {
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
         use: 'url-loader',
+      },
+      {
+        test: /\.node$/,
+        use: 'node-loader'
       }
     ]
   },

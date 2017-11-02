@@ -27,6 +27,14 @@ export default merge.smart(baseConfig, {
     filename: 'renderer.prod.js'
   },
 
+  externals: (context, request, callback) => {
+    if (/\.node$/.test(request)) {
+      const filename = path.relative(__dirname, path.resolve(context, request)).replace(/\\/g, '/');
+      return callback(null, `commonjs ./${filename}`);
+    }
+    callback();
+  },
+
   module: {
     rules: [
       // Extract all .global.css to style.css as is

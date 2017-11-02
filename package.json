@@ -3,6 +3,7 @@
   "productName": "Stash",
   "version": "1.0.0-alpha",
   "description": "Cryptographically secure team password manager built on open technologies and standardized encryption algorithms.",
+  "main": "./main.prod.js",
   "scripts": {
     "build": "concurrently \"npm run build-main\" \"npm run build-renderer\"",
     "build-dll": "cross-env NODE_ENV=development node --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.renderer.dev.dll.js --colors",
@@ -32,13 +33,22 @@
     "productName": "Stash",
     "appId": "de.doccrazy.Stash",
     "files": [
-      "dist/",
-      "node_modules/",
-      "app.html",
-      "main.prod.js",
-      "main.prod.js.map",
-      "package.json"
+      "package.json",
+      {
+        "from": "app",
+        "to": "",
+        "filter": [
+          "dist",
+          "app.html",
+          "main.prod.js",
+          "main.prod.js.map"
+        ]
+      },
+      "!node_modules",
+      "node_modules/keytar/build/Release/keytar.node",
+      "node_modules/nodegit/build/Release/nodegit.node"
     ],
+    "npmArgs": "--update-binary",
     "dmg": {
       "contents": [
         {
@@ -162,9 +172,11 @@
     "fork-ts-checker-webpack-plugin": "^0.2.8",
     "html-webpack-plugin": "^2.29.0",
     "identity-obj-proxy": "^3.0.0",
+    "imports-loader": "^0.7.1",
     "jest": "^20.0.4",
     "jsdom": "^11.0.0",
     "minimist": "^1.2.0",
+    "node-loader": "^0.6.0",
     "node-sass": "^4.5.3",
     "react-addons-test-utils": "^15.6.0",
     "react-test-renderer": "^15.6.1",
@@ -196,6 +208,7 @@
     "@types/keytar": "^4.0.1",
     "@types/lodash-es": "^4.14.6",
     "@types/mousetrap": "^1.5.34",
+    "@types/nodegit": "^0.18.4",
     "@types/react": "^15.6.1",
     "@types/react-dom": "^15.5.4",
     "@types/react-hot-loader": "^3.0.4",
@@ -221,10 +234,12 @@
     "immutable": "^3.8.1",
     "jquery": "^3.2.1",
     "kdbxweb": "^1.0.1",
+    "keytar": "^4.0.5",
     "lodash-es": "^4.17.4",
     "moment": "^2.18.1",
     "mousetrap": "^1.6.1",
     "natural-compare": "^1.4.0",
+    "nodegit": "^0.20.3",
     "popper.js": "^1.12.3",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
