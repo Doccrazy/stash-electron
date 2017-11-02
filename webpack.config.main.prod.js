@@ -4,7 +4,7 @@
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
-import BabiliPlugin from 'babili-webpack-plugin';
+import UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
@@ -12,7 +12,7 @@ import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
 CheckNodeEnv('production');
 
 export default merge.smart(baseConfig, {
-  devtool: 'source-map',
+  devtool: 'nosources-source-map',
 
   target: 'electron-main',
 
@@ -26,9 +26,11 @@ export default merge.smart(baseConfig, {
 
   plugins: [
     /**
-     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
+     * Minify using ES6 compatible UglifyJS
      */
-    new BabiliPlugin(),
+    new UglifyJSPlugin({
+      sourceMap: true
+    }),
 
     new BundleAnalyzerPlugin({
       analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
