@@ -46,7 +46,7 @@ export function childNodeByName(allNodes: { [nodeId: string]: Node }, nodeOrId: 
 
 export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<Node>, nodeId: string, filter?: (node: Node) => boolean): Promise<List<Node>> {
   console.time('readNodeRecursive');
-  (process as any).noAsar = true;
+  // (process as any).noAsar = true;
 
   let result: Node[] = [];
   let readQueue = [nodeId];
@@ -60,7 +60,7 @@ export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<
     readQueue = readNodes.reduce((acc: string[], n: Node) => acc.concat(n.childIds.toArray()), []);
   }
 
-  (process as any).noAsar = false;
+  // (process as any).noAsar = false;
 
   console.timeEnd('readNodeRecursive');
   console.log(result.length);
