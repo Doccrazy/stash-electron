@@ -4,6 +4,8 @@ declare module 'kdbxweb';
 
 declare module 'natural-compare';
 
+declare module 'electron-unhandled';
+
 declare module '*.css' {
   interface IClassNames {
     [className: string]: string
