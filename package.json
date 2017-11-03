@@ -45,7 +45,7 @@
         ]
       },
       "!node_modules",
-      "node_modules/keytar/build/Release/keytar.node",
+      "node_modules/keytar-prebuild/build/Release/keytar.node",
       "node_modules/nodegit/build/Release/nodegit.node"
     ],
     "dmg": {
