@@ -233,7 +233,7 @@
     "immutable": "^3.8.1",
     "jquery": "^3.2.1",
     "kdbxweb": "^1.0.1",
-    "keytar": "^4.0.5",
+    "keytar-prebuild": "^4.0.4",
     "lodash-es": "^4.17.4",
     "moment": "^2.18.1",
     "mousetrap": "^1.6.1",

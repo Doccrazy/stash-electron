@@ -87,6 +87,9 @@ export default {
       path.join(__dirname, 'app'),
       'node_modules',
     ],
+    alias: {
+      keytar: 'keytar-prebuild'
+    }
   },
 
   plugins: [
