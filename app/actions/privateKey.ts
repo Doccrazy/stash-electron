@@ -65,13 +65,13 @@ export function load(filename: string, passphrase?: string): Thunk<Promise<void>
         payload: privateKey
       });
     } catch (e) {
-      console.error(e);
       if (e instanceof sshpk.KeyEncryptedError) {
         dispatch({type: Actions.ERROR, payload: KeyError.ENCRYPTED});
       } else if (e instanceof sshpk.KeyParseError && (e as any).innerErr && (e as any).innerErr.message.startsWith('Incorrect passphrase')) {
         toastr.error('Decryption failed', 'Invalid passphrase');
         dispatch({type: Actions.ERROR, payload: KeyError.PASSPHRASE});
       } else {
+        console.error(e);
         toastr.error('Private key unreadable', e.message);
         dispatch({type: Actions.ERROR, payload: KeyError.FILE});
       }
