@@ -1,11 +1,23 @@
+import * as fs from 'fs-extra';
 import { Set } from 'immutable';
+import * as path from 'path';
 import EntryPtr from '../domain/EntryPtr';
-import {TypedAction, TypedThunk} from './types/index';
-import {State} from './types/favorites';
+import { afterAction } from '../store/eventMiddleware';
+import * as Repository from './repository';
+import { State } from './types/favorites';
+import { GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 
 export enum Actions {
   ADD = 'favorites/ADD',
-  REMOVE = 'favorites/REMOVE'
+  REMOVE = 'favorites/REMOVE',
+  SET = 'favorites/SET',
+  SAVED = 'favorites/SAVED'
+}
+
+export const FILENAME = '.favorites.json';
+
+interface FavoritesFile {
+  favorites?: string[]
 }
 
 export function add(ptr: EntryPtr): Action {
@@ -29,9 +41,57 @@ export function toggle(ptr: EntryPtr): Thunk<any> {
   };
 }
 
+export function toggleAndSave(ptr: EntryPtr): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    dispatch(toggle(ptr));
+    await dispatch(saveForRepo());
+  };
+}
+
+export function set(newFavorites: Set<EntryPtr>): Action {
+  return {
+    type: Actions.SET,
+    payload: newFavorites
+  };
+}
+
+export function loadForRepo(): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const repoPath = Repository.getRepo().rootPath;
+    const filename = path.join(repoPath, FILENAME);
+    if (fs.existsSync(filename)) {
+      const parsed = JSON.parse(await fs.readFile(filename, 'utf8')) as FavoritesFile;
+      if (parsed.favorites) {
+        dispatch(set(Set(parsed.favorites.map(href => EntryPtr.fromHref(href)))));
+      }
+    } else {
+      dispatch(set(Set()));
+    }
+  };
+}
+
+export function saveForRepo(): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const { favorites } = getState();
+    const repoPath = Repository.getRepo().rootPath;
+    const filename = path.join(repoPath, FILENAME);
+    const serialized: FavoritesFile = {
+      favorites: favorites.map((ptr: EntryPtr) => ptr.toHref()).toArray()
+    };
+    await fs.writeFile(filename, JSON.stringify(serialized, null, '  '));
+    dispatch({ type: Actions.SAVED });
+  };
+}
+
+afterAction(Repository.Actions.FINISH_LOAD, (dispatch, getState: GetState) => {
+  dispatch(loadForRepo());
+});
+
 type Action =
   TypedAction<Actions.ADD, EntryPtr>
-  | TypedAction<Actions.REMOVE, EntryPtr>;
+  | TypedAction<Actions.REMOVE, EntryPtr>
+  | TypedAction<Actions.SET, Set<EntryPtr>>
+  | OptionalAction<Actions.SAVED>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 
@@ -41,6 +101,8 @@ export default function reducer(state: State = Set(), action: Action): State {
       return state.add(action.payload);
     case Actions.REMOVE:
       return state.delete(action.payload);
+    case Actions.SET:
+      return action.payload;
     default:
       return state;
   }

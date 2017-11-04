@@ -4,7 +4,7 @@ import FileList from '../components/FileList';
 import EntryPtr from '../domain/EntryPtr';
 import { select } from '../actions/currentEntry';
 import { open } from '../actions/edit';
-import { toggle as toggleFavorite } from '../actions/favorites';
+import { toggleAndSave as toggleFavorite } from '../actions/favorites';
 import specialFolders, {SpecialFolderId} from '../utils/specialFolders';
 import {RootState} from '../actions/types/index';
 import FileListEntry from '../domain/FileListEntry';
