@@ -36,7 +36,9 @@ export default ({ open, nodeName, inherited, editable, modified, currentUser, us
   return (<Modal size="lg" isOpen={open} toggle={onClose}>
     <ModalHeader toggle={onClose}>Permissions for {nodeName}</ModalHeader>
     <ModalBody>
-      Authorized users{inherited && authParent && ` (inherited from ${authParent.name})`}: {resolvedUsers.join(', ')}
+      <span className="selectable">
+        Authorized users{inherited && authParent && ` (inherited from ${authParent.name})`}: {resolvedUsers.join(', ')}
+      </span>
       <Form id="editForm" onSubmit={onSave}>
         <div className={styles.usersTable}>
           {editable && !inherited && allUsers.sort().map((username: string) => (

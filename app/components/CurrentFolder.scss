@@ -8,6 +8,7 @@
   padding: 0.5rem 1rem !important;
   border: 1px solid #e9ecef;
   margin-bottom: 0 !important;
+  user-select: text;
 
   > li:first-child::before {
     @include fa-icon;

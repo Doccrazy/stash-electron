@@ -4,9 +4,21 @@ $fa-font-path: "~font-awesome/fonts";
 @import "~bootstrap/scss/bootstrap";
 @import '~react-redux-toastr/src/styles/index';
 
+a:not([draggable=true]),
+img:not([draggable=true]) {
+  -webkit-user-drag: none;
+}
+
+a[href^="http://"],
+a[href^="https://"],
+a[href^="ftp://"] {
+  -webkit-user-drag: auto;
+}
+
 html,
 body,
 #root {
+  user-select: none;
   height: 100%;
 }
 
@@ -28,4 +40,8 @@ body,
 
 .clickable {
   cursor: pointer;
+}
+
+.selectable {
+  user-select: text;
 }

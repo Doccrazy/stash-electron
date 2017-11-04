@@ -31,7 +31,7 @@ export default ({ node, entry, parsedContent, accessible, onEdit, onDelete }: Pr
     {type && TypePanel && node && entry ? (<div>
       <div className={styles.headerWithButtons}>
         <div>
-          <h4>{type.format ? type.format(entry) : entry}</h4>
+          <h4 className="selectable">{type.format ? type.format(entry) : entry}</h4>
         </div>
         <div>
           <FileActionBar node={node} entry={entry} accessible={accessible} onEdit={onEdit} onDelete={onDelete} />
