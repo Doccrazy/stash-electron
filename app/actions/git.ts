@@ -1,7 +1,8 @@
 import * as assert from 'assert';
 import * as Git from 'nodegit';
+import { toastr } from 'react-redux-toastr';
 import { afterAction } from '../store/eventMiddleware';
-import { compareRefs } from '../utils/git';
+import { compareRefs, resolveAllUsingTheirs } from '../utils/git';
 import * as Credentials from './credentials';
 import * as Repository from './repository';
 import { FetchResult, GitStatus, State } from './types/git';
@@ -26,6 +27,7 @@ export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
 
 function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<GitStatus>> {
   return async (dispatch, getState) => {
+    const oldStatus = getState().git.status;
     const status: GitStatus = { initialized: false };
     try {
       const gitRepo = await Git.Repository.open(repoPath);
@@ -58,6 +60,9 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
       }
       status.upstreamName = upstream.shorthand();
       const remoteName = (/^refs\/remotes\/([^\/]+)\//.exec(upstream.name()) || [])[1];
+
+      // if not fetching or fetch fails, remember bg mode from last fetch
+      status.allowBackgroundFetch = oldStatus.allowBackgroundFetch;
 
       if (doFetch && remoteName) {
         const fetchResult = await dispatch(gitFetchRemote(gitRepo, remoteName));
@@ -144,6 +149,44 @@ export function resetStatus(): Action {
     type: Actions.UPDATE_STATUS,
     payload: {
       initialized: false
+    }
+  };
+}
+
+export function resolveConflict(): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const repoPath = Repository.getRepo().rootPath;
+
+    try {
+      const gitRepo = await Git.Repository.open(repoPath);
+
+      if (gitRepo.isMerging()) {
+        toastr.error('Manual resolution required', 'Merge not implemented');
+        return;
+      }
+
+      if (!gitRepo.isRebasing()) {
+        return;
+      }
+
+      let index = await gitRepo.refreshIndex();
+      while (index.hasConflicts()) {
+        await resolveAllUsingTheirs(index);
+        try {
+          await gitRepo.continueRebase(null as any, null as any);
+        } catch (e) {
+          if (e instanceof Git.Index) {
+            // more conflicts
+            index = e;
+          } else {
+            throw e;
+          }
+        }
+      }
+      await dispatch(updateStatus(false));
+    } catch (e) {
+      console.error(e);
+      toastr.error('Resolve failed', e.message);
     }
   };
 }

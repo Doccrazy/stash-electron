@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Navbar, Nav, NavItem } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import ReduxToastr from 'react-redux-toastr';
-import GitStatus from '../components/GitStatus';
+import GitStatus from '../containers/GitStatus';
 import SearchField from '../containers/SearchField';
 import LoginPopup from '../containers/LoginPopup';
 import * as styles from './App.css';
@@ -32,7 +32,7 @@ export default class App extends React.Component<Props, {}> {
           </Nav>
           <SearchField className={`mr-3 ${styles.form}`} />
           <span className="navbar-text">
-            <GitStatus ahead={2} />
+            <GitStatus />
           </span>
         </Navbar>
         {this.props.children}
