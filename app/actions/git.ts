@@ -71,8 +71,8 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
       }
 
       let trackingState = await compareRefs(currentRef, upstream);
-      if (trackingState.right) {
-        status.incomingCommits = trackingState.right;
+      if (trackingState.behind) {
+        status.incomingCommits = trackingState.behind;
         // if origin is ahead, we need to fast-forward or rebase (rebaseBranches will do the appropriate)
         try {
           await gitRepo.rebaseBranches(currentRef.name(), upstream.name(), '', null as any, null as any);
@@ -86,9 +86,9 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
           }
         }
         trackingState = await compareRefs(currentRef, upstream);
-        assert.equal(trackingState.right, 0, 'no commits on origin after successful rebase');
+        assert.equal(trackingState.behind, 0, 'no commits on origin after successful rebase');
       }
-      status.commitsAheadOrigin = trackingState.left - trackingState.right;
+      status.commitsAheadOrigin = trackingState.ahead;
 
       const commit = await gitRepo.getHeadCommit();
       status.headCommit = {
