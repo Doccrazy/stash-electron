@@ -25,8 +25,8 @@ export function loadWithFeedback(filename: string): Thunk<Promise<void>> {
     while (getState().privateKey.error === KeyError.ENCRYPTED || getState().privateKey.error === KeyError.PASSPHRASE) {
       let passphrase;
       try {
-        const credentials = await dispatch(requestCredentials('Private key passphrase required',
-          `Please enter the passphrase for private key file ${filename} below.`, path.resolve(filename), false));
+        const credentials = await dispatch(requestCredentials(path.resolve(filename), 'Private key passphrase required',
+          `Please enter the passphrase for private key file ${filename} below.`));
         passphrase = credentials.password;
       } catch {
         dispatch({type: Actions.ERROR, payload: KeyError.CANCELLED});

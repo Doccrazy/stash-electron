@@ -1,5 +1,5 @@
 export interface Credentials {
-  username: string,
+  username?: string,
   password: string
 }
 
@@ -11,6 +11,7 @@ export interface FormState {
 
 export interface State {
   open?: boolean,
+  context?: string,
   askUsername?: boolean,
   title?: string,
   text?: string,

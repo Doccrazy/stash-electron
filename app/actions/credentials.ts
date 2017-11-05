@@ -1,8 +1,9 @@
 import { EventEmitter } from 'events';
 import * as keytar from 'keytar';
-import {OptionalAction, TypedAction, TypedThunk} from './types/index';
+import { GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 import {Credentials, State, FormState} from './types/credentials';
 import * as Settings from './settings';
+import { onceAfterAction } from '../store/eventMiddleware';
 
 export enum Actions {
   OPEN = 'credentials/OPEN',
@@ -12,23 +13,53 @@ export enum Actions {
 }
 
 const KEYTAR_SERVICE = 'de.doccrazy.Stash';
+const SETTINGS_KEY = 'storedLogins';
 
 const credentialsEvents = new EventEmitter();
 
-export function requestCredentials(title: string, text: string, username?: string, askUsername?: boolean): Thunk<Promise<Credentials>> {
+function keytarEncode(credentials: Credentials) {
+  return JSON.stringify(credentials);
+}
+
+function keytarDecode(val: string | null): Credentials | undefined {
+  return val ? JSON.parse(val) : null;
+}
+
+export function hasStoredLogin(getState: GetState, context: string) {
+  return (getState().settings.current[SETTINGS_KEY] || []).includes(context);
+}
+
+export function requestCredentials(context: string, title: string, text: string, username?: string, askUsername?: boolean): Thunk<Promise<Credentials>> {
   return async (dispatch, getState) => {
-    if (username && (getState().settings.current.storedLogins || []).includes(username)) {
-      const password = await keytar.getPassword(KEYTAR_SERVICE, username);
-      if (password) {
-        dispatch(change({ username, password }));
-        return { username, password };
+    if (hasStoredLogin(getState, context)) {
+      try {
+        const userPass = keytarDecode(await keytar.getPassword(KEYTAR_SERVICE, context));
+        if (userPass && userPass.password) {
+          dispatch(change(userPass));
+          return userPass;
+        }
+      } catch (e) {
+        // failed to get password from keytar
+        console.error(e);
       }
     }
 
-    if (!getState().credentials.open) {
+    if (getState().credentials.open) {
+      if (context !== getState().credentials.context) {
+        return new Promise<Credentials>((resolve, reject) => {
+          onceAfterAction(Actions.CLOSE, () => {
+            // TODO wait for other popup to fully close (reactstrap bug?)
+            setTimeout(() => {
+              resolve(dispatch(requestCredentials(context, title, text, username, askUsername)));
+            }, 500);
+          });
+        });
+      }
+    } else {
       dispatch({
         type: Actions.OPEN,
         payload: {
+          context,
           title,
           text,
           username,
@@ -44,7 +75,7 @@ export function requestCredentials(title: string, text: string, username?: strin
           const result: Credentials = { username: formState.username, password: formState.password };
           resolve(result);
         } else {
-          reject('cancelled by user');
+          reject(new Error('cancelled by user'));
         }
       });
     });
@@ -53,11 +84,21 @@ export function requestCredentials(title: string, text: string, username?: strin
 
 export function acceptCredentials(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const formState = getState().credentials.state;
-    if (formState.savePassword && formState.username && formState.password) {
-      await keytar.setPassword(KEYTAR_SERVICE, formState.username, formState.password);
+    const { credentials } = getState();
 
-      dispatch(Settings.changeAndSave('storedLogins', [...(getState().settings.current.storedLogins || []), formState.username]) as any);
+    const formState = credentials.state;
+    if (credentials.context && formState.savePassword && formState.password) {
+      try {
+        await keytar.setPassword(KEYTAR_SERVICE, credentials.context, keytarEncode({
+          username: formState.username,
+          password: formState.password
+        }));
+
+        dispatch(Settings.changeAndSave(SETTINGS_KEY, [...(getState().settings.current.storedLogins || []), credentials.context]) as any);
+      } catch (e) {
+        // failed to save password
+        console.error(e);
+      }
     }
     dispatch({
       type: Actions.CLOSE
@@ -67,11 +108,16 @@ export function acceptCredentials(): Thunk<Promise<void>> {
 
 export function rejectCredentials(error: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const formState = getState().credentials.state;
-    if (formState.username) {
-      await keytar.deletePassword(KEYTAR_SERVICE, formState.username);
+    const context = getState().credentials.context;
+    if (context) {
+      try {
+        await keytar.deletePassword(KEYTAR_SERVICE, context);
 
-      dispatch(Settings.changeAndSave('storedLogins', (getState().settings.current.storedLogins || []).filter(un => un !== formState.username)) as any);
+        dispatch(Settings.changeAndSave(SETTINGS_KEY, (getState().settings.current.storedLogins || []).filter(ctx => ctx !== context)) as any);
+      } catch (e) {
+        // failed to delete password
+        console.error(e);
+      }
     }
     dispatch({
       type: Actions.ERROR,
@@ -103,7 +149,7 @@ export function change(value: FormState): Action {
 }
 
 type Action =
-  TypedAction<Actions.OPEN, { title: string, text: string, username?: string, askUsername?: boolean }>
+  TypedAction<Actions.OPEN, { context: string, title: string, text: string, username?: string, askUsername?: boolean }>
   | OptionalAction<Actions.CLOSE>
   | TypedAction<Actions.CHANGE, FormState>
   | TypedAction<Actions.ERROR, string>;
@@ -115,6 +161,7 @@ export default function reducer(state: State = { state: {} }, action: Action): S
     case Actions.OPEN:
       return {
         open: true,
+        context: action.payload.context,
         title: action.payload.title,
         text: action.payload.text,
         askUsername: action.payload.askUsername,
