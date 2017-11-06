@@ -99,6 +99,7 @@ app.on('ready', async () => {
     x: mainWindowState.x,
     y: mainWindowState.y,
     backgroundColor: '#ccc',
+    icon: process.platform === 'linux' ? `${__dirname}/icon.png` : undefined,
     autoHideMenuBar: true
   });
 

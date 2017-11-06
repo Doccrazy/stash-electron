@@ -40,6 +40,7 @@
         "filter": [
           "dist",
           "app.html",
+          "icon.png",
           "main.prod.js",
           "main.prod.js.map"
         ]
