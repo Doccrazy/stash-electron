@@ -136,6 +136,7 @@ function gitFetchRemote(gitRepo: Git.Repository, remoteName: string): Thunk<Prom
     } catch (e) {
       if (credentialsContext) {
         await dispatch(Credentials.rejectCredentials('Operation failed'));
+        await dispatch(Credentials.close());
       }
       throw e;
     } finally {

@@ -71,7 +71,7 @@ export function requestCredentials(context: string, title: string, text: string,
     return new Promise<Credentials>((resolve, reject) => {
       credentialsEvents.once('close', (success: boolean) => {
         const formState = getState().credentials.state;
-        if (formState && formState.username && formState.password) {
+        if (formState && (!askUsername || formState.username) && formState.password) {
           const result: Credentials = { username: formState.username, password: formState.password };
           resolve(result);
         } else {
