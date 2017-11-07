@@ -3,7 +3,7 @@ import {List} from 'immutable';
 import * as Repository from './repository';
 import { expand } from './treeState';
 import { afterAction } from '../store/eventMiddleware';
-import { cleanFileName, hasChildOrEntry } from '../utils/repository';
+import { cleanFileName, hasChildOrEntry, RESERVED_FILENAMES } from '../utils/repository';
 import {State} from './types/currentNode';
 import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
 import Node, {ROOT_ID} from '../domain/Node';
@@ -123,6 +123,10 @@ export function saveNode(): Thunk<Promise<void>> {
       const newName = currentNode.name ? currentNode.name.trim() : currentNode.name;
       if (!newName || newName === currentNode.initialName) {
         dispatch(closeEdit());
+        return;
+      }
+      if (RESERVED_FILENAMES.includes(newName.toLowerCase())) {
+        toastr.error('', 'This filename is reserved for internal use.');
         return;
       }
 

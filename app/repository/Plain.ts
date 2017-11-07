@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { isValidFileName } from '../utils/repository';
+import { isValidFileName, RESERVED_FILENAMES } from '../utils/repository';
 import Node, { ROOT_ID } from '../domain/Node';
 import Repository from './Repository';
 
@@ -46,10 +46,12 @@ export default class PlainRepository implements Repository {
     files.forEach((file, idx) => {
       const stat = fileStats[idx];
 
-      if (stat.isFile()) {
-        entries.push(file);
-      } else if (stat.isDirectory()) {
-        children.push(makeId(nodeId, file));
+      if (!RESERVED_FILENAMES.includes(file.toLowerCase())) {
+        if (stat.isFile()) {
+          entries.push(file);
+        } else if (stat.isDirectory()) {
+          children.push(makeId(nodeId, file));
+        }
       }
     });
 

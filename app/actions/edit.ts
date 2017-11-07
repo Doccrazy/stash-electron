@@ -1,5 +1,5 @@
 import { fromJS, is } from 'immutable';
-import {cleanFileName, hasChildOrEntry, isAccessible, isValidFileName} from '../utils/repository';
+import { cleanFileName, hasChildOrEntry, isAccessible, isValidFileName, RESERVED_FILENAMES } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import typeFor, { typeById } from '../fileType';
 import * as Repository from './repository';
@@ -138,6 +138,13 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
         dispatch({
           type: Actions.VALIDATE,
           payload: 'Name must be provided and cannot contain / \\ : * ? " < > |.'
+        });
+        return;
+      }
+      if (RESERVED_FILENAMES.includes(newName.toLowerCase())) {
+        dispatch({
+          type: Actions.VALIDATE,
+          payload: 'This filename is reserved for internal use.'
         });
         return;
       }

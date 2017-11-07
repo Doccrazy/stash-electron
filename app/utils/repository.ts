@@ -1,4 +1,4 @@
-import {List} from 'immutable';
+import { List, Set } from 'immutable';
 import Node from '../domain/Node';
 
 export function hierarchy(nodes: { [nodeId: string]: Node }, nodeId?: string): Node[] {
@@ -82,3 +82,6 @@ export function isAccessible(nodes: { [id: string]: Node }, nodeId: string, user
   const authParent = findAuthParent(nodes, nodeId);
   return !authParent.authorizedUsers || (!!username && authParent.authorizedUsers.includes(username));
 }
+
+// these files are used internally and should not be allowed for file or folder names
+export const RESERVED_FILENAMES = Set(['.git', '.gitignore', '.favorites.json', '.keys.json', '.users.json']);
