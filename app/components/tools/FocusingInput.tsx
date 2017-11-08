@@ -5,7 +5,7 @@ export default class FocusingInput extends React.Component<InputProps & { focuse
   private inputRef: HTMLInputElement;
 
   setRef = (ref: HTMLInputElement) => {
-    if (!this.inputRef && this.props.focused) {
+    if (ref && !this.inputRef && this.props.focused) {
       this.inputRef = ref;
       setTimeout(() => { ref.focus(); ref.select(); });
     }
