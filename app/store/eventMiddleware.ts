@@ -1,7 +1,22 @@
 import { EventEmitter } from 'events';
 import {AnyAction, Dispatch, MiddlewareAPI} from 'redux';
 
-const storeEvents = new EventEmitter();
+const storeEvents = new class extends EventEmitter {
+  onceAny(events: string[],  listener: (...args: any[]) => void): this {
+    const cb = () => {
+      events.forEach(ev => {
+        this.removeListener(ev, cb);
+      });
+
+      listener.apply(this, arguments);
+    };
+
+    events.forEach(ev => {
+      this.on(ev, cb);
+    });
+    return this;
+  }
+}();
 
 export default <S> ({ dispatch, getState }: MiddlewareAPI<S>) => (next: Dispatch<S>) => (action: AnyAction) => {
   const preActionState = getState();
@@ -25,6 +40,10 @@ export function afterAction<S>(actionType: string | string[], listener: ActionLi
   }
 }
 
-export function onceAfterAction<S>(actionType: string, listener: ActionListener<S>) {
-  storeEvents.once(actionType, listener);
+export function onceAfterAction<S>(actionType: string | string[], listener: ActionListener<S>) {
+  if (Array.isArray(actionType)) {
+    storeEvents.onceAny(actionType, listener);
+  } else {
+    storeEvents.once(actionType, listener);
+  }
 }

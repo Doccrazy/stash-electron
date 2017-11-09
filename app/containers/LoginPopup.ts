@@ -6,6 +6,7 @@ import LoginPopup from '../components/LoginPopup';
 
 export default connect((state: RootState) => ({
   open: state.credentials.open,
+  working: state.credentials.working,
   askUsername: state.credentials.askUsername,
   title: state.credentials.title,
   text: state.credentials.text,

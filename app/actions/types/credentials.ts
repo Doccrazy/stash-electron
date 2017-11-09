@@ -11,6 +11,7 @@ export interface FormState {
 
 export interface State {
   open?: boolean,
+  working?: boolean,
   context?: string,
   askUsername?: boolean,
   title?: string,

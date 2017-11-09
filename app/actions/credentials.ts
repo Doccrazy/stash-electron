@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events';
 import * as keytar from 'keytar';
 import { GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 import {Credentials, State, FormState} from './types/credentials';
@@ -9,13 +8,12 @@ export enum Actions {
   OPEN = 'credentials/OPEN',
   CLOSE = 'credentials/CLOSE',
   CHANGE = 'credentials/CHANGE',
+  SUBMIT = 'credentials/SUBMIT',
   ERROR = 'credentials/ERROR'
 }
 
 const KEYTAR_SERVICE = 'de.doccrazy.Stash';
 const SETTINGS_KEY = 'storedLogins';
-
-const credentialsEvents = new EventEmitter();
 
 function keytarEncode(credentials: Credentials) {
   return JSON.stringify(credentials);
@@ -69,7 +67,7 @@ export function requestCredentials(context: string, title: string, text: string,
     }
 
     return new Promise<Credentials>((resolve, reject) => {
-      credentialsEvents.once('close', (success: boolean) => {
+      onceAfterAction([Actions.CLOSE, Actions.SUBMIT], () => {
         const formState = getState().credentials.state;
         if (formState && (!askUsername || formState.username) && formState.password) {
           const result: Credentials = { username: formState.username, password: formState.password };
@@ -131,13 +129,14 @@ export function close(): Thunk<void> {
     dispatch({
       type: Actions.CLOSE
     });
-    credentialsEvents.emit('close');
   };
 }
 
 export function confirm(): Thunk<void> {
   return (dispatch, getState) => {
-    credentialsEvents.emit('close', true);
+    dispatch({
+      type: Actions.SUBMIT
+    });
   };
 }
 
@@ -152,6 +151,7 @@ type Action =
   TypedAction<Actions.OPEN, { context: string, title: string, text: string, username?: string, askUsername?: boolean }>
   | OptionalAction<Actions.CLOSE>
   | TypedAction<Actions.CHANGE, FormState>
+  | OptionalAction<Actions.SUBMIT>
   | TypedAction<Actions.ERROR, string>;
 
 type Thunk<R> = TypedThunk<Action, R>;
@@ -171,8 +171,10 @@ export default function reducer(state: State = { state: {} }, action: Action): S
       return { open: false, state: {} };
     case Actions.CHANGE:
       return { ...state, state: action.payload };
+    case Actions.SUBMIT:
+      return { ...state, working: true };
     case Actions.ERROR:
-      return { ...state, error: action.payload, state: { ...state.state, password: undefined } };
+      return { ...state, working: false, error: action.payload, state: { ...state.state, password: undefined } };
     default:
       return state;
   }

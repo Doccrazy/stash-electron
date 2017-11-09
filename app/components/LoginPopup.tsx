@@ -6,6 +6,7 @@ import FocusingInput from './tools/FocusingInput';
 
 export interface Props {
   open?: boolean,
+  working?: boolean,
   askUsername?: boolean,
   title?: string,
   text?: string,
@@ -16,16 +17,16 @@ export interface Props {
   onClose: () => void
 }
 
-export default ({ open, askUsername, title, text, error, value, onChange, onConfirm, onClose}: Props) => (
-  <ConfirmPopup open={!!open} title={title || 'Enter credentials'} valid={(!askUsername || !!value.username) && !!value.password} feedback={error} onConfirm={onConfirm} onClose={onClose}>
+export default ({ open, working, askUsername, title, text, error, value, onChange, onConfirm, onClose}: Props) => (
+  <ConfirmPopup open={!!open} disabled={working} title={title || 'Enter credentials'} valid={(!askUsername || !!value.username) && !!value.password} feedback={error} onConfirm={onConfirm} onClose={onClose}>
     {text || 'Please enter your credentials below.'}
     {askUsername && <FormGroup>
       <Label>Username</Label>
-      <FocusingInput focused={!value.username} value={value.username || ''} onChange={ev => onChange({ ...value, username: ev.target.value })} />
+      <FocusingInput focused={!value.username} disabled={working} value={value.username || ''} onChange={ev => onChange({ ...value, username: ev.target.value })} />
     </FormGroup>}
     <FormGroup>
       <Label>Password</Label>
-      <FocusingInput focused={!askUsername || !!value.username} type="password" value={value.password || ''} onChange={ev => onChange({ ...value, password: ev.target.value })} />
+      <FocusingInput focused={!askUsername || !!value.username} disabled={working} type="password" value={value.password || ''} onChange={ev => onChange({ ...value, password: ev.target.value })} />
     </FormGroup>
     <FormGroup>
       <Label check>

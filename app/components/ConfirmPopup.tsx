@@ -3,6 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reacts
 
 export interface Props {
   open?: boolean,
+  disabled?: boolean,
   title: string,
   feedback?: string,
   valid?: boolean,
@@ -17,7 +18,7 @@ function doFocus(ref: HTMLButtonElement) {
   }
 }
 
-export default ({ open, title, feedback, valid = true, children, onConfirm, onClose }: Props) => (<Modal isOpen={open} toggle={onClose}>
+export default ({ open, disabled, title, feedback, valid = true, children, onConfirm, onClose }: Props) => (<Modal isOpen={open} toggle={onClose}>
   <ModalHeader toggle={onClose}>{title}</ModalHeader>
   <ModalBody>
     <Form id="editForm" onSubmit={onConfirm}>
@@ -26,7 +27,7 @@ export default ({ open, title, feedback, valid = true, children, onConfirm, onCl
   </ModalBody>
   <ModalFooter>
     <div className="text-danger" style={{ flexGrow: 1 }}>{feedback}</div>
-    <Button type="submit" form="editForm" innerRef={doFocus} color="primary" disabled={!valid}>Confirm</Button>{' '}
-    <Button color="secondary" onClick={onClose}>Cancel</Button>
+    <Button type="submit" form="editForm" innerRef={doFocus} color="primary" disabled={!valid || disabled}>Confirm</Button>{' '}
+    <Button color="secondary" onClick={onClose} disabled={disabled}>Cancel</Button>
   </ModalFooter>
 </Modal>);
