@@ -9,7 +9,8 @@ export enum Actions {
   OPEN = 'authorizedUsers/OPEN',
   CLOSE = 'authorizedUsers/CLOSE',
   INHERIT = 'authorizedUsers/INHERIT',
-  CHANGE = 'authorizedUsers/CHANGE'
+  CHANGE = 'authorizedUsers/CHANGE',
+  SAVED = 'authorizedUsers/SAVED'
 }
 
 export function open(nodeId: string): Thunk<void> {
@@ -46,7 +47,11 @@ export function save(): Thunk<void> {
     if (authorizedUsers.nodeId) {
       const repo = getRepo();
       await repo.setAuthorizedUsers(authorizedUsers.nodeId, authorizedUsers.users ? authorizedUsers.users.toArray() : undefined);
-      dispatch(readNode(authorizedUsers.nodeId));
+      await dispatch(readNode(authorizedUsers.nodeId));
+      dispatch({
+        type: Actions.SAVED,
+        payload: authorizedUsers.nodeId
+      });
     }
 
     dispatch(close());
@@ -84,7 +89,8 @@ type Action =
   TypedAction<Actions.OPEN, { node: Node }>
   | OptionalAction<Actions.CLOSE>
   | OptionalAction<Actions.INHERIT>
-  | TypedAction<Actions.CHANGE, Set<string>>;
+  | TypedAction<Actions.CHANGE, Set<string>>
+  | TypedAction<Actions.SAVED, string>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 

@@ -2,6 +2,8 @@ import * as fs from 'fs-extra';
 import * as Git from 'nodegit';
 import * as path from 'path';
 import * as assert from 'assert';
+import { OrderedSet } from 'immutable';
+import AwaitLock from './AwaitLock';
 
 export interface AheadBehindResult {
   ahead: number,
@@ -11,6 +13,26 @@ export interface AheadBehindResult {
 export interface GitCredentials {
   username?: string,
   password: string
+}
+
+export function isRepository(repoPath: string) {
+  return fs.existsSync(path.join(repoPath, '.git/index'));
+}
+
+/**
+ * nodegit APIs are not thread-safe and may throw anything from 'index busy' to segfaults, so we
+ * need to prevent concurrent repo access.
+ * Note: Lock is not reentrant, make sure not to call recursively!
+ */
+const repoLock = new AwaitLock();
+export async function accessingRepository(repoPath: string, callback: (repo: Git.Repository) => any): Promise<void> {
+  await repoLock.acquireAsync();
+  try {
+    const repo = await Git.Repository.open(repoPath);
+    await callback(repo);
+  } finally {
+    repoLock.release();
+  }
 }
 
 /**
@@ -82,4 +104,49 @@ export async function fetchWithRetry(repo: Git.Repository, remote: string, crede
     }
   }
   throw new Error('SSL error: unknown error');
+}
+
+export async function hasUncommittedChanges(repo: Git.Repository) {
+  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS });
+  return statusList.length > 0;
+}
+
+export async function commitAllChanges(repo: Git.Repository, message: string): Promise<Git.Oid | null> {
+  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS });
+  const index = await repo.refreshIndex();
+  let uncommittedChanges;
+  for (const file of statusList) {
+    uncommittedChanges = true;
+    if (!file.inWorkingTree()) {
+      continue;
+    }
+    if (file.isDeleted()) {
+      await index.removeByPath(file.path());
+    } else {
+      await index.addByPath(file.path());
+    }
+  }
+  if (uncommittedChanges) {
+    await index.write();
+    const oid = await index.writeTree();
+
+    const parent = await repo.getHeadCommit();
+    return repo.createCommit('HEAD', repo.defaultSignature(), repo.defaultSignature(), message, oid, [parent]);
+  }
+  return null;
+}
+
+export async function addToGitIgnore(repoPath: string, ...ignoreEntries: string[]): Promise<void> {
+  const gitIgnoreFn = path.join(repoPath, '.gitignore');
+  let patterns = fs.existsSync(gitIgnoreFn) ? OrderedSet((await fs.readFile(gitIgnoreFn, 'utf8')).split(/\r?\n/)) : OrderedSet<string>();
+  let modified;
+  for (const ignore of ignoreEntries) {
+    if (!patterns.includes(ignore)) {
+      patterns = patterns.add(ignore);
+      modified = true;
+    }
+  }
+  if (modified) {
+    await fs.writeFile(gitIgnoreFn, patterns.join('\n'));
+  }
 }

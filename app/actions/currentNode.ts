@@ -156,19 +156,16 @@ afterAction(Repository.Actions.UNLOAD, dispatch => {
   dispatch(deselect());
 });
 
-afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, nodeId, preActionState) => {
+afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, node: Node, preActionState) => {
   const { currentNode } = getState();
-  if (currentNode.nodeId === nodeId) {
-    const node = preActionState.repository.nodes[nodeId];
-    if (node.parentId) {
-      dispatch(select(node.parentId));
-    }
+  if (currentNode.nodeId === node.id && node.parentId) {
+    dispatch(select(node.parentId));
   }
 });
 
-afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { nodeId, newNode }) => {
+afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { node, newNode }) => {
   const { currentNode } = getState();
-  if (currentNode.nodeId === nodeId) {
+  if (currentNode.nodeId === node.id) {
     dispatch(select(newNode.id));
   }
 });

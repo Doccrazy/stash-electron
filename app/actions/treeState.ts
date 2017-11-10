@@ -68,12 +68,12 @@ afterAction(Repository.Actions.CREATE_NODE, (dispatch, getState: GetState, newNo
   }
 });
 
-afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, nodeId) => {
-  dispatch(close(nodeId));
+afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, node: Node) => {
+  dispatch(close(node.id));
 });
 
-afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { nodeId, newNode }) => {
-  dispatch(close(nodeId));
+afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { node, newNode }) => {
+  dispatch(close(node.id));
 });
 
 type Action =

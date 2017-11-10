@@ -1,10 +1,10 @@
 import { List, Set } from 'immutable';
 import Node from '../domain/Node';
 
-export function hierarchy(nodes: { [nodeId: string]: Node }, nodeId?: string): Node[] {
+export function hierarchy(nodes: { [nodeId: string]: Node }, nodeOrId?: Node | string): Node[] {
   const result = [];
-  if (nodeId) {
-    let n: Node | null = nodes[nodeId];
+  if (nodeOrId) {
+    let n: Node | null = typeof nodeOrId === 'string' ? nodes[nodeOrId] : nodeOrId;
     while (n) {
       result.unshift(n);
       n = n.parentId ? nodes[n.parentId] : null;
@@ -83,5 +83,7 @@ export function isAccessible(nodes: { [id: string]: Node }, nodeId: string, user
   return !authParent.authorizedUsers || (!!username && authParent.authorizedUsers.includes(username));
 }
 
+// these files are used for user-local settings and should not be shared
+export const RES_LOCAL_FILENAMES = Set<string>('.favorites.json');
 // these files are used internally and should not be allowed for file or folder names
-export const RESERVED_FILENAMES = Set(['.git', '.gitignore', '.favorites.json', '.keys.json', '.users.json']);
+export const RESERVED_FILENAMES = Set<string>(['.git', '.gitignore', '.keys.json', '.users.json']).union(RES_LOCAL_FILENAMES);

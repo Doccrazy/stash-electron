@@ -178,7 +178,8 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
       dispatch(Repository.writeEntry(new EntryPtr(edit.ptr.nodeId, fileName), buffer));
 
       dispatch({
-        type: Actions.SAVED
+        type: Actions.SAVED,
+        payload: edit.ptr
       });
     }
 
@@ -212,7 +213,7 @@ type Action =
   | TypedAction<Actions.REPOINT_OPEN, EntryPtr>
   | OptionalAction<Actions.CLOSE>
   | TypedAction<Actions.VALIDATE, string | boolean>
-  | OptionalAction<Actions.SAVED>
+  | TypedAction<Actions.SAVED, EntryPtr>
   | TypedAction<Actions.CHANGE, any>
   | TypedAction<Actions.CHANGE_STATE, any>
   | TypedAction<Actions.CHANGE_NAME, string>;

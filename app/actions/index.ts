@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import { routerReducer as router } from 'react-router-redux';
 import { reducer as toastr } from 'react-redux-toastr';
 import { RootState } from './types/index';
+import './gitHooks';
 
 import authorizedUsers from './authorizedUsers';
 import credentials from './credentials';

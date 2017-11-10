@@ -161,7 +161,7 @@ export function deleteNode(nodeId: string): Thunk<Promise<void>> {
 
       dispatch({
         type: Actions.DELETE_NODE,
-        payload: nodeId
+        payload: node
       });
     } catch (e) {
       // delete failed
@@ -223,7 +223,7 @@ export function renameNode(nodeId: string, newName: string): Thunk<Promise<void>
       dispatch({
         type: Actions.MOVE_NODE,
         payload: {
-          nodeId: node.id,
+          node: node,
           newNode: new Node({ id: newId, name: newName, parentId: node.parentId })
         }
       });
@@ -278,8 +278,8 @@ type Action =
   | TypedAction<Actions.DELETE_ENTRY, EntryPtr>
   | TypedAction<Actions.CREATE_ENTRY, EntryPtr>
   | TypedAction<Actions.UPDATE_ENTRY, { ptr: EntryPtr, buffer: Buffer }>
-  | TypedAction<Actions.DELETE_NODE, string>
-  | TypedAction<Actions.MOVE_NODE, { nodeId: string, newNode: Node }>
+  | TypedAction<Actions.DELETE_NODE, Node>
+  | TypedAction<Actions.MOVE_NODE, { node: Node, newNode: Node }>
   | TypedAction<Actions.CREATE_NODE, Node>;
 
 type Thunk<R> = TypedThunk<Action, R>;
@@ -320,7 +320,7 @@ export default function reducer(state: State = { nodes: { } }, action: Action): 
         node.withNewEntry(action.payload.entry));
 
     case Actions.DELETE_NODE: {
-      const node = state.nodes[action.payload];
+      const node = state.nodes[action.payload.id];
       if (node && node.parentId) {
         // remove node from parent
         const newParentNode = state.nodes[node.parentId].withChildDeleted(node.id);
@@ -334,7 +334,7 @@ export default function reducer(state: State = { nodes: { } }, action: Action): 
       return state;
     }
     case Actions.MOVE_NODE:
-      const intermediate = reducer(state, { type: Actions.DELETE_NODE, payload: action.payload.nodeId });
+      const intermediate = reducer(state, { type: Actions.DELETE_NODE, payload: action.payload.node });
       return reducer(intermediate, { type: Actions.CREATE_NODE, payload: action.payload.newNode });
     case Actions.CREATE_NODE: {
       const newNode = action.payload;
