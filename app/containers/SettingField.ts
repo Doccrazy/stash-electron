@@ -10,7 +10,7 @@ export interface Props {
 }
 
 export default connect((state: RootState, props: Props) => ({
-  value: state.settings.edited[props.field]
+  value: state.settings.edited[props.field] || ''
 }), (dispatch, props) => ({
   onChange: (ev: React.ChangeEvent<HTMLInputElement>) => dispatch(changeSetting(props.field, ev.target.value))
 }), (stateProps, dispatchProps, ownProps): any => {
