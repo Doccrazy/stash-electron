@@ -52,6 +52,14 @@ export default class EncryptedRepository extends PlainRepository {
     }
   }
 
+  async renameFile(nodeId: string, oldName: string, newName: string): Promise<void> {
+    return super.renameFile(nodeId, `${oldName}.enc`, `${newName}.enc`);
+  }
+
+  async deleteFile(nodeId: string, name: string): Promise<void> {
+    return super.deleteFile(nodeId, `${name}.enc`);
+  }
+
   readFile(nodeId: string, fileName: string): Promise<Buffer> {
     const masterKey = this.recAuthProvider.getMasterKey(nodeId);
 
