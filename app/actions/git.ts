@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import * as Git from 'nodegit';
 import { toastr } from 'react-redux-toastr';
 import { afterAction } from '../store/eventMiddleware';
-import { compareRefs, resolveAllUsingTheirs } from '../utils/git';
+import {compareRefs, fetchWithRetry, resolveAllUsingTheirs} from '../utils/git';
 import * as Credentials from './credentials';
 import * as Repository from './repository';
 import { FetchResult, GitStatus, State } from './types/git';
@@ -109,21 +109,16 @@ function gitFetchRemote(gitRepo: Git.Repository, remoteName: string): Thunk<Prom
     let credentialsContext: string | null = null;
     dispatch({ type: Actions.PROGRESS, payload: { message: `Fetching from ${remoteName}` } });
     try {
-      await gitRepo.fetch(remoteName, {
-        callbacks: {
-          credentials: async (url: string, usernameFromUrl: string) => {
-            if (credentialsContext) {
-              await dispatch(Credentials.rejectCredentials('Authentication failed'));
-            }
-            credentialsContext = null;
-            const result = await dispatch(Credentials.requestCredentials(url, 'Authenticate to git repository',
-              `The git repository at ${url} has requested authentication.
-                 Please enter your credentials below.`, usernameFromUrl, true));
-            credentialsContext = url;
-            return Git.Cred.userpassPlaintextNew(result.username || '', result.password);
-          },
-          certificateCheck: () => 1
+      await fetchWithRetry(gitRepo, remoteName, async (url: string, usernameFromUrl: string) => {
+        if (credentialsContext) {
+          await dispatch(Credentials.rejectCredentials('Authentication failed'));
         }
+        credentialsContext = null;
+        const result = await dispatch(Credentials.requestCredentials(url, 'Authenticate to git repository',
+          `The git repository at ${url} has requested authentication.
+             Please enter your credentials below.`, usernameFromUrl, true));
+        credentialsContext = url;
+        return result;
       });
       if (credentialsContext) {
         await dispatch(Credentials.acceptCredentials());

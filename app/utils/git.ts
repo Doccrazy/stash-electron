@@ -8,6 +8,11 @@ export interface AheadBehindResult {
   behind: number
 }
 
+export interface GitCredentials {
+  username?: string,
+  password: string
+}
+
 /**
  * Compare two refs to see who is ahead/behind
  * @returns the number of commits each ref is ahead of the common base
@@ -48,4 +53,33 @@ export async function resolveAllUsingTheirs(index: Git.Index) {
   await index.write();
   await index.writeTree();
   assert.ok(!index.hasConflicts(), 'all conflicts should be resolved');
+}
+
+/**
+ * retries a git fetch up to 10 times iff the dreaded 'SSL error: unknown error' error occurs, reusing credentials where applicable
+ */
+export async function fetchWithRetry(repo: Git.Repository, remote: string, credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) {
+  let lastCred: GitCredentials | null = null;
+  let errorCred: GitCredentials | null = null;
+  for (let i = 0; i < 10; i++) {
+    try {
+      return await repo.fetch(remote, {
+        callbacks: {
+          credentials: async (url: string, usernameFromUrl: string) => {
+            lastCred = !lastCred && errorCred ? errorCred : await credentialsCb(url, usernameFromUrl);
+            return Git.Cred.userpassPlaintextNew(lastCred.username || usernameFromUrl, lastCred.password);
+          },
+          certificateCheck: () => 1
+        }
+      });
+    } catch (e) {
+      if (e.message !== 'SSL error: unknown error') {
+        throw e;
+      }
+      console.warn(`'${e.message}' on fetch retry ${i}`);
+      errorCred = lastCred;
+      lastCred = null;
+    }
+  }
+  throw new Error('SSL error: unknown error');
 }
