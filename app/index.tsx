@@ -10,12 +10,14 @@ import installLinkHandler from './store/stashLinkHandler';
 import registerHotkeys from './store/hotkeyHandlers';
 import './utils/sshpk-key-deriv-patch.js';
 import './app.global.scss';
+import setupInactivityLock from './store/inactivityLock';
 
 const store = configureStore();
 setTimeout(() => {
   store.dispatch(loadSettings());
   installLinkHandler(store.dispatch);
   registerHotkeys(store.dispatch, store.getState);
+  setupInactivityLock(store.dispatch, store.getState);
 });
 
 render(
