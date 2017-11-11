@@ -89,8 +89,8 @@ afterAction([Actions.LOAD, Actions.SAVE], (dispatch, getState: GetState) => {
 function applyDefaults(settings: SettingsMap): SettingsMap {
   return {
     ...settings,
-    rootFontSize: settings.rootFontSize || 16,
-    ...(os.platform() === 'linux' ? { privateKeyFile: path.join(os.homedir(), '.ssh/id_rsa') } : {})
+    rootFontSize: Math.min(Math.max(Number.parseInt(settings.rootFontSize as any) || 16, 10), 20),
+    privateKeyFile: settings.privateKeyFile || (os.platform() === 'linux' ? path.join(os.homedir(), '.ssh/id_rsa') : '')
   };
 }
 
@@ -105,12 +105,16 @@ type Thunk<R> = TypedThunk<Action, R>;
 
 export default function reducer(state: State = { current: {}, edited: {}, previous: {} }, action: Action): State {
   switch (action.type) {
-    case Actions.LOAD:
-      return { current: applyDefaults(action.payload), edited: applyDefaults(action.payload), previous: {} };
+    case Actions.LOAD: {
+      const cleaned = applyDefaults(action.payload);
+      return { current: cleaned, edited: cleaned, previous: {} };
+    }
     case Actions.CHANGE:
       return { ...state, edited: { ...state.edited, [action.payload.key]: action.payload.value }};
-    case Actions.SAVE:
-      return { ...state, current: applyDefaults(state.edited), previous: state.current };
+    case Actions.SAVE: {
+      const cleaned = applyDefaults(state.edited);
+      return { ...state, current: cleaned, edited: cleaned, previous: state.current };
+    }
     default:
       return state;
   }
