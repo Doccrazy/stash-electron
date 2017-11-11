@@ -10,6 +10,10 @@ import typeFor from '../fileType/index';
 import {State} from './types/external';
 import {TypedAction, TypedThunk} from './types/index';
 
+export enum Actions {
+  FILES_WRITTEN = 'external/FILES_WRITTEN'
+}
+
 export function browseForAdd(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const files = remote.dialog.showOpenDialog({
@@ -33,7 +37,7 @@ export function addFiles(files: string[]): Thunk<Promise<void>> {
     }
     const node = repository.nodes[currentNode.nodeId];
 
-    let count = 0;
+    const filePtrs: EntryPtr[] = [];
     for (const fileName of files) {
       const baseName = path.parse(fileName).base;
       const stat = await fs.stat(fileName);
@@ -50,12 +54,17 @@ export function addFiles(files: string[]): Thunk<Promise<void>> {
         const buffer = await fs.readFile(fileName);
         const ptr = new EntryPtr(node.id, baseName);
         await dispatch(repoActions.writeEntry(ptr, buffer));
-        count += 1;
+        filePtrs.push(ptr);
       }
     }
 
-    if (count) {
-      toastr.success('', `${count} file(s) have been successfully added.`, { timeOut: 2000 });
+    if (filePtrs.length) {
+      dispatch({
+        type: Actions.FILES_WRITTEN,
+        payload: filePtrs
+      });
+
+      toastr.success('', `${filePtrs.length} file(s) have been successfully added.`, { timeOut: 2000 });
     }
   };
 }
@@ -110,7 +119,7 @@ window.addEventListener('beforeunload', () => {
   }
 });
 
-type Action = TypedAction<never, void>;
+type Action = TypedAction<Actions.FILES_WRITTEN, EntryPtr[]>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 

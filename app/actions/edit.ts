@@ -77,7 +77,7 @@ export function create(nodeId: string, typeId: string): Thunk<void> {
         formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
       }
     });
-  }
+  };
 }
 
 export function createInCurrent(typeId: string): Thunk<void> {
@@ -175,17 +175,21 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
       const fileName = edit.ptr.entry || newName;
       const buffer = type.write(edit.parsedContent);
 
-      dispatch(Repository.writeEntry(new EntryPtr(edit.ptr.nodeId, fileName), buffer));
+      const savedEntryPtr = new EntryPtr(edit.ptr.nodeId, fileName);
+      await dispatch(Repository.writeEntry(savedEntryPtr, buffer));
 
       dispatch({
         type: Actions.SAVED,
-        payload: edit.ptr
+        payload: {
+          ptr: savedEntryPtr,
+          isNew: !edit.ptr.entry
+        }
       });
     }
 
     // rename
     if (edit.ptr.entry && newName !== edit.ptr.entry) {
-      dispatch(Repository.rename(edit.ptr, newName));
+      await dispatch(Repository.rename(edit.ptr, newName));
     }
 
     if (closeAfter) {
@@ -213,7 +217,7 @@ type Action =
   | TypedAction<Actions.REPOINT_OPEN, EntryPtr>
   | OptionalAction<Actions.CLOSE>
   | TypedAction<Actions.VALIDATE, string | boolean>
-  | TypedAction<Actions.SAVED, EntryPtr>
+  | TypedAction<Actions.SAVED, { ptr: EntryPtr, isNew: boolean }>
   | TypedAction<Actions.CHANGE, any>
   | TypedAction<Actions.CHANGE_STATE, any>
   | TypedAction<Actions.CHANGE_NAME, string>;
