@@ -6,7 +6,7 @@ import {GetState, OptionalAction, TypedAction, TypedThunk} from './types/index';
 import {KeyError, State} from './types/privateKey';
 import {afterAction} from '../store/eventMiddleware';
 import * as Settings from './settings';
-import {requestCredentials, acceptCredentials, rejectCredentials} from './credentials';
+import { requestCredentials, acceptCredentials, rejectCredentials, clearStoredLogin } from './credentials';
 import {parsePrivateKey} from '../utils/rsa';
 import * as Keys from './keys';
 import * as Repository from './repository';
@@ -15,11 +15,17 @@ import {findUser} from '../repository/KeyProvider';
 export enum Actions {
   LOAD = 'privateKey/LOAD',
   ERROR = 'privateKey/ERROR',
+  LOCK = 'privateKey/LOCK',
   LOGIN = 'privateKey/LOGIN'
 }
 
-export function loadWithFeedback(filename: string): Thunk<Promise<void>> {
+export function loadAndUnlockInteractive(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
+    const filename = getState().settings.current.privateKeyFile;
+    if (!filename) {
+      return;
+    }
+
     await dispatch(load(filename));
 
     while (getState().privateKey.error === KeyError.ENCRYPTED || getState().privateKey.error === KeyError.PASSPHRASE) {
@@ -62,7 +68,10 @@ export function load(filename: string, passphrase?: string): Thunk<Promise<void>
 
       dispatch({
         type: Actions.LOAD,
-        payload: privateKey
+        payload: {
+          key: privateKey,
+          encrypted: !!passphrase
+        }
       });
     } catch (e) {
       if (e instanceof sshpk.KeyEncryptedError) {
@@ -79,10 +88,18 @@ export function load(filename: string, passphrase?: string): Thunk<Promise<void>
   };
 }
 
-export function cancelLoad() {
-  return {
-    type: Actions.ERROR,
-    payload: KeyError.CANCELLED
+export function lock(): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const filename = getState().settings.current.privateKeyFile;
+    if (!filename || !getState().privateKey.key || !getState().privateKey.encrypted) {
+      return;
+    }
+
+    await dispatch(clearStoredLogin(path.resolve(filename)));
+
+    dispatch({
+      type: Actions.LOCK
+    });
   };
 }
 
@@ -90,12 +107,12 @@ export function cancelLoad() {
 afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
   if (settings.current.privateKeyFile && settings.current.privateKeyFile !== settings.previous.privateKeyFile) {
-    dispatch(loadWithFeedback(settings.current.privateKeyFile));
+    dispatch(loadAndUnlockInteractive());
   }
 });
 
 // on any changes to the private key, dispatch a LOGIN action to notify other components
-afterAction([Keys.Actions.LOAD, Keys.Actions.SAVED, Actions.LOAD], (dispatch, getState: GetState) => {
+afterAction([Keys.Actions.LOAD, Keys.Actions.SAVED, Actions.LOAD, Actions.LOCK], (dispatch, getState: GetState) => {
   const { keys, privateKey } = getState();
   const currentUser = privateKey.key ? findUser(keys.byUser, privateKey.key) : undefined;
   if (currentUser !== privateKey.username) {
@@ -116,8 +133,9 @@ afterAction([Repository.Actions.FINISH_LOAD, Actions.LOGIN], (dispatch, getState
 });
 
 type Action =
-  TypedAction<Actions.LOAD, sshpk.PrivateKey>
+  TypedAction<Actions.LOAD, { key: sshpk.PrivateKey, encrypted: boolean }>
   | TypedAction<Actions.ERROR, KeyError>
+  | OptionalAction<Actions.LOCK>
   | OptionalAction<Actions.LOGIN, string>;
 
 type Thunk<R> = TypedThunk<Action, R>;
@@ -125,9 +143,11 @@ type Thunk<R> = TypedThunk<Action, R>;
 export default function reducer(state: State = {}, action: Action): State {
   switch (action.type) {
     case Actions.LOAD:
-      return { key: action.payload };
+      return { ...action.payload };
     case Actions.ERROR:
-      return { error: action.payload };
+      return { error: action.payload, encrypted: action.payload !== KeyError.FILE };
+    case Actions.LOCK:
+      return { encrypted: state.encrypted };
     case Actions.LOGIN:
       return { ...state, username: action.payload };
     default:

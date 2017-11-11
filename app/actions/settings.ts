@@ -87,10 +87,12 @@ afterAction([Actions.LOAD, Actions.SAVE], (dispatch, getState: GetState) => {
 });
 
 function applyDefaults(settings: SettingsMap): SettingsMap {
+  const inactivityTimeout = Number.parseInt(settings.inactivityTimeout as any);
   return {
     ...settings,
     rootFontSize: Math.min(Math.max(Number.parseInt(settings.rootFontSize as any) || 16, 10), 20),
-    privateKeyFile: settings.privateKeyFile || (os.platform() === 'linux' ? path.join(os.homedir(), '.ssh/id_rsa') : '')
+    privateKeyFile: settings.privateKeyFile || (os.platform() === 'linux' ? path.join(os.homedir(), '.ssh/id_rsa') : ''),
+    inactivityTimeout: Number.isNaN(inactivityTimeout) ? 15 : inactivityTimeout
   };
 }
 

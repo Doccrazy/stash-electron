@@ -16,8 +16,14 @@ const ERRORS = {
 
 export default connect((state: RootState, props: Props) => ({
   error: state.privateKey.error,
-  keySize: state.privateKey.key && state.privateKey.key.toPublic().size
-}))(({ error, keySize }: { error: KeyError, keySize: number }) => (<span className={cx(typeof error === 'number' && 'text-danger', keySize && 'text-success')}>
-  {typeof error === 'number' && ERRORS[error]}
-  {keySize && `Valid key has been loaded, size = ${keySize} bits.`}
+  keySize: state.privateKey.key && state.privateKey.key.toPublic().size,
+  keyEncrypted: state.privateKey.encrypted
+}))(({ error, keySize, keyEncrypted }: { error: KeyError, keySize: number, keyEncrypted: boolean }) => (<span>
+  <span className={cx(typeof error === 'number' && 'text-danger', keySize && 'text-success')}>
+    {typeof error === 'number' && ERRORS[error]}
+    {keySize && `Valid key has been loaded, size = ${keySize} bits.`}
+  </span>
+  {keySize && !keyEncrypted && <span className="text-warning ml-3">
+    <i className="fa fa-warning" /> Key is not encrypted; workspace locking unavailable.
+  </span>}
 </span>));

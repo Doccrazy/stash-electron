@@ -27,6 +27,23 @@ export function hasStoredLogin(getState: GetState, context: string) {
   return (getState().settings.current[SETTINGS_KEY] || []).includes(context);
 }
 
+export function clearStoredLogin(context: string): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    if (!hasStoredLogin(getState, context)) {
+      return;
+    }
+
+    try {
+      await keytar.deletePassword(KEYTAR_SERVICE, context);
+
+      dispatch(Settings.changeAndSave(SETTINGS_KEY, (getState().settings.current.storedLogins || []).filter(ctx => ctx !== context)) as any);
+    } catch (e) {
+      // failed to delete password
+      console.error(e);
+    }
+  };
+}
+
 export function requestCredentials(context: string, title: string, text: string, username?: string, askUsername?: boolean): Thunk<Promise<Credentials>> {
   return async (dispatch, getState) => {
     if (hasStoredLogin(getState, context)) {
@@ -108,14 +125,7 @@ export function rejectCredentials(error: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const context = getState().credentials.context;
     if (context) {
-      try {
-        await keytar.deletePassword(KEYTAR_SERVICE, context);
-
-        dispatch(Settings.changeAndSave(SETTINGS_KEY, (getState().settings.current.storedLogins || []).filter(ctx => ctx !== context)) as any);
-      } catch (e) {
-        // failed to delete password
-        console.error(e);
-      }
+      await dispatch(clearStoredLogin(context));
     }
     dispatch({
       type: Actions.ERROR,

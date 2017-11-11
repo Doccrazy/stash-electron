@@ -4,7 +4,8 @@ export type SettingsMap = {
   repositoryPath?: string,
   rootFontSize?: number,
   privateKeyFile?: string,
-  storedLogins?: string[]
+  storedLogins?: string[],
+  inactivityTimeout?: number
 };
 
 export interface State {

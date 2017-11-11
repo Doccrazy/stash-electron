@@ -27,10 +27,18 @@ export default () => (<div className="container">
           <SettingsBrowseFileButton field="privateKeyFile" title="Select private key"><i className="fa fa-folder-open" /></SettingsBrowseFileButton>
         </InputGroupButton>
       </InputGroup>
-      <div className="form-text"><PrivateKeyStatus /></div>
+      <small className="form-text"><PrivateKeyStatus /></small>
     </FormGroup>
     <FormGroup>
-      <Label>UI scale / root font size</Label>
+      <Label>Inactivity lock (minutes)</Label>
+      <SettingField field="inactivityTimeout" />
+      <small className="form-text text-muted">
+        Lock workspace after some minutes of inactivity; 0 to disable.&nbsp;
+        <i className="fa fa-warning" /> Requires an encrypted private key.
+      </small>
+    </FormGroup>
+    <FormGroup>
+      <Label>UI scale / root font size (px)</Label>
       <SettingField field="rootFontSize" />
     </FormGroup>
     <FormGroup className="text-right">

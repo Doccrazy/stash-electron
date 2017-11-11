@@ -5,6 +5,7 @@ import ReduxToastr from 'react-redux-toastr';
 import GitStatus from '../containers/GitStatus';
 import SearchField from '../containers/SearchField';
 import LoginPopup from '../containers/LoginPopup';
+import WorkspaceLock from '../containers/WorkspaceLock';
 import * as styles from './App.css';
 
 export interface Props {
@@ -32,6 +33,7 @@ export default class App extends React.Component<Props, {}> {
           </Nav>
           <SearchField className={`mr-3 ${styles.form}`} />
           <span className="navbar-text">
+            <WorkspaceLock />
             <GitStatus />
           </span>
         </Navbar>
