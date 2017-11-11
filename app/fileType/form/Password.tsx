@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, FormGroup, Label, Input, Row, Col } from 'reactstrap';
 import PwGenerateMenu from './PwGenerateMenu';
 import { typeById, FormProps } from '../index';
+import StrengthMeter from './StrengthMeter';
 
 type Content = { username?: string, password?: string, url?: string, description?: string };
 type FormState = { mask: boolean, repeatPassword?: string };
@@ -78,15 +79,18 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
           <Label sm={2} for="password">Password</Label>
           <Col sm={10}>
             <Row>
-              <Col><Input
-                innerRef={c => { this.passwordInput = c; }}
-                type={this.props.formState.mask ? 'password' : 'text'}
-                id="password"
-                placeholder="Password"
-                value={value.password || ''}
-                onChange={ev => onChange({ ...value, password: ev.target.value })}
-              /></Col>
-              <Col xs="auto"><Button title="Toggle password masking" tabIndex={-1} active={this.props.formState.mask} onClick={this.toggleMask}><i className="fa fa-ellipsis-h" /></Button></Col>
+              <Col>
+                <Input
+                  innerRef={c => { this.passwordInput = c; }}
+                  type={this.props.formState.mask ? 'password' : 'text'}
+                  id="password"
+                  placeholder="Password"
+                  value={value.password || ''}
+                  onChange={ev => onChange({ ...value, password: ev.target.value })}
+                />
+                <StrengthMeter value={value.password} />
+              </Col>
+              <Col xs="auto"><Button outline title="Toggle password masking" tabIndex={-1} active={this.props.formState.mask} onClick={this.toggleMask}><i className="fa fa-ellipsis-h" /></Button></Col>
             </Row>
           </Col>
         </FormGroup>

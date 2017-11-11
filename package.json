@@ -255,7 +255,8 @@
     "redux-thunk": "^2.2.0",
     "source-map-support": "^0.5.0",
     "ssh2-streams": "^0.1.19",
-    "sshpk": "^1.13.1"
+    "sshpk": "^1.13.1",
+    "tai-password-strength": "^1.1.1"
   },
   "devEngines": {
     "node": ">=7.x",

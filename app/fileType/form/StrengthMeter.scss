@@ -1,0 +1,33 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+.panel {
+  width: 100%;
+  text-align: center;
+  font-size: 0.75em;
+  border: $input-btn-border-width solid $input-border-color;
+
+  @if $enable-rounded {
+    border-radius: $input-border-radius;
+  }
+}
+
+.veryWeak {
+  background-color: lighten($red, 20%);
+}
+
+.weak {
+  background-color: lighten($orange, 20%);
+}
+
+.reasonable {
+  background-color: lighten($yellow, 20%);
+}
+
+.strong {
+  background-color: lighten($green, 20%);
+}
+
+.veryStrong {
+  background-color: lighten($cyan, 20%);
+}
