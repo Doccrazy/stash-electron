@@ -1,18 +1,29 @@
 import * as React from 'react';
 import { Input, InputProps } from 'reactstrap';
 
-export default class FocusingInput extends React.Component<InputProps & { focused: boolean }, {}> {
+type Props = InputProps & { focused: boolean };
+
+export default class FocusingInput extends React.Component<Props, {}> {
   private inputRef: HTMLInputElement;
 
-  setRef = (ref: HTMLInputElement) => {
-    if (ref && !this.inputRef && this.props.focused) {
-      this.inputRef = ref;
-      setTimeout(() => { ref.focus(); ref.select(); });
+  componentDidMount() {
+    this.tryFocus();
+  }
+
+  componentDidUpdate(prevProps: Readonly<Props>) {
+    if (prevProps.disabled && !this.props.disabled) {
+      this.tryFocus();
+    }
+  }
+
+  tryFocus() {
+    if (this.inputRef && this.props.focused) {
+      setTimeout(() => { this.inputRef.focus(); this.inputRef.select(); });
     }
   }
 
   render() {
     const { focused, ...innerProps } = this.props;
-    return <Input innerRef={this.setRef} {...innerProps} />;
+    return <Input innerRef={ref => { this.inputRef = ref; }} {...innerProps} />;
   }
 }

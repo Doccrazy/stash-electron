@@ -17,5 +17,5 @@ export default function setupInactivityLock(dispatch: Dispatch, getState: GetSta
       lastUserActivity = Date.now();
       dispatch(PrivateKey.lock());
     }
-  }, 1000).unref();
+  }, 1000);
 }
