@@ -84,6 +84,6 @@ export function isAccessible(nodes: { [id: string]: Node }, nodeId: string, user
 }
 
 // these files are used for user-local settings and should not be shared
-export const RES_LOCAL_FILENAMES = Set<string>('.favorites.json');
+export const RES_LOCAL_FILENAMES = Set<string>(['.favorites.json']);
 // these files are used internally and should not be allowed for file or folder names
 export const RESERVED_FILENAMES = Set<string>(['.git', '.gitignore', '.keys.json', '.users.json']).union(RES_LOCAL_FILENAMES);
