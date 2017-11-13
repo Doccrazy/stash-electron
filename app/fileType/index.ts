@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as jsonParser from './parser/json';
+import { StringMatcher } from '../utils/StringMatcher';
 
 export interface PanelProps<C> {
   node: any,
@@ -33,7 +34,7 @@ export interface Type<C> extends ReactTypeExt {
   toDisplayName: (name: string) => string,
   toFileName: (displayName: string) => string,
   initialize?: () => C,
-  matches?: (content: C, filter: string) => boolean,
+  matches?: (content: C, matcher: StringMatcher) => boolean,
   fromKdbxEntry?: (entry: any) => C,
   parse?: (buf: Buffer) => C,
   write?: (content: C) => Buffer
@@ -54,8 +55,8 @@ const TYPES: Type<any>[] = [
     toDisplayName: fn => fn.substr(0, fn.length - 10),
     toFileName: name => `${name}.pass.json`,
     initialize: () => ({}),
-    matches: (content, filterLC) => (content.username && content.username.toLowerCase().includes(filterLC))
-      || (content.description && content.description.toLowerCase().includes(filterLC)),
+    matches: (content, matcher) => (content.username && matcher.matches(content.username))
+      || (content.description && matcher.matches(content.description)),
     fromKdbxEntry: entry => ({
       description: entry.fields.Notes,
       username: entry.fields.UserName,

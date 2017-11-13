@@ -9,6 +9,7 @@ import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './t
 import {SearchOptions, State} from './types/search';
 import {State as RepositoryState} from './types/repository';
 import { afterAction } from '../store/eventMiddleware';
+import { FuzzyStringMatcher, StringMatcher } from '../utils/StringMatcher';
 
 export enum Actions {
   CHANGE_FILTER = 'search/CHANGE_FILTER',
@@ -60,9 +61,9 @@ export function changeFilter(filter: string): Thunk<void> {
   };
 }
 
-function matches(ptr: EntryPtr, content: any, filterLC: string) {
-  return ptr.entry.toLowerCase().includes(filterLC)
-    || typeForInt(ptr.entry).matches(content, filterLC);
+function matches(ptr: EntryPtr, content: any, matcher: StringMatcher) {
+  return matcher.matches(ptr.entry)
+    || typeForInt(ptr.entry).matches(content, matcher);
 }
 
 type PtrWithBuffer = { ptr: EntryPtr, buffer: Buffer };
@@ -97,8 +98,8 @@ async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId: stri
   console.timeEnd('parse');
 
   console.time('filter');
-  const filterLC = filter.toLowerCase();
-  const results = parsed.filter(({ ptr, content }: PtrWithContent) => matches(ptr, content, filterLC))
+  const matcher = new FuzzyStringMatcher(filter);
+  const results = parsed.filter(({ ptr, content }: PtrWithContent) => matches(ptr, content, matcher))
     .map((item: PtrWithContent) => item.ptr);
   console.timeEnd('filter');
 
@@ -112,9 +113,9 @@ function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/',
   console.log('# items: ', allEntries.length);
 
   console.time('filter');
-  const filterLC = filter.toLowerCase();
-  const results = allEntries.filter((ptr: EntryPtr) => ptr.entry.toLowerCase().includes(filterLC)
-    || (matchPath && !!hierarchy(nodes, ptr.nodeId).find(node => node.id !== '/' && node.name.toLowerCase().includes(filterLC))));
+  const matcher = new FuzzyStringMatcher(filter);
+  const results = allEntries.filter((ptr: EntryPtr) => matcher.matches(ptr.entry)
+    || (matchPath && !!hierarchy(nodes, ptr.nodeId).find(node => node.id !== '/' && matcher.matches(node.name))));
   console.timeEnd('filter');
 
   return List(results);
