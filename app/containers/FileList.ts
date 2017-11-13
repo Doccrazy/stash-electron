@@ -3,6 +3,7 @@ import naturalCompare from 'natural-compare';
 import FileList from '../components/FileList';
 import EntryPtr from '../domain/EntryPtr';
 import { select } from '../actions/currentEntry';
+import { select as selectNode } from '../actions/currentNode';
 import { open } from '../actions/edit';
 import { toggleAndSave as toggleFavorite } from '../actions/favorites';
 import specialFolders, {SpecialFolderId} from '../utils/specialFolders';
@@ -27,7 +28,7 @@ function createFileList(state: RootState): FileListEntry[] {
   const accessibleByNode: { [nodeId: string]: boolean } = Set(result.map(ptr => ptr.nodeId))
     .reduce((acc, id: string) => ({ ...acc, [id]: isAccessible(state.repository.nodes, id, state.privateKey.username)}), {});
   return result.map(ptr => new FileListEntry(ptr,
-    hierarchy(state.repository.nodes, ptr.nodeId).map(node => node.name), new Date(1505249965000 - (hashString(ptr.entry) >>> 0) * 5),
+    hierarchy(state.repository.nodes, ptr.nodeId), new Date(1505249965000 - (hashString(ptr.entry) >>> 0) * 5),
     accessibleByNode[ptr.nodeId]));
 }
 
@@ -39,5 +40,6 @@ export default connect((state: RootState) => ({
 }), dispatch => ({
   onSelect: (ptr: EntryPtr) => dispatch(select(ptr)),
   onEdit: (ptr: EntryPtr) => dispatch(open(ptr)),
-  onToggleFavorite: (ptr: EntryPtr) => dispatch(toggleFavorite(ptr))
+  onToggleFavorite: (ptr: EntryPtr) => dispatch(toggleFavorite(ptr)),
+  onSelectNode: (nodeId: string) => dispatch(selectNode(nodeId))
 }))(FileList);

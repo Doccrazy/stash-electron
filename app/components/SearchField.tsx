@@ -8,7 +8,8 @@ export interface Props {
   value: string,
   onChange: (value: string) => void,
   onSearch: () => void,
-  onToggleScope: () => void
+  onToggleScope: () => void,
+  onShowResults: () => void
 }
 
 export default class SearchField extends React.Component<Props, {}> {
@@ -40,7 +41,7 @@ export default class SearchField extends React.Component<Props, {}> {
   };
 
   render() {
-    const { className, limitedScope, value, onChange, onToggleScope } = this.props;
+    const { className, limitedScope, value, onChange, onToggleScope, onShowResults } = this.props;
     return (<Form inline className={className}>
       <InputGroup>
         <Input
@@ -49,7 +50,7 @@ export default class SearchField extends React.Component<Props, {}> {
           value={value}
           onChange={ev => onChange(ev.target.value)}
           onKeyDown={this.keyDown}
-          onFocus={() => { if (this.input) { this.input.select(); } }}
+          onFocus={() => { if (this.input) { this.input.select(); onShowResults(); } }}
         />
         <InputGroupButton>
           <Button onClick={onToggleScope}>{limitedScope ? 'within folder' : 'everywhere'}</Button>

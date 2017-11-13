@@ -16,13 +16,14 @@ export interface Props {
   onSelect: (ptr: EntryPtr) => void,
   onEdit: (ptr: EntryPtr) => void,
   onToggleFavorite: (ptr: EntryPtr) => void
+  onSelectNode: (nodeId: string) => void
 }
 
 interface ChromeMouseEvent extends React.MouseEvent<HTMLTableRowElement> {
   detail: number  // Click index (1 for first, 2 for second)
 }
 
-export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, onToggleFavorite }: Props) => (<div>
+export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, onToggleFavorite, onSelectNode }: Props) => (<div>
   <Table hover className={`table-sm table-sticky`}>
     <thead>
       <tr>
@@ -51,8 +52,10 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
             }}
           /></td>
           <td>{type.format ? type.format(file.ptr.entry) : file.ptr.entry}</td>
-          {showPath && <td title={file.nodeNames.slice(1).join(' / ')} className={file.nodeNames.length > 3 ? styles.pathEllipsis : undefined}>
-            {file.nodeNames.slice(1).slice(-2).map((name, idx) => <span key={idx} className={styles.pathSeg}>{name}</span>)}
+          {showPath && <td title={file.nodes.slice(1).map(node => node.name).join(' / ')} className={file.nodes.length > 3 ? styles.pathEllipsis : undefined}>
+            {file.nodes.slice(1).slice(-2).map((node, idx) => <span key={idx} className={styles.pathSeg}>
+              <a href="" onClick={ev => { onSelectNode(node.id); ev.stopPropagation(); }}>{node.name}</a>
+            </span>)}
           </td>}
           <td className="text-right" style={{ whiteSpace: 'nowrap' }}>{moment(file.lastModified).fromNow()}</td>
         </tr>);

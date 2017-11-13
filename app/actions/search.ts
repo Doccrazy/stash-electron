@@ -164,6 +164,14 @@ export function toggleScope(): Thunk<void> {
   };
 }
 
+export function showResults(): Thunk<void> {
+  return (dispatch, getState) => {
+    if (getState().search.filter && getState().search.filter.length >= 2 && getState().currentNode.specialId !== 'searchResults') {
+      dispatch(selectSpecial('searchResults') as any);
+    }
+  };
+}
+
 afterAction(RepoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }: { ptr: EntryPtr, newName: string }) => {
   const { search } = getState();
   const idx = search.results.indexOf(ptr);

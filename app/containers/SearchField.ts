@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import SearchField from '../components/SearchField';
-import { changeFilter, startSearch, toggleScope } from '../actions/search';
+import { changeFilter, startSearch, toggleScope, showResults } from '../actions/search';
 import {RootState} from '../actions/types/index';
 
 export default connect((state: RootState) => ({
@@ -9,5 +9,6 @@ export default connect((state: RootState) => ({
 }), dispatch => ({
   onChange: (value: string) => dispatch(changeFilter(value)),
   onSearch: () => dispatch(startSearch()) as any,
-  onToggleScope: () => dispatch(toggleScope()) as any
+  onToggleScope: () => dispatch(toggleScope()) as any,
+  onShowResults: () => { dispatch(showResults()); }
 }))(SearchField);

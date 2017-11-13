@@ -16,16 +16,21 @@ const MULTI_OPEN = false;
 
 function maybeExpand(dispatch: TypedDispatch<Action>, getState: GetState, nodeId: string) {
   const { repository, treeState } = getState();
-  if (repository.nodes[nodeId] && repository.nodes[nodeId].childIds.size && !treeState.has(nodeId)) {
+  let node = repository.nodes[nodeId];
+  // if node is a leaf, expand parent instead
+  if (node && node.parentId && node.childIds.size === 0) {
+    node = repository.nodes[node.parentId];
+  }
+  if (node && node.childIds.size && !treeState.has(node.id)) {
     if (MULTI_OPEN) {
       dispatch({
         type: Actions.EXPAND,
-        payload: nodeId
+        payload: node.id
       });
     } else {
       dispatch({
         type: Actions.SET_EXPAND,
-        payload: hierarchy(repository.nodes, nodeId).map(node => node.id)
+        payload: hierarchy(repository.nodes, node.id).map(n => n.id)
       });
     }
   }
