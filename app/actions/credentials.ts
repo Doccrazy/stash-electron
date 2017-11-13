@@ -44,7 +44,8 @@ export function clearStoredLogin(context: string): Thunk<Promise<void>> {
   };
 }
 
-export function requestCredentials(context: string, title: string, text: string, username?: string, askUsername?: boolean): Thunk<Promise<Credentials>> {
+export function requestCredentials(context: string, title: string, text: string, username?: string,
+                                   askUsername?: boolean, defaultSavePassword?: boolean): Thunk<Promise<Credentials>> {
   return async (dispatch, getState) => {
     if (hasStoredLogin(getState, context)) {
       try {
@@ -65,7 +66,7 @@ export function requestCredentials(context: string, title: string, text: string,
           onceAfterAction(Actions.CLOSE, () => {
             // TODO wait for other popup to fully close (reactstrap bug?)
             setTimeout(() => {
-              resolve(dispatch(requestCredentials(context, title, text, username, askUsername)));
+              resolve(dispatch(requestCredentials(context, title, text, username, askUsername, defaultSavePassword)));
             }, 500);
           });
         });
@@ -78,7 +79,8 @@ export function requestCredentials(context: string, title: string, text: string,
           title,
           text,
           username,
-          askUsername
+          askUsername,
+          defaultSavePassword
         }
       });
     }
@@ -158,7 +160,7 @@ export function change(value: FormState): Action {
 }
 
 type Action =
-  TypedAction<Actions.OPEN, { context: string, title: string, text: string, username?: string, askUsername?: boolean }>
+  TypedAction<Actions.OPEN, { context: string, title: string, text: string, username?: string, askUsername?: boolean, defaultSavePassword?: boolean }>
   | OptionalAction<Actions.CLOSE>
   | TypedAction<Actions.CHANGE, FormState>
   | OptionalAction<Actions.SUBMIT>
@@ -175,7 +177,7 @@ export default function reducer(state: State = { state: {} }, action: Action): S
         title: action.payload.title,
         text: action.payload.text,
         askUsername: action.payload.askUsername,
-        state: { username: action.payload.username }
+        state: { username: action.payload.username, savePassword: action.payload.defaultSavePassword }
       };
     case Actions.CLOSE:
       return { open: false, state: {} };

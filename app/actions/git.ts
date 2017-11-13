@@ -127,7 +127,7 @@ function gitFetchRemote(gitRepo: Git.Repository, remoteName: string): Thunk<Prom
         credentialsContext = null;
         const result = await dispatch(Credentials.requestCredentials(url, 'Authenticate to git repository',
           `The git repository at ${url} has requested authentication.
-             Please enter your credentials below.`, usernameFromUrl, true));
+             Please enter your credentials below.`, usernameFromUrl, true, true));
         credentialsContext = url;
         return result;
       });
