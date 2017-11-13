@@ -1,13 +1,14 @@
 import { List } from 'immutable';
 import { debounce } from 'lodash-es';
-import { getRepo } from './repository';
+import { getRepo, Actions as RepoActions } from './repository';
 import {deselectSpecial, selectSpecial} from './currentNode';
 import {hierarchy, isAccessible, recursiveChildIds} from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import typeFor, {typeForInt} from '../fileType/index';
-import {Dispatch, OptionalAction, TypedAction, TypedThunk} from './types/index';
+import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 import {SearchOptions, State} from './types/search';
 import {State as RepositoryState} from './types/repository';
+import { afterAction } from '../store/eventMiddleware';
 
 export enum Actions {
   CHANGE_FILTER = 'search/CHANGE_FILTER',
@@ -161,6 +162,19 @@ export function toggleScope(): Thunk<void> {
     }
   };
 }
+
+afterAction(RepoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }: { ptr: EntryPtr, newName: string }) => {
+  const { search } = getState();
+  const idx = search.results.indexOf(ptr);
+  if (idx >= 0) {
+    dispatch({
+      type: Actions.RESULTS,
+      payload: {
+        results: search.results.set(idx, new EntryPtr(ptr.nodeId, newName))
+      }
+    });
+  }
+});
 
 type Action =
   TypedAction<Actions.CHANGE_FILTER, string>
