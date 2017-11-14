@@ -1,7 +1,7 @@
 {
   "name": "stash-electron",
   "productName": "Stash",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-snapshot",
   "description": "Cryptographically secure team password manager built on open technologies and standardized encryption algorithms.",
   "main": "./main.prod.js",
   "scripts": {
@@ -16,9 +16,9 @@
     "lint-styles": "stylelint app/*.css app/components/*.css --syntax scss",
     "lint-styles-fix": "stylefmt -r app/*.css app/components/*.css",
     "package": "npm run build && build --publish never",
-    "package-all": "npm run build && build -mwl",
-    "package-linux": "npm run build && build --linux",
-    "package-win": "npm run build && build --win --x64",
+    "package-all": "npm run build && cross-env build -wl --x64 --publish always -c.publish.url=$PUBLISH_URL",
+    "package-linux": "npm run build && cross-env build --linux --x64 --publish always -c.publish.url=$PUBLISH_URL",
+    "package-win": "npm run build && cross-env build --win --x64 --publish always -c.publish.url=$PUBLISH_URL",
     "postinstall": "concurrently \"npm run build-dll\" \"electron-builder install-app-deps\" \"node node_modules/fbjs-scripts/node/check-dev-engines.js package.json\"",
     "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production electron ./app/",
@@ -71,7 +71,6 @@
     },
     "linux": {
       "target": [
-        "deb",
         "AppImage"
       ],
       "category": "Utility"
@@ -85,7 +84,13 @@
       "schemes": [
         "stash"
       ]
-    }
+    },
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "__url__"
+      }
+    ]
   },
   "repository": {
     "type": "git",
@@ -228,8 +233,10 @@
     "devtron": "^1.4.0",
     "diacritics": "^1.3.0",
     "electron-debug": "^1.2.0",
+    "electron-log": "^2.2.11",
     "electron-settings": "^3.1.1",
     "electron-unhandled": "^0.2.0",
+    "electron-updater": "^2.16.1",
     "electron-window-state": "^4.1.1",
     "font-awesome": "^4.7.0",
     "font-awesome-filetypes": "^1.0.1",

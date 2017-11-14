@@ -9,6 +9,8 @@
  * `./app/main.prod.js` using webpack. This gives us some performance wins.
  */
 import { app, BrowserWindow, shell } from 'electron';
+import logger from 'electron-log';
+import { autoUpdater } from 'electron-updater';
 import windowStateKeeper from 'electron-window-state';
 import { URL } from 'url';
 import MenuBuilder from './menu';
@@ -69,6 +71,9 @@ function cleanUrl(url) {
   currentUrl.hash = '';
   return new URL('./', currentUrl).href;
 }
+
+autoUpdater.logger = logger;
+autoUpdater.logger.transports.file.level = 'info';
 
 /**
  * Add event listeners...
@@ -139,4 +144,6 @@ app.on('ready', async () => {
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
+
+  autoUpdater.checkForUpdatesAndNotify();
 });
