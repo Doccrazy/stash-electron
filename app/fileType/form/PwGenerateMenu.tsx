@@ -28,11 +28,12 @@ export interface Props {
   onGenerate: (pw: string) => void
 }
 
+// React.createElement is required to work around missing props in reactstrap typings
 export default ({ onGenerate }: Props) => (
-  <UncontrolledDropdown tag="span">
-    <DropdownToggle title="Generate password" tabIndex={-1}>
+  React.createElement(UncontrolledDropdown, { tag: 'span'} as any,
+    React.createElement(DropdownToggle, { title: 'Generate password', tabIndex: -1} as any,
       <i className="fa fa-cog" />
-    </DropdownToggle>
+    ),
     <DropdownMenu right>
       <table>
         <thead>
@@ -53,5 +54,5 @@ export default ({ onGenerate }: Props) => (
         </tbody>
       </table>
     </DropdownMenu>
-  </UncontrolledDropdown>
+  )
 );

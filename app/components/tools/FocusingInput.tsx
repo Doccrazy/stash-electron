@@ -1,7 +1,10 @@
 import * as React from 'react';
-import { Input, InputProps } from 'reactstrap';
+import { Input } from 'reactstrap';
 
-type Props = InputProps & { focused: boolean };
+const _dummy: typeof Input.defaultProps = {};
+type InputProps = typeof _dummy;
+
+type Props = InputProps & { focused?: boolean };
 
 export default class FocusingInput extends React.Component<Props, {}> {
   private inputRef: HTMLInputElement;
