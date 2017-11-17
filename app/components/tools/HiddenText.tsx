@@ -12,6 +12,11 @@ export default class HiddenText extends React.Component<Props, { visible: boolea
     visible: false
   };
 
+  componentWillMount() {
+    this.show = this.show.bind(this);
+    this.hide = this.hide.bind(this);
+  }
+
   componentWillUnmount() {
     if (this.timeout) {
       clearTimeout(this.timeout);
@@ -19,20 +24,20 @@ export default class HiddenText extends React.Component<Props, { visible: boolea
     }
   }
 
-  show = () => {
+  show() {
     if (this.timeout) {
       clearTimeout(this.timeout);
       this.timeout = null;
     }
     this.setState({ visible: true });
-  };
+  }
 
-  hide = () => {
+  hide() {
     this.timeout = setTimeout(() => {
       this.timeout = null;
       this.setState({ visible: false });
     }, 2000) as any;
-  };
+  }
 
   render() {
     return (<span onMouseEnter={this.show} onMouseLeave={this.hide}>
