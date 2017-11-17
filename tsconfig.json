@@ -6,7 +6,7 @@
     "sourceMap": true,
     "module": "es2015",
     "moduleResolution": "node",
-    "target": "es2016",
+    "target": "es2017",
     "jsx": "react",
     "declaration": false,
     "typeRoots": [
