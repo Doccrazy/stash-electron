@@ -1,6 +1,6 @@
 import * as cx from 'classnames';
 import * as React from 'react';
-import { PasswordStrength } from 'tai-password-strength';
+import * as PasswordStrength from 'tai-password-strength/lib/password-strength.js';  // tslint:disable-line
 import * as styles from './StrengthMeter.scss';
 
 export interface Props {

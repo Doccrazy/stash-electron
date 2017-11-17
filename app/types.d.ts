@@ -6,7 +6,7 @@ declare module 'natural-compare';
 
 declare module 'electron-unhandled';
 
-declare module 'tai-password-strength' {
+declare module 'tai-password-strength/lib/password-strength.js' {
   type StrengthCode = 'VERY_WEAK' | 'WEAK' | 'REASONABLE' | 'STRONG' | 'VERY_STRONG';
 
   interface CheckResult {
@@ -20,9 +20,15 @@ declare module 'tai-password-strength' {
     charsets: object
   }
 
-  class PasswordStrength {
+  interface PasswordStrength {
     check(currentPassword: string): CheckResult;
   }
+  interface Lib {
+    new (): PasswordStrength;
+  }
+
+  const pws: Lib;
+  export = pws;
 }
 
 declare module '*.css' {
