@@ -13,6 +13,12 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
   nameInput: HTMLInputElement;
   passwordInput: HTMLInputElement;
 
+  componentWillMount() {
+    this.changeRepeatPassword = this.changeRepeatPassword.bind(this);
+    this.setPassword = this.setPassword.bind(this);
+    this.toggleMask = this.toggleMask.bind(this);
+  }
+
   componentDidMount() {
     setTimeout(() => {
       if (this.nameInput) {
@@ -29,24 +35,24 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
     }
   }
 
-  changeRepeatPassword = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  changeRepeatPassword(ev: React.ChangeEvent<HTMLInputElement>) {
     this.props.onChangeState({ ...this.props.formState, repeatPassword: ev.target.value });
-  };
+  }
 
-  setPassword = (password: string) => {
+  setPassword(password: string) {
     this.props.onChange({ ...this.props.value, password });
     if (this.props.formState.mask) {
       this.props.onChangeState({ ...this.props.formState, repeatPassword: password });
     }
-  };
+  }
 
-  toggleMask = () => {
+  toggleMask() {
     const newState = { ...this.props.formState, mask: !this.props.formState.mask };
     if (newState.mask) {
       newState.repeatPassword = this.props.value.password;
     }
     this.props.onChangeState(newState);
-  };
+  }
 
   render() {
     const { name, onChangeName, value, onChange } = this.props;
