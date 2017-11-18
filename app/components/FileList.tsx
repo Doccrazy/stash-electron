@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import typeFor from '../fileType';
 import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';
+import { EntryDragSource } from './tools/EntryPtrDrag';
 import * as styles from './FileList.scss';
 
 export interface Props {
@@ -51,7 +52,9 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
               ev.stopPropagation();
             }}
           /></td>
-          <td>{type.format ? type.format(file.ptr.entry) : file.ptr.entry}</td>
+          <td><EntryDragSource ptr={file.ptr} dragAllowed={file.accessible}>
+            {type.format ? type.format(file.ptr.entry) : file.ptr.entry}
+          </EntryDragSource></td>
           {showPath && <td title={file.nodes.slice(1).map(node => node.name).join(' / ')} className={file.nodes.length > 3 ? styles.pathEllipsis : undefined}>
             {file.nodes.slice(1).slice(-2).map((node, idx) => <span key={idx} className={styles.pathSeg}>
               <a href="" onClick={ev => { onSelectNode(node.id); ev.stopPropagation(); }}>{node.name}</a>

@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { DragDropContextProvider  } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import { Store } from 'redux';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
@@ -14,9 +16,11 @@ export interface Props {
 export default function Root({ store, history }: Props) {
   return (
     <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <Routes />
-      </ConnectedRouter>
+      <DragDropContextProvider backend={HTML5Backend}>
+        <ConnectedRouter history={history}>
+          <Routes />
+        </ConnectedRouter>
+      </DragDropContextProvider>
     </Provider>
   );
 }

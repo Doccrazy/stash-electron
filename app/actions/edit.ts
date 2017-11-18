@@ -205,7 +205,7 @@ afterAction(Repository.Actions.RENAME_ENTRY, (dispatch, getState: GetState, { pt
   }
 });
 
-afterAction(Repository.Actions.DELETE_ENTRY, (dispatch, getState: GetState, ptr) => {
+afterAction([Repository.Actions.DELETE_ENTRY, Repository.Actions.MOVE_ENTRY], (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
   const { edit } = getState();
   if (edit.ptr && edit.ptr.equals(ptr)) {
     dispatch(close());

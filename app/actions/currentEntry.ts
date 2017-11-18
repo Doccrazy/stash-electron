@@ -121,7 +121,7 @@ afterAction(Repository.Actions.RENAME_ENTRY, (dispatch, getState: GetState, { pt
 });
 
 // when a selected entry is deleted, clear selection
-afterAction(Repository.Actions.DELETE_ENTRY, (dispatch, getState: GetState, ptr) => {
+afterAction([Repository.Actions.DELETE_ENTRY, Repository.Actions.MOVE_ENTRY], (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
     dispatch(clear());

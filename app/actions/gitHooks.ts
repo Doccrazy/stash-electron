@@ -32,8 +32,12 @@ afterAction(Repository.Actions.RENAME_ENTRY, (dispatch, getState: GetState, { pt
   dispatch(maybeCommitChanges(`Rename ${fmtPtr(getState, ptr)} to ${typeNew.toDisplayName(newName)}`));
 });
 
-afterAction(Repository.Actions.DELETE_ENTRY, (dispatch, getState: GetState, ptr: EntryPtr) => {
+afterAction(Repository.Actions.DELETE_ENTRY, (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
   dispatch(maybeCommitChanges(`Delete ${fmtPtr(getState, ptr)}`));
+});
+
+afterAction(Repository.Actions.MOVE_ENTRY, (dispatch, getState: GetState, { ptr, newNodeId }: { ptr: EntryPtr, newNodeId: string }) => {
+  dispatch(maybeCommitChanges(`Move ${fmtPtr(getState, ptr)} to ${fmtNode(getState, newNodeId)}`));
 });
 
 afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { node, newNode }: { node: Node, newNode: Node }) => {

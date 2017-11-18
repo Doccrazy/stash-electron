@@ -9,7 +9,7 @@ import { afterAction } from '../store/eventMiddleware';
 import {State} from './types/repository';
 import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
 import Repository from '../repository/Repository';
-import {readNodeRecursive, recursiveChildIds} from '../utils/repository';
+import { hasChildOrEntry, readNodeRecursive, recursiveChildIds } from '../utils/repository';
 import KeyProvider from '../repository/KeyProvider';
 import KeyFileKeyProvider from '../repository/KeyFileKeyProvider';
 import UsersFileAuthorizationProvider from '../repository/UsersFileAuthorizationProvider';
@@ -22,6 +22,7 @@ export enum Actions {
   READ_NODE_LIST = 'repository/READ_NODE_LIST',
   RENAME_ENTRY = 'repository/RENAME_ENTRY',
   DELETE_ENTRY = 'repository/DELETE_ENTRY',
+  MOVE_ENTRY = 'repository/MOVE_ENTRY',
   CREATE_ENTRY = 'repository/CREATE_ENTRY',
   UPDATE_ENTRY = 'repository/UPDATE_ENTRY',
   DELETE_NODE = 'repository/DELETE_NODE',
@@ -135,12 +136,44 @@ export function deleteEntry(ptr: EntryPtr): Thunk<Promise<void>> {
 
       dispatch({
         type: Actions.DELETE_ENTRY,
-        payload: ptr
+        payload: {
+          ptr
+        }
       });
     } catch (e) {
       // delete failed
       console.error(e);
       toastr.error('', `Failed to delete entry ${ptr.entry}: ${e}`);
+    }
+  };
+}
+
+export function moveEntry(ptr: EntryPtr, newNodeId: string): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const targetNode = getState().repository.nodes[newNodeId];
+    if (hasChildOrEntry(getState().repository.nodes, targetNode, ptr.entry)) {
+      toastr.error('', `Cannot move: File already exists`);
+      return;
+    }
+
+    try {
+      const buffer = await repo.readFile(ptr.nodeId, ptr.entry);
+      await repo.writeFile(newNodeId, ptr.entry, buffer);
+      await repo.deleteFile(ptr.nodeId, ptr.entry);
+
+      dispatch({
+        type: Actions.MOVE_ENTRY,
+        payload: {
+          ptr,
+          newNodeId
+        }
+      });
+
+      toastr.success('', `Moved ${ptr.entry} to ${targetNode.name}`);
+    } catch (e) {
+      // delete failed
+      console.error(e);
+      toastr.error('', `Failed to move entry ${ptr.entry}: ${e}`);
     }
   };
 }
@@ -275,7 +308,8 @@ type Action =
   | OptionalAction<Actions.UNLOAD>
   | TypedAction<Actions.READ_NODE_LIST, List<Node>>
   | TypedAction<Actions.RENAME_ENTRY, { ptr: EntryPtr, newName: string }>
-  | TypedAction<Actions.DELETE_ENTRY, EntryPtr>
+  | TypedAction<Actions.DELETE_ENTRY, { ptr: EntryPtr }>
+  | TypedAction<Actions.MOVE_ENTRY, { ptr: EntryPtr, newNodeId: string }>
   | TypedAction<Actions.CREATE_ENTRY, EntryPtr>
   | TypedAction<Actions.UPDATE_ENTRY, { ptr: EntryPtr, buffer: Buffer }>
   | TypedAction<Actions.DELETE_NODE, Node>
@@ -313,8 +347,14 @@ export default function reducer(state: State = { nodes: { } }, action: Action): 
       return updatingNode(state, action.payload.ptr.nodeId, node =>
         node.withEntryRenamed(action.payload.ptr.entry, action.payload.newName));
     case Actions.DELETE_ENTRY:
-      return updatingNode(state, action.payload.nodeId, node =>
-        node.withEntryDeleted(action.payload.entry));
+      return updatingNode(state, action.payload.ptr.nodeId, node =>
+        node.withEntryDeleted(action.payload.ptr.entry));
+    case Actions.MOVE_ENTRY: {
+      const intermediate = updatingNode(state, action.payload.ptr.nodeId, node =>
+        node.withEntryDeleted(action.payload.ptr.entry));
+      return updatingNode(intermediate, action.payload.newNodeId, node =>
+        node.withNewEntry(action.payload.ptr.entry));
+    }
     case Actions.CREATE_ENTRY:
       return updatingNode(state, action.payload.nodeId, node =>
         node.withNewEntry(action.payload.entry));
@@ -333,9 +373,10 @@ export default function reducer(state: State = { nodes: { } }, action: Action): 
       }
       return state;
     }
-    case Actions.MOVE_NODE:
+    case Actions.MOVE_NODE: {
       const intermediate = reducer(state, { type: Actions.DELETE_NODE, payload: action.payload.node });
       return reducer(intermediate, { type: Actions.CREATE_NODE, payload: action.payload.newNode });
+    }
     case Actions.CREATE_NODE: {
       const newNode = action.payload;
       const parentNode = state.nodes[newNode.parentId as string];

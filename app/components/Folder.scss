@@ -1,0 +1,23 @@
+@import "~font-awesome/scss/mixins";
+@import "~font-awesome/scss/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+.nameSelected {
+  background-color: $yellow;
+}
+
+.nameMarked {
+  background-color: $gray-400;
+}
+
+.nameDrop {
+  background-color: $yellow;
+}
+
+.authIcon::before {
+  @include fa-icon();
+
+  content: $fa-var-users;
+  margin-left: 0.333em;
+}

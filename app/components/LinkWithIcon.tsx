@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './TreeNode.scss';
+import * as styles from './Folder.scss';
 
 export interface Props {
   title: string,
@@ -9,5 +9,5 @@ export interface Props {
 }
 
 export default ({ title, icon, active = false, onClick }: Props) => (
-  <a className={`text-dark ${active ? styles.labelSelected : ''}`} href="#" onClick={onClick}><i className={`fa fa-${icon}`} />&nbsp;{title}</a>
+  <a className={`text-dark ${active ? styles.nameSelected : ''}`} href="#" onClick={onClick}><i className={`fa fa-${icon}`} />&nbsp;{title}</a>
 );

@@ -13,14 +13,6 @@
   }
 }
 
-.labelSelected .name {
-  background-color: $yellow;
-}
-
-.labelMarked .name {
-  background-color: $gray-400;
-}
-
 .labelInaccessible {
   font-style: italic;
   color: theme-color('secondary');
@@ -44,13 +36,6 @@
 
 .iconOpen::before {
   content: $fa-var-caret-down;
-}
-
-.authIcon::before {
-  @include fa-icon();
-
-  content: $fa-var-users;
-  margin-left: 0.333em;
 }
 
 .children {
