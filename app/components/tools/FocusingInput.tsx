@@ -26,7 +26,7 @@ export default class FocusingInput extends React.Component<Props, {}> {
   }
 
   render() {
-    const { focused, ...innerProps } = this.props;
-    return <Input innerRef={ref => { this.inputRef = ref; }} {...innerProps} />;
+    const { focused, innerRef, ...innerProps } = this.props;
+    return <Input innerRef={ref => { this.inputRef = ref; if (typeof innerRef === 'function') { innerRef(ref); } }} {...innerProps} />;
   }
 }

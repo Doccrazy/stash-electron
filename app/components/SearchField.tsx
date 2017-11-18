@@ -12,31 +12,64 @@ export interface Props {
   onShowResults: () => void
 }
 
+function shouldIgnore(ev: KeyboardEvent) {
+  return document.body.matches('.modal-open') || (ev.target instanceof HTMLElement && (
+    // copied from mousetrap
+    ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT' || ev.target.tagName === 'TEXTAREA' || ev.target.isContentEditable
+  ));
+}
+
 export default class SearchField extends React.Component<Props, {}> {
   input: HTMLInputElement;
 
+  componentWillMount() {
+    this.globalKeyPress = this.globalKeyPress.bind(this);
+    this.keyDown = this.keyDown.bind(this);
+  }
+
   componentDidMount() {
-    Mousetrap.bind(['ctrl+f', 'meta+f'], () => {
-      if (this.input) {
+    Mousetrap.bind(['ctrl+f', 'meta+f'], ev => {
+      if (this.input && !shouldIgnore(ev)) {
         this.input.focus();
+        if (this.props.limitedScope) {
+          this.props.onToggleScope();
+        }
       }
     });
+
+    document.documentElement.addEventListener('keypress', this.globalKeyPress);
   }
 
   componentWillUnmount() {
     Mousetrap.unbind(['ctrl+f', 'meta+f']);
+    document.documentElement.removeEventListener('keypress', this.globalKeyPress);
   }
 
-  keyDown = (ev: React.KeyboardEvent<HTMLInputElement>) => {
-    if (ev.keyCode === 13) {
+  globalKeyPress(ev: KeyboardEvent) {
+    // when the user starts typing without a focused input field, start a search in current folder
+    if (!shouldIgnore(ev) && /^\S$/.test(ev.key) && !ev.altKey && !ev.ctrlKey && !ev.metaKey) {
+      if (this.input) {
+        this.input.focus();
+      }
+      if (!this.props.limitedScope) {
+        this.props.onToggleScope();
+      }
+    }
+  }
+
+  keyDown(ev: React.KeyboardEvent<HTMLInputElement>) {
+    if (ev.keyCode === 13) {  // search on enter
       ev.preventDefault();
       this.props.onSearch();
-    } else if (ev.keyCode === 9) {
+    } else if (ev.keyCode === 9) {  // toggle scope on tab
       ev.preventDefault();
       this.props.onToggleScope();
-    } else if (ev.keyCode === 27) {
+    } else if (ev.keyCode === 27) {  // clear on esc
       ev.preventDefault();
       this.props.onChange('');
+    } else if (ev.key === 'f' && ev.ctrlKey && this.props.limitedScope) {  // set global scope on ctrl+f
+      ev.preventDefault();
+      this.props.onToggleScope();
     }
   };
 
