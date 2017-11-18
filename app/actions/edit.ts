@@ -184,7 +184,14 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
       const buffer = type.write(edit.parsedContent);
 
       const savedEntryPtr = new EntryPtr(edit.ptr.nodeId, fileName);
-      await dispatch(Repository.writeEntry(savedEntryPtr, buffer));
+      try {
+        await dispatch(Repository.writeEntry(savedEntryPtr, buffer));
+      } catch (e) {
+        // failed to read
+        console.error(e);
+        toastr.error('', `Failed to write entry ${fileName}: ${e}`);
+        return;
+      }
 
       dispatch({
         type: Actions.SAVED,
@@ -264,7 +271,8 @@ export default function reducer(state: State = {}, action: Action): State {
     case Actions.CHANGE_NAME:
       return { ...state, name: action.payload };
     case Actions.VALIDATE:
-      return { ...state, validationError: typeof action.payload === 'boolean' ? 'Validation failed.' : action.payload };
+      const msg = typeof action.payload === 'boolean' ? (action.payload ? 'Validation failed.' : undefined) : action.payload;
+      return { ...state, validationError: msg };
     case Actions.CLOSE:
       return {};
     default:
