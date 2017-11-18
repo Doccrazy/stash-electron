@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
+import * as crypto from 'crypto';
 import './utils/electronNoDrop';
 import './utils/errorHandler';
 import Root from './containers/Root';
@@ -19,6 +20,14 @@ setTimeout(() => {
   registerHotkeys(store.dispatch, store.getState);
   setupInactivityLock(store.dispatch, store.getState);
 });
+
+setTimeout(() => {
+  // asynchronously initialize the OpenSSL library (takes ~1s)
+  // https://github.com/electron/electron/issues/2073
+  crypto.randomBytes(1, () => {
+    // done
+  });
+}, 1000);
 
 render(
   <AppContainer>
