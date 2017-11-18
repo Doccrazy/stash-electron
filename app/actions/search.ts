@@ -185,6 +185,32 @@ afterAction(RepoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newN
   }
 });
 
+afterAction(RepoActions.DELETE_ENTRY, (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
+  const { search } = getState();
+  const idx = search.results.indexOf(ptr);
+  if (idx >= 0) {
+    dispatch({
+      type: Actions.RESULTS,
+      payload: {
+        results: search.results.delete(idx)
+      }
+    });
+  }
+});
+
+afterAction(RepoActions.MOVE_ENTRY, (dispatch, getState: GetState, { ptr, newNodeId }: { ptr: EntryPtr, newNodeId: string }) => {
+  const { search } = getState();
+  const idx = search.results.indexOf(ptr);
+  if (idx >= 0) {
+    dispatch({
+      type: Actions.RESULTS,
+      payload: {
+        results: search.results.set(idx, new EntryPtr(newNodeId, ptr.entry))
+      }
+    });
+  }
+});
+
 type Action =
   TypedAction<Actions.CHANGE_FILTER, string>
   | OptionalAction<Actions.START>

@@ -1,4 +1,5 @@
 import { fromJS, is } from 'immutable';
+import { toastr } from 'react-redux-toastr';
 import { cleanFileName, hasChildOrEntry, isAccessible, isValidFileName, RESERVED_FILENAMES } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import typeFor, { typeById } from '../fileType';
@@ -29,8 +30,15 @@ export function open(ptr: EntryPtr, preParsedContent?: any): Thunk<Promise<void>
     if (type.parse) {
       parsedContent = preParsedContent;
       if (!parsedContent) {
-        const content = await Repository.getRepo().readFile(ptr.nodeId, ptr.entry);
-        parsedContent = type.parse(content);
+        try {
+          const content = await Repository.getRepo().readFile(ptr.nodeId, ptr.entry);
+          parsedContent = type.parse(content);
+        } catch (e) {
+          // failed to read
+          console.error(e);
+          toastr.error('', `Failed to open entry ${ptr.entry}: ${e}`);
+          return;
+        }
       }
     }
 
