@@ -19,6 +19,10 @@ export function isRepository(repoPath: string) {
   return fs.existsSync(path.join(repoPath, '.git/index'));
 }
 
+export function isSignatureConfigured(repo: Git.Repository) {
+  return !!Git.Signature.default(repo) && !!(Git.Signature.default(repo).name as any)() && !!(Git.Signature.default(repo).email as any)();
+}
+
 /**
  * nodegit APIs are not thread-safe and may throw anything from 'index busy' to segfaults, so we
  * need to prevent concurrent repo access.

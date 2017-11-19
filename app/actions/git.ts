@@ -8,8 +8,8 @@ import {
   commitAllChanges,
   compareRefs,
   fetchWithRetry, GitCredentials,
-  hasUncommittedChanges,
-  isRepository, pushWithRetry, remoteNameFromRef,
+  hasUncommittedChanges, isSignatureConfigured,
+  pushWithRetry, remoteNameFromRef,
   resolveAllUsingTheirs
 } from '../utils/git';
 import { RES_LOCAL_FILENAMES } from '../utils/repository';
@@ -35,6 +35,9 @@ export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
       type: Actions.UPDATE_STATUS,
       payload: status
     });
+    if (status.incomingCommits) {
+      toastr.info('', `${status.incomingCommits} commit(s) received from '${status.upstreamName}'.`);
+    }
     if (status.conflict && !getState().git.popupOpen) {
       dispatch(openPopup());
     }
@@ -64,6 +67,11 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
 
         if (gitRepo.headDetached()) {
           status.error = 'detached head';
+          return;
+        }
+
+        if (!isSignatureConfigured(gitRepo)) {
+          status.error = 'git user name and email are not configured';
           return;
         }
 
@@ -110,7 +118,7 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
 
         let commit = await gitRepo.getHeadCommit();
         status.commits = [];
-        for (let i = 0; i < status.commitsAheadOrigin + 1; i++) {
+        for (let i = 0; i < status.commitsAheadOrigin + (status.incomingCommits || 0) + 1; i++) {
           status.commits.push({
             hash: commit.id().tostrS(),
             message: commit.message(),
@@ -244,7 +252,7 @@ export function maybeCommitChanges(message: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const repoPath = Repository.getRepo().rootPath;
 
-    if (!isRepository(repoPath)) {
+    if (!getState().git.status.initialized) {
       return;
     }
 
@@ -252,6 +260,10 @@ export function maybeCommitChanges(message: string): Thunk<Promise<void>> {
       await accessingRepository(repoPath, async gitRepo => {
         if (!(await hasUncommittedChanges(gitRepo))) {
           return;
+        }
+
+        if (!isSignatureConfigured(gitRepo)) {
+          throw new Error('git user name and email are not configured');
         }
 
         await addToGitIgnore(repoPath, ...RES_LOCAL_FILENAMES.toArray());
