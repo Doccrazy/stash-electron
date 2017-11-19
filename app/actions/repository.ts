@@ -48,9 +48,12 @@ export function getAuthProvider(): AuthorizationProvider {
 
 export function load(repoPath?: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    dispatch({
-      type: Actions.UNLOAD
-    });
+    const isReload = repoPath === getState().repository.path;
+    if (!isReload) {
+      dispatch({
+        type: Actions.UNLOAD
+      });
+    }
 
     if (!repoPath || !fs.existsSync(repoPath)) {
       return;
@@ -74,7 +77,8 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
       await dispatch(readRecursive(ROOT_ID));
 
       dispatch({
-        type: Actions.FINISH_LOAD
+        type: Actions.FINISH_LOAD,
+        payload: isReload
       });
     } catch (e) {
       dispatch({
@@ -84,6 +88,15 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
       console.error(e);
       toastr.error('Failed to open repository', e.message || e);
     }
+  };
+}
+
+// Gimme fuel, gimme fire / Gimme that which I desire
+export function reload(): Thunk<Promise<void>> {
+  return (dispatch, getState) => {
+    const repoPath = getState().repository.path;
+
+    return dispatch(load(repoPath));
   };
 }
 
@@ -304,7 +317,7 @@ afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState:
 
 type Action =
   TypedAction<Actions.LOAD, { name: string, path: string }>
-  | OptionalAction<Actions.FINISH_LOAD>
+  | TypedAction<Actions.FINISH_LOAD, boolean>
   | OptionalAction<Actions.UNLOAD>
   | TypedAction<Actions.READ_NODE_LIST, List<Node>>
   | TypedAction<Actions.RENAME_ENTRY, { ptr: EntryPtr, newName: string }>

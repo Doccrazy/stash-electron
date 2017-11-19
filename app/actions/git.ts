@@ -40,6 +40,8 @@ export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
     });
     if (status.incomingCommits) {
       toastr.info('', `${status.incomingCommits} commit(s) received from '${status.upstreamName}'.`);
+
+      await dispatch(Repository.reload());
     }
     if (status.conflict && !getState().git.popupOpen) {
       dispatch(openPopup());
@@ -309,6 +311,10 @@ export function revertAndPush(): Thunk<Promise<void>> {
         }
       });
 
+      if (resetCommitHash) {
+        await dispatch(Repository.reload());
+      }
+
       await dispatch(updateStatus(false));
       dispatch(closePopup());
     } catch (e) {
@@ -337,8 +343,10 @@ export function closePopup(): Action {
   };
 }
 
-afterAction(Repository.Actions.FINISH_LOAD, (dispatch, getState: GetState) => {
-  dispatch(updateStatus(true));
+afterAction(Repository.Actions.FINISH_LOAD, (dispatch, getState: GetState, isReload) => {
+  if (!isReload) {
+    dispatch(updateStatus(true));
+  }
 });
 
 afterAction(Repository.Actions.UNLOAD, (dispatch, getState: GetState) => {

@@ -15,6 +15,7 @@ import * as styles from './Home.css';
 import NoKeyAlert from '../containers/NoKeyAlert';
 import AuthorizedUsersPopup from '../containers/AuthorizedUsersPopup';
 import GitActionsPopup from '../containers/GitActionsPopup';
+import RefreshLink from '../containers/RefreshLink';
 
 export default class Home extends React.Component<{}, {}> {
   render() {
@@ -28,6 +29,7 @@ export default class Home extends React.Component<{}, {}> {
         <GitActionsPopup />
         <div className={`bg-light ${styles.sidebar}`}>
           <p>
+            <RefreshLink />
             <SpecialFolderLink id="favorites" />
           </p>
           <Folder nodeId="/" />
