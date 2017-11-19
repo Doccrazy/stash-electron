@@ -12,6 +12,7 @@ import registerHotkeys from './store/hotkeyHandlers';
 import './utils/sshpk-key-deriv-patch.js';
 import './app.global.scss';
 import setupInactivityLock from './store/inactivityLock';
+import setupGitPolling from './store/gitPolling';
 
 const store = configureStore();
 setTimeout(() => {
@@ -19,6 +20,7 @@ setTimeout(() => {
   installLinkHandler(store.dispatch);
   registerHotkeys(store.dispatch, store.getState);
   setupInactivityLock(store.dispatch, store.getState);
+  setupGitPolling(store.dispatch, store.getState);
 });
 
 setTimeout(() => {

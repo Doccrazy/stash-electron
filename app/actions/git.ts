@@ -33,7 +33,10 @@ export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
     const status = await dispatch(determineGitStatus(repoPath, doFetch));
     dispatch({
       type: Actions.UPDATE_STATUS,
-      payload: status
+      payload: {
+        status,
+        updated: new Date()
+      }
     });
     if (status.incomingCommits) {
       toastr.info('', `${status.incomingCommits} commit(s) received from '${status.upstreamName}'.`);
@@ -204,7 +207,10 @@ export function resetStatus(): Action {
   return {
     type: Actions.UPDATE_STATUS,
     payload: {
-      initialized: false
+      status: {
+        initialized: false
+      },
+      updated: new Date()
     }
   };
 }
@@ -340,7 +346,7 @@ afterAction(Repository.Actions.UNLOAD, (dispatch, getState: GetState) => {
 });
 
 type Action =
-  TypedAction<Actions.UPDATE_STATUS, GitStatus> |
+  TypedAction<Actions.UPDATE_STATUS, { status: GitStatus, updated: Date }> |
   TypedAction<Actions.PROGRESS, { message?: string, done?: boolean }> |
   OptionalAction<Actions.OPEN_POPUP> |
   OptionalAction<Actions.MARK_FOR_RESET, string> |
@@ -348,10 +354,10 @@ type Action =
 
 type Thunk<R> = TypedThunk<Action, R>;
 
-export default function reducer(state: State = { status: { initialized: false } }, action: Action): State {
+export default function reducer(state: State = { status: { initialized: false }, lastStatusUpdate: new Date() }, action: Action): State {
   switch (action.type) {
     case Actions.UPDATE_STATUS:
-      return { ...state, status: action.payload, markedForReset: undefined };
+      return { ...state, status: action.payload.status, lastStatusUpdate: action.payload.updated, markedForReset: undefined };
     case Actions.PROGRESS:
       return { ...state, working: !action.payload.done, progressStatus: action.payload.message };
     case Actions.OPEN_POPUP:

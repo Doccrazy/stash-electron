@@ -1,5 +1,6 @@
 export interface State {
   status: GitStatus,
+  lastStatusUpdate: Date,
   working?: boolean,
   progressStatus?: string,
   popupOpen?: boolean,
