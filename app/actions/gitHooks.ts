@@ -66,7 +66,7 @@ afterAction(Keys.Actions.SAVED, (dispatch, getState: GetState, payload, preActio
       (added.size && removed.size ? ', ' : '') +
       (removed.size ? `remove ${removed.join(',')}` : '');
   }
-  dispatch(maybeCommitChanges(`Update known users: ${message}.`));
+  dispatch(maybeCommitChanges(`Update known users: ${message}`));
 });
 
 afterAction(External.Actions.FILES_WRITTEN, (dispatch, getState: GetState, files: EntryPtr[]) => {
