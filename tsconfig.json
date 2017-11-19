@@ -22,7 +22,8 @@
     "strictNullChecks": true
   },
   "include": [
-    "app/**/*"
+    "app/**/*",
+    "webpack.config.*"
   ],
   "exclude": [
     "node_modules",

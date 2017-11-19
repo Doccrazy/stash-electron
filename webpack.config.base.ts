@@ -2,11 +2,11 @@
  * Base webpack config used across other specific configs
  */
 
-import path from 'path';
-import webpack from 'webpack';
+import * as path from 'path';
+import * as webpack from 'webpack';
 // import { dependencies as externals } from './app/package.json';
 
-export default {
+const baseConfig: webpack.Configuration = {
   // externals: Object.keys(externals || {}),
 
   module: {
@@ -85,7 +85,7 @@ export default {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     modules: [
       path.join(__dirname, 'app'),
-      'node_modules',
+      'node_modules'
     ],
     alias: {
       keytar: 'keytar-prebuild'
@@ -97,6 +97,8 @@ export default {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
     }),
 
-    new webpack.NamedModulesPlugin(),
-  ],
+    new webpack.NamedModulesPlugin()
+  ]
 };
+
+export default baseConfig;
