@@ -1,12 +1,14 @@
 export interface State {
   status: GitStatus,
   working?: boolean,
-  progressStatus?: string
+  progressStatus?: string,
+  popupOpen?: boolean,
+  markedForReset?: string
 }
 
 export interface GitStatus {
   initialized: boolean,
-  headCommit?: GitCommitInfo,
+  commits?: GitCommitInfo[],
   commitsAheadOrigin?: number,
   conflict?: boolean,
   branchName?: string,
@@ -17,9 +19,12 @@ export interface GitStatus {
 }
 
 export interface GitCommitInfo {
+  hash: string,
   message: string,
-  author: string,
-  date: Date
+  authorName: string,
+  authorEmail: string,
+  date: Date,
+  pushed?: boolean
 }
 
 export interface FetchResult {

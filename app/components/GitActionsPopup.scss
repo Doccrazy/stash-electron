@@ -1,0 +1,21 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~font-awesome/scss/variables";
+@import "~font-awesome/scss/mixins";
+
+.commitRow {
+  &:hover .revert {
+    opacity: 1;
+  }
+}
+
+.revert {
+  color: $danger;
+  opacity: 0;
+
+  &::before {
+    @include fa-icon();
+
+    content: $fa-var-undo;
+  }
+}

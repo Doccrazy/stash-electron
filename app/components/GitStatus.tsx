@@ -22,13 +22,12 @@ export interface Props {
   working?: boolean,
   ahead?: number,
   behind?: number,
-  onRefresh: () => void,
-  onResolve: () => void
+  onClick: () => void
 }
 
-export default ({ initialized = true, error, conflict, working, ahead, behind, onRefresh, onResolve }: Props) => (
-  <a href="" onClick={() => conflict ? onResolve() : onRefresh()} className={cx(color(initialized, error, conflict, ahead, behind), styles.container)}>
-    <i className={cx('fa fa-git-square', styles.git, working && styles.working, behind && styles.attention)} />
+export default ({ initialized = true, error, conflict, working, ahead, behind, onClick }: Props) => (
+  <a href="" onClick={onClick} className={cx(color(initialized, error, conflict, ahead, behind), styles.container)}>
+    <i className={cx('fa fa-git-square', styles.git, working && styles.working, ahead && styles.attention)} />
     {conflict && <span className="text-danger">!</span>}
     {!!behind && <span><i className="fa fa-long-arrow-down" />{behind}</span>}
     {!!ahead && <span><i className="fa fa-long-arrow-up" />{ahead}</span>}

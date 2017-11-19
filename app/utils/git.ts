@@ -65,9 +65,10 @@ export async function resolveAllUsingTheirs(index: Git.Index) {
     console.log(`resolving ${entry.path}`);
     const conflict = (await index.conflictGet(entry.path)) as any as ConflictEntry;  // error in nodegit docs/typings
 
-    // write "their" content into the file
-    const theirBlob = await repo.getBlob(conflict.their_out.id);
-    await fs.writeFile(path.join(repo.workdir(), entry.path), theirBlob.content());
+    // here "our" refers to the upstream/master branch, as we are rebasing another branch (the local changes) onto it
+    // write "our" content into the file
+    const ourBlob = await repo.getBlob(conflict.our_out.id);
+    await fs.writeFile(path.join(repo.workdir(), entry.path), ourBlob.content());
 
     // mark file as resolved
     await index.addByPath(entry.path);  // another doc/typings error: method actually returns a promise
@@ -104,6 +105,19 @@ export async function fetchWithRetry(repo: Git.Repository, remote: string, crede
     }
   }
   throw new Error('SSL error: unknown error');
+}
+
+export async function pushWithRetry(repo: Git.Repository, remote: string, credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) {
+  const gitRemote = await repo.getRemote(remote, null as any);
+  await gitRemote.push([(await repo.head()).name()], {
+    callbacks: {
+      credentials: async (url: string, usernameFromUrl: string) => {
+        const cred = await credentialsCb(url, usernameFromUrl);
+        return Git.Cred.userpassPlaintextNew(cred.username || usernameFromUrl, cred.password);
+      },
+      certificateCheck: () => 1
+    }
+  }, null as any);
 }
 
 export async function hasUncommittedChanges(repo: Git.Repository) {
@@ -149,4 +163,16 @@ export async function addToGitIgnore(repoPath: string, ...ignoreEntries: string[
   if (modified) {
     await fs.writeFile(gitIgnoreFn, patterns.join('\n'));
   }
+}
+
+export function formatStatusLine(ahead: number | undefined, upstreamName: string) {
+  if (ahead) {
+    return `Your branch is ahead of '${upstreamName}' by ${ahead} commit${ahead > 1 ? 's' : ''}.`;
+  } else {
+    return `Your branch is up-to-date with '${upstreamName}'.`;
+  }
+}
+
+export function remoteNameFromRef(ref: Git.Reference) {
+  return (/^refs\/remotes\/([^\/]+)\//.exec(ref.name()) || [])[1];
 }
