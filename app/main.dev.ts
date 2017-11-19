@@ -1,5 +1,3 @@
-/* eslint global-require: 1 */
-
 /**
  * This module executes inside of electron's main process. You can start
  * electron renderer process from here and communicate with the other processes
@@ -8,18 +6,18 @@
  * When running `npm run build` or `npm run build-main`, this file is compiled to
  * `./app/main.prod.js` using webpack. This gives us some performance wins.
  */
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell, Event } from 'electron';
 import logger from 'electron-log';
 import { autoUpdater } from 'electron-updater';
-import windowStateKeeper from 'electron-window-state';
+import * as windowStateKeeper from 'electron-window-state';
 import { URL } from 'url';
 import MenuBuilder from './menu';
 
-let mainWindow = null;
+let mainWindow: BrowserWindow | null = null;
 
-function processCommandLine(argv) {
+function processCommandLine(argv: string[]) {
   const lastArg = argv.pop();
-  if (lastArg && lastArg.startsWith('stash:')) {
+  if (mainWindow && lastArg && lastArg.startsWith('stash:')) {
     mainWindow.webContents.send('stashLink', lastArg);
   }
 }
@@ -30,7 +28,9 @@ if (process.env.NODE_ENV === 'production') {
 const isSecondInstance = app.makeSingleInstance(commandLine => {
   // Someone tried to run a second instance, we should focus our window.
   if (mainWindow) {
-    if (mainWindow.isMinimized()) mainWindow.restore();
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
     mainWindow.focus();
 
     processCommandLine(commandLine);
@@ -40,6 +40,7 @@ if (isSecondInstance) {
   app.quit();
 }
 
+/* tslint:disable:no-var-requires */
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -51,6 +52,7 @@ if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true')
   const p = path.join(__dirname, '..', 'app', 'node_modules');
   require('module').globalPaths.push(p);
 }
+/* tslint:enable:no-var-requires */
 
 const installExtensions = async () => {
   const installer = require('electron-devtools-installer');
@@ -65,15 +67,15 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-function cleanUrl(url) {
+function cleanUrl(url: string) {
   const currentUrl = new URL(url);
   currentUrl.search = '';
   currentUrl.hash = '';
   return new URL('./', currentUrl).href;
 }
 
+logger.transports.file.level = 'info';
 autoUpdater.logger = logger;
-autoUpdater.logger.transports.file.level = 'info';
 
 /**
  * Add event listeners...
@@ -87,7 +89,6 @@ app.on('window-all-closed', () => {
   }
 });
 
-
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
@@ -95,7 +96,7 @@ app.on('ready', async () => {
 
   const mainWindowState = windowStateKeeper({
     defaultWidth: 1280,
-    defaultHeight: 960,
+    defaultHeight: 960
   });
 
   mainWindow = new BrowserWindow({
@@ -123,9 +124,9 @@ app.on('ready', async () => {
   });
 
   // prevent internal navigation, open external links in default browser
-  const handleNavigate = (e, url) => {
+  function handleNavigate(e: Event, url: string) {
     e.preventDefault();
-    const currentCleanedUrl = cleanUrl(mainWindow.webContents.getURL());
+    const currentCleanedUrl = cleanUrl(e.sender.getURL());
     const newCleanedUrl = cleanUrl(url);
     if (process.env.NODE_ENV === 'development') {
       console.log('navigate', url);
@@ -134,7 +135,7 @@ app.on('ready', async () => {
       // external link
       shell.openExternal(url);
     }
-  };
+  }
   mainWindow.webContents.on('will-navigate', handleNavigate);
   mainWindow.webContents.on('new-window', handleNavigate);
 

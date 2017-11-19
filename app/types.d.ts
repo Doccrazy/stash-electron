@@ -6,6 +6,8 @@ declare module 'natural-compare';
 
 declare module 'electron-unhandled';
 
+declare module 'electron-window-state';
+
 declare module 'tai-password-strength/lib/password-strength.js' {
   type StrengthCode = 'VERY_WEAK' | 'WEAK' | 'REASONABLE' | 'STRONG' | 'VERY_STRONG';
 

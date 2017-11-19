@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import 'redux-thunk';
-import naturalCompare from 'natural-compare';
+import * as naturalCompare from 'natural-compare';
 import Folder from '../components/Folder';
 import { toggle } from '../actions/treeState';
 import { select } from '../actions/currentNode';

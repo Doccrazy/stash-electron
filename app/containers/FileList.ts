@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Set } from 'immutable';
-import naturalCompare from 'natural-compare';
+import * as naturalCompare from 'natural-compare';
 import * as path from 'path';
 import { connect } from 'react-redux';
 import { select } from '../actions/currentEntry';
