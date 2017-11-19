@@ -29,6 +29,7 @@ const DATE_FORMAT = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '
 export default ({ open, disabled, feedback, status, markedForReset, onMarkReset, onPushRevert, onRefresh, onResolve, onClose }: Props) => {
   const toReset = status.commits ? status.commits.findIndex(ci => ci.hash === markedForReset) + 1 : 0;
   const toPush = status.commitsAheadOrigin ? status.commitsAheadOrigin - toReset : 0;
+  const upstreamRef = status.commits ? (status.commits.filter(ci => ci.pushed)[0] || {}).hash : undefined;
   const revertClick = (commitHash: string) => {
     if (!disabled) {
       onMarkReset(markedForReset === commitHash ? undefined : commitHash);
@@ -39,6 +40,7 @@ export default ({ open, disabled, feedback, status, markedForReset, onMarkReset,
     <ModalHeader toggle={() => { if (!status.conflict) { onClose(); } }}>Git repository status</ModalHeader>
     <ModalBody>
       {!status.conflict && !status.error && status.upstreamName && <p>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName)}</p>}
+      {status.incomingCommits && <p className="text-success">{status.incomingCommits} new commit(s) received on last pull.</p>}
       {status.error && <p className="text-danger">Error: {status.error}.</p>}
       {status.conflict && <div>
         <p className="text-danger">Your repository is in a conflicting state, possibly because remote changes could not be automatically merged.</p>
@@ -62,7 +64,7 @@ export default ({ open, disabled, feedback, status, markedForReset, onMarkReset,
         {status.commits.map((commit, idx) =>
           <tr key={commit.hash} className={cx(styles.commitRow, commit.pushed && 'table-secondary', !commit.pushed && toReset > idx && 'table-danger')}>
             <td>{commit.hash.substr(0, 7)}</td>
-            <td>{commit.pushed && <i className="fa fa-tag" title={status.upstreamName} />} {commit.message}</td>
+            <td>{commit.hash === upstreamRef && <i className="fa fa-tag" title={status.upstreamName} />} {commit.message}</td>
             <td title={`${commit.authorName} <${commit.authorEmail}>`}>{commit.authorName}</td>
             <td className="text-nowrap">{commit.date.toLocaleString(undefined, DATE_FORMAT)}</td>
             <td>{!commit.pushed &&

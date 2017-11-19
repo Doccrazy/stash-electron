@@ -33,11 +33,11 @@ export default ({ status, working, onClick }: Props) => (<span>
   </a>
   <UncontrolledTooltip placement={'bottom-end' as any} target="gitStatusLink">
     {!status.conflict && !status.error && status.upstreamName &&
-      <span>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName, true)}</span>
+      <div>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName, true)}</div>
     }
-    {status.incomingCommits && <span className="text-success">{status.incomingCommits} new commit(s) received on last pull.</span>}
-    {!status.initialized && <span>No git repository found.</span>}
-    {status.error && <span className="text-danger">Error: {status.error}.</span>}
-    {status.conflict && <span className="text-danger">Conflicts need to be resolved.</span>}
+    {status.incomingCommits && <div className="text-success">{status.incomingCommits} new commit(s) received on last pull.</div>}
+    {!status.initialized && <div>No git repository found.</div>}
+    {status.error && <div className="text-danger">Error: {status.error}.</div>}
+    {status.conflict && <div className="text-danger">Conflicts need to be resolved.</div>}
     </UncontrolledTooltip>
 </span>);
