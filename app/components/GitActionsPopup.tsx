@@ -39,7 +39,7 @@ export default ({ open, disabled, feedback, status, markedForReset, onMarkReset,
     <ModalHeader toggle={() => { if (!status.conflict) { onClose(); } }}>Git repository status</ModalHeader>
     <ModalBody>
       {!status.conflict && !status.error && status.upstreamName && <p>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName)}</p>}
-      {status.error && <p className="text-danger">{status.error}</p>}
+      {status.error && <p className="text-danger">Error: {status.error}.</p>}
       {status.conflict && <div>
         <p className="text-danger">Your repository is in a conflicting state, possibly because remote changes could not be automatically merged.</p>
         <p>

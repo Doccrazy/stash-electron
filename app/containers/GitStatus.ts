@@ -4,12 +4,8 @@ import {RootState} from '../actions/types/index';
 import GitStatus from '../components/GitStatus';
 
 export default connect((state: RootState, props: void) => ({
-  initialized: state.git.status.initialized,
-  error: !!state.git.status.error,
-  conflict: state.git.status.conflict,
-  working: state.git.working,
-  ahead: state.git.status.commitsAheadOrigin,
-  incoming: state.git.status.incomingCommits
+  status: state.git.status,
+  working: state.git.working
 }), (dispatch, props) => ({
   onClick: () => dispatch(openPopup())
 }))(GitStatus);

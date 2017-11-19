@@ -1,35 +1,43 @@
 import * as React from 'react';
+import { UncontrolledTooltip } from 'reactstrap';
 import * as cx from 'classnames';
 import * as styles from './GitStatus.css';
+import { GitStatus } from '../actions/types/git';
+import { formatStatusLine } from '../utils/git';
 
-function color(init: boolean, error?: boolean, conflict?: boolean, ahead?: number) {
-  if (!init) {
+function color(status: GitStatus) {
+  if (!status.initialized) {
     return 'text-secondary';
   }
-  if (error || conflict) {
+  if (status.error || status.conflict) {
     return 'text-danger';
   }
-  if (ahead) {
+  if (status.commitsAheadOrigin) {
     return 'text-warning';
   }
   return 'text-success';
 }
 
 export interface Props {
-  initialized?: boolean,
-  error?: boolean,
-  conflict?: boolean,
+  status: GitStatus,
   working?: boolean,
-  ahead?: number,
-  incoming?: number,
   onClick: () => void
 }
 
-export default ({ initialized = true, error, conflict, working, ahead, incoming, onClick }: Props) => (
-  <a href="" onClick={onClick} className={cx(color(initialized, error, conflict, ahead), styles.container)}>
-    <i className={cx('fa fa-git-square', styles.git, working && styles.working, ahead && styles.attention)} />
-    {conflict && <span className="text-danger">!</span>}
-    {!!incoming && <span><i className="fa fa-long-arrow-down" />{incoming}</span>}
-    {!!ahead && <span><i className="fa fa-long-arrow-up" />{ahead}</span>}
+export default ({ status, working, onClick }: Props) => (<span>
+  <a href="" id="gitStatusLink" onClick={onClick} className={cx(color(status), styles.container)}>
+    <i className={cx('fa fa-git-square', styles.git, working && styles.working, status.commitsAheadOrigin && styles.attention)} />
+    {status.conflict && <span className="text-danger">!</span>}
+    {!!status.incomingCommits && <span><i className="fa fa-long-arrow-down" />{status.incomingCommits}</span>}
+    {!!status.commitsAheadOrigin && <span><i className="fa fa-long-arrow-up" />{status.commitsAheadOrigin}</span>}
   </a>
-);
+  <UncontrolledTooltip placement={'bottom-end' as any} target="gitStatusLink">
+    {!status.conflict && !status.error && status.upstreamName &&
+      <span>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName, true)}</span>
+    }
+    {status.incomingCommits && <span className="text-success">{status.incomingCommits} new commit(s) received on last pull.</span>}
+    {!status.initialized && <span>No git repository found.</span>}
+    {status.error && <span className="text-danger">Error: {status.error}.</span>}
+    {status.conflict && <span className="text-danger">Conflicts need to be resolved.</span>}
+    </UncontrolledTooltip>
+</span>);

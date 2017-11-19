@@ -169,11 +169,11 @@ export async function addToGitIgnore(repoPath: string, ...ignoreEntries: string[
   }
 }
 
-export function formatStatusLine(ahead: number | undefined, upstreamName: string) {
+export function formatStatusLine(ahead: number | undefined, upstreamName: string, short?: boolean) {
   if (ahead) {
-    return `Your branch is ahead of '${upstreamName}' by ${ahead} commit${ahead > 1 ? 's' : ''}.`;
+    return `${short ? 'A' : 'Your branch is a'}head of '${upstreamName}' by ${ahead} commit${ahead > 1 ? 's' : ''}.`;
   } else {
-    return `Your branch is up-to-date with '${upstreamName}'.`;
+    return `${short ? 'U' : 'Your branch is u'}p-to-date with '${upstreamName}'.`;
   }
 }
 
