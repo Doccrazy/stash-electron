@@ -8,6 +8,7 @@ import * as AuthorizedUsers from './authorizedUsers';
 import * as Edit from './edit';
 import * as External from './external';
 import * as FileImport from './fileImport';
+import * as Keys from './keys';
 import { maybeCommitChanges } from './git';
 import * as Repository from './repository';
 import { StatusType } from './types/fileImport';
@@ -52,6 +53,20 @@ afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, node:
 
 afterAction(AuthorizedUsers.Actions.SAVED, (dispatch, getState: GetState, nodeId: string) => {
   dispatch(maybeCommitChanges(`Update authorization for folder ${fmtNode(getState, nodeId)}`));
+});
+
+afterAction(Keys.Actions.SAVED, (dispatch, getState: GetState, payload, preActionState) => {
+  const oldUsers = Set(Object.keys(preActionState.keys.byUser));
+  const newUsers = Set(Object.keys(getState().keys.byUser));
+  const added = newUsers.subtract(oldUsers);
+  const removed = oldUsers.subtract(newUsers);
+  let message = 'change public keys.';
+  if (added.size || removed.size) {
+    message = (added.size ? `add ${added.join(',')}` : '') +
+      (added.size && removed.size ? ', ' : '') +
+      (removed.size ? `remove ${removed.join(',')}` : '');
+  }
+  dispatch(maybeCommitChanges(`Update known users: ${message}.`));
 });
 
 afterAction(External.Actions.FILES_WRITTEN, (dispatch, getState: GetState, files: EntryPtr[]) => {

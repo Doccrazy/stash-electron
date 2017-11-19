@@ -6,8 +6,10 @@ export interface Props {
   open?: boolean,
   feedback?: string,
   valid?: boolean,
+  privateKeyLoaded?: boolean
   value: FormState,
   onChange: (value: FormState) => void,
+  onUsePrivateKey: () => void,
   onLoadKey: () => void,
   onConfirm: () => void,
   onClose: () => void
@@ -19,7 +21,8 @@ function focusOnRender(ref: HTMLInputElement) {
   }
 }
 
-export default ({ open, feedback, valid = true, value, onChange, onLoadKey, onConfirm, onClose }: Props) => (<Modal isOpen={open} toggle={onClose}>
+export default ({ open, feedback, valid = true, value, privateKeyLoaded,
+                  onChange, onUsePrivateKey, onLoadKey, onConfirm, onClose }: Props) => (<Modal isOpen={open} toggle={onClose}>
   <ModalHeader toggle={onClose}>Add user key</ModalHeader>
   <ModalBody>
     <Form id="editForm" onSubmit={onConfirm}>
@@ -28,7 +31,10 @@ export default ({ open, feedback, valid = true, value, onChange, onLoadKey, onCo
         <Input innerRef={value.username ? undefined : focusOnRender} value={value.username || ''} onChange={ev => onChange({ ...value, username: ev.target.value })} />
       </FormGroup>
       <FormGroup>
-        <Button size="sm" className="pull-right" onClick={onLoadKey}>Load file</Button>
+        <div className="pull-right">
+          {privateKeyLoaded && <Button size="sm" onClick={onUsePrivateKey}>Use my key</Button>}{' '}
+          <Button size="sm" onClick={onLoadKey}>Load file</Button>
+        </div>
         <Label>Public key (SSH / PEM / PPK)</Label>
         <Input type="textarea" value={value.publicKey || ''} onChange={ev => onChange({ ...value, publicKey: ev.target.value })} style={{ height: 160 }} />
       </FormGroup>

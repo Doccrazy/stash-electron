@@ -148,8 +148,11 @@ export async function commitAllChanges(repo: Git.Repository, message: string): P
     await index.write();
     const oid = await index.writeTree();
 
-    const parent = await repo.getHeadCommit();
-    return repo.createCommit('HEAD', repo.defaultSignature(), repo.defaultSignature(), message, oid, [parent]);
+    const parents: Git.Commit[] = [];
+    if (!repo.headUnborn()) {
+      parents.push(await repo.getHeadCommit());
+    }
+    return repo.createCommit('HEAD', repo.defaultSignature(), repo.defaultSignature(), message, oid, parents);
   }
   return null;
 }

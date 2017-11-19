@@ -177,6 +177,18 @@ export function browseLoadKey(): Thunk<Promise<void>> {
   };
 }
 
+export function loadPrivateKey(): Thunk<void> {
+  return (dispatch, getState) => {
+    const { keys, privateKey } = getState();
+
+    if (!privateKey.key) {
+      return;
+    }
+
+    dispatch(change({ ...keys.formState, publicKey: privateKey.key.toPublic().toString('ssh') }));
+  };
+}
+
 afterAction(Repository.Actions.FINISH_LOAD, (dispatch, getState: GetState) => {
   dispatch(load(Repository.getKeyProvider()));
 });
