@@ -60,7 +60,7 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
               <a href="" onClick={ev => { onSelectNode(node.id); ev.stopPropagation(); }}>{node.name}</a>
             </span>)}
           </td>}
-          <td className="text-right" style={{ whiteSpace: 'nowrap' }}>{moment(file.lastModified).fromNow()}</td>
+          <td className="text-right" style={{ whiteSpace: 'nowrap' }}>{file.lastModified && moment(file.lastModified).fromNow()}</td>
         </tr>);
       })}
     </tbody>

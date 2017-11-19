@@ -1,17 +1,27 @@
-import { connect } from 'react-redux';
+import * as fs from 'fs';
+import { Set } from 'immutable';
 import naturalCompare from 'natural-compare';
-import FileList from '../components/FileList';
-import EntryPtr from '../domain/EntryPtr';
+import * as path from 'path';
+import { connect } from 'react-redux';
 import { select } from '../actions/currentEntry';
 import { select as selectNode } from '../actions/currentNode';
 import { open } from '../actions/edit';
 import { toggleAndSave as toggleFavorite } from '../actions/favorites';
-import specialFolders, {SpecialFolderId} from '../utils/specialFolders';
-import {RootState} from '../actions/types/index';
+import { RootState } from '../actions/types/index';
+import FileList from '../components/FileList';
+import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';
-import {hierarchy, isAccessible} from '../utils/repository';
-import {hashString} from '../utils/hash';
-import {Set} from 'immutable';
+import { hierarchy, isAccessible } from '../utils/repository';
+import specialFolders, { SpecialFolderId } from '../utils/specialFolders';
+
+// TODO
+function lastModifiedFromFsHack(repoPath: string, ptr: EntryPtr) {
+  try {
+    return fs.statSync(path.join(repoPath, ptr.nodeId, `${ptr.entry}.enc`)).mtime;
+  } catch (e) {
+    return undefined;
+  }
+}
 
 function createFileList(state: RootState): FileListEntry[] {
   let result: EntryPtr[] = [];
@@ -28,7 +38,7 @@ function createFileList(state: RootState): FileListEntry[] {
   const accessibleByNode: { [nodeId: string]: boolean } = Set(result.map(ptr => ptr.nodeId))
     .reduce((acc, id: string) => ({ ...acc, [id]: isAccessible(state.repository.nodes, id, state.privateKey.username)}), {});
   return result.map(ptr => new FileListEntry(ptr,
-    hierarchy(state.repository.nodes, ptr.nodeId), new Date(1505249965000 - (hashString(ptr.entry) >>> 0) * 5),
+    hierarchy(state.repository.nodes, ptr.nodeId), lastModifiedFromFsHack(state.repository.path!, ptr),
     accessibleByNode[ptr.nodeId]));
 }
 
