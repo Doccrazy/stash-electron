@@ -35,6 +35,9 @@ export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
       type: Actions.UPDATE_STATUS,
       payload: status
     });
+    if (status.conflict && !getState().git.popupOpen) {
+      dispatch(openPopup());
+    }
   };
 }
 

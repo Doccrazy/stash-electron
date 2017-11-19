@@ -44,7 +44,8 @@ export default ({ open, disabled, feedback, status, markedForReset, onMarkReset,
         <p className="text-danger">Your repository is in a conflicting state, possibly because remote changes could not be automatically merged.</p>
         <p>
           Before working with the repository, the conflict has to be resolved. Please choose either <b>Resolve using 'theirs'</b> to
-          accept the incoming change for all conflicting files, or <b>Pull &amp; refresh</b> if you resolved the conflict manually.
+          accept the incoming change for all conflicting files (non-conflicting changes will be preserved), or <b>Pull &amp; refresh</b> if
+          you resolved the conflict manually.
         </p>
       </div>}
       {status.commits && <table className="table table-sm">
