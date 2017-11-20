@@ -75,7 +75,8 @@
       ],
       "category": "Utility",
       "desktop": {
-        "StartupWMClass": "Stash"
+        "StartupWMClass": "Stash",
+        "MimeType": "x-scheme-handler/stash;"
       }
     },
     "directories": {
