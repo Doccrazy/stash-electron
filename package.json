@@ -73,7 +73,10 @@
       "target": [
         "AppImage"
       ],
-      "category": "Utility"
+      "category": "Utility",
+      "desktop": {
+        "StartupWMClass": "Stash"
+      }
     },
     "directories": {
       "buildResources": "resources",
