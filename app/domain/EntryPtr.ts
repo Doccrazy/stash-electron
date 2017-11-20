@@ -41,6 +41,6 @@ export default class EntryPtr {
 
   toHref() {
     const fullPath = path.posix.join(this.nodeId, this.entry);
-    return `stash:${encodeURI(fullPath)}`;
+    return `stash://${encodeURI(fullPath)}`;
   }
 }
