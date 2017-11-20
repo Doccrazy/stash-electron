@@ -24,7 +24,7 @@ export default class EntryPtr {
     if (!parts.dir) {
       throw new Error('Missing node');
     }
-    return new EntryPtr(`${parts.dir}/`, parts.base);
+    return new EntryPtr(`${parts.dir}${parts.dir.endsWith('/') ? '' : '/'}`, parts.base);
   }
 
   equals(other: any) {
