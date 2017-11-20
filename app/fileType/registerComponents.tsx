@@ -18,7 +18,7 @@ mergeConfig('password', {
 });
 
 mergeConfig(undefined, {
-  format: entry => <span><i className={`fa ${getClassNameForExtension(entry.split('.').pop())}`} /> {entry}</span>,
+  format: entry => <span><i className={`fa ${getClassNameForExtension(entry.split('.').pop() || '')}`} /> {entry}</span>,
   panel: DefaultPanel,
   form: DefaultForm
 });

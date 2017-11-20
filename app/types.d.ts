@@ -1,12 +1,24 @@
-declare module 'font-awesome-filetypes';
+declare module 'font-awesome-filetypes' {
+  function getClassNameForExtension(extension: string): string;
+  export default getClassNameForExtension;
+}
 
 declare module 'kdbxweb';
 
-declare module 'natural-compare';
+declare module 'natural-compare' {
+  const naturalCompare: (a: string, b: string) => number;
+  export = naturalCompare;
+}
 
-declare module 'electron-unhandled';
+declare module 'electron-unhandled' {
+  const unhandled: () => void;
+  export = unhandled;
+}
 
-declare module 'electron-window-state';
+declare module 'electron-window-state' {
+  const windowStateKeeper: (options: {}) => any;
+  export = windowStateKeeper;
+}
 
 declare module 'tai-password-strength/lib/password-strength.js' {
   type StrengthCode = 'VERY_WEAK' | 'WEAK' | 'REASONABLE' | 'STRONG' | 'VERY_STRONG';

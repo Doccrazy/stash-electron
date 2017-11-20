@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { URL } from 'url';
-import unhandled from 'electron-unhandled';
+import * as unhandled from 'electron-unhandled';
 import * as sourceMapSupport from 'source-map-support';
 
 function resolveFileUrl(url: string): string {
