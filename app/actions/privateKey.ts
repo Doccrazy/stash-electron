@@ -42,9 +42,9 @@ export function loadAndUnlockInteractive(): Thunk<Promise<void>> {
       await dispatch(load(filename, passphrase));
 
       if (getState().privateKey.error) {
-        await dispatch(rejectCredentials('Invalid passphrase'));
+        await dispatch(rejectCredentials(path.resolve(filename), 'Invalid passphrase'));
       } else {
-        await dispatch(acceptCredentials());
+        await dispatch(acceptCredentials(path.resolve(filename)));
       }
     }
   };

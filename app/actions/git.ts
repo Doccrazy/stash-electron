@@ -152,7 +152,7 @@ async function withCredentials(dispatch: TypedDispatch<Action>,
   try {
     await cb(async (url: string, usernameFromUrl: string) => {
       if (credentialsContext) {
-        await dispatch(Credentials.rejectCredentials('Authentication failed'));
+        await dispatch(Credentials.rejectCredentials(credentialsContext, 'Authentication failed'));
       }
       credentialsContext = null;
       const result = await dispatch(Credentials.requestCredentials(url, 'Authenticate to git repository',
@@ -162,12 +162,12 @@ async function withCredentials(dispatch: TypedDispatch<Action>,
       return result;
     });
     if (credentialsContext) {
-      await dispatch(Credentials.acceptCredentials());
+      await dispatch(Credentials.acceptCredentials(credentialsContext));
     }
     return credentialsContext;
   } catch (e) {
     if (credentialsContext) {
-      await dispatch(Credentials.rejectCredentials('Operation failed'));
+      await dispatch(Credentials.rejectCredentials(credentialsContext, 'Operation failed'));
       await dispatch(Credentials.close());
     }
     throw e;

@@ -51,7 +51,6 @@ export function requestCredentials(context: string, title: string, text: string,
       try {
         const userPass = keytarDecode(await keytar.getPassword(KEYTAR_SERVICE, context));
         if (userPass && userPass.password) {
-          dispatch(change(userPass));
           return userPass;
         }
       } catch (e) {
@@ -99,9 +98,14 @@ export function requestCredentials(context: string, title: string, text: string,
   };
 }
 
-export function acceptCredentials(): Thunk<Promise<void>> {
+export function acceptCredentials(context: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { credentials } = getState();
+
+    if (context !== credentials.context) {
+      // form never opened (likely because valid credentials were stored)
+      return;
+    }
 
     const formState = credentials.state;
     if (credentials.context && formState.savePassword && formState.password) {
@@ -123,16 +127,17 @@ export function acceptCredentials(): Thunk<Promise<void>> {
   };
 }
 
-export function rejectCredentials(error: string): Thunk<Promise<void>> {
+export function rejectCredentials(context: string, error: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const context = getState().credentials.context;
-    if (context) {
-      await dispatch(clearStoredLogin(context));
+    await dispatch(clearStoredLogin(context));
+
+    // only show error if rejection came from currently open dialog
+    if (context === getState().credentials.context) {
+      dispatch({
+        type: Actions.ERROR,
+        payload: error
+      });
     }
-    dispatch({
-      type: Actions.ERROR,
-      payload: error
-    });
   };
 }
 
