@@ -63,8 +63,8 @@ export function changeFilter(filter: string): Thunk<void> {
 }
 
 function matches(ptr: EntryPtr, content: any, matcher: StringMatcher) {
-  return matcher.matches(ptr.entry)
-    || typeForInt(ptr.entry).matches(content, matcher);
+  const t = typeForInt(ptr.entry);
+  return matcher.matches(t.toDisplayName(ptr.entry)) || t.matches(content, matcher);
 }
 
 type PtrWithBuffer = { ptr: EntryPtr, buffer: Buffer };
@@ -115,7 +115,7 @@ function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/',
 
   console.time('filter');
   const matcher = new FuzzyStringMatcher(filter);
-  const results = allEntries.filter((ptr: EntryPtr) => matcher.matches(ptr.entry)
+  const results = allEntries.filter((ptr: EntryPtr) => matcher.matches(typeFor(ptr.entry).toDisplayName(ptr.entry))
     || (matchPath && matcher.matches(`/${hierarchy(nodes, ptr.nodeId).slice(1).map(node => node.name).join('/')}/`)));
   console.timeEnd('filter');
 
