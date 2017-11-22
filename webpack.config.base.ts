@@ -4,7 +4,10 @@
 
 import * as path from 'path';
 import * as webpack from 'webpack';
+import * as GitRevisionPlugin from 'git-revision-webpack-plugin';
 // import { dependencies as externals } from './app/package.json';
+
+const gitRevisionPlugin = new GitRevisionPlugin();
 
 const baseConfig: webpack.Configuration = {
   // externals: Object.keys(externals || {}),
@@ -85,7 +88,11 @@ const baseConfig: webpack.Configuration = {
 
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+      'GIT_VERSION': JSON.stringify(gitRevisionPlugin.version()),
+      'GIT_HASH': JSON.stringify(gitRevisionPlugin.commithash()),
+      'GIT_BRANCH': JSON.stringify(gitRevisionPlugin.branch()),
+      'BUILD_DATE': JSON.stringify(new Date())
     }),
 
     new webpack.NamedModulesPlugin()

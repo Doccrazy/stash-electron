@@ -1,4 +1,4 @@
-import * as  React from 'react';
+import * as React from 'react';
 import { Button, DropdownItem } from 'reactstrap';
 import { clipboard } from 'electron';
 import { toastr } from 'react-redux-toastr';

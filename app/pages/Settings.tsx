@@ -1,5 +1,6 @@
-import * as  React from 'react';
+import * as React from 'react';
 import { Form, FormGroup, InputGroup, InputGroupButton, Label } from 'reactstrap';
+import { remote } from 'electron';
 import SettingField from '../containers/SettingField';
 import SaveSettingsButton from '../containers/SaveSettingsButton';
 import SettingsBrowseDirButton from '../containers/SettingsBrowseDirButton';
@@ -45,4 +46,6 @@ export default () => (<div className="container">
       <SaveSettingsButton color="success">Save</SaveSettingsButton>
     </FormGroup>
   </Form>
+  <small className="text-muted">{remote.app.getName()} {remote.app.getVersion()} (
+    {GIT_VERSION} built {new Date(BUILD_DATE).toLocaleString()}, running on Electron {process.versions.electron})</small>
 </div>);

@@ -1,3 +1,8 @@
+declare const GIT_VERSION: string;
+declare const GIT_HASH: string;
+declare const GIT_BRANCH: string;
+declare const BUILD_DATE: string;
+
 declare module 'font-awesome-filetypes' {
   function getClassNameForExtension(extension: string): string;
   export default getClassNameForExtension;
