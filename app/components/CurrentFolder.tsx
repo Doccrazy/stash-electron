@@ -4,13 +4,17 @@ import Breadcrumb from './Breadcrumb';
 import { hierarchy } from '../utils/repository';
 import * as styles from './CurrentFolder.scss';
 import TextEditBox from './TextEditBox';
-import specialFolders, {SpecialFolderId} from '../utils/specialFolders';
 import Node from '../domain/Node';
+
+interface SpecialDisplay {
+  title: string,
+  icon: string
+}
 
 export interface Props {
   nodes: {[nodeId: string]: Node},
   currentNodeId?: string,
-  currentSpecialId?: SpecialFolderId,
+  specialFolder?: SpecialDisplay,
   editing?: boolean,
   currentName?: string,
   onSelectFolder: (nodeId: string) => void,
@@ -19,12 +23,12 @@ export interface Props {
   onConfirmEdit: () => void
 }
 
-export default ({ nodes, currentNodeId, currentSpecialId, editing, currentName, onSelectFolder, onChangeName, onCancelEdit, onConfirmEdit }: Props) => {
+export default ({ nodes, currentNodeId, specialFolder, editing, currentName, onSelectFolder, onChangeName, onCancelEdit, onConfirmEdit }: Props) => {
   const nodeHierarchy = hierarchy(nodes, currentNodeId);
   return (<div>
-    {currentSpecialId && <Breadcrumb
-      className={cx(styles.breadcrumb, `icon-${specialFolders[currentSpecialId].icon}`)}
-      nodes={[{ id: currentSpecialId, name: specialFolders[currentSpecialId].title }]}
+    {specialFolder && <Breadcrumb
+      className={cx(styles.breadcrumb, `icon-${specialFolder.icon}`)}
+      nodes={[{ id: 'special', name: specialFolder.title }]}
     />}
     {currentNodeId && !editing && <Breadcrumb className={styles.breadcrumb} nodes={nodeHierarchy} onClick={onSelectFolder} />}
     {currentNodeId && editing && <TextEditBox

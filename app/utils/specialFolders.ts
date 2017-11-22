@@ -4,21 +4,21 @@ import {RootState} from '../actions/types/index';
 export type SpecialFolderId = 'favorites' | 'searchResults';
 
 export interface SpecialFolder {
-  title: string,
+  title: (state: RootState) => string,
   icon: string,
   selector: (state: RootState) => EntryPtr[]
 }
 
 const SPECIAL_FOLDERS: { [id in SpecialFolderId]: SpecialFolder } = {
   favorites: {
-    title: 'My Favorites',
+    title: () => 'My Favorites',
     icon: 'star',
     selector: (state: RootState) => state.favorites.toArray()
   },
   searchResults: {
-    title: 'Search results',
+    title: (state: RootState) => `Search results (${state.search.results.size > 100 ? '100+' : state.search.results.size})`,
     icon: 'search',
-    selector: (state: RootState) => state.search.results.toArray()
+    selector: (state: RootState) => state.search.results.toArray().slice(0, 100)
   }
 };
 
