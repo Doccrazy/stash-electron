@@ -1,5 +1,5 @@
 import { List } from 'immutable';
-import { debounce } from 'lodash-es';
+import { debounce } from 'lodash';
 import { getRepo, Actions as RepoActions } from './repository';
 import {deselectSpecial, selectSpecial} from './currentNode';
 import {hierarchy, isAccessible, recursiveChildIds} from '../utils/repository';

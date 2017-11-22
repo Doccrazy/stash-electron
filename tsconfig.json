@@ -23,7 +23,9 @@
   },
   "include": [
     "app/**/*",
-    "webpack.config.*"
+    "webpack.config.*",
+    "test/**/*",
+    "internals/scripts/*.ts"
   ],
   "exclude": [
     "node_modules",
