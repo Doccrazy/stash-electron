@@ -31,7 +31,8 @@ function quickFilter(): Thunk<void> {
       return;
     }
 
-    const results: List<EntryPtr> = filterByName(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/', search.filter);
+    const results: List<EntryPtr> = filterByName(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/',
+      search.filter, !search.options.limitedScope);
 
     dispatch({
       type: Actions.RESULTS,
@@ -115,7 +116,7 @@ function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/',
   console.time('filter');
   const matcher = new FuzzyStringMatcher(filter);
   const results = allEntries.filter((ptr: EntryPtr) => matcher.matches(ptr.entry)
-    || (matchPath && !!hierarchy(nodes, ptr.nodeId).find(node => node.id !== '/' && matcher.matches(node.name))));
+    || (matchPath && !!hierarchy(nodes, ptr.nodeId).find(node => node.id !== '/' && matcher.matches(`/${node.name}/`))));
   console.timeEnd('filter');
 
   return List(results);
