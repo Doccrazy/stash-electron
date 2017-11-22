@@ -116,7 +116,7 @@ function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/',
   console.time('filter');
   const matcher = new FuzzyStringMatcher(filter);
   const results = allEntries.filter((ptr: EntryPtr) => matcher.matches(ptr.entry)
-    || (matchPath && !!hierarchy(nodes, ptr.nodeId).find(node => node.id !== '/' && matcher.matches(`/${node.name}/`))));
+    || (matchPath && matcher.matches(`/${hierarchy(nodes, ptr.nodeId).slice(1).map(node => node.name).join('/')}/`)));
   console.timeEnd('filter');
 
   return List(results);
