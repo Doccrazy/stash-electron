@@ -10,7 +10,7 @@ export interface Props {
 
 export default connect((state: RootState, props: Props) => ({
   active: state.currentNode.specialId === props.id,
-  title: specialFolders[props.id].title,
+  title: specialFolders[props.id].title(state),
   icon: specialFolders[props.id].icon
 }), (dispatch, props) => ({
   onClick: () => dispatch(selectSpecial(props.id))
