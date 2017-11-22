@@ -113,10 +113,19 @@ function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/',
   console.timeEnd('resolve');
   console.log('# items: ', allEntries.length);
 
+  const hierarchyCache: { [nodeId: string]: string } = {};
+  function hierToStr(nodeId: string): string {
+    const cached = hierarchyCache[nodeId];
+    if (cached) {
+      return cached;
+    }
+    return hierarchyCache[nodeId] = FuzzyStringMatcher.prepare(`/${hierarchy(nodes, nodeId).slice(1).map(node => node.name).join('/')}/`);
+  }
+
   console.time('filter');
   const matcher = new FuzzyStringMatcher(filter);
   const results = allEntries.filter((ptr: EntryPtr) => matcher.matches(typeFor(ptr.entry).toDisplayName(ptr.entry))
-    || (matchPath && matcher.matches(`/${hierarchy(nodes, ptr.nodeId).slice(1).map(node => node.name).join('/')}/`)));
+    || (matchPath && matcher.matchesPrepared(hierToStr(ptr.nodeId))));
   console.timeEnd('filter');
 
   return List(results);

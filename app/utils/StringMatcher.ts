@@ -40,10 +40,18 @@ export class FuzzyStringMatcher implements StringMatcher {
   private readonly filter: string;
 
   constructor(filter: string) {
-    this.filter = normalize(filter.toLowerCase());
+    this.filter = FuzzyStringMatcher.prepare(filter);
+  }
+
+  static prepare(other: string): string {
+    return normalize(other.toLowerCase());
   }
 
   matches(other: string): boolean {
-    return normalize(other.toLowerCase()).includes(this.filter);
+    return FuzzyStringMatcher.prepare(other).includes(this.filter);
+  }
+
+  matchesPrepared(preparedOther: string): boolean {
+    return preparedOther.includes(this.filter);
   }
 }
