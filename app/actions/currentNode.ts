@@ -54,12 +54,14 @@ export function deselectSpecial(): Action {
   };
 }
 
-export function prepareDelete(): Thunk<void> {
+export function prepareDelete(nodeId?: string): Thunk<void> {
   return (dispatch, getState) => {
     const { currentNode } = getState();
-    if (currentNode.nodeId && currentNode.nodeId !== ROOT_ID) {
+    nodeId = nodeId || currentNode.nodeId;
+    if (nodeId && nodeId !== ROOT_ID) {
       dispatch({
-        type: Actions.PREPARE_DELETE
+        type: Actions.PREPARE_DELETE,
+        payload: nodeId
       });
     }
   };
@@ -68,13 +70,14 @@ export function prepareDelete(): Thunk<void> {
 export function confirmDelete(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentNode } = getState();
-    if (currentNode.nodeId) {
-      await dispatch(Repository.deleteNode(currentNode.nodeId));
+    if (currentNode.deleting) {
+      await dispatch(Repository.deleteNode(currentNode.deleting));
+      dispatch(closeDelete());
     }
   };
 }
 
-export function cancelDelete(): Action {
+export function closeDelete(): Action {
   return {
     type: Actions.CANCEL_DELETE
   };
@@ -192,7 +195,7 @@ afterAction(Repository.Actions.READ_NODE_LIST, (dispatch, getState: GetState, no
 type Action =
   OptionalAction<Actions.SELECT, string>
   | OptionalAction<Actions.SELECT_SPECIAL, SpecialFolderId>
-  | OptionalAction<Actions.PREPARE_DELETE>
+  | OptionalAction<Actions.PREPARE_DELETE, string>
   | OptionalAction<Actions.CANCEL_DELETE>
   | TypedAction<Actions.START_RENAME, string>
   | OptionalAction<Actions.START_CREATE>
@@ -208,9 +211,9 @@ export default function reducer(state: State = {}, action: Action): State {
     case Actions.SELECT_SPECIAL:
       return { nodeId: state.nodeId, specialId: action.payload };
     case Actions.PREPARE_DELETE:
-      return { ...state, deleting: true };
+      return { ...state, deleting: action.payload };
     case Actions.CANCEL_DELETE:
-      return { ...state, deleting: false };
+      return { ...state, deleting: undefined };
     case Actions.START_RENAME:
       return { ...state, renaming: true, creating: false, initialName: action.payload, name: action.payload };
     case Actions.START_CREATE:

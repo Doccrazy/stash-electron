@@ -3,11 +3,15 @@ import { Table } from 'reactstrap';
 import * as cx from 'classnames';
 import { Set } from 'immutable';
 import * as moment from 'moment';
+import { remote } from 'electron';
 import typeFor from '../fileType';
 import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';
 import { EntryDragSource } from './tools/EntryPtrDrag';
 import * as styles from './FileList.scss';
+import { copyStashLink } from '../store/stashLinkHandler';
+
+const { Menu, MenuItem } = remote;
 
 export interface Props {
   files: FileListEntry[],
@@ -16,6 +20,7 @@ export interface Props {
   showPath?: boolean,
   onSelect: (ptr: EntryPtr) => void,
   onEdit: (ptr: EntryPtr) => void,
+  onDelete: (ptr: EntryPtr) => void,
   onToggleFavorite: (ptr: EntryPtr) => void
   onSelectNode: (nodeId: string) => void
 }
@@ -24,7 +29,20 @@ interface ChromeMouseEvent extends React.MouseEvent<HTMLTableRowElement> {
   detail: number  // Click index (1 for first, 2 for second)
 }
 
-export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, onToggleFavorite, onSelectNode }: Props) => (<div>
+function showContextMenu(accessible: boolean | undefined, ptr: EntryPtr, onEdit: (ptr: EntryPtr) => void, onDelete: (ptr: EntryPtr) => void) {
+  const menu = new Menu();
+  if (accessible) {
+    menu.append(new MenuItem({label: 'Edit', icon: remote.nativeImage.createFromDataURL(require('../icon-pencil.png')), click() { onEdit(ptr); }}));
+  }
+  menu.append(new MenuItem({label: 'Share link', icon: remote.nativeImage.createFromDataURL(require('../icon-share.png')), click() { copyStashLink(ptr); }}));
+  if (accessible) {
+    menu.append(new MenuItem({type: 'separator'}));
+    menu.append(new MenuItem({label: 'Delete', icon: remote.nativeImage.createFromDataURL(require('../icon-trash-o.png')), click() { onDelete(ptr); }}));
+  }
+  menu.popup(remote.getCurrentWindow());
+}
+
+export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, onDelete, onToggleFavorite, onSelectNode }: Props) => (<div>
   <Table hover className={`table-sm table-sticky`}>
     <thead>
       <tr>
@@ -43,6 +61,7 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
           onClick={(ev: ChromeMouseEvent) => { if (ev.detail === 1) { onSelect(file.ptr); } }}
           onMouseDown={(ev: ChromeMouseEvent) => { if (ev.detail > 1) { ev.preventDefault(); } }}
           onDoubleClick={() => onEdit(file.ptr)}
+          onContextMenu={ev => { ev.preventDefault(); showContextMenu(file.accessible, file.ptr, onEdit, onDelete); }}
           onKeyDown={ev => console.log(ev)}
         >
           <td><i

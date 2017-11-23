@@ -5,7 +5,7 @@ export interface State {
   readonly specialId?: SpecialFolderId,
   readonly renaming?: boolean,
   readonly creating?: boolean,
-  readonly deleting?: boolean,
+  readonly deleting?: string,
   readonly initialName?: string,
   readonly name?: string
 }

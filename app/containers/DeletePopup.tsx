@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import ConfirmPopup from '../components/ConfirmPopup';
-import { confirmDelete, cancelDelete } from '../actions/currentEntry';
+import { confirmDelete, closeDelete } from '../actions/currentEntry';
 import typeFor from '../fileType';
 import {RootState} from '../actions/types/index';
 
@@ -11,11 +11,11 @@ function fmt(entry: string) {
 }
 
 export default connect((state: RootState) => ({
-  open: state.currentEntry.deleting,
-  entry: state.currentEntry.ptr && state.currentEntry.ptr.entry
+  open: !!state.currentEntry.deleting,
+  entry: state.currentEntry.deleting && state.currentEntry.deleting.entry
 }), dispatch => ({
   onDelete: () => dispatch(confirmDelete()),
-  onClose: () => dispatch(cancelDelete())
+  onClose: () => dispatch(closeDelete())
 }))(
   ({ open, entry, onDelete, onClose }) => (<ConfirmPopup open={open} title="Confirm deleting entry" onConfirm={onDelete} onClose={onClose}>
     Are you sure you want to delete {entry ? fmt(entry) : entry}?

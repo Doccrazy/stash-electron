@@ -72,12 +72,14 @@ export function clear(): Action {
   };
 }
 
-export function prepareDelete(): Thunk<void> {
+export function prepareDelete(ptr?: EntryPtr): Thunk<void> {
   return (dispatch, getState) => {
     const { currentEntry } = getState();
-    if (currentEntry.ptr) {
+    ptr = ptr || currentEntry.ptr;
+    if (ptr) {
       dispatch({
-        type: Actions.PREPARE_DELETE
+        type: Actions.PREPARE_DELETE,
+        payload: ptr
       });
     }
   };
@@ -86,13 +88,14 @@ export function prepareDelete(): Thunk<void> {
 export function confirmDelete(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentEntry } = getState();
-    if (currentEntry.ptr) {
-      await dispatch(Repository.deleteEntry(currentEntry.ptr));
+    if (currentEntry.deleting) {
+      await dispatch(Repository.deleteEntry(currentEntry.deleting));
+      dispatch(closeDelete());
     }
   };
 }
 
-export function cancelDelete(): Action {
+export function closeDelete(): Action {
   return {
     type: Actions.CANCEL_DELETE
   };
@@ -157,7 +160,7 @@ type Action =
     | TypedAction<Actions.RESELECT, EntryPtr>
     | TypedAction<Actions.READ, any>
     | OptionalAction<Actions.CLEAR>
-    | OptionalAction<Actions.PREPARE_DELETE>
+    | OptionalAction<Actions.PREPARE_DELETE, EntryPtr>
     | OptionalAction<Actions.CANCEL_DELETE>;
 
 type Thunk<R> = TypedThunk<Action, R>;
@@ -171,7 +174,7 @@ export default function reducer(state: State = {}, action: Action): State {
       return state;
     case Actions.RESELECT:
       if (action.payload instanceof EntryPtr) {
-        return { ...state, ptr: action.payload, deleting: false };
+        return { ...state, ptr: action.payload, deleting: undefined };
       }
       return state;
     case Actions.READ:
@@ -182,9 +185,9 @@ export default function reducer(state: State = {}, action: Action): State {
     case Actions.CLEAR:
       return {};
     case Actions.PREPARE_DELETE:
-      return { ...state, deleting: true };
+      return { ...state, deleting: action.payload };
     case Actions.CANCEL_DELETE:
-      return { ...state, deleting: false };
+      return { ...state, deleting: undefined };
     default:
       return state;
   }

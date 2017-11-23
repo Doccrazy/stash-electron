@@ -34,7 +34,7 @@
   content: $fa-var-caret-right;
 }
 
-.iconOpen::before {
+.iconWithChildren.iconOpen::before {
   content: $fa-var-caret-down;
 }
 

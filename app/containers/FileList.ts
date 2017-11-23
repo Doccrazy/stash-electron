@@ -3,7 +3,7 @@ import { Set } from 'immutable';
 import * as naturalCompare from 'natural-compare';
 import * as path from 'path';
 import { connect } from 'react-redux';
-import { select } from '../actions/currentEntry';
+import { prepareDelete, select } from '../actions/currentEntry';
 import { select as selectNode } from '../actions/currentNode';
 import { open } from '../actions/edit';
 import { toggleAndSave as toggleFavorite } from '../actions/favorites';
@@ -50,6 +50,7 @@ export default connect((state: RootState) => ({
 }), dispatch => ({
   onSelect: (ptr: EntryPtr) => dispatch(select(ptr)),
   onEdit: (ptr: EntryPtr) => dispatch(open(ptr)),
+  onDelete: (ptr: EntryPtr) => dispatch(prepareDelete(ptr)),
   onToggleFavorite: (ptr: EntryPtr) => dispatch(toggleFavorite(ptr)),
   onSelectNode: (nodeId: string) => dispatch(selectNode(nodeId))
 }))(FileList);

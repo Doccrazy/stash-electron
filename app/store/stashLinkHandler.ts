@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, clipboard } from 'electron';
 import EntryPtr from '../domain/EntryPtr';
 import { select as selectNode } from '../actions/currentNode';
 import { select as selectEntry } from '../actions/currentEntry';
@@ -40,6 +40,11 @@ export function openStashLink(link: string): Thunk<Promise<void>> {
       toastr.error('Invalid link', `${link}: ${e}`);
     }
   };
+}
+
+export function copyStashLink(ptr: EntryPtr) {
+  clipboard.writeText(ptr.toHref());
+  toastr.success('', 'Stash link to entry copied', { timeOut: 2000 });
 }
 
 export default function(dispatch: Dispatch) {
