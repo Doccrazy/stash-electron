@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop,no-restricted-syntax,no-plusplus */
 import * as fs from 'fs-extra';
-import kdbxweb from 'kdbxweb';
+import * as kdbxweb from 'kdbxweb';
 import {State, ImportSettings, StatusType} from './types/fileImport';
 import { childNodeByName, cleanFileName } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';

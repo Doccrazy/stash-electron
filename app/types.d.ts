@@ -8,7 +8,19 @@ declare module 'font-awesome-filetypes' {
   export default getClassNameForExtension;
 }
 
-declare module 'kdbxweb';
+declare module 'kdbxweb' {
+  const Kdbx: any;
+  const KdbxUuid: any;
+  const KdbxError: any;
+  const Credentials: any;
+  const Consts: any;
+  const ProtectedValue: any;
+  const ByteUtils: any;
+  const VarDictionary: any;
+  const Int64: any;
+  const Random: any;
+  const CryptoEngine: any;
+}
 
 declare module 'natural-compare' {
   const naturalCompare: (a: string, b: string) => number;
