@@ -13,6 +13,7 @@ import './utils/sshpk-key-deriv-patch.js';
 import './app.global.scss';
 import setupInactivityLock from './store/inactivityLock';
 import setupGitPolling from './store/gitPolling';
+import installQuitHook from './store/quitHook';
 
 const store = configureStore();
 setTimeout(() => {
@@ -21,6 +22,7 @@ setTimeout(() => {
   registerHotkeys(store.dispatch, store.getState);
   setupInactivityLock(store.dispatch, store.getState);
   setupGitPolling(store.dispatch, store.getState);
+  installQuitHook(store.dispatch, store.getState);
 });
 
 setTimeout(() => {
