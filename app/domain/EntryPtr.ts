@@ -1,7 +1,8 @@
 import * as path from 'path';
-import { URL } from 'url';
 import { hashString } from '../utils/hash';
 import Node from './Node';
+
+const URL_PROTOCOL = 'stash:';
 
 export default class EntryPtr {
   readonly nodeId: string;
@@ -13,14 +14,11 @@ export default class EntryPtr {
   }
 
   static fromHref(href: string) {
-    const url = new URL(href);
-    if (url.protocol !== 'stash:' || url.host || url.port) {
+    if (!href || !href.startsWith(URL_PROTOCOL) || href.length < URL_PROTOCOL.length + 3) {
       throw new Error('Not a Stash URL');
-    } else if (!url.pathname || url.pathname === '/') {
-      throw new Error('Missing entry path');
     }
 
-    const parts = path.posix.parse(decodeURI(url.pathname));
+    const parts = path.posix.parse(path.posix.normalize(decodeURI(href.substr(URL_PROTOCOL.length))));
     if (!parts.dir) {
       throw new Error('Missing node');
     }
@@ -41,6 +39,6 @@ export default class EntryPtr {
 
   toHref() {
     const fullPath = path.posix.join(this.nodeId, this.entry);
-    return `stash://${encodeURI(fullPath)}`;
+    return `${URL_PROTOCOL}/${encodeURI(fullPath)}`;
   }
 }
