@@ -33,7 +33,11 @@ export async function accessingRepository(repoPath: string, callback: (repo: Git
   await repoLock.acquireAsync();
   try {
     const repo = await Git.Repository.open(repoPath);
-    await callback(repo);
+    try {
+      await callback(repo);
+    } finally {
+      repo.free();
+    }
   } finally {
     repoLock.release();
   }

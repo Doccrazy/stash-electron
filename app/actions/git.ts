@@ -403,7 +403,7 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
       dispatch({type: Actions.PROGRESS, payload: { message: `Cloning from remote...` }});
 
       await withCredentials(dispatch, async credentialsCb => {
-        await Git.Clone.clone(git.cloneRemoteUrl!, cloneTarget, {
+        const gitRepo = await Git.Clone.clone(git.cloneRemoteUrl!, cloneTarget, {
           fetchOpts: {
             callbacks: {
               credentials: async (url: string, usernameFromUrl: string) => {
@@ -414,6 +414,7 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
             }
           }
         });
+        gitRepo.free();
       });
 
       dispatch(closeClonePopup());
