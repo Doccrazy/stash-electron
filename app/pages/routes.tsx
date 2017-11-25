@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Switch, Route } from 'react-router';
-import App from './pages/App';
-import HomePage from './pages/Home';
-import SettingsPage from './pages/Settings';
-import UsersPage from './pages/Users';
-import NoRepository from './pages/NoRepository';
-import noRepoSwitch from './containers/noRepoSwitch';
+import App from './App';
+import HomePage from './Home';
+import SettingsPage from './Settings';
+import UsersPage from './Users';
+import NoRepository from './NoRepository';
+import noRepoSwitch from '../containers/noRepoSwitch';
 
 const HomeWithOverlay = noRepoSwitch(HomePage, NoRepository);
 const UsersWithOverlay = noRepoSwitch(UsersPage, NoRepository);

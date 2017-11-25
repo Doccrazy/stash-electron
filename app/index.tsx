@@ -4,7 +4,7 @@ import { AppContainer } from 'react-hot-loader';
 import * as crypto from 'crypto';
 import './utils/electronNoDrop';
 import './utils/errorHandler';
-import Root from './containers/Root';
+import Root from './pages/Root';
 import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';
 import installLinkHandler from './store/stashLinkHandler';
@@ -41,8 +41,8 @@ render(
 );
 
 if ((module as any).hot) {
-  (module as any).hot.accept('./containers/Root', () => {
-    const NextRoot = require('./containers/Root').default; // eslint-disable-line global-require
+  (module as any).hot.accept('./pages/Root', () => {
+    const NextRoot = require('./pages/Root').default; // eslint-disable-line global-require
     render(
       <AppContainer>
         <NextRoot store={store} history={history} />
