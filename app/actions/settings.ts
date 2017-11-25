@@ -66,7 +66,7 @@ export function browseForFolder(key: SettingsKeys, title: string): Thunk<void> {
   };
 }
 
-export function browseForFile(key: SettingsKeys, title: string, filters?: { extensions: string[], name: string }[]): Thunk<void> {
+export function browseForFile(key: SettingsKeys, title: string, filters?: { extensions: string[], name: string }[], doSave?: boolean): Thunk<void> {
   return (dispatch, getState) => {
     const file = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
       title,
@@ -75,7 +75,11 @@ export function browseForFile(key: SettingsKeys, title: string, filters?: { exte
     });
 
     if (file && file[0]) {
-      dispatch(changeSetting(key, file[0]));
+      if (doSave) {
+        dispatch(changeAndSave(key, file[0]));
+      } else {
+        dispatch(changeSetting(key, file[0]));
+      }
     }
   };
 }
