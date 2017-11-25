@@ -17,7 +17,8 @@ export interface Props {
 }
 
 function animatedMount(C: React.ComponentType<{}>): React.ComponentType<RouteComponentProps<any>> {
-  return ({ match }) => React.createElement(Fade, { in: !!match, timeout: 0, mountOnEnter: true, unmountOnExit: true } as any, <C />);
+  return ({ match }) => React.createElement(Fade,
+    { in: !!match, timeout: { enter: 0, exit: 150 }, mountOnEnter: true, unmountOnExit: true } as any, <C />);
 }
 
 export default class App extends React.Component<Props, {}> {
