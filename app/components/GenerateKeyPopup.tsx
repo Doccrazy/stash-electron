@@ -26,7 +26,7 @@ export default ({ open, disabled, passphrase, passphraseRepeat, valid = true, on
       <Form id="editForm" onSubmit={onGenerate}>
         <FormGroup>
           <Label>Passphrase</Label>
-          <FocusingInput type="password" valid={valid ? undefined : false} disabled={disabled}
+          <FocusingInput type="password" focused valid={valid ? undefined : false} disabled={disabled}
                          value={passphrase || ''} onChange={ev => onChangePassphrase(ev.target.value)} />
         </FormGroup>
         <FormGroup>

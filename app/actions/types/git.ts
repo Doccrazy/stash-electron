@@ -4,7 +4,10 @@ export interface State {
   working?: boolean,
   progressStatus?: string,
   popupOpen?: boolean,
-  markedForReset?: string
+  markedForReset?: string,
+  clonePopupOpen?: boolean,
+  cloneRemoteUrl?: string,
+  cloneTarget?: string
 }
 
 export interface GitStatus {

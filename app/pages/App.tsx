@@ -8,6 +8,7 @@ import SearchField from '../containers/SearchField';
 import LoginPopup from '../containers/LoginPopup';
 import GitActionsPopup from '../containers/GitActionsPopup';
 import GenerateKeyPopup from '../containers/GenerateKeyPopup';
+import GitClonePopup from '../containers/GitClonePopup';
 import WorkspaceLock from '../containers/WorkspaceLock';
 import * as styles from './App.scss';
 
@@ -27,6 +28,7 @@ export default class App extends React.Component<Props, {}> {
         <LoginPopup />
         <GitActionsPopup />
         <GenerateKeyPopup />
+        <GitClonePopup />
         <Navbar color="dark" className={`navbar-dark navbar-expand-md ${styles.nav}`}>
           <NavLink to="/" className="navbar-brand"><span className={styles.logo} /> Stash</NavLink>
           <Nav className="mr-auto" navbar>

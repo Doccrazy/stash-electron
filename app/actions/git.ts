@@ -1,6 +1,9 @@
 import * as assert from 'assert';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import * as Git from 'nodegit';
 import { toastr } from 'react-redux-toastr';
+import { remote } from 'electron';
 import { afterAction } from '../store/eventMiddleware';
 import {
   accessingRepository,
@@ -17,13 +20,18 @@ import * as Credentials from './credentials';
 import * as Repository from './repository';
 import { FetchResult, GitStatus, State } from './types/git';
 import { GetState, OptionalAction, TypedAction, TypedDispatch, TypedThunk } from './types/index';
+import { changeAndSave } from './settings';
 
 export enum Actions {
   PROGRESS = 'git/PROGRESS',
   UPDATE_STATUS = 'git/UPDATE_STATUS',
   OPEN_POPUP = 'git/OPEN_POPUP',
   MARK_FOR_RESET = 'git/MARK_FOR_RESET',
-  CLOSE_POPUP = 'git/CLOSE_POPUP'
+  CLOSE_POPUP = 'git/CLOSE_POPUP',
+  OPEN_CLONE_POPUP = 'git/OPEN_CLONE_POPUP',
+  CHANGE_CLONE_URL = 'git/CHANGE_CLONE_URL',
+  CHANGE_CLONE_TARGET = 'git/CHANGE_CLONE_TARGET',
+  CLOSE_CLONE_POPUP = 'git/CLOSE_CLONE_POPUP'
 }
 
 export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
@@ -343,6 +351,99 @@ export function closePopup(): Action {
   };
 }
 
+export function openClonePopup(): Action {
+  return {
+    type: Actions.OPEN_CLONE_POPUP
+  };
+}
+
+export function changeCloneUrl(url: string): Action {
+  return {
+    type: Actions.CHANGE_CLONE_URL,
+    payload: url
+  };
+}
+
+export function changeCloneTarget(target: string): Action {
+  return {
+    type: Actions.CHANGE_CLONE_TARGET,
+    payload: target
+  };
+}
+
+export function cloneAndLoad(): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const { git } = getState();
+
+    if (!git.cloneRemoteUrl || !git.cloneTarget) {
+      return;
+    }
+    // matches last part of URL, without .git
+    const m = /.*\/([^\/]+?)(?:\.git)?\/?$/.exec(git.cloneRemoteUrl);
+    if (!m) {
+      dispatch({ type: Actions.PROGRESS, payload: { done: true, message: 'Error: Invalid URL' } });
+      return;
+    }
+    const repoName = m[1];
+
+    try {
+      let cloneTarget = git.cloneTarget;
+      await fs.mkdirp(cloneTarget);
+      if ((await fs.readdir(cloneTarget)).length) {
+        // target is not empty => guess subfolder name
+        cloneTarget = path.join(cloneTarget, repoName);
+      }
+      await fs.mkdirp(cloneTarget);
+      if ((await fs.readdir(cloneTarget)).length) {
+        // target incl. subfolder is still not empty
+        dispatch({type: Actions.PROGRESS, payload: { done: true, message: 'Error: Directory is not empty' }});
+        return;
+      }
+
+      dispatch({type: Actions.PROGRESS, payload: { message: `Cloning from remote...` }});
+
+      await withCredentials(dispatch, async credentialsCb => {
+        await Git.Clone.clone(git.cloneRemoteUrl!, cloneTarget, {
+          fetchOpts: {
+            callbacks: {
+              credentials: async (url: string, usernameFromUrl: string) => {
+                const cred = await credentialsCb(url, usernameFromUrl);
+                return Git.Cred.userpassPlaintextNew(cred.username || usernameFromUrl, cred.password);
+              },
+              certificateCheck: () => 1
+            }
+          }
+        });
+      });
+
+      dispatch(closeClonePopup());
+      dispatch({ type: Actions.PROGRESS, payload: { done: true } });
+      dispatch(changeAndSave('repositoryPath', cloneTarget));
+    } catch (e) {
+      dispatch({type: Actions.PROGRESS, payload: { done: true, message: `Error: ${e.message}` }});
+    }
+  };
+}
+
+export function browseForTarget(): Thunk<void> {
+  return dispatch => {
+    const file = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+      title: 'Select target folder',
+      properties: ['openDirectory']
+    });
+
+    if (file && file[0]) {
+      dispatch(changeCloneTarget(file[0]));
+    }
+  };
+}
+
+export function closeClonePopup(): Action {
+  return {
+    type: Actions.CLOSE_CLONE_POPUP
+  };
+}
+
 afterAction(Repository.Actions.FINISH_LOAD, (dispatch, getState: GetState, isReload) => {
   if (!isReload) {
     dispatch(updateStatus(true));
@@ -358,7 +459,11 @@ type Action =
   TypedAction<Actions.PROGRESS, { message?: string, done?: boolean }> |
   OptionalAction<Actions.OPEN_POPUP> |
   OptionalAction<Actions.MARK_FOR_RESET, string> |
-  OptionalAction<Actions.CLOSE_POPUP>;
+  OptionalAction<Actions.CLOSE_POPUP> |
+  OptionalAction<Actions.OPEN_CLONE_POPUP> |
+  TypedAction<Actions.CHANGE_CLONE_URL, string> |
+  TypedAction<Actions.CHANGE_CLONE_TARGET, string> |
+  OptionalAction<Actions.CLOSE_CLONE_POPUP>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 
@@ -374,6 +479,14 @@ export default function reducer(state: State = { status: { initialized: false },
       return { ...state, markedForReset: action.payload };
     case Actions.CLOSE_POPUP:
       return { ...state, popupOpen: false };
+    case Actions.OPEN_CLONE_POPUP:
+      return { ...state, clonePopupOpen: true, cloneRemoteUrl: undefined, cloneTarget: undefined, progressStatus: undefined };
+    case Actions.CHANGE_CLONE_URL:
+      return { ...state, cloneRemoteUrl: action.payload };
+    case Actions.CHANGE_CLONE_TARGET:
+      return { ...state, cloneTarget: action.payload };
+    case Actions.CLOSE_CLONE_POPUP:
+      return { ...state, clonePopupOpen: false };
     default:
       return state;
   }

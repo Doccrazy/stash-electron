@@ -6,7 +6,9 @@ import SaveSettingsButton from '../containers/SaveSettingsButton';
 import SettingsBrowseDirButton from '../containers/SettingsBrowseDirButton';
 import SettingsBrowseFileButton from '../containers/SettingsBrowseFileButton';
 import PrivateKeyStatus from '../containers/PrivateKeyStatus';
-import GenerateKeyButton from '../containers/GenerateKeyButton';
+import ActionButton from '../containers/ActionButton';
+import { openGenerate } from '../actions/privateKey';
+import { openClonePopup } from '../actions/git';
 
 export default () => (<div className="container">
   <h1 className="my-4">Application settings</h1>
@@ -14,22 +16,29 @@ export default () => (<div className="container">
   <Form>
     <FormGroup>
       <Label>Repository path</Label>
-      <InputGroup>
-        <SettingField field="repositoryPath" />
-        <InputGroupButton>
-          <SettingsBrowseDirButton field="repositoryPath" title="Select repository path"><i className="fa fa-folder" /></SettingsBrowseDirButton>
-        </InputGroupButton>
-      </InputGroup>
+      <div className="d-flex">
+        <InputGroup>
+          <SettingField field="repositoryPath" />
+          <InputGroupButton>
+            <SettingsBrowseDirButton field="repositoryPath" title="Select repository path"><i className="fa fa-folder" /></SettingsBrowseDirButton>
+          </InputGroupButton>
+        </InputGroup>
+        <div className="text-nowrap col-form-label mx-2">- or -</div>
+        <ActionButton action={openClonePopup} title="Will prompt for target folder"><i className="fa fa-git-square" /> Clone remote repository</ActionButton>
+      </div>
     </FormGroup>
     <FormGroup>
       <Label>Private key file (SSH / PEM / PPK)</Label>
-      <InputGroup>
-        <SettingField field="privateKeyFile" />
-        <InputGroupButton>
-          <SettingsBrowseFileButton field="privateKeyFile" title="Select private key"><i className="fa fa-folder-open" /></SettingsBrowseFileButton>
-          <GenerateKeyButton title="Generate new private key"><i className="fa fa-cog" /></GenerateKeyButton>
-        </InputGroupButton>
-      </InputGroup>
+      <div className="d-flex">
+        <InputGroup>
+          <SettingField field="privateKeyFile" />
+          <InputGroupButton>
+            <SettingsBrowseFileButton field="privateKeyFile" title="Select private key"><i className="fa fa-folder-open" /></SettingsBrowseFileButton>
+          </InputGroupButton>
+        </InputGroup>
+        <div className="text-nowrap col-form-label mx-2">- or -</div>
+        <ActionButton action={openGenerate} title="Will prompt for save location"><i className="fa fa-cog" /> Generate new keypair</ActionButton>
+      </div>
       <small className="form-text"><PrivateKeyStatus /></small>
     </FormGroup>
     <FormGroup>
