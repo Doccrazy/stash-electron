@@ -3,7 +3,7 @@ import { Button, Form, Input, InputGroup, InputGroupButton } from 'reactstrap';
 import * as Mousetrap from 'mousetrap';
 
 export interface Props {
-  className: string,
+  className?: string,
   limitedScope: boolean,
   value: string,
   onChange: (value: string) => void,
@@ -76,7 +76,7 @@ export default class SearchField extends React.Component<Props, {}> {
   render() {
     const { className, limitedScope, value, onChange, onToggleScope, onShowResults } = this.props;
     return (<Form inline className={className}>
-      <InputGroup>
+      <InputGroup className="w-100">
         <Input
           innerRef={input => { this.input = input; }}
           placeholder="Type to search, enter for fulltext"

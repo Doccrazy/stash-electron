@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Navbar, Nav, NavItem } from 'reactstrap';
+import { Navbar, Nav, NavItem, Fade } from 'reactstrap';
+import { Route, RouteComponentProps } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import ReduxToastr from 'react-redux-toastr';
 import GitStatus from '../containers/GitStatus';
@@ -10,8 +11,12 @@ import WorkspaceLock from '../containers/WorkspaceLock';
 import * as styles from './App.scss';
 
 export interface Props {
-  children: any
+  children: React.ReactNode
 }
+
+const AnimatedSearchField = ({ match }: RouteComponentProps<any>) => React.createElement(Fade, { in: !!match, timeout: 0 } as any,
+  <SearchField />
+);
 
 export default class App extends React.Component<Props, {}> {
   render() {
@@ -33,7 +38,9 @@ export default class App extends React.Component<Props, {}> {
               <NavLink to="/settings" exact className="nav-link">Settings</NavLink>
             </NavItem>
           </Nav>
-          <SearchField className={`mr-3 ${styles.form}`} />
+          <div className={`mr-3 ${styles.form}`}>
+            <Route path="/" exact children={AnimatedSearchField} />
+          </div>
           <span className="navbar-text">
             <WorkspaceLock />
             <GitStatus />
