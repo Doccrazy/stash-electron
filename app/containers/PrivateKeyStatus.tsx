@@ -21,7 +21,7 @@ export default connect((state: RootState, props: Props) => ({
 }))(({ error, keySize, keyEncrypted }: { error: KeyError, keySize: number, keyEncrypted: boolean }) => (<span>
   <span className={cx(typeof error === 'number' && 'text-danger', keySize && 'text-success')}>
     {typeof error === 'number' && ERRORS[error]}
-    {keySize && `Valid key has been loaded, size = ${keySize} bits.`}
+    {keySize && `Valid key loaded, size = ${keySize} bits.`}
   </span>
   {keySize && !keyEncrypted && <span className="text-warning ml-3">
     <i className="fa fa-warning" /> Key is not encrypted; workspace locking unavailable.

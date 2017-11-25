@@ -6,6 +6,7 @@ import SaveSettingsButton from '../containers/SaveSettingsButton';
 import SettingsBrowseDirButton from '../containers/SettingsBrowseDirButton';
 import SettingsBrowseFileButton from '../containers/SettingsBrowseFileButton';
 import PrivateKeyStatus from '../containers/PrivateKeyStatus';
+import GenerateKeyButton from '../containers/GenerateKeyButton';
 
 export default () => (<div className="container">
   <h1 className="my-4">Application settings</h1>
@@ -26,6 +27,7 @@ export default () => (<div className="container">
         <SettingField field="privateKeyFile" />
         <InputGroupButton>
           <SettingsBrowseFileButton field="privateKeyFile" title="Select private key"><i className="fa fa-folder-open" /></SettingsBrowseFileButton>
+          <GenerateKeyButton title="Generate new private key"><i className="fa fa-cog" /></GenerateKeyButton>
         </InputGroupButton>
       </InputGroup>
       <small className="form-text"><PrivateKeyStatus /></small>

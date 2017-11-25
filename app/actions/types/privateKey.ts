@@ -7,9 +7,17 @@ export enum KeyError {
   CANCELLED
 }
 
+interface GenerateState {
+  readonly open?: boolean,
+  readonly working?: boolean,
+  readonly passphrase?: string,
+  readonly repeatPassphrase?: string
+}
+
 export interface State {
   readonly key?: sshpk.PrivateKey;
   readonly error?: KeyError,
   readonly username?: string,
-  readonly encrypted?: boolean
+  readonly encrypted?: boolean,
+  readonly generate: GenerateState
 }

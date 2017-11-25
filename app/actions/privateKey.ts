@@ -1,13 +1,15 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as sshpk from 'sshpk';
+import * as os from 'os';
 import {toastr} from 'react-redux-toastr';
+import { remote } from 'electron';
 import {GetState, OptionalAction, TypedAction, TypedThunk} from './types/index';
 import {KeyError, State} from './types/privateKey';
 import {afterAction} from '../store/eventMiddleware';
 import * as Settings from './settings';
 import { requestCredentials, acceptCredentials, rejectCredentials, clearStoredLogin } from './credentials';
-import {parsePrivateKey} from '../utils/rsa';
+import { generateRSAKeyPKCS8, parsePrivateKey, toPEM } from '../utils/rsa';
 import * as Keys from './keys';
 import * as Repository from './repository';
 import {findUser} from '../repository/KeyProvider';
@@ -16,17 +18,21 @@ export enum Actions {
   LOAD = 'privateKey/LOAD',
   ERROR = 'privateKey/ERROR',
   LOCK = 'privateKey/LOCK',
-  LOGIN = 'privateKey/LOGIN'
+  LOGIN = 'privateKey/LOGIN',
+  OPEN_GENERATE = 'privateKey/OPEN_GENERATE',
+  CLOSE_GENERATE = 'privateKey/CLOSE_GENERATE',
+  CHANGE_GEN_PASS = 'privateKey/CHANGE_GEN_PASS',
+  GENERATE_WORKING = 'privateKey/GENERATE_WORKING'
 }
 
-export function loadAndUnlockInteractive(): Thunk<Promise<void>> {
+export function loadAndUnlockInteractive(presetPassphrase?: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const filename = getState().settings.current.privateKeyFile;
     if (!filename) {
       return;
     }
 
-    await dispatch(load(filename));
+    await dispatch(load(filename, presetPassphrase));
 
     while (getState().privateKey.error === KeyError.ENCRYPTED || getState().privateKey.error === KeyError.PASSPHRASE) {
       let passphrase;
@@ -103,6 +109,54 @@ export function lock(): Thunk<Promise<void>> {
   };
 }
 
+export function openGenerate(): Action {
+  return {
+    type: Actions.OPEN_GENERATE
+  };
+}
+
+export function closeGenerate(): Action {
+  return {
+    type: Actions.CLOSE_GENERATE
+  };
+}
+
+export function changeGeneratePassphrase(passphrase: string, repeat?: boolean): Action {
+  return {
+    type: Actions.CHANGE_GEN_PASS,
+    payload: {
+      passphrase,
+      repeat
+    }
+  };
+}
+
+export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    dispatch({ type: Actions.GENERATE_WORKING, payload: true });
+
+    try {
+      const pkcs8Key = await generateRSAKeyPKCS8();
+      const finalKey = toPEM(pkcs8Key, getState().privateKey.generate.passphrase);
+
+      const file = remote.dialog.showSaveDialog({
+        title: 'Save private key',
+        filters: [{name: 'PEM-encoded private key', extensions: ['pem']}],
+        defaultPath: os.homedir()
+      });
+      if (file) {
+        await fs.writeFile(file, finalKey);
+        dispatch(Settings.changeAndSave('privateKeyFile', file));
+        dispatch(closeGenerate());
+      }
+    } catch (e) {
+      toastr.error('Failed to generate key', e.message);
+    }
+
+    dispatch({ type: Actions.GENERATE_WORKING, payload: false });
+  };
+}
+
 // when the private key setting changes, reload the private key
 afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
@@ -136,20 +190,38 @@ type Action =
   TypedAction<Actions.LOAD, { key: sshpk.PrivateKey, encrypted: boolean }>
   | TypedAction<Actions.ERROR, KeyError>
   | OptionalAction<Actions.LOCK>
-  | OptionalAction<Actions.LOGIN, string>;
+  | OptionalAction<Actions.LOGIN, string>
+  | OptionalAction<Actions.OPEN_GENERATE>
+  | OptionalAction<Actions.CLOSE_GENERATE>
+  | TypedAction<Actions.CHANGE_GEN_PASS, { passphrase: string, repeat?: boolean }>
+  | OptionalAction<Actions.GENERATE_WORKING, boolean>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 
-export default function reducer(state: State = {}, action: Action): State {
+export default function reducer(state: State = { generate: {}}, action: Action): State {
   switch (action.type) {
     case Actions.LOAD:
-      return { ...action.payload };
+      return { ...action.payload, generate: {} };
     case Actions.ERROR:
-      return { error: action.payload, encrypted: action.payload !== KeyError.FILE };
+      return { error: action.payload, encrypted: action.payload !== KeyError.FILE, generate: state.generate };
     case Actions.LOCK:
-      return { encrypted: state.encrypted };
+      return { encrypted: state.encrypted, generate: {} };
     case Actions.LOGIN:
       return { ...state, username: action.payload };
+    case Actions.OPEN_GENERATE:
+      return { ...state, generate: { open: true } };
+    case Actions.CLOSE_GENERATE:
+      return { ...state, generate: { open: false } };
+    case Actions.CHANGE_GEN_PASS:
+      const generate = { ...state.generate };
+      if (action.payload.repeat) {
+        generate.repeatPassphrase = action.payload.passphrase;
+      } else {
+        generate.passphrase = action.payload.passphrase;
+      }
+      return { ...state, generate };
+    case Actions.GENERATE_WORKING:
+      return { ...state, generate: { ...state.generate, working: action.payload } };
     default:
       return state;
   }

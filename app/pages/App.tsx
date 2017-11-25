@@ -7,6 +7,7 @@ import GitStatus from '../containers/GitStatus';
 import SearchField from '../containers/SearchField';
 import LoginPopup from '../containers/LoginPopup';
 import GitActionsPopup from '../containers/GitActionsPopup';
+import GenerateKeyPopup from '../containers/GenerateKeyPopup';
 import WorkspaceLock from '../containers/WorkspaceLock';
 import * as styles from './App.scss';
 
@@ -25,6 +26,7 @@ export default class App extends React.Component<Props, {}> {
         <ReduxToastr timeOut={4000} preventDuplicates position="top-right" transitionIn="fadeIn" transitionOut="fadeOut" />
         <LoginPopup />
         <GitActionsPopup />
+        <GenerateKeyPopup />
         <Navbar color="dark" className={`navbar-dark navbar-expand-md ${styles.nav}`}>
           <NavLink to="/" className="navbar-brand"><span className={styles.logo} /> Stash</NavLink>
           <Nav className="mr-auto" navbar>
