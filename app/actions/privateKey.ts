@@ -137,7 +137,8 @@ export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
 
     try {
       const pkcs8Key = await generateRSAKeyPKCS8();
-      const finalKey = toPEM(pkcs8Key, getState().privateKey.generate.passphrase);
+      const passphrase = getState().privateKey.generate.passphrase;
+      const finalKey = toPEM(pkcs8Key, passphrase);
 
       const file = remote.dialog.showSaveDialog({
         title: 'Save private key',
@@ -146,8 +147,12 @@ export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
       });
       if (file) {
         await fs.writeFile(file, finalKey);
-        dispatch(Settings.changeAndSave('privateKeyFile', file));
         dispatch(closeGenerate());
+        if (passphrase) {
+          // save passphrase, so user does not have to enter it again
+          dispatch(changeGeneratePassphrase(passphrase));
+        }
+        dispatch(Settings.changeAndSave('privateKeyFile', file));
       }
     } catch (e) {
       toastr.error('Failed to generate key', e.message);
@@ -161,7 +166,7 @@ export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
 afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
   if (settings.current.privateKeyFile && settings.current.privateKeyFile !== settings.previous.privateKeyFile) {
-    dispatch(loadAndUnlockInteractive());
+    dispatch(loadAndUnlockInteractive(getState().privateKey.generate.passphrase));
   }
 });
 
@@ -203,7 +208,7 @@ export default function reducer(state: State = { generate: {}}, action: Action):
     case Actions.LOAD:
       return { ...action.payload, generate: {} };
     case Actions.ERROR:
-      return { error: action.payload, encrypted: action.payload !== KeyError.FILE, generate: state.generate };
+      return { error: action.payload, encrypted: action.payload !== KeyError.FILE, generate: {} };
     case Actions.LOCK:
       return { encrypted: state.encrypted, generate: {} };
     case Actions.LOGIN:
