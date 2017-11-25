@@ -14,7 +14,6 @@ import SpecialFolderLink from '../containers/SpecialFolderLink';
 import * as styles from './Home.css';
 import NoKeyAlert from '../containers/NoKeyAlert';
 import AuthorizedUsersPopup from '../containers/AuthorizedUsersPopup';
-import GitActionsPopup from '../containers/GitActionsPopup';
 import RefreshLink from '../containers/RefreshLink';
 
 export default class Home extends React.Component<{}, {}> {
@@ -26,7 +25,6 @@ export default class Home extends React.Component<{}, {}> {
         <DeleteNodePopup />
         <ImportPopup />
         <AuthorizedUsersPopup />
-        <GitActionsPopup />
         <div className={`bg-light ${styles.sidebar}`}>
           <p>
             <RefreshLink />
