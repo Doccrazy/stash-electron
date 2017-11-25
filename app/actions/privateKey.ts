@@ -140,7 +140,7 @@ export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
       const passphrase = getState().privateKey.generate.passphrase;
       const finalKey = toPEM(pkcs8Key, passphrase);
 
-      const file = remote.dialog.showSaveDialog({
+      const file = remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
         title: 'Save private key',
         filters: [{name: 'PEM-encoded private key', extensions: ['pem']}],
         defaultPath: os.homedir()

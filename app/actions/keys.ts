@@ -166,7 +166,7 @@ export function browseLoadKey(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { keys } = getState();
 
-    const files = remote.dialog.showOpenDialog({
+    const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
       title: 'Select public key',
       properties: ['openFile']
     });

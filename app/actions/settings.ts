@@ -55,7 +55,7 @@ export function save(): Thunk<void> {
 
 export function browseForFolder(key: SettingsKeys, title: string): Thunk<void> {
   return (dispatch, getState) => {
-    const folder = remote.dialog.showOpenDialog({
+    const folder = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
       title,
       properties: ['openDirectory']
     });
@@ -68,7 +68,7 @@ export function browseForFolder(key: SettingsKeys, title: string): Thunk<void> {
 
 export function browseForFile(key: SettingsKeys, title: string, filters?: { extensions: string[], name: string }[]): Thunk<void> {
   return (dispatch, getState) => {
-    const file = remote.dialog.showOpenDialog({
+    const file = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
       title,
       filters,
       properties: ['openFile', 'showHiddenFiles']

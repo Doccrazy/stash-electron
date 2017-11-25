@@ -16,7 +16,7 @@ export enum Actions {
 
 export function browseForAdd(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const files = remote.dialog.showOpenDialog({
+    const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
       title: 'Select file(s) to encrypt into Stash',
       properties: ['openFile', 'multiSelections']
     });
@@ -88,7 +88,7 @@ export function open(ptr: EntryPtr): Thunk<Promise<void>> {
 
 export function browseForSaveAs(ptr: EntryPtr): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const targetPath = remote.dialog.showSaveDialog({
+    const targetPath = remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
       title: 'Save as *UNENCRYPTED*',
       defaultPath: ptr.entry
     });
