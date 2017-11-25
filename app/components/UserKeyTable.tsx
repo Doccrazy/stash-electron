@@ -8,8 +8,8 @@ export interface Props {
   onDelete: (username: string) => void
 }
 
-export default ({ keysByUser, currentUser, onDelete }: Props) => (<div>
-  <table className={`table table-hover table-sm table-sticky ${styles.table}`}>
+export default ({ keysByUser, currentUser, onDelete }: Props) => (<div className={styles.table}>
+  <table className="table table-hover table-sm table-sticky">
     <thead>
       <tr>
         <th>Username</th>

@@ -1,12 +1,23 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
 .root {
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: $gray-100;
 }
 
 .nav {
   flex-shrink: 0;
+
+  /* -webkit-app-region: drag; */
 }
+
+/* .nav a:not(:global(.navbar-brand)),
+.nav form {
+  -webkit-app-region: no-drag;
+} */
 
 .form {
   width: 50%;

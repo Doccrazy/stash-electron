@@ -7,7 +7,7 @@ import SearchField from '../containers/SearchField';
 import LoginPopup from '../containers/LoginPopup';
 import GitActionsPopup from '../containers/GitActionsPopup';
 import WorkspaceLock from '../containers/WorkspaceLock';
-import * as styles from './App.css';
+import * as styles from './App.scss';
 
 export interface Props {
   children: any

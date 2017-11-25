@@ -11,7 +11,7 @@ import CurrentFolder from '../containers/CurrentFolder';
 import ImportPopup from '../containers/ImportPopup';
 import AddFileDropAcceptor from '../containers/AddFileDropAcceptor';
 import SpecialFolderLink from '../containers/SpecialFolderLink';
-import * as styles from './Home.css';
+import * as styles from './Home.scss';
 import NoKeyAlert from '../containers/NoKeyAlert';
 import AuthorizedUsersPopup from '../containers/AuthorizedUsersPopup';
 import RefreshLink from '../containers/RefreshLink';
@@ -25,7 +25,7 @@ export default class Home extends React.Component<{}, {}> {
         <DeleteNodePopup />
         <ImportPopup />
         <AuthorizedUsersPopup />
-        <div className={`bg-light ${styles.sidebar}`}>
+        <div className={styles.sidebar}>
           <p>
             <RefreshLink />
             <SpecialFolderLink id="favorites" />
