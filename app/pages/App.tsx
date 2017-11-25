@@ -15,9 +15,9 @@ export interface Props {
   children: React.ReactNode
 }
 
-const AnimatedSearchField = ({ match }: RouteComponentProps<any>) => React.createElement(Fade, { in: !!match, timeout: 0 } as any,
-  <SearchField />
-);
+function animatedMount(C: React.ComponentType<{}>): React.ComponentType<RouteComponentProps<any>> {
+  return ({ match }) => React.createElement(Fade, { in: !!match, timeout: 0, mountOnEnter: true, unmountOnExit: true } as any, <C />);
+}
 
 export default class App extends React.Component<Props, {}> {
   render() {
@@ -41,7 +41,7 @@ export default class App extends React.Component<Props, {}> {
             </NavItem>
           </Nav>
           <div className={`mr-3 ${styles.form}`}>
-            <Route path="/" exact children={AnimatedSearchField} />
+            <Route path="/" exact children={animatedMount(SearchField)} />
           </div>
           <span className="navbar-text">
             <WorkspaceLock />
