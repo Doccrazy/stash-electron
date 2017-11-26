@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as Git from 'nodegit';
 import { toastr } from 'react-redux-toastr';
 import { remote } from 'electron';
-import { afterAction } from '../store/eventMiddleware';
+import { afterAction, onceAfterAction } from '../store/eventMiddleware';
 import {
   accessingRepository,
   addToGitIgnore,
@@ -28,10 +28,14 @@ export enum Actions {
   OPEN_POPUP = 'git/OPEN_POPUP',
   MARK_FOR_RESET = 'git/MARK_FOR_RESET',
   CLOSE_POPUP = 'git/CLOSE_POPUP',
-  OPEN_CLONE_POPUP = 'git/OPEN_CLONE_POPUP',
-  CHANGE_CLONE_URL = 'git/CHANGE_CLONE_URL',
-  CHANGE_CLONE_TARGET = 'git/CHANGE_CLONE_TARGET',
-  CLOSE_CLONE_POPUP = 'git/CLOSE_CLONE_POPUP'
+  CLONE_OPEN_POPUP = 'git/OPEN_CLONE_POPUP',
+  CLONE_CHANGE_URL = 'git/CHANGE_CLONE_URL',
+  CLONE_CHANGE_TARGET = 'git/CHANGE_CLONE_TARGET',
+  CLONE_CLOSE_POPUP = 'git/CLOSE_CLONE_POPUP',
+  SIGNATURE_OPEN_POPUP = 'git/SIGNATURE_OPEN_POPUP',
+  SIGNATURE_CHANGE = 'git/SIGNATURE_CHANGE',
+  SIGNATURE_CONFIRM = 'git/SIGNATURE_CONFIRM',
+  SIGNATURE_CLOSE_POPUP = 'git/SIGNATURE_CLOSE_POPUP'
 }
 
 export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
@@ -83,11 +87,6 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
           return;
         }
 
-        if (!isSignatureConfigured(gitRepo)) {
-          status.error = 'git user name and email are not configured';
-          return;
-        }
-
         let upstream: Git.Reference;
         try {
           upstream = await Git.Branch.upstream(currentRef);
@@ -97,6 +96,11 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
         }
         status.upstreamName = upstream.shorthand();
         const remoteName = remoteNameFromRef(upstream);
+
+        if (!isSignatureConfigured(gitRepo) && (await compareRefs(currentRef, upstream)).ahead) {
+          status.error = 'git user name and email are not configured';
+          return;
+        }
 
         // if not fetching or fetch fails, remember bg mode from last fetch
         status.allowBackgroundFetch = oldStatus.allowBackgroundFetch;
@@ -279,7 +283,14 @@ export function maybeCommitChanges(message: string): Thunk<Promise<void>> {
         }
 
         if (!isSignatureConfigured(gitRepo)) {
-          throw new Error('git user name and email are not configured');
+          try {
+            const signature = await dispatch(requestSignature());
+            const cfg = signature.local ? (await gitRepo.config()) : (await Git.Config.openDefault());
+            await cfg.setString('user.name', signature.name);
+            await cfg.setString('user.email', signature.email);
+          } catch (e) {
+            throw new Error('git user name and email are not configured');
+          }
         }
 
         await addToGitIgnore(repoPath, ...RES_LOCAL_FILENAMES.toArray());
@@ -353,20 +364,20 @@ export function closePopup(): Action {
 
 export function openClonePopup(): Action {
   return {
-    type: Actions.OPEN_CLONE_POPUP
+    type: Actions.CLONE_OPEN_POPUP
   };
 }
 
 export function changeCloneUrl(url: string): Action {
   return {
-    type: Actions.CHANGE_CLONE_URL,
+    type: Actions.CLONE_CHANGE_URL,
     payload: url
   };
 }
 
 export function changeCloneTarget(target: string): Action {
   return {
-    type: Actions.CHANGE_CLONE_TARGET,
+    type: Actions.CLONE_CHANGE_TARGET,
     payload: target
   };
 }
@@ -375,11 +386,11 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { git } = getState();
 
-    if (!git.cloneRemoteUrl || !git.cloneTarget) {
+    if (!git.clone.remoteUrl || !git.clone.target) {
       return;
     }
     // matches last part of URL, without .git
-    const m = /.*\/([^\/]+?)(?:\.git)?\/?$/.exec(git.cloneRemoteUrl);
+    const m = /.*\/([^\/]+?)(?:\.git)?\/?$/.exec(git.clone.remoteUrl);
     if (!m) {
       dispatch({ type: Actions.PROGRESS, payload: { done: true, message: 'Error: Invalid URL' } });
       return;
@@ -387,7 +398,7 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
     const repoName = m[1];
 
     try {
-      let cloneTarget = git.cloneTarget;
+      let cloneTarget = git.clone.target;
       await fs.mkdirp(cloneTarget);
       if ((await fs.readdir(cloneTarget)).length) {
         // target is not empty => guess subfolder name
@@ -403,7 +414,7 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
       dispatch({type: Actions.PROGRESS, payload: { message: `Cloning from remote...` }});
 
       await withCredentials(dispatch, async credentialsCb => {
-        const gitRepo = await Git.Clone.clone(git.cloneRemoteUrl!, cloneTarget, {
+        const gitRepo = await Git.Clone.clone(git.clone.remoteUrl!, cloneTarget, {
           fetchOpts: {
             callbacks: {
               credentials: async (url: string, usernameFromUrl: string) => {
@@ -441,7 +452,44 @@ export function browseForTarget(): Thunk<void> {
 
 export function closeClonePopup(): Action {
   return {
-    type: Actions.CLOSE_CLONE_POPUP
+    type: Actions.CLONE_CLOSE_POPUP
+  };
+}
+
+export function requestSignature(): Thunk<Promise<{name: string, email: string, local?: boolean}>> {
+  return async (dispatch, getState) => {
+    dispatch({ type: Actions.SIGNATURE_OPEN_POPUP });
+
+    return new Promise<{name: string, email: string, local?: boolean}>((resolve, reject) => {
+      onceAfterAction([Actions.SIGNATURE_CONFIRM, Actions.SIGNATURE_CLOSE_POPUP], () => {
+        const { name, email, local } = getState().git.signature;
+        if (name && email) {
+          resolve({ name, email, local });
+        } else {
+          reject(new Error('cancelled by user'));
+        }
+        dispatch(closeSignaturePopup());
+      });
+    });
+  };
+}
+
+export function changeSignature(name: string, email: string, local: boolean): Action {
+  return {
+    type: Actions.SIGNATURE_CHANGE,
+    payload: { name, email, local }
+  };
+}
+
+export function confirmSignature(): Action {
+  return {
+    type: Actions.SIGNATURE_CONFIRM
+  };
+}
+
+export function closeSignaturePopup(): Action {
+  return {
+    type: Actions.SIGNATURE_CLOSE_POPUP
   };
 }
 
@@ -461,14 +509,18 @@ type Action =
   OptionalAction<Actions.OPEN_POPUP> |
   OptionalAction<Actions.MARK_FOR_RESET, string> |
   OptionalAction<Actions.CLOSE_POPUP> |
-  OptionalAction<Actions.OPEN_CLONE_POPUP> |
-  TypedAction<Actions.CHANGE_CLONE_URL, string> |
-  TypedAction<Actions.CHANGE_CLONE_TARGET, string> |
-  OptionalAction<Actions.CLOSE_CLONE_POPUP>;
+  OptionalAction<Actions.CLONE_OPEN_POPUP> |
+  TypedAction<Actions.CLONE_CHANGE_URL, string> |
+  TypedAction<Actions.CLONE_CHANGE_TARGET, string> |
+  OptionalAction<Actions.CLONE_CLOSE_POPUP> |
+  OptionalAction<Actions.SIGNATURE_OPEN_POPUP> |
+  TypedAction<Actions.SIGNATURE_CHANGE, { name: string, email: string, local: boolean }> |
+  OptionalAction<Actions.SIGNATURE_CONFIRM> |
+  OptionalAction<Actions.SIGNATURE_CLOSE_POPUP>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 
-export default function reducer(state: State = { status: { initialized: false }, lastStatusUpdate: new Date() }, action: Action): State {
+export default function reducer(state: State = {status: {initialized: false}, lastStatusUpdate: new Date(), clone: {}, signature: {}}, action: Action): State {
   switch (action.type) {
     case Actions.UPDATE_STATUS:
       return { ...state, status: action.payload.status, lastStatusUpdate: action.payload.updated, markedForReset: undefined };
@@ -480,14 +532,20 @@ export default function reducer(state: State = { status: { initialized: false },
       return { ...state, markedForReset: action.payload };
     case Actions.CLOSE_POPUP:
       return { ...state, popupOpen: false };
-    case Actions.OPEN_CLONE_POPUP:
-      return { ...state, clonePopupOpen: true, cloneRemoteUrl: undefined, cloneTarget: undefined, progressStatus: undefined };
-    case Actions.CHANGE_CLONE_URL:
-      return { ...state, cloneRemoteUrl: action.payload };
-    case Actions.CHANGE_CLONE_TARGET:
-      return { ...state, cloneTarget: action.payload };
-    case Actions.CLOSE_CLONE_POPUP:
-      return { ...state, clonePopupOpen: false };
+    case Actions.CLONE_OPEN_POPUP:
+      return { ...state, clone: { open: true }, progressStatus: undefined };
+    case Actions.CLONE_CHANGE_URL:
+      return { ...state, clone: { ...state.clone, remoteUrl: action.payload } };
+    case Actions.CLONE_CHANGE_TARGET:
+      return { ...state, clone: { ...state.clone, target: action.payload } };
+    case Actions.CLONE_CLOSE_POPUP:
+      return { ...state, clone: {} };
+    case Actions.SIGNATURE_OPEN_POPUP:
+      return { ...state, signature: { open: true } };
+    case Actions.SIGNATURE_CHANGE:
+      return { ...state, signature: { ...state.signature, ...action.payload } };
+    case Actions.SIGNATURE_CLOSE_POPUP:
+      return { ...state, signature: {} };
     default:
       return state;
   }

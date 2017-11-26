@@ -5,9 +5,8 @@ export interface State {
   progressStatus?: string,
   popupOpen?: boolean,
   markedForReset?: string,
-  clonePopupOpen?: boolean,
-  cloneRemoteUrl?: string,
-  cloneTarget?: string
+  clone: CloneState,
+  signature: SignatureState
 }
 
 export interface GitStatus {
@@ -34,4 +33,17 @@ export interface GitCommitInfo {
 export interface FetchResult {
   success: true,
   allowNonInteractive?: boolean
+}
+
+export interface CloneState {
+  open?: boolean,
+  remoteUrl?: string,
+  target?: string
+}
+
+export interface SignatureState {
+  open?: boolean,
+  name?: string,
+  email?: string,
+  local?: boolean
 }

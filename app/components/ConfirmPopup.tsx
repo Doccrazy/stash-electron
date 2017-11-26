@@ -9,7 +9,7 @@ export interface Props {
   valid?: boolean,
   children: any,
   onConfirm: () => void,
-  onClose: () => void
+  onClose?: () => void
 }
 
 function doFocus(ref: HTMLButtonElement) {
@@ -28,6 +28,6 @@ export default ({ open, disabled, title, feedback, valid = true, children, onCon
   <ModalFooter>
     <div className="text-danger" style={{ flexGrow: 1 }}>{feedback}</div>
     <Button type="submit" form="editForm" innerRef={doFocus} color="primary" disabled={!valid || disabled}>Confirm</Button>{' '}
-    <Button color="secondary" onClick={onClose} disabled={disabled}>Cancel</Button>
+    {onClose && <Button color="secondary" onClick={onClose} disabled={disabled}>Cancel</Button>}
   </ModalFooter>
 </Modal>);

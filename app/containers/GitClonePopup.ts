@@ -4,12 +4,12 @@ import {RootState} from '../actions/types/index';
 import GitClonePopup from '../components/GitClonePopup';
 
 export default connect((state: RootState) => ({
-  open: state.git.clonePopupOpen,
+  open: state.git.clone.open,
   working: state.git.working,
-  valid: !!state.git.cloneRemoteUrl && !!state.git.cloneRemoteUrl,
+  valid: !!state.git.clone.remoteUrl && !!state.git.clone.remoteUrl,
   feedback: state.git.progressStatus,
-  url: state.git.cloneRemoteUrl,
-  target: state.git.cloneTarget
+  url: state.git.clone.remoteUrl,
+  target: state.git.clone.target
 }), dispatch => ({
   onChangeUrl: (url: string) => dispatch(changeCloneUrl(url)),
   onChangeTarget: (target: string) => dispatch(changeCloneTarget(target)),
