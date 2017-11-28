@@ -37,9 +37,10 @@ function createFileList(state: RootState): FileListEntry[] {
 
   const accessibleByNode: { [nodeId: string]: boolean } = Set(result.map(ptr => ptr.nodeId))
     .reduce((acc, id: string) => ({ ...acc, [id]: isAccessible(state.repository.nodes, id, state.privateKey.username)}), {});
-  return result.map(ptr => new FileListEntry(ptr,
+  const fileListEntries = result.map(ptr => new FileListEntry(ptr,
     hierarchy(state.repository.nodes, ptr.nodeId), lastModifiedFromFsHack(state.repository.path!, ptr),
     accessibleByNode[ptr.nodeId]));
+  return state.settings.current.hideInaccessible ? fileListEntries.filter(e => e.accessible) : fileListEntries;
 }
 
 export default connect((state: RootState) => ({

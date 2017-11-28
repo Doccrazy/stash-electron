@@ -6,6 +6,6 @@ export default connect(null, dispatch => ({
   onClick: () => dispatch(reload())
 }))(
   ({ onClick }: { onClick: () => void }) => (
-    <a href="" className="text-dark pull-right" title="Refresh repository" onClick={onClick}><i className="fa fa-refresh" /></a>
+    <a href="" className="text-dark" title="Refresh repository" onClick={onClick}><i className="fa fa-refresh" /></a>
   )
 );

@@ -1,11 +1,18 @@
 export type SettingsKeys = keyof SettingsMap;
 
-export type SettingsMap = {
+export interface StringSettings {
   repositoryPath?: string,
   rootFontSize?: number,
   privateKeyFile?: string,
-  storedLogins?: string[],
   inactivityTimeout?: number
+}
+
+export interface BoolSettings {
+  hideInaccessible?: boolean
+}
+
+export type SettingsMap = StringSettings & BoolSettings & {
+  storedLogins?: string[]
 };
 
 export interface State {
