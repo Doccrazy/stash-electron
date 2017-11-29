@@ -1,7 +1,7 @@
 {
   "name": "stash-electron",
   "productName": "Stash",
-  "version": "1.0.0",
+  "version": "1.0.1-snapshot",
   "description": "Cryptographically secure team password manager built on open technologies and standardized encryption algorithms.",
   "main": "./main.prod.js",
   "scripts": {
