@@ -22,12 +22,23 @@ function sortedChildIds(nodes: { [id: string]: Node }, nodeId: string) {
     .toArray();
 }
 
+function isVisible(parentAccessible: boolean, nodeId: string, nodes: { [id: string]: Node }, username?: string, currentNodeId?: string): boolean {
+  const node = nodes[nodeId];
+  return (!node.authorizedUsers ? parentAccessible : (!!username && node.authorizedUsers.includes(username)))
+    || nodeId === currentNodeId
+    || !!node.childIds.find(cid => isVisible(false, cid!, nodes, username, currentNodeId));
+}
+
 export default connect((state: RootState, props: Props) => {
   const node = state.repository.nodes[props.nodeId];
   const accessible = isAccessible(state.repository.nodes, props.nodeId, state.privateKey.username);
+  let childIds = sortedChildIds(state.repository.nodes, props.nodeId);
+  if (state.settings.current.hideInaccessible) {
+    childIds = childIds.filter(cid => isVisible(accessible, cid, state.repository.nodes, state.privateKey.username, state.currentNode.nodeId));
+  }
   return ({
     label: node.name,
-    childIds: sortedChildIds(state.repository.nodes, props.nodeId),
+    childIds,
     expanded: state.treeState.has(props.nodeId),
     selected: !state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,
     marked: !!state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,

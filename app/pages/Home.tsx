@@ -15,6 +15,7 @@ import * as styles from './Home.scss';
 import NoKeyAlert from '../containers/NoKeyAlert';
 import AuthorizedUsersPopup from '../containers/AuthorizedUsersPopup';
 import RefreshLink from '../containers/RefreshLink';
+import SettingsToggleLink from '../containers/SettingsToggleLink';
 
 export default class Home extends React.Component<{}, {}> {
   render() {
@@ -27,7 +28,12 @@ export default class Home extends React.Component<{}, {}> {
         <AuthorizedUsersPopup />
         <div className={styles.sidebar}>
           <p>
-            <RefreshLink />
+            <span className="pull-right">
+              <SettingsToggleLink field="hideInaccessible" iconOn="eye-slash" titleOn="Inaccessible files/folders are hidden; click to toggle"
+                                  iconOff="eye" titleOff="Inaccessible files/folders are shown; click to toggle"/>
+              &nbsp;&nbsp;
+              <RefreshLink />
+            </span>
             <SpecialFolderLink id="favorites" />
           </p>
           <Folder nodeId="/" />
