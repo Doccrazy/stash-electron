@@ -54,7 +54,7 @@ export default () => (<div className={`${styles.body} h-100 d-flex`}>
               <SettingsBrowseFileButton field="privateKeyFile" title="Browse for private key file" instantSave>
                 <i className="fa fa-folder-open" /> Load existing key
               </SettingsBrowseFileButton>
-              <ActionButton action={openGenerate}><i className="fa fa-cog" /> Generate new keypair</ActionButton>
+              <ActionButton actionCreator={openGenerate}><i className="fa fa-cog" /> Generate new keypair</ActionButton>
             </FormGroup>
             <FormGroup>
               <Label>Selected private key file</Label>

@@ -24,7 +24,9 @@ export default () => (<div className="container">
           </InputGroupButton>
         </InputGroup>
         <div className="text-nowrap col-form-label mx-2">- or -</div>
-        <ActionButton action={openClonePopup} title="Will prompt for target folder"><i className="fa fa-git-square" /> Clone remote repository</ActionButton>
+        <ActionButton actionCreator={openClonePopup} title="Will prompt for target folder">
+          <i className="fa fa-git-square" /> Clone remote repository
+        </ActionButton>
       </div>
     </FormGroup>
     <FormGroup>
@@ -37,7 +39,7 @@ export default () => (<div className="container">
           </InputGroupButton>
         </InputGroup>
         <div className="text-nowrap col-form-label mx-2">- or -</div>
-        <ActionButton action={openGenerate} title="Will prompt for save location"><i className="fa fa-cog" /> Generate new keypair</ActionButton>
+        <ActionButton actionCreator={openGenerate} title="Will prompt for save location"><i className="fa fa-cog" /> Generate new keypair</ActionButton>
       </div>
       <small className="form-text"><PrivateKeyStatus /></small>
     </FormGroup>
