@@ -1,7 +1,7 @@
 {
   "name": "stash-electron",
   "productName": "Stash",
-  "version": "1.0.1-snapshot",
+  "version": "0.0.1-dev",
   "description": "Cryptographically secure team password manager built on open technologies and standardized encryption algorithms.",
   "main": "./main.prod.js",
   "scripts": {
@@ -15,10 +15,10 @@
     "lint-fix": "npm run lint -- --fix",
     "lint-styles": "stylelint app/*.css app/components/*.css --syntax scss",
     "lint-styles-fix": "stylefmt -r app/*.css app/components/*.css",
-    "package": "npm run build && build --publish never",
-    "package-all": "npm run build && cross-env build -wl --x64 --publish always -c.publish.url=$PUBLISH_URL",
-    "package-linux": "npm run build && cross-env build --linux --x64 --publish always -c.publish.url=$PUBLISH_URL",
-    "package-win": "npm run build && cross-env build --win --x64 --publish always -c.publish.url=$PUBLISH_URL",
+    "package": "npm run build && node internals/scripts/build.js dev",
+    "package-all": "npm run build && node internals/scripts/build.js all",
+    "package-linux": "npm run build && node internals/scripts/build.js linux",
+    "package-win": "npm run build && node internals/scripts/build.js win",
     "postinstall": "concurrently \"npm run build-dll\" \"electron-builder install-app-deps\"",
     "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production electron ./app/",
@@ -70,13 +70,19 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        "AppImage",
+        "pacman"
       ],
       "category": "Utility",
       "desktop": {
         "StartupWMClass": "Stash",
         "MimeType": "x-scheme-handler/stash;"
       }
+    },
+    "pacman": {
+      "depends": [
+        "libcurl-gnutls"
+      ]
     },
     "directories": {
       "buildResources": "resources",
@@ -124,6 +130,7 @@
     "@types/chai-as-promised": "^7.1.0",
     "@types/extract-text-webpack-plugin": "^3.0.0",
     "@types/mocha": "^2.2.44",
+    "@types/semver": "^5.4.0",
     "@types/sinon": "^4.0.0",
     "@types/webpack": "^3.8.1",
     "@types/webpack-bundle-analyzer": "^2.9.0",
