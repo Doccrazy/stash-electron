@@ -46,3 +46,14 @@ body,
 .selectable {
   user-select: text;
 }
+
+.hover-container {
+  .hover-content {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  &:hover .hover-content {
+    opacity: 1;
+  }
+}
