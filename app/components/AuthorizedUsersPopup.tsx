@@ -63,7 +63,7 @@ export default ({ open, nodeName, inherited, editable, modified, currentUser, us
     <ModalFooter>
       <div className="text-danger" style={{ flexGrow: 1 }}>{validationError}</div>
       {editable && <Button type="submit" form="editForm" color="primary" disabled={!modified}>Save</Button>}{' '}
-      <Button form="editForm" color="secondary" onClick={onClose}>{editable ? 'Cancel' : 'Close'}</Button>
+      <Button autoFocus form="editForm" color="secondary" onClick={onClose}>{editable ? 'Cancel' : 'Close'}</Button>
     </ModalFooter>
   </Modal>);
 };
