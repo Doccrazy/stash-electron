@@ -8,6 +8,6 @@ export interface Props {
 export default connect(undefined, (dispatch, props: Props & typeof Button.defaultProps) => ({
   onClick: (ev: any) => { dispatch(props.actionCreator()); }
 }), (stateProps, dispatchProps, ownProps) => {
-  const { action = null, ...props } = { ...ownProps, ...dispatchProps };
+  const { actionCreator = null, ...props } = { ...ownProps, ...dispatchProps };
   return props;
 })(Button);
