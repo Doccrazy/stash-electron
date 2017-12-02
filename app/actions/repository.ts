@@ -170,9 +170,7 @@ export function moveEntry(ptr: EntryPtr, newNodeId: string): Thunk<Promise<void>
     }
 
     try {
-      const buffer = await repo.readFile(ptr.nodeId, ptr.entry);
-      await repo.writeFile(newNodeId, ptr.entry, buffer);
-      await repo.deleteFile(ptr.nodeId, ptr.entry);
+      await repo.moveFile(ptr.nodeId, ptr.entry, newNodeId);
 
       dispatch({
         type: Actions.MOVE_ENTRY,
@@ -308,7 +306,35 @@ export function moveNode(nodeId: string, newParentId: string): Thunk<Promise<voi
     } catch (e) {
       // move failed
       console.error(e);
-      toastr.error('', `Failed to move folder to ${newParentId}: ${e}`);
+      toastr.error('', `Failed to move folder to ${newParentNode.name}: ${e}`);
+    }
+  };
+}
+
+export function mergeNode(nodeId: string, targetNodeId: string): Thunk<Promise<void>> {
+  if (!nodeId || nodeId === ROOT_ID) {
+    throw new Error(`Invalid node ${nodeId}`);
+  }
+  return async (dispatch, getState) => {
+    const { repository } = getState();
+    const node = repository.nodes[nodeId];
+    const targetNode = repository.nodes[targetNodeId];
+    if (!node || !node.parentId || !targetNode) {
+      return;
+    }
+
+    try {
+      await repo.mergeNode(nodeId, targetNodeId);
+
+      dispatch({
+        type: Actions.DELETE_NODE,
+        payload: node
+      });
+      dispatch(readRecursive(targetNodeId));
+    } catch (e) {
+      // move failed
+      console.error(e);
+      toastr.error('', `Failed to merge folder into ${targetNode.name}: ${e}`);
     }
   };
 }

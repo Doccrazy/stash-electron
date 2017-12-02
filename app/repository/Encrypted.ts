@@ -84,6 +84,21 @@ export default class EncryptedRepository extends PlainRepository {
     return super.renameFile(nodeId, `${oldName}.enc`, `${newName}.enc`);
   }
 
+  async moveFile(nodeId: string, name: string, targetNodeId: string): Promise<void> {
+    const sourceMasterKey = this.recAuthProvider.getMasterKey(nodeId);
+    const targetMasterKey = this.recAuthProvider.getMasterKey(targetNodeId);
+
+    if (sourceMasterKey.equals(targetMasterKey)) {
+      // no auth change, we can just move
+      return super.moveFile(nodeId, `${name}.enc`, targetNodeId);
+    }
+
+    // need to reencrypt
+    const buffer = await this.readFile(nodeId, name);
+    await this.writeFile(targetNodeId, name, buffer);
+    await this.deleteFile(nodeId, name);
+  }
+
   async deleteFile(nodeId: string, name: string): Promise<void> {
     return super.deleteFile(nodeId, `${name}.enc`);
   }

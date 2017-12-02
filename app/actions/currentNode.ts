@@ -168,8 +168,7 @@ export function performMoveMerge(merge: boolean): Thunk<Promise<void>> {
     }
 
     if (merge) {
-      // TODO
-      toastr.error('not yet implemented', `merge ${move.nodeId} into ${move.targetNodeId}`);
+      await dispatch(Repository.mergeNode(move.nodeId, move.targetNodeId));
     } else {
       await dispatch(Repository.moveNode(move.nodeId, move.targetNodeId));
     }

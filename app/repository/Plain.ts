@@ -106,6 +106,37 @@ export default class PlainRepository implements Repository {
     return makeId(newParentId, name);
   }
 
+  async mergeNode(nodeId: string, targetNodeId: string): Promise<void> {
+    if (nodeId === ROOT_ID) {
+      throw new Error('Cannot move root node');
+    }
+
+    if (nodeId.startsWith(targetNodeId)) {
+      // rename source node to avoid possible conflicts when merging into parent
+      const tempName = `__tmp${Date.now()}`;
+      nodeId = await this.renameNode(nodeId, tempName);
+    }
+
+    const node = await this.readNode(nodeId);
+    const targetNode = await this.readNode(targetNodeId);
+
+    // move entries to target
+    await Promise.all(node.entries.map((entry: string) => this.moveFile(nodeId, entry, targetNodeId)).toArray());
+
+    // move or merge folders to target
+    await Promise.all(node.childIds.map((childId: string): Promise<any> => {
+      const name = path.posix.parse(childId).base;
+      const existingId = targetNode.childIds.find(cid => path.posix.parse(cid!).base.toLowerCase() === name.toLowerCase());
+      if (existingId) {
+        return this.mergeNode(childId, existingId);
+      } else {
+        return this.moveNode(childId, targetNodeId);
+      }
+    }).toArray());
+
+    await this.deleteNode(nodeId);
+  }
+
   async deleteNode(nodeId: string) {
     const absPath = path.join(this.rootPath, nodeId);
     assertSubPath(this.rootPath, absPath);
@@ -124,6 +155,10 @@ export default class PlainRepository implements Repository {
 
   async renameFile(nodeId: string, oldName: string, newName: string): Promise<void> {
     await this.rename(path.join(nodeId, oldName), path.join(nodeId, newName));
+  }
+
+  async moveFile(nodeId: string, name: string, targetNodeId: string): Promise<void> {
+    await this.rename(path.join(nodeId, name), path.join(targetNodeId, name), true);
   }
 
   async deleteFile(nodeId: string, name: string): Promise<void> {
@@ -158,12 +193,12 @@ export default class PlainRepository implements Repository {
     await fs.writeFile(path.join(absPath, fileName), buffer);
   }
 
-  private async rename(oldPath: string, newPath: string) {
+  private async rename(oldPath: string, newPath: string, overwrite?: boolean) {
     const absPath = path.join(this.rootPath, oldPath);
     assertSubPath(this.rootPath, absPath);
     const newAbsPath = path.join(this.rootPath, newPath);
     assertSubPath(this.rootPath, newAbsPath);
 
-    await fs.rename(absPath, newAbsPath);
+    await fs.move(absPath, newAbsPath, { overwrite });
   }
 }
