@@ -30,6 +30,11 @@ export default class EncryptedRepository extends PlainRepository {
     return new Node({...node, entries, authorizedUsers});
   }
 
+  renameNode(nodeId: string, newName: string): Promise<string> {
+    this.authProvider.resetCaches();
+    return super.renameNode(nodeId, newName);
+  }
+
   async moveNode(nodeId: string, newParentId: string): Promise<string> {
     if (this.authProvider.getAuthorizedUsers(nodeId).length) {
       // if the node being moved has its own auth file, we can move it without access to the key
@@ -48,6 +53,11 @@ export default class EncryptedRepository extends PlainRepository {
     }
 
     return newId;
+  }
+
+  deleteNode(nodeId: string) {
+    this.authProvider.resetCaches();
+    return super.deleteNode(nodeId);
   }
 
   async setAuthorizedUsers(nodeId: string, users?: string[]): Promise<void> {
