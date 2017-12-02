@@ -88,6 +88,24 @@ export default class PlainRepository implements Repository {
     return makeId(node.parentId, newName);
   }
 
+  async moveNode(nodeId: string, newParentId: string): Promise<string> {
+    if (nodeId === ROOT_ID) {
+      throw new Error('Cannot move root node');
+    }
+    const name = path.posix.parse(nodeId).base;
+
+    const dirPath = path.join(this.rootPath, nodeId);
+    const newDirPath = path.join(this.rootPath, newParentId, name);
+
+    if (fs.existsSync(newDirPath)) {
+      throw new Error(`Move failed: ${name} already exists`);
+    }
+
+    await fs.move(dirPath, newDirPath);
+
+    return makeId(newParentId, name);
+  }
+
   async deleteNode(nodeId: string) {
     const absPath = path.join(this.rootPath, nodeId);
     assertSubPath(this.rootPath, absPath);

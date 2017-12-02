@@ -30,10 +30,28 @@ export default class EncryptedRepository extends PlainRepository {
     return new Node({...node, entries, authorizedUsers});
   }
 
+  async moveNode(nodeId: string, newParentId: string): Promise<string> {
+    if (this.authProvider.getAuthorizedUsers(nodeId).length) {
+      // if the node being moved has its own auth file, we can move it without access to the key
+      this.authProvider.resetCaches();
+      return super.moveNode(nodeId, newParentId);
+    }
+
+    const oldMasterKey = this.recAuthProvider.getMasterKey(nodeId);
+    const newId = await super.moveNode(nodeId, newParentId);
+    this.authProvider.resetCaches();
+    const newMasterKey = this.recAuthProvider.getMasterKey(newId);
+
+    if (oldMasterKey && !oldMasterKey.equals(newMasterKey)) {
+      const affectedNodes = await this.findNodesWithSameKey(newId);
+      await this.reencrypt(affectedNodes, oldMasterKey, newMasterKey);
+    }
+
+    return newId;
+  }
+
   async setAuthorizedUsers(nodeId: string, users?: string[]): Promise<void> {
-    // find all nodes that will be affected by the operation, stopping if child node has overridden auth users
-    const affectedNodes = await readNodeRecursive(id => this.readNode(id), nodeId,
-        node => node.id === nodeId || !node.authorizedUsers || !node.authorizedUsers.size);
+    const affectedNodes = await this.findNodesWithSameKey(nodeId);
     const entryCount = affectedNodes.map((n: Node) => n.entries.size).reduce((acc: number, v: number) => acc + v, 0);
     if (!entryCount) {
       // if no entries are affected, we can just set the users without masterkey access
@@ -89,5 +107,11 @@ export default class EncryptedRepository extends PlainRepository {
         await this.writeAndEncipher(node.id, fileName, plainBuffer, newMasterKey);
       }
     }
+  }
+
+  private findNodesWithSameKey(nodeId: string) {
+    // find all nodes that will be affected by the operation, stopping if child node has overridden auth users
+    return readNodeRecursive(id => this.readNode(id), nodeId,
+      node => node.id === nodeId || !node.authorizedUsers || !node.authorizedUsers.size);
   }
 }

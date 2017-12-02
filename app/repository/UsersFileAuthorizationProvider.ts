@@ -68,6 +68,13 @@ export default class UsersFileAuthorizationProvider implements AuthorizationProv
     return usersFile.getMasterKey() as Buffer;
   }
 
+  resetCaches(): void {
+    for (const nodeId of Object.keys(this.usersFileCache)) {
+      this.usersFileCache[nodeId].lock();
+    }
+    this.usersFileCache = {};
+  }
+
   private getUsersFile(nodeId: string): UsersFile {
     const cached = this.usersFileCache[nodeId];
     if (cached) {

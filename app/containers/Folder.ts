@@ -3,12 +3,12 @@ import 'redux-thunk';
 import * as naturalCompare from 'natural-compare';
 import Folder from '../components/Folder';
 import { toggle } from '../actions/treeState';
-import { prepareDelete, select } from '../actions/currentNode';
+import { prepareDelete, prepareMove, select } from '../actions/currentNode';
 import { moveEntry } from '../actions/repository';
 import { open as openPermissions } from '../actions/authorizedUsers';
 import {RootState} from '../actions/types/index';
-import Node from '../domain/Node';
-import {isAccessible} from '../utils/repository';
+import Node, { ROOT_ID } from '../domain/Node';
+import { isAccessible, isParentOrSelf } from '../utils/repository';
 import {formatUserList} from '../utils/format';
 import EntryPtr from '../domain/EntryPtr';
 
@@ -37,19 +37,23 @@ export default connect((state: RootState, props: Props) => {
     childIds = childIds.filter(cid => isVisible(accessible, cid, state.repository.nodes, state.privateKey.username, state.currentNode.nodeId));
   }
   return ({
+    nodeId: props.nodeId,
     label: node.name,
     childIds,
     expanded: state.treeState.has(props.nodeId),
     selected: !state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,
     marked: !!state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,
+    nodeEditable: props.nodeId !== ROOT_ID,
     accessible,
     authInfo: node.authorizedUsers && formatUserList('Accessible to ', node.authorizedUsers, state.privateKey.username),
-    onCheckDropEntry: (ptr: EntryPtr) => ptr.nodeId !== props.nodeId && accessible
+    onCheckDropEntry: (ptr: EntryPtr) => ptr.nodeId !== props.nodeId && accessible,
+    onCheckDropNode: (nodeId: string) => !isParentOrSelf(state.repository.nodes, nodeId, props.nodeId) && accessible
   });
 }, (dispatch, props) => ({
   onClickIcon: () => dispatch(toggle(props.nodeId)),
   onClickLabel: () => dispatch(select(props.nodeId)),
   onClickAuth: () => dispatch(openPermissions(props.nodeId)),
   onDelete: () => dispatch(prepareDelete(props.nodeId)),
-  onDropEntry: (ptr: EntryPtr) => dispatch(moveEntry(ptr, props.nodeId))
+  onDropEntry: (ptr: EntryPtr) => dispatch(moveEntry(ptr, props.nodeId)),
+  onDropNode: (nodeId: string) => dispatch(prepareMove(nodeId, props.nodeId))
 }))(Folder);

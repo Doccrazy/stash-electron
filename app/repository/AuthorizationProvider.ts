@@ -8,4 +8,6 @@ export default interface AuthorizationProvider {
   setCurrentUser(key?: SshPK.PrivateKey): void;
 
   getMasterKey(nodeId: string): Buffer;
+
+  resetCaches(): void;
 }

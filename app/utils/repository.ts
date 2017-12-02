@@ -44,6 +44,14 @@ export function childNodeByName(allNodes: { [nodeId: string]: Node }, nodeOrId: 
   return n.childIds.find((child: string) => allNodes[child] && (allNodes[child].name.toLowerCase() === childName.toLowerCase()));
 }
 
+export function isParentOrSelf(nodes: { [id: string]: Node }, parentId: string, childId: string) {
+  let child = nodes[childId];
+  while (child.id !== parentId && child.parentId) {
+    child = nodes[child.parentId];
+  }
+  return child.id === parentId;
+}
+
 export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<Node>, nodeId: string, filter?: (node: Node) => boolean): Promise<List<Node>> {
   console.time('readNodeRecursive');
   // (process as any).noAsar = true;
@@ -80,7 +88,18 @@ export function isAccessible(nodes: { [id: string]: Node }, nodeId: string, user
     return false;
   }
   const authParent = findAuthParent(nodes, nodeId);
-  return !authParent.authorizedUsers || (!!username && authParent.authorizedUsers.includes(username));
+  return isAuth(authParent, username);
+}
+
+export function isFullyAccessible(nodes: { [id: string]: Node }, nodeId: string, username?: string) {
+  if (!isAccessible(nodes, nodeId, username)) {
+    return false;
+  }
+  return !recursiveChildIds(nodes, nodeId).find(childId => nodes[childId] && !isAuth(nodes[childId], username));
+}
+
+function isAuth(node: Node, username?: string) {
+  return !node.authorizedUsers || (!!username && node.authorizedUsers.includes(username));
 }
 
 // these files are used for user-local settings and should not be shared

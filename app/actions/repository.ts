@@ -282,6 +282,37 @@ export function renameNode(nodeId: string, newName: string): Thunk<Promise<void>
   };
 }
 
+export function moveNode(nodeId: string, newParentId: string): Thunk<Promise<void>> {
+  if (!nodeId || nodeId === ROOT_ID) {
+    throw new Error(`Invalid node ${nodeId}`);
+  }
+  return async (dispatch, getState) => {
+    const { repository } = getState();
+    const node = repository.nodes[nodeId];
+    const newParentNode = repository.nodes[newParentId];
+    if (!node || !node.parentId || !newParentNode) {
+      return;
+    }
+
+    try {
+      const newId = await repo.moveNode(node.id, newParentId);
+
+      dispatch({
+        type: Actions.MOVE_NODE,
+        payload: {
+          node: node,
+          newNode: new Node({ id: newId, name: node.name, parentId: newParentId })
+        }
+      });
+      dispatch(readRecursive(newId));
+    } catch (e) {
+      // move failed
+      console.error(e);
+      toastr.error('', `Failed to move folder to ${newParentId}: ${e}`);
+    }
+  };
+}
+
 export function createChildNode(parentNodeId: string, name: string): Thunk<Promise<void>> {
   if (!parentNodeId) {
     throw new Error('Missing parentId');

@@ -8,6 +8,7 @@ export default interface Repository {
 
   createNode(parentId: string, newNodeName: string): Promise<Node>;
   renameNode(nodeId: string, newName: string): Promise<string>;
+  moveNode(nodeId: string, newParentId: string): Promise<string>
   deleteNode(nodeId: string): Promise<void>;
   setAuthorizedUsers(nodeId: string, users?: string[]): Promise<void>;
 

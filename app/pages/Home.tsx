@@ -10,6 +10,7 @@ import DeleteNodePopup from '../containers/DeleteNodePopup';
 import CurrentFolder from '../containers/CurrentFolder';
 import ImportPopup from '../containers/ImportPopup';
 import AddFileDropAcceptor from '../containers/AddFileDropAcceptor';
+import MoveFolderPopup from '../containers/MoveFolderPopup';
 import SpecialFolderLink from '../containers/SpecialFolderLink';
 import * as styles from './Home.scss';
 import NoKeyAlert from '../containers/NoKeyAlert';
@@ -26,6 +27,7 @@ export default class Home extends React.Component<{}, {}> {
         <DeleteNodePopup />
         <ImportPopup />
         <AuthorizedUsersPopup />
+        <MoveFolderPopup />
         <div className={styles.sidebar}>
           <p>
             <span className="pull-right">

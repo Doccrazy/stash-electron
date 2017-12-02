@@ -17,7 +17,9 @@ export enum Actions {
   START_RENAME = 'currentNode/START_RENAME',
   START_CREATE = 'currentNode/START_CREATE',
   CHANGE_NAME = 'currentNode/CHANGE_NAME',
-  CLOSE_EDIT = 'currentNode/CLOSE_EDIT'
+  CLOSE_EDIT = 'currentNode/CLOSE_EDIT',
+  PREPARE_MOVE = 'currentNode/PREPARE_MOVE',
+  CLOSE_MOVE = 'currentNode/CLOSE_MOVE'
 }
 
 export function select(nodeId: string): Thunk<Promise<void>> {
@@ -151,6 +153,34 @@ export function saveNode(): Thunk<Promise<void>> {
   };
 }
 
+export function prepareMove(nodeId: string, targetNodeId: string): Action {
+  return {
+    type: Actions.PREPARE_MOVE,
+    payload: { nodeId, targetNodeId }
+  };
+}
+
+export function performMoveMerge(merge: boolean): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const { move } = getState().currentNode;
+    if (!move) {
+      return;
+    }
+
+    if (merge) {
+      // TODO
+      toastr.error('not yet implemented', `merge ${move.nodeId} into ${move.targetNodeId}`);
+    } else {
+      await dispatch(Repository.moveNode(move.nodeId, move.targetNodeId));
+    }
+    dispatch(closeMove());
+  };
+}
+
+export function closeMove(): Action {
+  return { type: Actions.CLOSE_MOVE };
+}
+
 afterAction(Repository.Actions.FINISH_LOAD, dispatch => {
   dispatch(select('/'));
 });
@@ -200,7 +230,9 @@ type Action =
   | TypedAction<Actions.START_RENAME, string>
   | OptionalAction<Actions.START_CREATE>
   | TypedAction<Actions.CHANGE_NAME, string>
-  | OptionalAction<Actions.CLOSE_EDIT>;
+  | OptionalAction<Actions.CLOSE_EDIT>
+  | TypedAction<Actions.PREPARE_MOVE, { nodeId: string, targetNodeId: string }>
+  | OptionalAction<Actions.CLOSE_MOVE>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 
@@ -222,6 +254,10 @@ export default function reducer(state: State = {}, action: Action): State {
       return { ...state, name: action.payload };
     case Actions.CLOSE_EDIT:
       return { ...state, renaming: false, creating: false, initialName: undefined, name: undefined };
+    case Actions.PREPARE_MOVE:
+      return { ...state, move: action.payload };
+    case Actions.CLOSE_MOVE:
+      return { ...state, move: undefined };
     default:
       return state;
   }

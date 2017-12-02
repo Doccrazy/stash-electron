@@ -71,7 +71,7 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
               ev.stopPropagation();
             }}
           /></td>
-          <td><EntryDragSource ptr={file.ptr} dragAllowed={file.accessible}>
+          <td><EntryDragSource item={file.ptr} dragAllowed={file.accessible}>
             {type.format ? type.format(file.ptr.entry) : file.ptr.entry}
           </EntryDragSource></td>
           {showPath && <td title={file.nodes.slice(1).map(node => node.name).join(' / ')} className={file.nodes.length > 3 ? styles.pathEllipsis : undefined}>
