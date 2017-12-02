@@ -1,17 +1,11 @@
 import * as React from 'react';
-import { Button, UncontrolledDropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
+import { UncontrolledDropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 import generatePassword from '../../utils/generatePassword';
+import './StrengthMeter.scss';
 
 const LENGTHS = [8, 12, 16, 20, 24];
 const CLASS_NAMES = ['Aa9', '+#_', '" :'];
 const CLASSES = [['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890'], ['!$%&/()+*-_#.,;<>?@[]'], ['"\'\\:=`´^°|~{} ']];
-
-function mapColor(cIdx: number, lIdx: number) {
-  const t = (cIdx / (CLASSES.length - 1)) + (lIdx / (LENGTHS.length - 1));
-  const r = Math.floor(Math.min(255 * t, 255));
-  const g = Math.floor(220 - Math.max(220 * (t - 1), 0));
-  return `rgb(${r}, ${g}, 0)`;
-}
 
 function generatePw(len: number, charClassIdx: number) {
   let classSet: string[] = [];
@@ -46,9 +40,9 @@ export default ({ onGenerate }: Props) => (
           {CLASS_NAMES.map((cls, cIdx) => (<tr key={cls}>
             <th className="text-center">{cls}</th>
             {LENGTHS.map((len, lIdx) => (<td key={len}>
-              <Button size="sm" style={{ backgroundColor: mapColor(cIdx, lIdx) }} onClick={() => onGenerate(generatePw(len, cIdx))}>
+              <button type="button" className={`btn btn-sm str-${cIdx}-${lIdx}`} onClick={() => onGenerate(generatePw(len, cIdx))}>
                 <i className="fa fa-cog" />
-              </Button>
+              </button>
             </td>))}
           </tr>))}
         </tbody>
