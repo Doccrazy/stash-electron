@@ -34,9 +34,9 @@ export function clearStoredLogin(context: string): Thunk<Promise<void>> {
     }
 
     try {
-      await keytar.deletePassword(KEYTAR_SERVICE, context);
-
       dispatch(Settings.changeAndSave(SETTINGS_KEY, (getState().settings.current.storedLogins || []).filter(ctx => ctx !== context)) as any);
+
+      await keytar.deletePassword(KEYTAR_SERVICE, context);
     } catch (e) {
       // failed to delete password
       console.error(e);

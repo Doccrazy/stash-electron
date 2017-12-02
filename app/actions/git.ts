@@ -153,6 +153,9 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
     } catch (e) {
       console.error(e);
       status.error = e.message;
+      if (e.message === 'cancelled by user') {
+        status.allowBackgroundFetch = false;
+      }
     }
     return status;
   };
