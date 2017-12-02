@@ -16,6 +16,7 @@ This release adds some of the most requested features in v1.0.0 and fixes some b
 - The non-functional "delete" context menu entry on the repository root has been removed
 - The git login window should no longer pop up every minute when applying saved credentials fails or is cancelled
 - A bug that could cause corrupted items on certain folder operations has been fixed
+- Fixed initial git fetch preventing repo detection under bad network conditions
 
 # v1.0.0 (2017-11-27)
 

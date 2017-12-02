@@ -496,8 +496,9 @@ export function closeSignaturePopup(): Action {
   };
 }
 
-afterAction(Repository.Actions.FINISH_LOAD, (dispatch, getState: GetState, isReload) => {
+afterAction(Repository.Actions.FINISH_LOAD, async (dispatch, getState: GetState, isReload) => {
   if (!isReload) {
+    await dispatch(updateStatus(false));
     dispatch(updateStatus(true));
   }
 });
