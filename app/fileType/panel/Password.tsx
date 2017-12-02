@@ -14,8 +14,18 @@ function sanitizeUrl(url: string) {
   return url;
 }
 
+let timeout: NodeJS.Timer | null;
 function copyToClip(name: string, text: string) {
   clipboard.writeText(text);
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+  timeout = setTimeout(() => {
+    if (clipboard.readText() === text) {
+      clipboard.clear();
+    }
+  }, 30000);
   toastr.success('', `${name} copied`, { timeOut: 2000 });
 }
 
