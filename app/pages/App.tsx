@@ -39,10 +39,10 @@ export default class App extends React.Component<Props, {}> {
               <NavLink to="/" exact className="nav-link">Browser</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink to="/users" exact className="nav-link">Users</NavLink>
+              <NavLink to="/users" className="nav-link">Users</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink to="/settings" exact className="nav-link">Settings</NavLink>
+              <NavLink to="/settings" className="nav-link">Settings</NavLink>
             </NavItem>
           </Nav>
           <div className={`mr-3 ${styles.form}`}>

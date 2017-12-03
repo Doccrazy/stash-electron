@@ -7,6 +7,9 @@ This release adds some of the most requested features in v1.0.0 and fixes some b
 - Added an edit icon in the breadcrumb bar for quick folder renaming
 - A new 👁 icon in the folder tree allows you to hide inaccessible items (files and folders; off by default)
 - When copying password data, the clipboard is now cleared after 30s
+- New views on the *Users* page allow a quick breakdown of user rights:
+  - *Permissions* lists all granted permissions for each user
+  - *Access* provides a map of access rights per folder
 
 #### Changes
 - The password generator dropdown now uses the same colors as the strength meter

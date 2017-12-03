@@ -8,8 +8,8 @@ export interface Props {
   onDelete: (username: string) => void
 }
 
-export default ({ keysByUser, currentUser, onDelete }: Props) => (<div className={styles.table}>
-  <table className="table table-hover table-sm table-sticky">
+export default ({ keysByUser, currentUser, onDelete }: Props) => (
+  <table className={`table table-hover table-sm table-sticky ${styles.table}`}>
     <thead>
       <tr>
         <th>Username</th>
@@ -19,7 +19,7 @@ export default ({ keysByUser, currentUser, onDelete }: Props) => (<div className
       </tr>
     </thead>
     <tbody>
-      {Object.keys(keysByUser).map(username => (<tr key={username} className={username === currentUser ? 'table-success' : ''}>
+      {Object.keys(keysByUser).sort().map(username => (<tr key={username} className={username === currentUser ? 'table-success' : ''}>
         <td>{username}</td>
         <td className={styles.keyCell}>{keysByUser[username].toString('ssh').substr(8)}</td>
         <td>{keysByUser[username].comment}</td>
@@ -27,4 +27,4 @@ export default ({ keysByUser, currentUser, onDelete }: Props) => (<div className
       </tr>))}
     </tbody>
   </table>
-</div>);
+);

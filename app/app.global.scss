@@ -23,20 +23,32 @@ body,
   height: 100%;
 }
 
+.table-sticky tr:not([class*="table-"]) > th {
+  background-color: #fff;
+}
+
+.table-sticky.table-hover > tbody > tr:not([class*="table-"]):hover > th {
+  background-color: darken(#fff, 5%);
+}
+
 .table-sticky > thead > tr > th {
   position: sticky;
   top: 0;
   border: none;
-  background-color: #fff;
+  z-index: 1;
+  box-shadow: 0 2px 0 0 $table-border-color;
+
+  &.sticky-y {
+    left: 0;
+    z-index: 2;
+    box-shadow: 2px 2px 0 0 $table-border-color;
+  }
 }
 
-.table-sticky > thead > tr > th::after {
-  content: '';
-  position: absolute;
+.table-sticky > tbody > tr > th {
+  position: sticky;
   left: 0;
-  bottom: 0;
-  width: 100%;
-  border-bottom: 1px solid #e9ecef;
+  box-shadow: 2px 0 0 0 $table-border-color;
 }
 
 .clickable {

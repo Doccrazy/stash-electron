@@ -1,0 +1,16 @@
+.users {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.actionBar {
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.tableContainer {
+  height: 100%;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
