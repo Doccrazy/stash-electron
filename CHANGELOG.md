@@ -20,6 +20,7 @@ This release adds some of the most requested features in v1.0.0 and fixes some b
 - The git login window should no longer pop up every minute when applying saved credentials fails or is cancelled
 - A bug that could cause corrupted items on certain folder operations has been fixed
 - Fixed initial git fetch preventing repo detection under bad network conditions
+- Conflicts in internal JSON files should now be resolved more intelligently, preventing JSON parsing exceptions
 
 # v1.0.0 (2017-11-27)
 

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as sshpk from 'sshpk';
 import KeyProvider, {findUser} from './KeyProvider';
 
-const FILENAME = '.keys.json';
+export const FILENAME = '.keys.json';
 
 export default class KeyFileKeyProvider implements KeyProvider {
   private keyfile: string;

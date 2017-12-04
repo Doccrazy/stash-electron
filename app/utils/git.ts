@@ -1,7 +1,6 @@
 import * as fs from 'fs-extra';
 import * as Git from 'nodegit';
 import * as path from 'path';
-import * as assert from 'assert';
 import { OrderedSet } from 'immutable';
 import AwaitLock from './AwaitLock';
 
@@ -64,26 +63,73 @@ interface ConflictEntry {
   their_out: Git.IndexEntry
 }
 
-export async function resolveAllUsingTheirs(index: Git.Index) {
+/**
+ * Try to resolve all conflicts in current index using passed resolver
+ * @returns {Promise<boolean>} true if all conflicts have been resolved, false if conflicts remain
+ */
+export async function resolveAll(index: Git.Index, resolver: typeof usingOurs): Promise<boolean> {
   if (!index.hasConflicts()) {
-    return;
+    return true;
   }
   const repo = index.owner();
+  let changed = false;
   for (const entry of index.entries().filter(e => Git.Index.entryStage(e) === 1 && Git.Index.entryIsConflict(e))) {
     console.log(`resolving ${entry.path}`);
     const conflict = (await index.conflictGet(entry.path)) as any as ConflictEntry;  // error in nodegit docs/typings
 
-    // here "our" refers to the upstream/master branch, as we are rebasing another branch (the local changes) onto it
-    // write "our" content into the file
     const ourBlob = await repo.getBlob(conflict.our_out.id);
-    await fs.writeFile(path.join(repo.workdir(), entry.path), ourBlob.content());
+    const theirBlob = await repo.getBlob(conflict.their_out.id);
+    const ancestorBlob = await repo.getBlob(conflict.ancestor_out.id);
 
-    // mark file as resolved
-    await index.addByPath(entry.path);  // another doc/typings error: method actually returns a promise
+    // write content returned by resolver into the file
+    const resolved = resolver(entry.path, ourBlob.content(), theirBlob.content(), ancestorBlob.content());
+    if (resolved) {
+      await fs.writeFile(path.join(repo.workdir(), entry.path), resolved);
+
+      // mark file as resolved
+      await index.addByPath(entry.path);  // another doc/typings error: method actually returns a promise
+      changed = true;
+    } else {
+      // resolver failed, write "theirs" (probably the local changes) to eliminate conflict markers,
+      // but do not mark as resolved
+      await fs.writeFile(path.join(repo.workdir(), entry.path), theirBlob.content());
+    }
   }
-  await index.write();
-  await index.writeTree();
-  assert.ok(!index.hasConflicts(), 'all conflicts should be resolved');
+  if (changed) {
+    await index.write();
+    await index.writeTree();
+  }
+
+  return !index.hasConflicts();
+}
+
+// here "our" refers to the upstream/master branch, as we are rebasing another branch (the local changes) onto it
+export function usingOurs(filename: string, ours: Buffer, theirs: Buffer, ancestor: Buffer): Buffer | null {
+  return ours;
+}
+
+export async function finishRebaseResolving(gitRepo: Git.Repository, resolver: typeof usingOurs): Promise<boolean> {
+  if (!gitRepo.isRebasing()) {
+    return true;
+  }
+
+  let index = await gitRepo.refreshIndex();
+  while (index.hasConflicts()) {
+    if (!(await resolveAll(index, resolver))) {
+      return false;
+    }
+    try {
+      await gitRepo.continueRebase(null as any, null as any);
+    } catch (e) {
+      if (e instanceof Git.Index) {
+        // more conflicts
+        index = e;
+      } else {
+        throw e;
+      }
+    }
+  }
+  return true;
 }
 
 /**

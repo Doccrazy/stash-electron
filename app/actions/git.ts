@@ -1,19 +1,22 @@
 import * as assert from 'assert';
 import * as fs from 'fs-extra';
+import { Set } from 'immutable';
 import * as path from 'path';
 import * as Git from 'nodegit';
 import { toastr } from 'react-redux-toastr';
 import { remote } from 'electron';
+import { FILENAME as KEYS_FILE } from '../repository/KeyFileKeyProvider';
+import { FILENAME as USERS_FILE, default as UsersFile } from '../repository/UsersFile';
 import { afterAction, onceAfterAction } from '../store/eventMiddleware';
 import {
   accessingRepository,
   addToGitIgnore,
   commitAllChanges,
   compareRefs,
-  fetchWithRetry, GitCredentials,
+  fetchWithRetry, finishRebaseResolving, GitCredentials,
   hasUncommittedChanges, isSignatureConfigured,
   pushWithRetry, remoteNameFromRef,
-  resolveAllUsingTheirs
+  usingOurs
 } from '../utils/git';
 import { RES_LOCAL_FILENAMES } from '../utils/repository';
 import * as Credentials from './credentials';
@@ -118,16 +121,19 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
           // if origin is ahead, we need to fast-forward or rebase (rebaseBranches will do the appropriate)
           try {
             await gitRepo.rebaseBranches(currentRef.name(), upstream.name(), '', null as any, null as any);
-            currentRef = await gitRepo.head();
           } catch (e) {
             if (e instanceof Git.Index) {
               // rebase failed due to conflicts
-              status.conflict = true;
-              return;
+              const success = await finishRebaseResolving(gitRepo, conservativeAutoMerge);
+              if (!success) {
+                status.conflict = true;
+                return;
+              }
             } else {
               throw e;
             }
           }
+          currentRef = await gitRepo.head();
           trackingState = await compareRefs(currentRef, upstream);
           assert.equal(trackingState.behind, 0, 'no commits on origin after successful rebase');
         }
@@ -159,6 +165,54 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
     }
     return status;
   };
+}
+
+function conservativeAutoMerge(filename: string, ours: Buffer, theirs: Buffer, ancestor: Buffer): Buffer | null {
+  if (filename === KEYS_FILE) {
+    console.log(`auto-merging ${filename}`);
+    const ourKeys = JSON.parse(ours.toString('utf8'));
+    const theirKeys = JSON.parse(theirs.toString('utf8'));
+    const baseKeys = JSON.parse(ancestor.toString('utf8'));
+
+    // take union of both changes (with authority on ours)
+    const result = { ...theirKeys, ...ourKeys };
+
+    // apply user removals from both
+    const removed = Set(Object.keys(baseKeys)).subtract(Set(Object.keys(ourKeys)).intersect(Set(Object.keys(theirKeys))));
+    removed.forEach(r => { delete result[r!]; });
+
+    return Buffer.from(JSON.stringify(result, null, '  '));
+  } else if (path.parse(filename).base === USERS_FILE) {
+    console.log(`auto-merging ${filename}`);
+    const ourUsers = new UsersFile(ours);
+    const theirUsers = new UsersFile(theirs);
+    const baseUsers = new UsersFile(ancestor);
+
+    // if master keys differ, we cannot merge
+    if (!ourUsers.getHashedMasterKey()!.equals(theirUsers.getHashedMasterKey()!)) {
+      return null;
+    }
+    // as the master keys are equal, we can now assume both branches only added or updated users
+
+    // merge their user updates into ours
+    for (const username of theirUsers.listUsers()) {
+      if (baseUsers.listUsers().includes(username) && !baseUsers.internalGet(username)!.equals(theirUsers.internalGet(username)!)
+      && baseUsers.internalGet(username)!.equals(ourUsers.internalGet(username)!)) {
+        ourUsers.internalAdd(username, theirUsers.internalGet(username)!);
+      }
+    }
+
+    // merge their added users into ours
+    const addedInTheirs = Set(theirUsers.listUsers()).subtract(baseUsers.listUsers());
+    addedInTheirs.forEach((username: string) => {
+      if (!ourUsers.listUsers().includes(username)) {
+        ourUsers.internalAdd(username, theirUsers.internalGet(username)!);
+      }
+    });
+
+    return ourUsers.writeBuffer();
+  }
+  return null;
 }
 
 async function withCredentials(dispatch: TypedDispatch<Action>,
@@ -243,24 +297,7 @@ export function resolveConflict(): Thunk<Promise<void>> {
           return;
         }
 
-        if (!gitRepo.isRebasing()) {
-          return;
-        }
-
-        let index = await gitRepo.refreshIndex();
-        while (index.hasConflicts()) {
-          await resolveAllUsingTheirs(index);
-          try {
-            await gitRepo.continueRebase(null as any, null as any);
-          } catch (e) {
-            if (e instanceof Git.Index) {
-              // more conflicts
-              index = e;
-            } else {
-              throw e;
-            }
-          }
-        }
+        await finishRebaseResolving(gitRepo, usingOurs);
       });
 
       await dispatch(updateStatus(false));
