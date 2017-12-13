@@ -21,6 +21,7 @@ This release adds some of the most requested features in v1.0.0 and fixes some b
 - A bug that could cause corrupted items on certain folder operations has been fixed
 - Fixed initial git fetch preventing repo detection under bad network conditions
 - Conflicts in internal JSON files should now be resolved more intelligently, preventing JSON parsing exceptions
+- Permissions of empty folders can now set without authorization, as intended
 
 # v1.0.0 (2017-11-27)
 
