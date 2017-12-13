@@ -6,13 +6,15 @@ import {RootState} from '../actions/types/index';
 import {findAuthParent, isAccessible} from '../utils/repository';
 
 export default connect((state: RootState) => {
-  const parentNodeId = !!state.authorizedUsers.nodeId && state.repository.nodes[state.authorizedUsers.nodeId].parentId;
+  const node = state.authorizedUsers.nodeId ? state.repository.nodes[state.authorizedUsers.nodeId] : undefined;
+  const parentNodeId = !!node && node.parentId;
   const authParent = parentNodeId ? findAuthParent(state.repository.nodes, parentNodeId) : undefined;
   return ({
-    open: !!state.authorizedUsers.nodeId,
-    nodeName: state.authorizedUsers.nodeId && state.repository.nodes[state.authorizedUsers.nodeId].name,
+    open: !!node,
+    nodeName: node ? node.name : '',
     inherited: state.authorizedUsers.inherited,
-    editable: !!state.authorizedUsers.nodeId && isAccessible(state.repository.nodes, state.authorizedUsers.nodeId, state.privateKey.username),
+    editable: !!node && (isAccessible(state.repository.nodes, node.id, state.privateKey.username)
+      || (node.childIds.isEmpty() && node.entries.isEmpty())),
     modified: state.authorizedUsers.inherited !== state.authorizedUsers.initialInherited
       || (state.authorizedUsers.users && state.authorizedUsers.initialUsers && !state.authorizedUsers.users.equals(state.authorizedUsers.initialUsers)),
     currentUser: state.privateKey.username,
