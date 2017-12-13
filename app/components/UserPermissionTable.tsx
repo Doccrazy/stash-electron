@@ -25,7 +25,7 @@ export default ({ permissionsByUser, currentUser }: Props) => (
     <tbody>
       {Object.keys(permissionsByUser).sort().map(username => (<tr key={username} className={username === currentUser ? 'table-success' : ''}>
         <td>{username}</td>
-        <td>{permissionsByUser[username].map(formatPath).join(', ')}</td>
+        <td className="selectable">{permissionsByUser[username].map(formatPath).join(', ')}</td>
       </tr>))}
     </tbody>
   </table>

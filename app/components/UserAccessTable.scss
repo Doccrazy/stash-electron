@@ -1,0 +1,47 @@
+@import "~font-awesome/scss/mixins";
+@import "~font-awesome/scss/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+.table {
+  background-color: #fff !important;
+  margin-bottom: 0;
+}
+
+.table th:not(:global(.sticky-y)) {
+  font-weight: normal !important;
+  white-space: nowrap;
+}
+
+.table > thead > tr > th:not(:global(.sticky-y)) {
+  min-width: 35px;
+  text-align: center;
+}
+
+.table > tbody > tr > td {
+  text-align: center;
+}
+
+.authorized::before {
+  @include fa-icon();
+
+  content: $fa-var-check;
+  color: theme-color("success");
+}
+
+.unauthorized::before {
+  @include fa-icon();
+
+  content: $fa-var-times;
+  color: theme-color("danger");
+}
+
+.readonly {
+  opacity: 0.65;
+}
+
+.modified::after {
+  content: '*';
+  margin-left: 0.333em;
+  color: $body-color;
+}

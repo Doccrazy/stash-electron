@@ -12,7 +12,7 @@ import * as Keys from './keys';
 import { maybeCommitChanges } from './git';
 import * as Repository from './repository';
 import { StatusType } from './types/fileImport';
-import { GetState } from './types/index';
+import { GetState, RootState } from './types/index';
 
 function fmtPtr(getState: GetState, ptr: EntryPtr) {
   const type = typeFor(ptr.entry);
@@ -53,6 +53,13 @@ afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, node:
 
 afterAction(AuthorizedUsers.Actions.SAVED, (dispatch, getState: GetState, nodeId: string) => {
   dispatch(maybeCommitChanges(`Update authorization for folder ${fmtNode(getState, nodeId)}`));
+});
+
+afterAction<RootState>(AuthorizedUsers.Actions.BULK_SAVED, (dispatch, getState, payload, preActionState) => {
+  const nodes = preActionState.authorizedUsers.bulkChanges
+    .groupBy(ch => ch!.nodeId)
+    .map((g, nodeId: string) => fmtNode(getState, nodeId));
+  dispatch(maybeCommitChanges(`Update authorization for folder${nodes.size > 1 ? 's' : ''} ${nodes.join(', ')}`));
 });
 
 afterAction(Keys.Actions.SAVED, (dispatch, getState: GetState, payload, preActionState) => {

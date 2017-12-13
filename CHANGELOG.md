@@ -9,7 +9,7 @@ This release adds some of the most requested features in v1.0.0 and fixes some b
 - When copying password data, the clipboard is now cleared after 30s
 - New views on the *Users* page allow a quick breakdown of user rights:
   - *Permissions* lists all granted permissions for each user
-  - *Access* provides a map of access rights per folder
+  - *Access* provides an editable map of access rights per folder
 - The changelog is now included on the *Settings* page
 
 #### Changes

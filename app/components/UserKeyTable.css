@@ -10,17 +10,3 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.accessTable th:not(:global(.sticky-y)) {
-  font-weight: normal !important;
-  white-space: nowrap;
-}
-
-.accessTable > thead > tr > th:not(:global(.sticky-y)) {
-  min-width: 35px;
-  text-align: center;
-}
-
-.accessTable > tbody > tr > td {
-  text-align: center;
-}
