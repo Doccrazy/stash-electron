@@ -146,6 +146,11 @@ const rendererProdConfig: webpack.Configuration = {
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
         use: 'url-loader'
+      },
+      // Markdown
+      {
+        test: /\.md$/,
+        use: ['html-loader', 'markdown-loader']
       }
     ]
   },

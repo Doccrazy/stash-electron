@@ -1,4 +1,4 @@
-# upcoming v1.1.0 (planned 2017-12-xx)
+## upcoming v1.1.0 (planned 2017-12-xx)
 
 This release adds some of the most requested features in v1.0.0 and fixes some bugs.
 
@@ -10,6 +10,7 @@ This release adds some of the most requested features in v1.0.0 and fixes some b
 - New views on the *Users* page allow a quick breakdown of user rights:
   - *Permissions* lists all granted permissions for each user
   - *Access* provides a map of access rights per folder
+- The changelog is now included on the *Settings* page
 
 #### Changes
 - The password generator dropdown now uses the same colors as the strength meter
@@ -23,6 +24,6 @@ This release adds some of the most requested features in v1.0.0 and fixes some b
 - Conflicts in internal JSON files should now be resolved more intelligently, preventing JSON parsing exceptions
 - Permissions of empty folders can now set without authorization, as intended
 
-# v1.0.0 (2017-11-27)
+## v1.0.0 (2017-11-27)
 
 First stable release.

@@ -5,6 +5,7 @@ import HomePage from './Home';
 import SettingsPage from './Settings';
 import UsersPage from './Users';
 import WelcomePage from './Welcome';
+import ChangelogPage from './Changelog';
 import NoRepository from './NoRepository';
 import noRepoSwitch from '../containers/noRepoSwitch';
 
@@ -17,6 +18,7 @@ export default () => (
       <Route path="/settings" component={SettingsPage} />
       <Route path="/users" component={UsersWithOverlay} />
       <Route path="/welcome" children={WelcomePage} />
+      <Route path="/changelog" children={ChangelogPage} />
       <Route component={HomeWithOverlay} />
     </Switch>
   </App>
