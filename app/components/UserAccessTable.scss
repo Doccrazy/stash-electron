@@ -36,8 +36,12 @@
   color: theme-color("danger");
 }
 
-.readonly {
-  opacity: 0.65;
+.authorized.readonly::before {
+  color: transparentize(theme-color("success"), 0.35);
+}
+
+.unauthorized.readonly::before {
+  color: transparentize(theme-color("danger"), 0.35);
 }
 
 .modified::after {
