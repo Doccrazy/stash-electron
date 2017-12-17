@@ -6,6 +6,7 @@
 .table {
   background-color: #fff !important;
   margin-bottom: 0;
+  width: auto !important;
 }
 
 .table th:not(:global(.sticky-y)) {

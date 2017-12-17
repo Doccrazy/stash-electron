@@ -23,7 +23,7 @@ body,
   height: 100%;
 }
 
-.table-sticky tr:not([class*="table-"]) > th {
+.table-sticky tr:not([class*="table-"]) > th:not([class*="table-"]) {
   background-color: #fff;
 }
 

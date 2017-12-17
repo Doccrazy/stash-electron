@@ -27,7 +27,7 @@ export default (({}) => (<div className={`container ${styles.users}`}>
       <ButtonGroup>
         <NavLink to="/users" exact className="btn btn-outline-primary">Keys</NavLink>
         <NavLink to="/users/permissions" className="btn btn-outline-primary">Permissions</NavLink>
-        <NavLink to="/users/access" className="btn btn-outline-primary">Access</NavLink>
+        <NavLink to="/users/access" className="btn btn-outline-primary">Folder access</NavLink>
       </ButtonGroup>
     </div>
     <div className="col text-right">
