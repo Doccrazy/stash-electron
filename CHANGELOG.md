@@ -1,4 +1,4 @@
-## upcoming v1.1.0 (planned 2017-12-xx)
+## v1.1.0 (2017-12-18)
 
 This release adds some of the most requested features in v1.0.0 and fixes some bugs.
 
