@@ -143,7 +143,7 @@
     "cross-spawn": "^5.1.0",
     "css-loader": "^0.28.3",
     "electron": "^1.7.8",
-    "electron-builder": "^19.45.5",
+    "electron-builder": "^19.49.0",
     "electron-devtools-installer": "^2.2.0",
     "enzyme": "^3.2.0",
     "enzyme-to-json": "^3.2.2",
