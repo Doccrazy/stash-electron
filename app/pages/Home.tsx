@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Col, Row } from 'reactstrap';
+import ScrollWatch from '../components/tools/ScrollWatch';
 import FolderActionBar from '../containers/FolderActionBar';
 import FileList from '../containers/FileList';
 import Folder from '../containers/Folder';
@@ -28,8 +29,8 @@ export default class Home extends React.Component<{}, {}> {
         <ImportPopup />
         <AuthorizedUsersPopup />
         <MoveFolderPopup />
-        <div className={styles.sidebar}>
-          <p>
+        <ScrollWatch className={styles.sidebar} step={20} classes={['', styles.scroll1, styles.scroll2, styles.scroll3]}>
+          <div className={styles.sideToolbar}>
             <span className="pull-right">
               <SettingsToggleLink field="hideInaccessible" iconOn="eye-slash" titleOn="Inaccessible files/folders are hidden; click to toggle"
                                   iconOff="eye" titleOff="Inaccessible files/folders are shown; click to toggle"/>
@@ -37,9 +38,11 @@ export default class Home extends React.Component<{}, {}> {
               <RefreshLink />
             </span>
             <SpecialFolderLink id="favorites" />
-          </p>
-          <Folder nodeId="/" />
-        </div>
+          </div>
+          <div className={styles.sideTree}>
+            <Folder nodeId="/" />
+          </div>
+        </ScrollWatch>
         <div className={`${styles.main}`}>
           <NoKeyAlert />
           <div className={styles.contentHeader}>

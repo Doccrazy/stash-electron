@@ -11,11 +11,34 @@
   width: 25%;
   height: 100%;
   flex-shrink: 0;
-  padding: 15px;
   overflow-x: auto;
   overflow-y: auto;
   background-color: $gray-200;
   border-right: 1px solid $gray-400;
+}
+
+.sideToolbar {
+  padding: 15px;
+  background-color: $gray-200;
+  position: sticky;
+  top: 0;
+  transition: box-shadow 0.15s ease-in-out;
+
+  .scroll1 & {
+    box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .scroll2 & {
+    box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .scroll3 & {
+    box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+.sideTree {
+  padding: 15px;
 }
 
 .main {

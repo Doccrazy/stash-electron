@@ -1,3 +1,8 @@
+## upcoming release (no planned release date)
+
+#### Changes
+- The *My Favorites* link and the tool icons now remain visible when scrolling
+
 ## v1.1.0 (2017-12-18)
 
 This release adds some of the most requested features in v1.0.0 and fixes some bugs.
