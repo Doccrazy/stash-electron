@@ -15,10 +15,7 @@
     "lint-fix": "npm run lint -- --fix",
     "lint-styles": "stylelint app/*.css app/components/*.css --syntax scss",
     "lint-styles-fix": "stylefmt -r app/*.css app/components/*.css",
-    "package": "npm run build && node internals/scripts/build.js dev",
-    "package-all": "npm run build && node internals/scripts/build.js all",
-    "package-linux": "npm run build && node internals/scripts/build.js linux",
-    "package-win": "npm run build && node internals/scripts/build.js win",
+    "package": "npm run build && node internals/scripts/build.js",
     "postinstall": "concurrently \"npm run build-dll\" \"electron-builder install-app-deps\"",
     "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production electron ./app/",
@@ -71,7 +68,8 @@
     "linux": {
       "target": [
         "AppImage",
-        "pacman"
+        "pacman",
+        "deb"
       ],
       "category": "Utility",
       "desktop": {
@@ -80,9 +78,12 @@
       }
     },
     "pacman": {
-      "depends": [
-        "libcurl-gnutls"
-      ]
+      "depends": ["libcurl-gnutls"]
+    },
+    "deb": {
+      "depends": ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3", "libcurl3-gnutls", "libsecret-1-0"],
+      "packageCategory": "utils",
+      "priority": "optional"
     },
     "directories": {
       "buildResources": "resources",
@@ -93,17 +94,11 @@
       "schemes": [
         "stash"
       ]
-    },
-    "publish": [
-      {
-        "provider": "generic",
-        "url": "__url__"
-      }
-    ]
+    }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chentsulin/electron-react-boilerplate.git"
+    "url": "https://github.com/Doccrazy/stash-electron.git"
   },
   "author": {
     "name": "Matthias Piepkorn",
@@ -112,7 +107,7 @@
   },
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/chentsulin/electron-react-boilerplate/issues"
+    "url": "https://github.com/Doccrazy/stash-electron/issues"
   },
   "keywords": [
     "electron",
@@ -124,7 +119,7 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/chentsulin/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/Doccrazy/stash-electron#readme",
   "devDependencies": {
     "@types/chai": "^4.0.5",
     "@types/chai-as-promised": "^7.1.0",

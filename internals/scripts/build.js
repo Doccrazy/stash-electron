@@ -2,12 +2,15 @@ const { build, CliOptions, createTargets, Platform } = require('electron-builder
 const { exec } = require('child_process');
 const semver = require('semver');
 
-let buildWin, buildLinux;
-if (['win', 'all'].includes(process.argv[2]) || (process.argv[2] === 'dev' && process.platform === 'win32')) {
+let buildWin, buildLinux, buildMac;
+if (process.argv[2] === 'all' || process.argv.slice(2).includes('win') || (!process.argv[2] && process.platform === 'win32')) {
   buildWin = true;
 }
-if (['linux', 'all'].includes(process.argv[2]) || (process.argv[2] === 'dev' && process.platform === 'linux')) {
+if (process.argv[2] === 'all' || process.argv.slice(2).includes('linux') || (!process.argv[2] && process.platform === 'linux')) {
   buildLinux = true;
+}
+if (process.argv[2] === 'all' || process.argv.slice(2).includes('mac') || (!process.argv[2] && process.platform === 'darwin')) {
+  buildMac = true;
 }
 
 function makeConfig(platform, version, snapshotNum) {
@@ -18,11 +21,11 @@ function makeConfig(platform, version, snapshotNum) {
 
   return {
     targets: createTargets([platform], undefined, 'x64'),
-    publish: 'always',
+    publish: process.env.PUBLISH_URL ? 'always' : undefined,
     config: {
       publish: {
-        provider: 'generic',
-        url: process.env.PUBLISH_URL || '__url__'
+        provider: process.env.PUBLISH_URL ? 'generic' : 'github',
+        ...(process.env.PUBLISH_URL ? { url: process.env.PUBLISH_URL } : {})
       },
       extraMetadata: {
         version: version.format()
@@ -33,6 +36,12 @@ function makeConfig(platform, version, snapshotNum) {
           '--iteration', pkgIteration
         ],
         artifactName: `\${name}-${pkgVersion}-${pkgIteration}.pkg.tar.xz`
+      },
+      deb: {
+        fpm: [
+          '--version', pkgVersion,
+          '--iteration', pkgIteration
+        ]
       }
     }
   };
@@ -63,9 +72,17 @@ exec('git describe --tags', async (error, stdout, stderr) => {
   }
 
   if (buildWin) {
-    await build(makeConfig(Platform.WINDOWS, taggedVersion, snapshotNum));
+    await build(makeConfig(Platform.WINDOWS, taggedVersion, snapshotNum)).catch(printErrorAndExit);
   }
   if (buildLinux) {
-    await build(makeConfig(Platform.LINUX, taggedVersion, snapshotNum));
+    await build(makeConfig(Platform.LINUX, taggedVersion, snapshotNum)).catch(printErrorAndExit);
+  }
+  if (buildMac) {
+    await build(makeConfig(Platform.MAC, taggedVersion, snapshotNum)).catch(printErrorAndExit);
   }
 });
+
+function printErrorAndExit(error) {
+  console.error((error.stack || error).toString());
+  process.exit(1);
+}

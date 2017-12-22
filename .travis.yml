@@ -1,42 +1,56 @@
-sudo: false
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode9.0
+      language: node_js
+      node_js: "8"
+      env:
+        - ELECTRON_CACHE=$HOME/.cache/electron
+        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
 
-language: node_js
-
-node_js:
-  - 8
-  - 7
+    - os: linux
+      services: docker
+      language: generic
 
 cache:
-  yarn: true
   directories:
     - node_modules
-    - app/node_modules
+    - $HOME/.cache/electron
+    - $HOME/.cache/electron-builder
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.8
-      - icnsutils
-      - graphicsmagick
-      - xz-utils
-      - xorriso
+env:
+  global:
+    - ELECTRON_CACHE=$HOME/.cache/electron
+    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+    - secure: eVVluxkZaqvpciWWIOUCjqeQGrm5EVFxhnjDpXCcbzisQH2o65ZP2ccHtUeX4guC2IyUB6HZKTSCiJPk4vvIFGbSL72+fu+USlDRlqpB351e7CM/qsN/ODERQQ317f/GHACiSaBzn6jBzmRMYMAoQXSxE06BCvTCOFVuPcQQG++epsr4yf0q67ox/dBmIiWnT8xZDWMMawjZf583rZfGTseqgZjz+9a/74hvhqElbK0gn4hQ7PL5sftSBVRiKdwC0ygkPfg2Mfe++XQ4h+mE8UO/3xdp1UPR1ziUhpLQ1fr+tPLl7VkcPDi5LdUS2rANsKvprLtKAaOslv7pntPAy04LVRARfCruwzWHlWlkH6SPdvgI0rbduPQ1Q4nTyTp3Mwwxxt1aZjbCQw5/uZcdhRXx/UpfMCfZW9J3VkM9EXs8HUY6gQCRWkO8U+uI+VMUScEtxq2DVe1vih2YjppmuPKspkqQ1ZFnPyLerFc/sAEnNgokzZE3FCEtNdGFxB9mCSa4otyJxCpHRQ/G2cl5wrpqt5WYFKMJi9Qyj7XSe95qdcpVi7U3392w+NobSJppJJDldj6juGVtJnc38+Mb59nPb141TYUxcaQKGy6DB+qS+HszrtDyVuGzgm0YsY82V5SRwht/6SZTOUzkubrJTyvd0c2d3NFMdZg4OW2Gaxg=
 
-install:
-  - export CXX="g++-4.8"
-  - yarn
-  - cd app && yarn && cd ..
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
+before_install:
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
+    fi
 
 before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start &
-  - sleep 3
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      export DISPLAY=:99.0
+      sh -e /etc/init.d/xvfb start &
+      sleep 3
+    fi
 
 script:
-  - node --version
-  - yarn lint
-  - yarn package
-  - yarn test
-  - yarn test-e2e
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      docker run --rm \
+        --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|_TOKEN|_KEY|AWS_|STRIP|BUILD_|DISPLAY') \
+        -v ${PWD}:/project \
+        -v ~/.cache/electron:/root/.cache/electron \
+        -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        electronuserland/builder:wine \
+        /bin/bash -c "npm install && npm test && DISPLAY= npm run package linux win"
+    else
+      npm run package mac
+    fi
+before_cache:
+  - rm -rf $HOME/.cache/electron-builder/wine
