@@ -1,4 +1,5 @@
 import * as fs from 'fs-extra';
+import { Minimatch } from 'minimatch';
 import * as Git from 'nodegit';
 import * as path from 'path';
 import { OrderedSet } from 'immutable';
@@ -12,6 +13,15 @@ export interface AheadBehindResult {
 export interface GitCredentials {
   username?: string,
   password: string
+}
+
+export interface GitCommitInfo {
+  hash: string,
+  message: string,
+  authorName: string,
+  authorEmail: string,
+  date: Date,
+  pushed?: boolean
 }
 
 export function isRepository(repoPath: string) {
@@ -28,12 +38,12 @@ export function isSignatureConfigured(repo: Git.Repository) {
  * Note: Lock is not reentrant, make sure not to call recursively!
  */
 const repoLock = new AwaitLock();
-export async function accessingRepository(repoPath: string, callback: (repo: Git.Repository) => any): Promise<void> {
+export async function accessingRepository<T>(repoPath: string, callback: (repo: Git.Repository) => T | Promise<T>): Promise<T> {
   await repoLock.acquireAsync();
   try {
     const repo = await Git.Repository.open(repoPath);
     try {
-      await callback(repo);
+      return await callback(repo);
     } finally {
       repo.free();
     }
@@ -175,12 +185,12 @@ export async function pushWithRetry(repo: Git.Repository, remote: string, creden
 }
 
 export async function hasUncommittedChanges(repo: Git.Repository) {
-  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS });
+  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS });  // tslint:disable-line
   return statusList.length > 0;
 }
 
 export async function commitAllChanges(repo: Git.Repository, message: string): Promise<Git.Oid | null> {
-  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS });
+  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS });  // tslint:disable-line
   const index = await repo.refreshIndex();
   let uncommittedChanges;
   for (const file of statusList) {
@@ -232,4 +242,81 @@ export function formatStatusLine(ahead: number | undefined, upstreamName: string
 
 export function remoteNameFromRef(ref: Git.Reference) {
   return (/^refs\/remotes\/([^\/]+)\//.exec(ref.name()) || [])[1];
+}
+
+export function commitInfo(commit: Git.Commit): GitCommitInfo {
+  return {
+    hash: commit.id().tostrS(),
+    message: commit.message(),
+    authorName: (commit.author().name as any)(),  // error in typings and docs
+    authorEmail: (commit.author().email as any)(),  // error in typings and docs
+    date: commit.date()
+  };
+}
+
+/**
+ * For each given file, fetches the commit where the file has last been changed
+ * @param gitRepo
+ * @param entries files to fetch history for
+ * @param excludePatterns fnmatch patterns that, when matched, cause a commit to be skipped
+ * @returns {Promise} promise for a map of commit infos keyed by the passed entries
+ */
+export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: string[], ...excludePatterns: string[]) {
+  const latestCommits: { [entry: string]: GitCommitInfo } = {};
+  const oldestCommits: { [entry: string]: GitCommitInfo } = {};
+
+  const walker = gitRepo.createRevWalk('');
+  walker.pushHead();
+  walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME);  // tslint:disable-line
+
+  // performance can be optimized quite a bit by batching the commits and diffs fetched from libgit
+  const BATCH_SIZE = 100;
+
+  console.time('walk');
+
+  const opts = new (Git as any).DiffOptions();
+  opts.flags = Git.Diff.OPTION.FORCE_BINARY;
+  const pathspec = entries.slice();
+  pathspec.push(...excludePatterns);
+  opts.pathspec.copy(pathspec);
+
+  const excludeMatchers = excludePatterns.map(pat => new Minimatch(pat));
+  let allCommits: Git.Commit[];
+  do {
+    allCommits = await walker.getCommits(BATCH_SIZE);
+    const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts, null as any)));
+    outer: for (let i = 0; i < commitDiffs.length; i++) {
+      const commit = allCommits[i];
+      const changedFiles: string[] = [];
+      for (const diff of commitDiffs[i]) {
+        for (let deltaIdx = 0; deltaIdx < diff.numDeltas(); deltaIdx++) {
+          const entry = (diff.getDelta(deltaIdx).newFile as any)().path();
+          changedFiles.push(entry);
+        }
+        for (const entry of changedFiles) {
+          if (entries.includes(entry)) {
+            oldestCommits[entry] = commitInfo(commit);
+          }
+        }
+        // if commit has any of the excluded files, skip it
+        if (excludeMatchers.find(m => !!changedFiles.find(fn => m.match(fn)))) {
+          continue outer;
+        }
+        for (const entry of changedFiles) {
+          if (entries.includes(entry) && !latestCommits[entry]) {
+            latestCommits[entry] = commitInfo(commit);
+          }
+        }
+      }
+    }
+  } while (allCommits.length === BATCH_SIZE && Object.keys(latestCommits).length < entries.length);
+  // if no commit has been found considering the exclude patterns, use the commit where the file first appeared
+  for (const entry of entries) {
+    if (!latestCommits[entry]) {
+      latestCommits[entry] = oldestCommits[entry];
+    }
+  }
+  console.timeEnd('walk');
+
+  return latestCommits;
 }

@@ -78,10 +78,21 @@
       }
     },
     "pacman": {
-      "depends": ["libcurl-gnutls"]
+      "depends": [
+        "libcurl-gnutls"
+      ]
     },
     "deb": {
-      "depends": ["gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3", "libcurl3-gnutls", "libsecret-1-0"],
+      "depends": [
+        "gconf2",
+        "gconf-service",
+        "libnotify4",
+        "libappindicator1",
+        "libxtst6",
+        "libnss3",
+        "libcurl3-gnutls",
+        "libsecret-1-0"
+      ],
       "packageCategory": "utils",
       "priority": "optional"
     },
@@ -188,6 +199,7 @@
     "@types/fs-extra": "^4.0.1",
     "@types/keytar": "^4.0.1",
     "@types/lodash": "^4.14.85",
+    "@types/minimatch": "^3.0.2",
     "@types/mousetrap": "^1.5.34",
     "@types/nodegit": "^0.18.4",
     "@types/react": "^16.0.23",
@@ -223,6 +235,7 @@
     "kdbxweb": "^1.0.1",
     "keytar-prebuild": "^4.0.4",
     "lodash": "^4.17.4",
+    "minimatch": "^3.0.4",
     "moment": "^2.18.1",
     "mousetrap": "^1.6.1",
     "natural-compare": "^1.4.0",

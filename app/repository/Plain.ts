@@ -154,16 +154,15 @@ export default class PlainRepository implements Repository {
   }
 
   async renameFile(nodeId: string, oldName: string, newName: string): Promise<void> {
-    await this.rename(path.join(nodeId, oldName), path.join(nodeId, newName));
+    await this.rename(this.resolvePath(nodeId, oldName), this.resolvePath(nodeId, newName));
   }
 
   async moveFile(nodeId: string, name: string, targetNodeId: string): Promise<void> {
-    await this.rename(path.join(nodeId, name), path.join(targetNodeId, name), true);
+    await this.rename(this.resolvePath(nodeId, name), this.resolvePath(targetNodeId, name), true);
   }
 
   async deleteFile(nodeId: string, name: string): Promise<void> {
-    const absPath = path.join(this.rootPath, nodeId, name);
-    assertSubPath(this.rootPath, absPath);
+    const absPath = this.resolveAbsPath(nodeId, name);
 
     const stat = await fs.stat(absPath);
     if (!stat.isFile()) {
@@ -173,24 +172,26 @@ export default class PlainRepository implements Repository {
     await fs.unlink(absPath);
   }
 
-  readFile(nodeId: string, fileName: string) {
-    const absPath = path.join(this.rootPath, nodeId);
+  resolveAbsPath(nodeId: string, fileName: string): string {
+    const relativePath = this.resolvePath(nodeId, fileName);
+    const absPath = path.join(this.rootPath, relativePath);
     assertSubPath(this.rootPath, absPath);
+    return absPath;
+  }
+
+  resolvePath(nodeId: string, fileName: string): string {
     if (!isValidFileName(fileName)) {
       throw new Error(`Invalid filename: ${fileName}`);
     }
+    return path.posix.join(nodeId, fileName).substr(1);
+  }
 
-    return fs.readFile(path.join(absPath, fileName));
+  readFile(nodeId: string, fileName: string) {
+    return fs.readFile(this.resolveAbsPath(nodeId, fileName));
   }
 
   async writeFile(nodeId: string, fileName: string, buffer: Buffer) {
-    const absPath = path.join(this.rootPath, nodeId);
-    assertSubPath(this.rootPath, absPath);
-    if (!isValidFileName(fileName)) {
-      throw new Error(`Invalid filename: ${fileName}`);
-    }
-
-    await fs.writeFile(path.join(absPath, fileName), buffer);
+    await fs.writeFile(this.resolveAbsPath(nodeId, fileName), buffer);
   }
 
   private async rename(oldPath: string, newPath: string, overwrite?: boolean) {

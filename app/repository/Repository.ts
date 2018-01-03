@@ -17,6 +17,7 @@ export default interface Repository {
   moveFile(nodeId: string, name: string, targetNodeId: string): Promise<void>;
   deleteFile(nodeId: string, name: string): Promise<void>;
 
+  resolvePath(nodeId: string, fileName: string): string;
   readFile(nodeId: string, fileName: string): Promise<Buffer>;
   writeFile(nodeId: string, fileName: string, buffer: Buffer): Promise<void>;
 }

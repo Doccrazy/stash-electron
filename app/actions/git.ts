@@ -11,7 +11,7 @@ import { afterAction, onceAfterAction } from '../store/eventMiddleware';
 import {
   accessingRepository,
   addToGitIgnore,
-  commitAllChanges,
+  commitAllChanges, commitInfo,
   compareRefs,
   fetchWithRetry, finishRebaseResolving, GitCredentials,
   hasUncommittedChanges, isSignatureConfigured,
@@ -43,7 +43,7 @@ export enum Actions {
 
 export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const repoPath = Repository.getRepo().rootPath;
+    const repoPath = getState().repository.path!;
 
     const status = await dispatch(determineGitStatus(repoPath, doFetch));
     dispatch({
@@ -143,11 +143,7 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
         status.commits = [];
         for (let i = 0; i < status.commitsAheadOrigin + (status.incomingCommits || 0) + 1; i++) {
           status.commits.push({
-            hash: commit.id().tostrS(),
-            message: commit.message(),
-            authorName: (commit.author().name as any)(),  // error in typings and docs
-            authorEmail: (commit.author().email as any)(),  // error in typings and docs
-            date: commit.date(),
+            ...commitInfo(commit),
             pushed: i >= status.commitsAheadOrigin
           });
           if (commit.parentcount() === 0) {
@@ -288,7 +284,7 @@ export function resetStatus(): Action {
 
 export function resolveConflict(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const repoPath = Repository.getRepo().rootPath;
+    const repoPath = getState().repository.path!;
 
     try {
       await accessingRepository(repoPath, async gitRepo => {
@@ -310,7 +306,7 @@ export function resolveConflict(): Thunk<Promise<void>> {
 
 export function maybeCommitChanges(message: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const repoPath = Repository.getRepo().rootPath;
+    const repoPath = getState().repository.path!;
 
     if (!getState().git.status.initialized) {
       return;
@@ -348,7 +344,7 @@ export function maybeCommitChanges(message: string): Thunk<Promise<void>> {
 
 export function revertAndPush(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const repoPath = Repository.getRepo().rootPath;
+    const repoPath = getState().repository.path!;
     const resetCommitHash = getState().git.markedForReset;
 
     try {

@@ -57,7 +57,7 @@ export function set(newFavorites: Set<EntryPtr>): Action {
 
 export function loadForRepo(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const repoPath = Repository.getRepo().rootPath;
+    const repoPath = getState().repository.path!;
     const filename = path.join(repoPath, FILENAME);
     if (fs.existsSync(filename)) {
       const parsed = JSON.parse(await fs.readFile(filename, 'utf8')) as FavoritesFile;
@@ -73,7 +73,7 @@ export function loadForRepo(): Thunk<Promise<void>> {
 export function saveForRepo(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { favorites } = getState();
-    const repoPath = Repository.getRepo().rootPath;
+    const repoPath = getState().repository.path!;
     const filename = path.join(repoPath, FILENAME);
     const serialized: FavoritesFile = {
       favorites: favorites.map((ptr: EntryPtr) => ptr.toHref()).toArray()

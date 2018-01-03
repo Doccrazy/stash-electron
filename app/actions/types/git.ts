@@ -1,3 +1,5 @@
+import {GitCommitInfo} from '../../utils/git';
+
 export interface State {
   status: GitStatus,
   lastStatusUpdate: Date,
@@ -19,15 +21,6 @@ export interface GitStatus {
   incomingCommits?: number,
   allowBackgroundFetch?: boolean,
   error?: string
-}
-
-export interface GitCommitInfo {
-  hash: string,
-  message: string,
-  authorName: string,
-  authorEmail: string,
-  date: Date,
-  pushed?: boolean
 }
 
 export interface FetchResult {

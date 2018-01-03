@@ -9,6 +9,7 @@ import { State as CredentialsState } from './credentials';
 import { State as CurrentEntryState } from './currentEntry';
 import { State as CurrentNodeState } from './currentNode';
 import { State as EditState } from './edit';
+import { State as EntryDetailsState } from './entryDetails';
 import { State as ExternalState } from './external';
 import { State as FavoritesState } from './favorites';
 import { State as FileImportState } from './fileImport';
@@ -26,6 +27,7 @@ export interface RootState {
   currentEntry: CurrentEntryState,
   currentNode: CurrentNodeState,
   edit: EditState,
+  entryDetails: EntryDetailsState,
   external: ExternalState,
   favorites: FavoritesState,
   fileImport: FileImportState,

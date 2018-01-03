@@ -9,6 +9,7 @@ import credentials from './credentials';
 import currentEntry from './currentEntry';
 import currentNode from './currentNode';
 import edit from './edit';
+import entryDetails from './entryDetails';
 import external from './external';
 import favorites from './favorites';
 import fileImport from './fileImport';
@@ -26,6 +27,7 @@ const rootReducer = combineReducers<RootState>({
   currentEntry,
   currentNode,
   edit,
+  entryDetails,
   external,
   favorites,
   fileImport,

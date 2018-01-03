@@ -4,6 +4,7 @@ import * as cx from 'classnames';
 import { Set } from 'immutable';
 import * as moment from 'moment';
 import { remote } from 'electron';
+import {Details} from '../actions/types/entryDetails';
 import typeFor from '../fileType';
 import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';
@@ -42,6 +43,16 @@ function showContextMenu(accessible: boolean | undefined, ptr: EntryPtr, onEdit:
   menu.popup(remote.getCurrentWindow());
 }
 
+const ModifiedHeader = () => (<th className="text-right">Modified</th>);
+
+const ModifiedColumn = ({ details }: { details?: Details }) => details && details.modified ? <td
+  className="text-right"
+  style={{ whiteSpace: 'nowrap' }}
+  title={`${details.modified.date ? details.modified.date.toLocaleString() : ''}${details.modified.user ? ` by ${details.modified.user}` : ''}`}
+>
+  {details.modified.date && moment(details.modified.date).fromNow()}
+</td> : <td/>;
+
 export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, onDelete, onToggleFavorite, onSelectNode }: Props) => (<div>
   <Table hover className={`table-sm table-sticky`}>
     <thead>
@@ -49,7 +60,7 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
         <th style={{ width: '5%' }}>Fav</th>
         <th>Filename</th>
         {showPath && <th>Path</th>}
-        <th className="text-right">Modified</th>
+        <ModifiedHeader />
       </tr>
     </thead>
     <tbody>
@@ -79,7 +90,7 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
               <a href="" onClick={ev => { onSelectNode(node.id); ev.stopPropagation(); }}>{node.name}</a>
             </span>)}
           </td>}
-          <td className="text-right" style={{ whiteSpace: 'nowrap' }}>{file.lastModified && moment(file.lastModified).fromNow()}</td>
+          <ModifiedColumn details={file.details} />
         </tr>);
       })}
     </tbody>

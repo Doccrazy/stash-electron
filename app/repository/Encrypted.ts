@@ -80,17 +80,13 @@ export default class EncryptedRepository extends PlainRepository {
     }
   }
 
-  async renameFile(nodeId: string, oldName: string, newName: string): Promise<void> {
-    return super.renameFile(nodeId, `${oldName}.enc`, `${newName}.enc`);
-  }
-
   async moveFile(nodeId: string, name: string, targetNodeId: string): Promise<void> {
     const sourceMasterKey = this.recAuthProvider.getMasterKey(nodeId);
     const targetMasterKey = this.recAuthProvider.getMasterKey(targetNodeId);
 
     if (sourceMasterKey.equals(targetMasterKey)) {
       // no auth change, we can just move
-      return super.moveFile(nodeId, `${name}.enc`, targetNodeId);
+      return super.moveFile(nodeId, name, targetNodeId);
     }
 
     // need to reencrypt
@@ -99,8 +95,8 @@ export default class EncryptedRepository extends PlainRepository {
     await this.deleteFile(nodeId, name);
   }
 
-  async deleteFile(nodeId: string, name: string): Promise<void> {
-    return super.deleteFile(nodeId, `${name}.enc`);
+  resolvePath(nodeId: string, fileName: string): string {
+    return super.resolvePath(nodeId, `${fileName}.enc`);
   }
 
   readFile(nodeId: string, fileName: string): Promise<Buffer> {
@@ -116,13 +112,13 @@ export default class EncryptedRepository extends PlainRepository {
   }
 
   private async readAndDecipher(nodeId: string, fileName: string, masterKey: Buffer) {
-    const buffer = await super.readFile(nodeId, `${fileName}.enc`);
+    const buffer = await super.readFile(nodeId, fileName);
     return decipherSync(masterKey, buffer);
   }
 
   private writeAndEncipher(nodeId: string, fileName: string, buffer: Buffer, masterKey: Buffer): Promise<void> {
     const encBuffer = encipherSync(masterKey, buffer);
-    return super.writeFile(nodeId, `${fileName}.enc`, encBuffer);
+    return super.writeFile(nodeId, fileName, encBuffer);
   }
 
   private async reencrypt(nodes: List<Node>, oldMasterKey: Buffer, newMasterKey: Buffer): Promise<void> {
