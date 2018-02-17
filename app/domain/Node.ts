@@ -1,12 +1,12 @@
-import { Set, Iterable } from 'immutable';
+import { Set, Collection } from 'immutable';
 
 export interface NodeLike {
   id: string,
   name: string,
   parentId?: string,
-  childIds?: Iterable.Set<string> | Iterable.Indexed<string> | string[],
-  entries?: Iterable.Set<string> | Iterable.Indexed<string> | string[],
-  authorizedUsers?: Iterable.Set<string> | Iterable.Indexed<string> | string[]
+  childIds?: Collection.Set<string> | Collection.Indexed<string> | string[],
+  entries?: Collection.Set<string> | Collection.Indexed<string> | string[],
+  authorizedUsers?: Collection.Set<string> | Collection.Indexed<string> | string[]
 }
 
 export const ROOT_ID = '/';

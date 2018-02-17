@@ -230,7 +230,7 @@
     "font-awesome-filetypes": "^1.0.1",
     "fs-extra": "^4.0.1",
     "history": "^4.6.3",
-    "immutable": "^3.8.1",
+    "immutable": "^4.0.0-rc.9",
     "jquery": "^3.2.1",
     "kdbxweb": "^1.0.1",
     "keytar-prebuild": "^4.0.4",

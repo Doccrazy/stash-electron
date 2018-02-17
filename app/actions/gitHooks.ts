@@ -58,8 +58,8 @@ afterAction(AuthorizedUsers.Actions.SAVED, (dispatch, getState: GetState, nodeId
 afterAction<RootState>(AuthorizedUsers.Actions.BULK_SAVED, (dispatch, getState, payload, preActionState) => {
   const nodes = preActionState.authorizedUsers.bulkChanges
     .groupBy(ch => ch!.nodeId)
-    .map((g, nodeId: string) => fmtNode(getState, nodeId));
-  dispatch(maybeCommitChanges(`Update authorization for folder${nodes.size > 1 ? 's' : ''} ${nodes.join(', ')}`));
+    .map((g, nodeId) => fmtNode(getState, nodeId));
+  dispatch(maybeCommitChanges(`Update authorization for folder${nodes.count() > 1 ? 's' : ''} ${nodes.join(', ')}`));
 });
 
 afterAction(Keys.Actions.SAVED, (dispatch, getState: GetState, payload, preActionState) => {
@@ -81,7 +81,7 @@ afterAction(External.Actions.FILES_WRITTEN, (dispatch, getState: GetState, files
   if (files.length === 1) {
     dispatch(maybeCommitChanges(`Add/edit external file ${fmtPtr(getState, files[0])}`));
   } else {
-    const nodeTxt = nodeIds.size === 1 ? fmtNode(getState, nodeIds.first()) : 'multiple folders';
+    const nodeTxt = nodeIds.size === 1 ? fmtNode(getState, nodeIds.first()!) : 'multiple folders';
     dispatch(maybeCommitChanges(`Add/edit ${files.length} external files in ${nodeTxt}`));
   }
 });
