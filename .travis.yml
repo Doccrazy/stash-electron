@@ -22,7 +22,6 @@ env:
   global:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - DEBUG=electron-builder
     - secure: eVVluxkZaqvpciWWIOUCjqeQGrm5EVFxhnjDpXCcbzisQH2o65ZP2ccHtUeX4guC2IyUB6HZKTSCiJPk4vvIFGbSL72+fu+USlDRlqpB351e7CM/qsN/ODERQQ317f/GHACiSaBzn6jBzmRMYMAoQXSxE06BCvTCOFVuPcQQG++epsr4yf0q67ox/dBmIiWnT8xZDWMMawjZf583rZfGTseqgZjz+9a/74hvhqElbK0gn4hQ7PL5sftSBVRiKdwC0ygkPfg2Mfe++XQ4h+mE8UO/3xdp1UPR1ziUhpLQ1fr+tPLl7VkcPDi5LdUS2rANsKvprLtKAaOslv7pntPAy04LVRARfCruwzWHlWlkH6SPdvgI0rbduPQ1Q4nTyTp3Mwwxxt1aZjbCQw5/uZcdhRXx/UpfMCfZW9J3VkM9EXs8HUY6gQCRWkO8U+uI+VMUScEtxq2DVe1vih2YjppmuPKspkqQ1ZFnPyLerFc/sAEnNgokzZE3FCEtNdGFxB9mCSa4otyJxCpHRQ/G2cl5wrpqt5WYFKMJi9Qyj7XSe95qdcpVi7U3392w+NobSJppJJDldj6juGVtJnc38+Mb59nPb141TYUxcaQKGy6DB+qS+HszrtDyVuGzgm0YsY82V5SRwht/6SZTOUzkubrJTyvd0c2d3NFMdZg4OW2Gaxg=
 
 before_install:
