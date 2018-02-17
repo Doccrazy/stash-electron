@@ -1,5 +1,6 @@
 import { Set } from 'immutable';
 import { connect } from 'react-redux';
+import { entryContextMenu } from '../actions/contextMenus';
 import { prepareDelete, select } from '../actions/currentEntry';
 import { select as selectNode } from '../actions/currentNode';
 import { open } from '../actions/edit';
@@ -32,5 +33,6 @@ export default connect((state: RootState) => ({
   onEdit: (ptr: EntryPtr) => dispatch(open(ptr)),
   onDelete: (ptr: EntryPtr) => dispatch(prepareDelete(ptr)),
   onToggleFavorite: (ptr: EntryPtr) => dispatch(toggleFavorite(ptr)),
-  onSelectNode: (nodeId: string) => dispatch(selectNode(nodeId))
+  onSelectNode: (nodeId: string) => dispatch(selectNode(nodeId)),
+  onContextMenu: (ptr: EntryPtr) => dispatch(entryContextMenu(ptr))
 }))(FileList);

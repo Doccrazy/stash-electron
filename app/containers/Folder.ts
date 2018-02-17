@@ -1,9 +1,10 @@
 import { connect } from 'react-redux';
 import 'redux-thunk';
 import * as naturalCompare from 'natural-compare';
+import { nodeContextMenu } from '../actions/contextMenus';
 import Folder from '../components/Folder';
 import { toggle } from '../actions/treeState';
-import { prepareDelete, prepareMove, select } from '../actions/currentNode';
+import { prepareMove, select } from '../actions/currentNode';
 import { moveEntry } from '../actions/repository';
 import { open as openPermissions } from '../actions/authorizedUsers';
 import {RootState} from '../actions/types/index';
@@ -53,7 +54,7 @@ export default connect((state: RootState, props: Props) => {
   onClickIcon: () => dispatch(toggle(props.nodeId)),
   onClickLabel: () => dispatch(select(props.nodeId)),
   onClickAuth: () => dispatch(openPermissions(props.nodeId)),
-  onDelete: () => dispatch(prepareDelete(props.nodeId)),
   onDropEntry: (ptr: EntryPtr) => dispatch(moveEntry(ptr, props.nodeId)),
-  onDropNode: (nodeId: string) => dispatch(prepareMove(nodeId, props.nodeId))
+  onDropNode: (nodeId: string) => dispatch(prepareMove(nodeId, props.nodeId)),
+  onContextMenu: () => dispatch(nodeContextMenu(props.nodeId))
 }))(Folder);
