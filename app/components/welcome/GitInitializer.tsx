@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, FormGroup, Label, Input, InputGroup, InputGroupButton } from 'reactstrap';
+import { Button, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 import { GitStatus } from '../../actions/types/git';
 import { formatStatusLine } from '../../utils/git';
 
@@ -54,9 +54,9 @@ export default ({ repoLoading, repoLoaded, status, working, action, cloneUrl, on
     {action === GitInitAction.CLONE && <FormGroup>
       <InputGroup>
         <Input placeholder="Remote repository URL" value={cloneUrl || ''} onChange={ev => onChangeCloneUrl(ev.target.value)} disabled={working} />
-        <InputGroupButton>
+        <InputGroupAddon addonType="append">
           <Button color="info" onClick={onClone} disabled={working}>{working ? <i className="fa fa-spinner fa-pulse" /> : 'Clone'}</Button>
-        </InputGroupButton>
+        </InputGroupAddon>
       </InputGroup>
       {status.error && <small className="form-text text-danger">{status.error}</small>}
     </FormGroup>}

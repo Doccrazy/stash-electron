@@ -25,7 +25,7 @@ export default ({ name = '', email = '', local = false, onChange }: Props) => (<
     <Label>Email address</Label>
     <Input value={email} onChange={ev => onChange(name, ev.target.value, local)} maxLength={100} />
   </FormGroup>
-  <FormGroup>
+  <FormGroup check>
     <Label check>
       <Input type="checkbox" checked={local} onChange={ev => onChange(name, email, ev.target.checked)} />
       Save for local repository only

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Form, Input, InputGroup, InputGroupButton } from 'reactstrap';
+import { Button, Form, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 import * as Mousetrap from 'mousetrap';
 
 export interface Props {
@@ -85,9 +85,9 @@ export default class SearchField extends React.Component<Props, {}> {
           onKeyDown={this.keyDown}
           onFocus={() => { if (this.input) { this.input.select(); onShowResults(); } }}
         />
-        <InputGroupButton>
+        <InputGroupAddon addonType="append">
           <Button onClick={onToggleScope}>{limitedScope ? 'within folder' : 'everywhere'}</Button>
-        </InputGroupButton>
+        </InputGroupAddon>
       </InputGroup>
     </Form>);
   }

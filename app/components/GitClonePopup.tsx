@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, InputGroup, InputGroupButton } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 import * as os from 'os';
 import * as path from 'path';
 import FocusingInput from './tools/FocusingInput';
@@ -33,9 +33,9 @@ export default ({ open, working, valid, feedback, url, target, onChangeUrl, onCh
           <InputGroup>
             <Input placeholder={`ex. ${path.join(os.homedir(), 'Workspace')}`} valid={valid ? undefined : false} disabled={working}
                    value={target || ''} onChange={ev => onChangeTarget(ev.target.value)} />
-            <InputGroupButton>
+            <InputGroupAddon addonType="append">
               <Button onClick={onBrowseTarget}><i className="fa fa-folder-open" /></Button>
-            </InputGroupButton>
+            </InputGroupAddon>
           </InputGroup>
           <small className="form-text text-muted">If target folder is not empty, a new subfolder will be created</small>
         </FormGroup>

@@ -28,7 +28,7 @@ export default ({ open, working, askUsername, title, text, error, value, onChang
       <Label>Password</Label>
       <FocusingInput focused={!askUsername || !!value.username} disabled={working} type="password" value={value.password || ''} onChange={ev => onChange({ ...value, password: ev.target.value })} />
     </FormGroup>
-    <FormGroup>
+    <FormGroup check>
       <Label check>
         <Input type="checkbox" checked={!!value.savePassword} onChange={ev => onChange({ ...value, savePassword: ev.target.checked })} />
         Use system keystore to remember this password

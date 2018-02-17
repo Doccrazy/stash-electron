@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Form, Input, InputGroup, InputGroupButton } from 'reactstrap';
+import { Button, Form, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 
 export interface Props {
   placeholder?: string,
@@ -42,8 +42,8 @@ export default class TextEditBox extends React.Component<Props, {}> {
             onChange={ev => onChange(ev.target.value)}
             onKeyDown={this.inputKeyDown}
           />
-          <InputGroupButton><Button type="submit" color="success"><i className="fa fa-check" /></Button></InputGroupButton>
-          <InputGroupButton><Button color="danger" onClick={onCancel}><i className="fa fa-times" /></Button></InputGroupButton>
+          <InputGroupAddon addonType="append"><Button type="submit" color="success"><i className="fa fa-check" /></Button></InputGroupAddon>
+          <InputGroupAddon addonType="append"><Button color="danger" onClick={onCancel}><i className="fa fa-times" /></Button></InputGroupAddon>
         </InputGroup>
       </Form>
     );

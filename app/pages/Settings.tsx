@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Form, FormGroup, InputGroup, InputGroupButton, Label } from 'reactstrap';
+import { Form, FormGroup, InputGroup, InputGroupAddon, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { remote } from 'electron';
 import SettingField from '../containers/SettingField';
@@ -20,9 +20,9 @@ export default () => (<div className="container">
       <div className="d-flex">
         <InputGroup>
           <SettingField field="repositoryPath" />
-          <InputGroupButton>
+          <InputGroupAddon addonType="append">
             <SettingsBrowseDirButton field="repositoryPath" title="Select repository path"><i className="fa fa-folder" /></SettingsBrowseDirButton>
-          </InputGroupButton>
+          </InputGroupAddon>
         </InputGroup>
         <div className="text-nowrap col-form-label mx-2">- or -</div>
         <ActionButton actionCreator={openClonePopup} title="Will prompt for target folder">
@@ -35,9 +35,9 @@ export default () => (<div className="container">
       <div className="d-flex">
         <InputGroup>
           <SettingField field="privateKeyFile" />
-          <InputGroupButton>
+          <InputGroupAddon addonType="append">
             <SettingsBrowseFileButton field="privateKeyFile" title="Select private key"><i className="fa fa-folder-open" /></SettingsBrowseFileButton>
-          </InputGroupButton>
+          </InputGroupAddon>
         </InputGroup>
         <div className="text-nowrap col-form-label mx-2">- or -</div>
         <ActionButton actionCreator={openGenerate} title="Will prompt for save location"><i className="fa fa-cog" /> Generate new keypair</ActionButton>

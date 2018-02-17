@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupButton } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import SettingsBrowseDirButton from '../containers/SettingsBrowseDirButton';
 import SettingField from '../containers/SettingField';
@@ -33,9 +33,9 @@ export default () => (<div className={`${styles.body} h-100 d-flex`}>
               <Label>Where do you want your repository to be stored?</Label>
               <InputGroup>
                 <SettingField field="repositoryPath" instantSave />
-                <InputGroupButton>
+                <InputGroupAddon addonType="append">
                   <SettingsBrowseDirButton field="repositoryPath" title="Select repository path"><i className="fa fa-folder" /></SettingsBrowseDirButton>
-                </InputGroupButton>
+                </InputGroupAddon>
               </InputGroup>
             </FormGroup>
             <GitInitializer />
@@ -61,7 +61,7 @@ export default () => (<div className={`${styles.body} h-100 d-flex`}>
               <SettingField field="privateKeyFile" readOnly />
               <small className="form-text"><PrivateKeyStatus /></small>
             </FormGroup>
-            <FormGroup>
+            <FormGroup check>
               <Label check>
                 <Input type="checkbox" /> Add me to the repository's known users, so others may grant me access
               </Label>
