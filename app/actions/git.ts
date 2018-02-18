@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as fs from 'fs-extra';
-import { Set } from 'immutable';
+import { List, Map, OrderedMap, Set } from 'immutable';
 import * as path from 'path';
 import * as Git from 'nodegit';
 import { toastr } from 'react-redux-toastr';
@@ -13,8 +13,8 @@ import {
   addToGitIgnore,
   commitAllChanges, commitInfo,
   compareRefs,
-  fetchWithRetry, finishRebaseResolving, GitCredentials,
-  hasUncommittedChanges, isSignatureConfigured,
+  fetchWithRetry, finishRebaseResolving, GitCommitInfo, GitCredentials,
+  hasUncommittedChanges, isSignatureConfigured, loadHistory,
   pushWithRetry, remoteNameFromRef,
   usingOurs
 } from '../utils/git';
@@ -28,6 +28,7 @@ import { changeAndSave } from './settings';
 export enum Actions {
   PROGRESS = 'git/PROGRESS',
   UPDATE_STATUS = 'git/UPDATE_STATUS',
+  HISTORY = 'git/HISTORY',
   OPEN_POPUP = 'git/OPEN_POPUP',
   MARK_FOR_RESET = 'git/MARK_FOR_RESET',
   CLOSE_POPUP = 'git/CLOSE_POPUP',
@@ -53,6 +54,7 @@ export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
         updated: new Date()
       }
     });
+    dispatch(refreshHistory());
     if (status.incomingCommits) {
       toastr.info('', `${status.incomingCommits} commit(s) received from '${status.upstreamName}'.`);
 
@@ -268,6 +270,41 @@ function gitPushRemote(gitRepo: Git.Repository, remoteName: string): Thunk<Promi
       dispatch({ type: Actions.PROGRESS, payload: { done: true } });
     }
   };
+}
+
+function refreshHistory(): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    if (!getState().git.status.initialized) {
+      return;
+    }
+    const repoPath = getState().repository.path!;
+
+    try {
+      await accessingRepository(repoPath, async gitRepo => {
+        const history = await loadHistory(gitRepo);
+        dispatch({
+          type: Actions.HISTORY,
+          payload: history
+        });
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+}
+
+function buildHistory(history: GitCommitInfo[]) {
+  let commits = OrderedMap<string, GitCommitInfo>();
+  let files = Map<string, List<string>>();
+
+  for (const entry of history) {
+    commits = commits.set(entry.hash, entry);
+    for (const filename of entry.changedFiles || []) {
+      files = files.update(filename, oidList => (oidList || List()).push(entry.hash));
+    }
+  }
+
+  return { commits, files };
 }
 
 export function resetStatus(): Action {
@@ -543,6 +580,7 @@ afterAction(Repository.Actions.UNLOAD, (dispatch, getState: GetState) => {
 type Action =
   TypedAction<Actions.UPDATE_STATUS, { status: GitStatus, updated: Date }> |
   TypedAction<Actions.PROGRESS, { message?: string, done?: boolean }> |
+  TypedAction<Actions.HISTORY, GitCommitInfo[]> |
   OptionalAction<Actions.OPEN_POPUP> |
   OptionalAction<Actions.MARK_FOR_RESET, string> |
   OptionalAction<Actions.CLOSE_POPUP> |
@@ -557,12 +595,21 @@ type Action =
 
 type Thunk<R> = TypedThunk<Action, R>;
 
-export default function reducer(state: State = {status: {initialized: false}, lastStatusUpdate: new Date(), clone: {}, signature: {}}, action: Action): State {
+const INITIAL_STATE: State = {
+  status: {initialized: false},
+  lastStatusUpdate: new Date(),
+  clone: {},
+  signature: {},
+  history: {commits: OrderedMap(), files: Map()}
+};
+export default function reducer(state: State = INITIAL_STATE, action: Action): State {
   switch (action.type) {
     case Actions.UPDATE_STATUS:
       return { ...state, status: action.payload.status, lastStatusUpdate: action.payload.updated, markedForReset: undefined };
     case Actions.PROGRESS:
       return { ...state, working: !action.payload.done, progressStatus: action.payload.message };
+    case Actions.HISTORY:
+      return { ...state, history: buildHistory(action.payload) };
     case Actions.OPEN_POPUP:
       return { ...state, popupOpen: true, markedForReset: undefined };
     case Actions.MARK_FOR_RESET:

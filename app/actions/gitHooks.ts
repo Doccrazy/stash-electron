@@ -3,6 +3,7 @@ import EntryPtr from '../domain/EntryPtr';
 import Node from '../domain/Node';
 import typeFor from '../fileType/index';
 import { afterAction } from '../store/eventMiddleware';
+import { formatPath } from '../utils/format';
 import { hierarchy } from '../utils/repository';
 import * as AuthorizedUsers from './authorizedUsers';
 import * as Edit from './edit';
@@ -20,8 +21,8 @@ function fmtPtr(getState: GetState, ptr: EntryPtr) {
 }
 
 function fmtNode(getState: GetState, node: Node | string) {
-  const hier = hierarchy(getState().repository.nodes, node);
-  return hier.length <= 1 ? '/' : hier.map(n => n.name).slice(1).slice(-2).join('/');
+  const hier = hierarchy(getState().repository.nodes, node).map(n => n.name);
+  return formatPath(hier);
 }
 
 afterAction(Edit.Actions.SAVED, (dispatch, getState: GetState, { ptr, isNew }: { ptr: EntryPtr, isNew: boolean }) => {

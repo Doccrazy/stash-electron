@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { formatPath } from '../utils/format';
 import * as styles from './UserKeyTable.css';
 
 export interface PermissionMap  {
@@ -8,10 +9,6 @@ export interface PermissionMap  {
 export interface Props {
   permissionsByUser: PermissionMap,
   currentUser?: string | null
-}
-
-function formatPath(path: string[]): string {
-  return path.length === 1 ? '/' : path.slice(1).slice(-2).join('/');
 }
 
 export default ({ permissionsByUser, currentUser }: Props) => (

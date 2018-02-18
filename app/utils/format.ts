@@ -20,3 +20,17 @@ export function formatUserList(title: string, users: Collection.Set<string> |  C
   }
   return result;
 }
+
+const DATE_TIME_FORMAT = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: 'numeric' };
+
+export function formatDateTime(date: Date) {
+  return date.toLocaleString(undefined, DATE_TIME_FORMAT);
+}
+
+export function formatPath(path: string[]): string {
+  return path.length <= 1 ? '/' : path.slice(1).slice(-2).join('/');
+}
+
+export function formatPathSpaced(path: string[]): string {
+  return path.length <= 1 ? '/' : path.slice(1).slice(-2).join(' / ');
+}

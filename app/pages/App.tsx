@@ -3,6 +3,7 @@ import { Navbar, Nav, NavItem, Fade } from 'reactstrap';
 import { Route, RouteComponentProps } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import ReduxToastr from 'react-redux-toastr';
+import AuthHistoryPopup from '../containers/AuthHistoryPopup';
 import GitStatus from '../containers/GitStatus';
 import SearchField from '../containers/SearchField';
 import LoginPopup from '../containers/LoginPopup';
@@ -33,6 +34,7 @@ export default class App extends React.Component<Props, {}> {
         <GenerateKeyPopup />
         <GitClonePopup />
         <GitSignaturePopup />
+        <AuthHistoryPopup />
         <Navbar color="dark" className={`navbar-dark navbar-expand-md ${styles.nav}`}>
           <NavLink to="/" className="navbar-brand"><span className={styles.logo} /> Stash</NavLink>
           <Nav className="mr-auto" navbar>

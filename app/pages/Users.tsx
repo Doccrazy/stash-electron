@@ -8,10 +8,13 @@ import NoKeyAlert from '../containers/NoKeyAlert';
 import UserKeyAddPopup from '../containers/UserKeyAddPopup';
 import UserKeyTable from '../containers/UserKeyTable';
 import UserPermissionTable from '../containers/UserPermissionTable';
+import UsersHistoryButton from '../containers/UsersHistoryButton';
+import UsersHistoryPopup from '../containers/UsersHistoryPopup';
 import * as styles from './Users.scss';
 
 export default (({}) => (<div className={`container ${styles.users}`}>
   <UserKeyAddPopup />
+  <UsersHistoryPopup />
   <h1 className="my-4">Known users and keys</h1>
 
   <p>
@@ -29,6 +32,7 @@ export default (({}) => (<div className={`container ${styles.users}`}>
         <NavLink to="/users/permissions" className="btn btn-outline-primary">Permissions</NavLink>
         <NavLink to="/users/access" className="btn btn-outline-primary">Folder access</NavLink>
       </ButtonGroup>
+      <UsersHistoryButton color="link" title="History"><i className="fa fa-history"/></UsersHistoryButton>
     </div>
     <div className="col text-right">
       <UserKeyActionBar />

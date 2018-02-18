@@ -15,10 +15,10 @@ export interface Props {
   users?: Set<string>,
   allUsers: Set<string>,
   authParent?: Node,
-  validationError?: string,
   onChange: (users: Set<string>) => void,
   onToggleInherit: () => void,
   onSave: () => void,
+  onHistory: () => void,
   onClose: () => void
 }
 
@@ -31,7 +31,7 @@ function mayToggle(username: string, currentUser: string | undefined, users: Set
   return username !== currentUser || (currentUser && !users.includes(currentUser));
 }
 
-export default ({ open, nodeName, inherited, editable, modified, currentUser, users = Set(), allUsers, authParent, validationError, onChange, onToggleInherit, onSave, onClose }: Props) => {
+export default ({ open, nodeName, inherited, editable, modified, currentUser, users = Set(), allUsers, authParent, onChange, onToggleInherit, onSave, onHistory, onClose }: Props) => {
   const resolvedUsers = ((inherited && authParent ? authParent.authorizedUsers : users) || Set()).sort() as Set<string>;
   return (<Modal size="lg" isOpen={open} toggle={onClose}>
     <ModalHeader toggle={onClose}>Permissions for {nodeName}</ModalHeader>
@@ -61,7 +61,7 @@ export default ({ open, nodeName, inherited, editable, modified, currentUser, us
       </div>}
     </ModalBody>
     <ModalFooter>
-      <div className="text-danger" style={{ flexGrow: 1 }}>{validationError}</div>
+      <div style={{ flexGrow: 1 }}><Button color="link" title="Show history" onClick={onHistory}><i className="fa fa-history"/></Button></div>
       {editable && <Button type="submit" form="editForm" color="primary" disabled={!modified}>Save</Button>}{' '}
       <Button autoFocus form="editForm" color="secondary" onClick={onClose}>{editable ? 'Cancel' : 'Close'}</Button>
     </ModalFooter>

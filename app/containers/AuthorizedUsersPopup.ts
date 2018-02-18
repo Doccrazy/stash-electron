@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import {Set} from 'immutable';
+import { openAuth } from '../actions/usersHistory';
 import AuthorizedUsersPopup from '../components/AuthorizedUsersPopup';
 import { save, close, change, toggleInherit } from '../actions/authorizedUsers';
 import {RootState} from '../actions/types/index';
@@ -20,12 +21,12 @@ export default connect((state: RootState) => {
     currentUser: state.privateKey.username,
     users: state.authorizedUsers.users,
     allUsers: Set(Object.keys(state.keys.byUser)),
-    authParent,
-    validationError: ''
+    authParent
   });
 }, dispatch => ({
   onChange: (users: Set<string>) => dispatch(change(users)),
   onToggleInherit: () => dispatch(toggleInherit()),
   onSave: () => dispatch(save()),
+  onHistory: () => dispatch((_, getState) => { dispatch(openAuth(getState().authorizedUsers.nodeId)); }),
   onClose: () => dispatch(close())
 }))(AuthorizedUsersPopup);

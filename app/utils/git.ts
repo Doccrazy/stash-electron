@@ -21,7 +21,8 @@ export interface GitCommitInfo {
   authorName: string,
   authorEmail: string,
   date: Date,
-  pushed?: boolean
+  pushed?: boolean,
+  changedFiles?: string[]
 }
 
 export function isRepository(repoPath: string) {
@@ -319,4 +320,49 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
   console.timeEnd('walk');
 
   return latestCommits;
+}
+
+/**
+ * Loads all commits in the given repository with changed files
+ */
+export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInfo[]> {
+  const walker = gitRepo.createRevWalk('');
+  walker.pushHead();
+  walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME);  // tslint:disable-line
+
+  // performance can be optimized quite a bit by batching the commits and diffs fetched from libgit
+  const BATCH_SIZE = 100;
+
+  console.time('walk');
+
+  const opts = new (Git as any).DiffOptions();
+  opts.flags = Git.Diff.OPTION.FORCE_BINARY;
+
+  const result: GitCommitInfo[] = [];
+  let allCommits: Git.Commit[];
+  do {
+    allCommits = await walker.getCommits(BATCH_SIZE);
+    const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts, null as any)));
+    for (let i = 0; i < commitDiffs.length; i++) {
+      const info = commitInfo(allCommits[i]);
+      info.changedFiles = [];
+      for (const diff of commitDiffs[i]) {
+        for (let deltaIdx = 0; deltaIdx < diff.numDeltas(); deltaIdx++) {
+          const entry = (diff.getDelta(deltaIdx).newFile as any)().path();
+          info.changedFiles.push(entry);
+        }
+      }
+      result.push(info);
+    }
+  } while (allCommits.length === BATCH_SIZE);
+  console.timeEnd('walk');
+
+  return result;
+}
+
+export async function loadBlobs(gitRepo: Git.Repository, commits: GitCommitInfo[], filename: string) {
+  const gitCommits = await Promise.all(commits.map(c => c.hash).map(oid => gitRepo.getCommit(oid)));
+  const entries = await Promise.all(gitCommits.map(c => c.getEntry(filename)));
+  const blobs = await Promise.all(entries.map(e => e.getBlob()));
+  return blobs.map(blob => blob.content());
 }

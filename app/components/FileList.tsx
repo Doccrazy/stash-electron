@@ -7,6 +7,7 @@ import {Details} from '../actions/types/entryDetails';
 import typeFor from '../fileType';
 import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';
+import { formatDateTime } from '../utils/format';
 import { EntryDragSource } from './tools/EntryPtrDrag';
 import * as styles from './FileList.scss';
 
@@ -31,7 +32,7 @@ const ModifiedHeader = () => (<th className="text-right">Modified</th>);
 const ModifiedColumn = ({ details }: { details?: Details }) => details && details.modified ? <td
   className="text-right"
   style={{ whiteSpace: 'nowrap' }}
-  title={`${details.modified.date ? details.modified.date.toLocaleString() : ''}${details.modified.user ? ` by ${details.modified.user}` : ''}`}
+  title={`${details.modified.date ? formatDateTime(details.modified.date) : ''}${details.modified.user ? ` by ${details.modified.user}` : ''}`}
 >
   {details.modified.date && moment(details.modified.date).fromNow()}
 </td> : <td/>;

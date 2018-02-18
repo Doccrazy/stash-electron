@@ -1,0 +1,47 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/mixins/lists";
+@import "~bootstrap/scss/variables";
+
+.userList {
+  @include list-unstyled;
+
+  display: inline;
+
+  > li {
+    display: inline;
+
+    &::after {
+      content: ", ";
+    }
+
+    &:last-child::after {
+      content: "";
+    }
+  }
+}
+
+.added {
+  color: $success;
+}
+
+.removed {
+  color: $danger;
+}
+
+.filter {
+  // sticky table hack
+  position: absolute !important;
+  z-index: 1000;
+  left: 4.5rem;
+  top: $modal-inner-padding + 0.2rem;
+
+  > a {
+    padding: 0;
+    display: inline;
+  }
+
+  > :global(.dropdown-menu) {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}

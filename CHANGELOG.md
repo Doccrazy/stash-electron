@@ -1,5 +1,9 @@
 ## upcoming release (no planned release date)
 
+#### New features
+- The *Modified* column is now based on git history instead of local file date
+- A history popup has been added for user keys and folder permissions
+
 #### Changes
 - The *My Favorites* link and the tool icons now remain visible when scrolling
 

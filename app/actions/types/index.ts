@@ -20,6 +20,7 @@ import { State as RepositoryState } from './repository';
 import { State as SearchState } from './search';
 import { State as SettingsState } from './settings';
 import { State as TreeStateState } from './treeState';
+import { State as UsersHistoryState } from './usersHistory';
 
 export interface RootState {
   authorizedUsers: AuthorizedUsersState,
@@ -38,6 +39,7 @@ export interface RootState {
   search: SearchState,
   settings: SettingsState,
   treeState: TreeStateState,
+  usersHistory: UsersHistoryState,
 
   router: RouterState,
   toastr: ToastrState

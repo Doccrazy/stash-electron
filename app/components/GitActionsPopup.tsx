@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import * as cx from 'classnames';
 import { GitStatus } from '../actions/types/git';
+import { formatDateTime } from '../utils/format';
 import * as styles from './GitActionsPopup.scss';
 import { formatStatusLine } from '../utils/git';
 
@@ -23,8 +24,6 @@ function doFocus(ref: HTMLButtonElement) {
     setTimeout(() => ref.focus());
   }
 }
-
-const DATE_FORMAT = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: 'numeric' };
 
 export default ({ open, disabled, feedback, status, markedForReset, onMarkReset, onPushRevert, onRefresh, onResolve, onClose }: Props) => {
   const toReset = status.commits ? status.commits.findIndex(ci => ci.hash === markedForReset) + 1 : 0;
@@ -66,7 +65,7 @@ export default ({ open, disabled, feedback, status, markedForReset, onMarkReset,
             <td>{commit.hash.substr(0, 7)}</td>
             <td>{commit.hash === upstreamRef && <i className="fa fa-tag" title={status.upstreamName} />} {commit.message}</td>
             <td title={`${commit.authorName} <${commit.authorEmail}>`}>{commit.authorName}</td>
-            <td className="text-nowrap">{commit.date.toLocaleString(undefined, DATE_FORMAT)}</td>
+            <td className="text-nowrap">{formatDateTime(commit.date)}</td>
             <td>{!commit.pushed &&
               <a href="" onClick={() => revertClick(commit.hash)}  title="Select for revert" className={cx('text-danger', styles.revert)}/>
             }</td>

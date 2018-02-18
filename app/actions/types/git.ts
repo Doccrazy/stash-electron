@@ -1,14 +1,16 @@
+import { List, Map, OrderedMap } from 'immutable';
 import {GitCommitInfo} from '../../utils/git';
 
 export interface State {
-  status: GitStatus,
-  lastStatusUpdate: Date,
-  working?: boolean,
-  progressStatus?: string,
-  popupOpen?: boolean,
-  markedForReset?: string,
-  clone: CloneState,
-  signature: SignatureState
+  readonly status: GitStatus,
+  readonly lastStatusUpdate: Date,
+  readonly working?: boolean,
+  readonly progressStatus?: string,
+  readonly popupOpen?: boolean,
+  readonly markedForReset?: string,
+  readonly clone: CloneState,
+  readonly signature: SignatureState,
+  readonly history: GitHistory
 }
 
 export interface GitStatus {
@@ -21,6 +23,11 @@ export interface GitStatus {
   incomingCommits?: number,
   allowBackgroundFetch?: boolean,
   error?: string
+}
+
+export interface GitHistory {
+  commits: OrderedMap<string, GitCommitInfo>,
+  files: Map<string, List<string>>
 }
 
 export interface FetchResult {
