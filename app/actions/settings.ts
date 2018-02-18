@@ -96,7 +96,8 @@ function applyDefaults(settings: SettingsMap): SettingsMap {
     ...settings,
     rootFontSize: Math.min(Math.max(Number.parseInt(settings.rootFontSize as any) || 16, 10), 20),
     privateKeyFile: settings.privateKeyFile || (os.platform() === 'linux' ? path.join(os.homedir(), '.ssh/id_rsa') : ''),
-    inactivityTimeout: Number.isNaN(inactivityTimeout) ? 15 : inactivityTimeout
+    inactivityTimeout: Number.isNaN(inactivityTimeout) ? 15 : inactivityTimeout,
+    keyDisplayFormat: settings.keyDisplayFormat || 'sha256'
   };
 }
 

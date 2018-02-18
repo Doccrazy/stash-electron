@@ -4,7 +4,8 @@ export interface StringSettings {
   repositoryPath?: string,
   rootFontSize?: number,
   privateKeyFile?: string,
-  inactivityTimeout?: number
+  inactivityTimeout?: number,
+  keyDisplayFormat?: 'sha256' | 'md5' | 'full'
 }
 
 export interface BoolSettings {

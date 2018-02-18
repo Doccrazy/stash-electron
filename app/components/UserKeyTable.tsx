@@ -5,15 +5,17 @@ import * as styles from './UserKeyTable.css';
 export interface Props {
   keysByUser: State['byUser'],
   currentUser?: string | null,
+  keyFormat: string,
+  onToggleKeyFormat: () => void
   onDelete: (username: string) => void
 }
 
-export default ({ keysByUser, currentUser, onDelete }: Props) => (
+export default ({ keysByUser, currentUser, keyFormat, onDelete, onToggleKeyFormat }: Props) => (
   <table className={`table table-hover table-sm table-sticky ${styles.table}`}>
     <thead>
       <tr>
         <th>Username</th>
-        <th>Public key (SSH)</th>
+        <th className="clickable" title="Toggle key display" onClick={onToggleKeyFormat}>Public key (SSH)</th>
         <th>Key name</th>
         <th />
       </tr>
@@ -21,7 +23,13 @@ export default ({ keysByUser, currentUser, onDelete }: Props) => (
     <tbody>
       {Object.keys(keysByUser).sort().map(username => (<tr key={username} className={username === currentUser ? 'table-success' : ''}>
         <td>{username}</td>
-        <td className={styles.keyCell}>{keysByUser[username].toString('ssh').substr(8)}</td>
+        <td className={styles.keyCell}>
+          {keyFormat === 'full'
+            ? keysByUser[username].toString('ssh').substr(8)
+            : <span>
+              {keysByUser[username].size} {keyFormat === 'md5' && 'MD5:'}{keysByUser[username].fingerprint(keyFormat).toString()}
+            </span>}
+        </td>
         <td>{keysByUser[username].comment}</td>
         <td>{currentUser && username !== currentUser && <a href="" className="text-danger" onClick={() => onDelete(username)}><i className="fa fa-trash-o"/></a>}</td>
       </tr>))}

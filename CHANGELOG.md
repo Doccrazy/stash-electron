@@ -3,6 +3,7 @@
 #### New features
 - The *Modified* column is now based on git history instead of local file date
 - A history popup has been added for user keys and folder permissions
+- SSH key format can now be toggled between fingerprint and full display, defaulting to SHA256 fingerprint
 
 #### Changes
 - The *My Favorites* link and the tool icons now remain visible when scrolling
