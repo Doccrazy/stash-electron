@@ -1,7 +1,7 @@
 import * as os from 'os';
 import { remote } from 'electron';
 import * as electronSettings from 'electron-settings';
-import {SettingsKeys, SettingsMap, State} from './types/settings';
+import { KeyFormat, SettingsKeys, SettingsMap, State } from './types/settings';
 import {TypedAction, GetState, TypedThunk, OptionalAction} from './types/index';
 import {afterAction} from '../store/eventMiddleware';
 import * as path from 'path';
@@ -90,14 +90,14 @@ afterAction([Actions.LOAD, Actions.SAVE], (dispatch, getState: GetState) => {
   document.documentElement.style.fontSize = `${settings.current.rootFontSize}px`;
 });
 
-function applyDefaults(settings: SettingsMap): SettingsMap {
+function applyDefaults(settings: Partial<SettingsMap>): SettingsMap {
   const inactivityTimeout = Number.parseInt(settings.inactivityTimeout as any);
   return {
     ...settings,
     rootFontSize: Math.min(Math.max(Number.parseInt(settings.rootFontSize as any) || 16, 10), 20),
     privateKeyFile: settings.privateKeyFile || (os.platform() === 'linux' ? path.join(os.homedir(), '.ssh/id_rsa') : ''),
     inactivityTimeout: Number.isNaN(inactivityTimeout) ? 15 : inactivityTimeout,
-    keyDisplayFormat: settings.keyDisplayFormat || 'sha256'
+    keyDisplayFormat: Object.values(KeyFormat).includes(settings.keyDisplayFormat) ? settings.keyDisplayFormat! : KeyFormat.SHA256
   };
 }
 
@@ -110,11 +110,11 @@ type Action =
 
 type Thunk<R> = TypedThunk<Action, R>;
 
-export default function reducer(state: State = { current: {}, edited: {}, previous: {} }, action: Action): State {
+export default function reducer(state: State = { current: applyDefaults({}), edited: {}, previous: applyDefaults({}) }, action: Action): State {
   switch (action.type) {
     case Actions.LOAD: {
       const cleaned = applyDefaults(action.payload);
-      return { current: cleaned, edited: cleaned, previous: {} };
+      return { current: cleaned, edited: cleaned, previous: state.current };
     }
     case Actions.CHANGE:
       return { ...state, edited: { ...state.edited, [action.payload.key]: action.payload.value }};

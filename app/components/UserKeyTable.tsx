@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {State} from '../actions/types/keys';
+import { KeyFormat } from '../actions/types/settings';
 import * as styles from './UserKeyTable.css';
 
 export interface Props {
   keysByUser: State['byUser'],
   currentUser?: string | null,
-  keyFormat: string,
+  keyFormat: KeyFormat,
   onToggleKeyFormat: () => void
   onDelete: (username: string) => void
 }
@@ -24,10 +25,10 @@ export default ({ keysByUser, currentUser, keyFormat, onDelete, onToggleKeyForma
       {Object.keys(keysByUser).sort().map(username => (<tr key={username} className={username === currentUser ? 'table-success' : ''}>
         <td>{username}</td>
         <td className={styles.keyCell}>
-          {keyFormat === 'full'
+          {keyFormat === KeyFormat.FULL
             ? keysByUser[username].toString('ssh').substr(8)
             : <span>
-              {keysByUser[username].size} {keyFormat === 'md5' && 'MD5:'}{keysByUser[username].fingerprint(keyFormat).toString()}
+              {keysByUser[username].size} {keyFormat === KeyFormat.MD5 && 'MD5:'}{keysByUser[username].fingerprint(keyFormat).toString()}
             </span>}
         </td>
         <td>{keysByUser[username].comment}</td>

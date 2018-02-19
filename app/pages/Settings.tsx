@@ -46,7 +46,7 @@ export default () => (<div className="container">
     </FormGroup>
     <FormGroup>
       <Label>Inactivity lock (minutes)</Label>
-      <SettingField field="inactivityTimeout" />
+      <SettingField field="inactivityTimeout" type="number" min={0} step={5} />
       <small className="form-text text-muted">
         Lock workspace after some minutes of inactivity; 0 to disable.&nbsp;
         <i className="fa fa-warning" /> Requires an encrypted private key.
@@ -54,7 +54,7 @@ export default () => (<div className="container">
     </FormGroup>
     <FormGroup>
       <Label>UI scale / root font size (px)</Label>
-      <SettingField field="rootFontSize" />
+      <SettingField field="rootFontSize" type="number" min={10} max={20} />
     </FormGroup>
     <FormGroup className="text-right">
       <SaveSettingsButton color="success">Save</SaveSettingsButton>
