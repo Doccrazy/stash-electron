@@ -1,8 +1,10 @@
 ## upcoming release (no planned release date)
 
 #### New features
-- The *Modified* column is now based on git history instead of local file date
-- A history popup has been added for user keys and folder permissions
+- **Git history support**
+  - The *Modified* column is now based on git history instead of local file date
+  - A history popup has been added for user keys and folder permissions
+  - The history of entries can now be accessed by a dropdown in the lower panel
 - SSH key format can now be toggled between fingerprint and full display, defaulting to SHA256 fingerprint
 
 #### Changes

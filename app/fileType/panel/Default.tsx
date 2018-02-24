@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Button } from 'reactstrap';
 import { connect } from 'react-redux';
 import { PanelProps } from '../index';
-import EntryPtr from '../../domain/EntryPtr';
 import { browseForSaveAs, open as openExternal } from '../../actions/external';
 
 interface InnerProps {
@@ -19,6 +18,6 @@ const DefaultPanel = ({ onOpen, onSaveAs }: InnerProps) => (<div >
 </div>);
 
 export default connect(null, (dispatch, props: PanelProps<void>) => ({
-  onOpen: () => dispatch(openExternal(new EntryPtr(props.node.id, props.entry))),
-  onSaveAs: () => dispatch(browseForSaveAs(new EntryPtr(props.node.id, props.entry)))
+  onOpen: () => dispatch(openExternal()),
+  onSaveAs: () => dispatch(browseForSaveAs())
 }))(DefaultPanel);

@@ -1,6 +1,8 @@
 import * as path from 'path';
 import AuthorizationProvider from './AuthorizationProvider';
 import * as SshPK from 'sshpk';
+import FileSystem from './fs/FileSystem';
+import NodeFileSystem from './fs/NodeFileSystem';
 import KeyProvider from './KeyProvider';
 import UsersFile from './UsersFile';
 
@@ -12,18 +14,18 @@ export default class UsersFileAuthorizationProvider implements AuthorizationProv
   private currentUsername?: string | null;
   private currentKey?: SshPK.PrivateKey;
 
-  constructor(repoPath: string, keyProvider: KeyProvider) {
+  constructor(repoPath: string, keyProvider: KeyProvider, private readonly fs: FileSystem = new NodeFileSystem()) {
     this.repoPath = repoPath;
     this.keyProvider = keyProvider;
   }
 
-  getAuthorizedUsers(nodeId: string): string[] {
-    const usersFile = this.getUsersFile(nodeId);
+  async getAuthorizedUsers(nodeId: string): Promise<string[]> {
+    const usersFile = await this.getUsersFile(nodeId);
     return usersFile.listUsers();
   }
 
-  setAuthorizedUsers(nodeId: string, users: string[]): void {
-    const usersFile = this.getUsersFile(nodeId);
+  async setAuthorizedUsers(nodeId: string, users: string[]): Promise<void> {
+    const usersFile = await this.getUsersFile(nodeId);
     if (!users.length) {
       usersFile.reset();
     } else if (!usersFile.isInitialized()) {
@@ -42,7 +44,7 @@ export default class UsersFileAuthorizationProvider implements AuthorizationProv
       }
       usersFile.bulkAuthorize(addedUsers, this.keyProvider);
     }
-    usersFile.save();
+    await usersFile.save();
   }
 
   setCurrentUser(key?: SshPK.PrivateKey): void {
@@ -53,12 +55,12 @@ export default class UsersFileAuthorizationProvider implements AuthorizationProv
     }
   }
 
-  getMasterKey(nodeId: string): Buffer {
+  async getMasterKey(nodeId: string): Promise<Buffer> {
     if (!this.currentUsername || !this.currentKey) {
       throw new Error('Not logged in');
     }
 
-    const usersFile = this.getUsersFile(nodeId);
+    const usersFile = await this.getUsersFile(nodeId);
     if (!usersFile.isUnlocked()) {
       if (!usersFile.listUsers().includes(this.currentUsername)) {
         throw new Error(`Unauthorized on ${nodeId}`);
@@ -75,12 +77,12 @@ export default class UsersFileAuthorizationProvider implements AuthorizationProv
     this.usersFileCache = {};
   }
 
-  private getUsersFile(nodeId: string): UsersFile {
+  private async getUsersFile(nodeId: string): Promise<UsersFile> {
     const cached = this.usersFileCache[nodeId];
     if (cached) {
       return cached;
     }
-    const nodeUsersFile = new UsersFile(path.join(this.repoPath, nodeId));
+    const nodeUsersFile = await UsersFile.forDirectory(path.join(this.repoPath, nodeId), this.fs);
     this.usersFileCache[nodeId] = nodeUsersFile;
     return nodeUsersFile;
   }

@@ -8,7 +8,7 @@ import EntryPtr from '../domain/EntryPtr';
 import * as repoActions from './repository';
 import typeFor from '../fileType/index';
 import {State} from './types/external';
-import {TypedAction, TypedThunk} from './types/index';
+import { RootState, TypedAction, TypedThunk } from './types/index';
 
 export enum Actions {
   FILES_WRITTEN = 'external/FILES_WRITTEN'
@@ -69,9 +69,16 @@ export function addFiles(files: string[]): Thunk<Promise<void>> {
   };
 }
 
-export function open(ptr: EntryPtr): Thunk<Promise<void>> {
+export function open(ptr?: EntryPtr): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const buffer = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
+    if (!ptr) {
+      ptr = getState().currentEntry.ptr;
+    }
+    if (!ptr) {
+      return;
+    }
+
+    const buffer = read(getState(), ptr);
 
     let absPath = path.join(tempDir, ptr.entry);
     let ctr = 0;
@@ -86,8 +93,15 @@ export function open(ptr: EntryPtr): Thunk<Promise<void>> {
   };
 }
 
-export function browseForSaveAs(ptr: EntryPtr): Thunk<Promise<void>> {
+export function browseForSaveAs(ptr?: EntryPtr): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
+    if (!ptr) {
+      ptr = getState().currentEntry.ptr;
+    }
+    if (!ptr) {
+      return;
+    }
+
     const targetPath = remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
       title: 'Save as *UNENCRYPTED*',
       defaultPath: ptr.entry
@@ -101,7 +115,7 @@ export function browseForSaveAs(ptr: EntryPtr): Thunk<Promise<void>> {
 function saveAs(ptr: EntryPtr, targetPath: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     try {
-      const buffer = await repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
+      const buffer = read(getState(), ptr);
 
       await fs.writeFile(targetPath, buffer);
       toastr.success('', `${ptr.entry} saved successfully.`, { timeOut: 2000 });
@@ -109,6 +123,11 @@ function saveAs(ptr: EntryPtr, targetPath: string): Thunk<Promise<void>> {
       toastr.error('', `Save failed: ${e}.`);
     }
   };
+}
+
+// TODO git history
+async function read(state: RootState, ptr: EntryPtr) {
+  return repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
 }
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'stash-'));

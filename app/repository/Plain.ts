@@ -1,7 +1,8 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import { isValidFileName, RESERVED_FILENAMES } from '../utils/repository';
 import Node, { ROOT_ID } from '../domain/Node';
+import FileSystem from './fs/FileSystem';
+import NodeFileSystem from './fs/NodeFileSystem';
 import Repository from './Repository';
 
 function assertSubPath(parent: string, child: string) {
@@ -21,7 +22,7 @@ export default class PlainRepository implements Repository {
   readonly rootPath: string;
   readonly name: string;
 
-  constructor(rootPath: string) {
+  constructor(rootPath: string, private readonly fs: FileSystem = new NodeFileSystem()) {
     this.rootPath = path.normalize(rootPath);
     this.name = path.parse(this.rootPath).name;
   }
@@ -37,8 +38,8 @@ export default class PlainRepository implements Repository {
       parentId = parsed.dir === ROOT_ID ? ROOT_ID : `${parsed.dir}/`;
     }
 
-    const files = await fs.readdir(dirPath);
-    const fileStats = await Promise.all(files.map(fn => fs.stat(path.join(dirPath, fn))));
+    const files = await this.fs.readdir(dirPath);
+    const fileStats = await Promise.all(files.map(fn => this.fs.stat(path.join(dirPath, fn))));
 
     const entries: string[] = [];
     const children: string[] = [];
@@ -65,14 +66,14 @@ export default class PlainRepository implements Repository {
       throw new Error(`Invalid filename: ${newNodeName}`);
     }
 
-    const stat = await fs.stat(absPath);
+    const stat = await this.fs.stat(absPath);
     if (!stat.isDirectory()) {
       throw new Error(`Not a directory: ${parentNodeId}`);
     }
 
     const newPath = path.join(absPath, newNodeName);
 
-    await fs.mkdir(newPath);
+    await this.fs.mkdir(newPath);
 
     return new Node({ id: makeId(parentNodeId, newNodeName), name: newNodeName, parentId: parentNodeId });
   }
@@ -97,11 +98,11 @@ export default class PlainRepository implements Repository {
     const dirPath = path.join(this.rootPath, nodeId);
     const newDirPath = path.join(this.rootPath, newParentId, name);
 
-    if (fs.existsSync(newDirPath)) {
+    if (await this.fs.exists(newDirPath)) {
       throw new Error(`Move failed: ${name} already exists`);
     }
 
-    await fs.move(dirPath, newDirPath);
+    await this.fs.move(dirPath, newDirPath);
 
     return makeId(newParentId, name);
   }
@@ -141,12 +142,12 @@ export default class PlainRepository implements Repository {
     const absPath = path.join(this.rootPath, nodeId);
     assertSubPath(this.rootPath, absPath);
 
-    const stat = await fs.stat(absPath);
+    const stat = await this.fs.stat(absPath);
     if (!stat.isDirectory()) {
       throw new Error(`Not a directory: ${nodeId}`);
     }
 
-    await fs.remove(absPath);
+    await this.fs.remove(absPath);
   }
 
   async setAuthorizedUsers(nodeId: string, users?: string[]): Promise<void> {
@@ -164,12 +165,12 @@ export default class PlainRepository implements Repository {
   async deleteFile(nodeId: string, name: string): Promise<void> {
     const absPath = this.resolveAbsPath(nodeId, name);
 
-    const stat = await fs.stat(absPath);
+    const stat = await this.fs.stat(absPath);
     if (!stat.isFile()) {
       throw new Error(`Not a file: ${name} in ${nodeId}`);
     }
 
-    await fs.unlink(absPath);
+    await this.fs.unlink(absPath);
   }
 
   resolveAbsPath(nodeId: string, fileName: string): string {
@@ -186,12 +187,17 @@ export default class PlainRepository implements Repository {
     return path.posix.join(nodeId, fileName).substr(1);
   }
 
+  unresolvePath(resolvedPath: string) {
+    const parsed = path.posix.parse(resolvedPath);
+    return { nodeId: `/${parsed.dir}`, fileName: parsed.base };
+  }
+
   readFile(nodeId: string, fileName: string) {
-    return fs.readFile(this.resolveAbsPath(nodeId, fileName));
+    return this.fs.readFile(this.resolveAbsPath(nodeId, fileName));
   }
 
   async writeFile(nodeId: string, fileName: string, buffer: Buffer) {
-    await fs.writeFile(this.resolveAbsPath(nodeId, fileName), buffer);
+    await this.fs.writeFile(this.resolveAbsPath(nodeId, fileName), buffer);
   }
 
   private async rename(oldPath: string, newPath: string, overwrite?: boolean) {
@@ -200,6 +206,6 @@ export default class PlainRepository implements Repository {
     const newAbsPath = path.join(this.rootPath, newPath);
     assertSubPath(this.rootPath, newAbsPath);
 
-    await fs.move(absPath, newAbsPath, { overwrite });
+    await this.fs.move(absPath, newAbsPath, { overwrite });
   }
 }

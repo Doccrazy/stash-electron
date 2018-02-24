@@ -1,6 +1,7 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as sshpk from 'sshpk';
+import FileSystem from './fs/FileSystem';
+import NodeFileSystem from './fs/NodeFileSystem';
 import KeyProvider, {findUser} from './KeyProvider';
 
 export const FILENAME = '.keys.json';
@@ -9,16 +10,22 @@ export default class KeyFileKeyProvider implements KeyProvider {
   private keyfile: string;
   private keys: { [username: string]: sshpk.Key };
 
-  constructor(repoPath: string) {
-    this.keyfile = path.join(repoPath, FILENAME);
-    this.keys = {};
+  private constructor(keyfile: string, keys: KeyFileKeyProvider['keys'], private readonly fs: FileSystem = new NodeFileSystem()) {
+    this.keyfile = keyfile;
+    this.keys = keys;
+  }
 
-    if (fs.existsSync(this.keyfile)) {
-      const parsedKeyfile = JSON.parse(fs.readFileSync(this.keyfile, 'utf8'));
+  static async create(repoPath: string, fs: FileSystem = new NodeFileSystem()) {
+    const keyfile = path.join(repoPath, FILENAME);
+    const keys: KeyFileKeyProvider['keys'] = {};
+
+    if (await fs.exists(keyfile)) {
+      const parsedKeyfile = JSON.parse((await fs.readFile(keyfile)).toString());
       for (const username of Object.keys(parsedKeyfile)) {
-        this.keys[username] = sshpk.parseKey(parsedKeyfile[username], 'auto');
+        keys[username] = sshpk.parseKey(parsedKeyfile[username], 'auto');
       }
     }
+    return new KeyFileKeyProvider(keyfile, keys, fs);
   }
 
   getKey(username: string) {
@@ -49,6 +56,6 @@ export default class KeyFileKeyProvider implements KeyProvider {
     for (const username of this.listUsers()) {
       serKeyfile[username] = this.getKey(username).toString('ssh');
     }
-    return fs.writeFile(this.keyfile, JSON.stringify(serKeyfile, null, '  '));
+    return this.fs.writeFile(this.keyfile, Buffer.from(JSON.stringify(serKeyfile, null, '  ')));
   }
 }

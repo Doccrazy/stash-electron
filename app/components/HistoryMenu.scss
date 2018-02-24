@@ -1,0 +1,33 @@
+@import "~font-awesome/scss/variables";
+@import "~font-awesome/scss/mixins";
+
+.dropdown {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.commit {
+  &::before {
+    @include fa-icon;
+
+    content: $fa-var-circle;
+    width: 1rem;
+    margin-right: 0.333rem;
+    text-align: center;
+    font-size: 60%;
+  }
+
+  &.latest::before {
+    content: $fa-var-dot-circle-o;
+    font-size: 100%;
+  }
+
+  display: flex !important;
+  align-items: center;
+
+  > div:last-child {
+    flex-grow: 1;
+    text-align: right;
+    padding-left: 2em;
+  }
+}

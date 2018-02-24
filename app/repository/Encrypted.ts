@@ -1,3 +1,6 @@
+import * as path from "path";
+import FileSystem from './fs/FileSystem';
+import NodeFileSystem from './fs/NodeFileSystem';
 import PlainRepository from './Plain';
 import Node from '../domain/Node';
 import AuthorizationProvider from './AuthorizationProvider';
@@ -9,15 +12,15 @@ import {List} from 'immutable';
 export default class EncryptedRepository extends PlainRepository {
   private readonly recAuthProvider: RecursiveAuthProviderWrapper;
 
-  constructor(rootPath: string, private readonly authProvider: AuthorizationProvider) {
-    super(rootPath);
+  constructor(rootPath: string, private readonly authProvider: AuthorizationProvider, fs: FileSystem = new NodeFileSystem()) {
+    super(rootPath, fs);
     this.recAuthProvider = new RecursiveAuthProviderWrapper(authProvider);
   }
 
   async readNode(nodeId: string): Promise<Node> {
     const node = await super.readNode(nodeId);
 
-    let authorizedUsers: string[] | undefined = this.authProvider.getAuthorizedUsers(nodeId);
+    let authorizedUsers: string[] | undefined = await this.authProvider.getAuthorizedUsers(nodeId);
     if (!authorizedUsers.length) {
       authorizedUsers = undefined;
     }
@@ -36,16 +39,16 @@ export default class EncryptedRepository extends PlainRepository {
   }
 
   async moveNode(nodeId: string, newParentId: string): Promise<string> {
-    if (this.authProvider.getAuthorizedUsers(nodeId).length) {
+    if ((await this.authProvider.getAuthorizedUsers(nodeId)).length) {
       // if the node being moved has its own auth file, we can move it without access to the key
       this.authProvider.resetCaches();
       return super.moveNode(nodeId, newParentId);
     }
 
-    const oldMasterKey = this.recAuthProvider.getMasterKey(nodeId);
+    const oldMasterKey = await this.recAuthProvider.getMasterKey(nodeId);
     const newId = await super.moveNode(nodeId, newParentId);
     this.authProvider.resetCaches();
-    const newMasterKey = this.recAuthProvider.getMasterKey(newId);
+    const newMasterKey = await this.recAuthProvider.getMasterKey(newId);
 
     if (oldMasterKey && !oldMasterKey.equals(newMasterKey)) {
       const affectedNodes = await this.findNodesWithSameKey(newId);
@@ -65,24 +68,24 @@ export default class EncryptedRepository extends PlainRepository {
     const entryCount = affectedNodes.map((n: Node) => n.entries.size).reduce((acc: number, v: number) => acc + v, 0);
     if (!entryCount) {
       // if no entries are affected, we can just set the users without masterkey access
-      this.authProvider.setAuthorizedUsers(nodeId, []);
+      await this.authProvider.setAuthorizedUsers(nodeId, []);
       if (users && users.length) {
-        this.authProvider.setAuthorizedUsers(nodeId, users);
+        await this.authProvider.setAuthorizedUsers(nodeId, users);
       }
       return;
     }
 
-    const oldMasterKey = this.recAuthProvider.getMasterKey(nodeId);
-    this.authProvider.setAuthorizedUsers(nodeId, users || []);
-    const newMasterKey = this.recAuthProvider.getMasterKey(nodeId);
+    const oldMasterKey = await this.recAuthProvider.getMasterKey(nodeId);
+    await this.authProvider.setAuthorizedUsers(nodeId, users || []);
+    const newMasterKey = await this.recAuthProvider.getMasterKey(nodeId);
     if (oldMasterKey && !oldMasterKey.equals(newMasterKey)) {
       await this.reencrypt(affectedNodes, oldMasterKey, newMasterKey);
     }
   }
 
   async moveFile(nodeId: string, name: string, targetNodeId: string): Promise<void> {
-    const sourceMasterKey = this.recAuthProvider.getMasterKey(nodeId);
-    const targetMasterKey = this.recAuthProvider.getMasterKey(targetNodeId);
+    const sourceMasterKey = await this.recAuthProvider.getMasterKey(nodeId);
+    const targetMasterKey = await this.recAuthProvider.getMasterKey(targetNodeId);
 
     if (sourceMasterKey.equals(targetMasterKey)) {
       // no auth change, we can just move
@@ -99,14 +102,19 @@ export default class EncryptedRepository extends PlainRepository {
     return super.resolvePath(nodeId, `${fileName}.enc`);
   }
 
-  readFile(nodeId: string, fileName: string): Promise<Buffer> {
-    const masterKey = this.recAuthProvider.getMasterKey(nodeId);
+  unresolvePath(resolvedPath: string) {
+    const result = super.unresolvePath(resolvedPath);
+    return { ...result, fileName: path.posix.parse(result.fileName).name };
+  }
+
+  async readFile(nodeId: string, fileName: string): Promise<Buffer> {
+    const masterKey = await this.recAuthProvider.getMasterKey(nodeId);
 
     return this.readAndDecipher(nodeId, fileName, masterKey);
   }
 
-  writeFile(nodeId: string, fileName: string, buffer: Buffer): Promise<any> {
-    const masterKey = this.recAuthProvider.getMasterKey(nodeId);
+  async writeFile(nodeId: string, fileName: string, buffer: Buffer): Promise<any> {
+    const masterKey = await this.recAuthProvider.getMasterKey(nodeId);
 
     return this.writeAndEncipher(nodeId, fileName, buffer, masterKey);
   }

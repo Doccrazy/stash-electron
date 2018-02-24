@@ -1,7 +1,8 @@
-import { List, Set } from 'immutable';
+import { Set } from 'immutable';
 import * as path from 'path';
 import Node from '../domain/Node';
 import { FILENAME, default as UsersFile } from '../repository/UsersFile';
+import { commitsFor } from '../store/selectors';
 import { accessingRepository, GitCommitInfo, loadBlobs } from '../utils/git';
 import { AuthHistory, State } from './types/usersHistory';
 import { OptionalAction, TypedAction, TypedThunk } from './types';
@@ -57,10 +58,7 @@ export function openAuth(nodeId?: string): Thunk<Promise<void>> {
       .filter(node => node.id === nodeId || (!nodeId && !!node.authorizedUsers));
 
     // get List<GitCommitInfo> of relevant commits for each node's users file
-    const commits = nodes.map(node =>
-      git.history.files.get(usersFn(node.id), List<string>())
-        .map(oid => git.history.commits.get(oid)!)
-    );
+    const commits = nodes.map(node => commitsFor(getState(), usersFn(node.id)));
 
     await accessingRepository(repoPath, async gitRepo => {
       for (let i = 0; i < nodes.length; i++) {
@@ -73,7 +71,7 @@ export function openAuth(nodeId?: string): Thunk<Promise<void>> {
         for (let commitIdx = 0; commitIdx < fileCommits.length; commitIdx++) {
           const commit = fileCommits[commitIdx];
           const blob = blobs[commitIdx];
-          const usersFile = new UsersFile(blob);
+          const usersFile = UsersFile.forBuffer(blob);
 
           const historyEntry = makeHistoryEntry(commit, node, lastUsersFile, usersFile);
           history.push(historyEntry);

@@ -1,8 +1,9 @@
 import * as path from 'path';
-import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as sshpk from 'sshpk';
 import {ALG_KEY_BYTES} from '../utils/cryptoStream';
+import FileSystem from './fs/FileSystem';
+import NodeFileSystem from './fs/NodeFileSystem';
 import KeyProvider from './KeyProvider';
 
 export const FILENAME = '.users.json';
@@ -44,20 +45,13 @@ interface FileFormat {
 
 export default class UsersFile {
   private readonly usersFile: string;
-  private encryptedKeys: {[username: string]: Buffer};
+  private encryptedKeys: {[username: string]: Buffer} = {};
   private hashedMasterKey: Buffer;
   private masterKey: Buffer | null;
 
-  constructor(directoryOrBuf: string | Buffer) {
-    this.encryptedKeys = {};
-    let buf: Buffer | null = null;
-    if (typeof directoryOrBuf === 'string') {
-      this.usersFile = path.join(directoryOrBuf, FILENAME);
-      if (fs.existsSync(this.usersFile)) {
-        buf = fs.readFileSync(this.usersFile);
-      }
-    } else {
-      buf = directoryOrBuf;
+  private constructor(buf: Buffer | null | undefined, filename: string | null | undefined, private readonly fs: FileSystem = new NodeFileSystem()) {
+    if (filename) {
+      this.usersFile = filename;
     }
 
     if (buf) {
@@ -70,6 +64,19 @@ export default class UsersFile {
         this.encryptedKeys[username] = Buffer.from(parsedFile.encryptedKeys[username], 'base64');
       }
     }
+  }
+
+  static async forDirectory(directory: string, fs: FileSystem = new NodeFileSystem()) {
+    const usersFile = path.join(directory, FILENAME);
+    let buf: Buffer | null = null;
+    if (await fs.exists(usersFile)) {
+      buf = await fs.readFile(usersFile);
+    }
+    return new UsersFile(buf, usersFile, fs);
+  }
+
+  static forBuffer(buf: Buffer, fs: FileSystem = new NodeFileSystem()) {
+    return new UsersFile(buf, undefined, fs);
   }
 
   isInitialized() {
@@ -149,12 +156,12 @@ export default class UsersFile {
     return Object.keys(this.encryptedKeys);
   }
 
-  save() {
+  async save(): Promise<void> {
     const buffer = this.writeBuffer();
     if (buffer) {
-      fs.writeFileSync(this.usersFile, buffer);
-    } else if (fs.existsSync(this.usersFile)) {
-      fs.unlinkSync(this.usersFile);
+      await this.fs.writeFile(this.usersFile, buffer);
+    } else if (await this.fs.exists(this.usersFile)) {
+      await this.fs.unlink(this.usersFile);
     }
   }
 

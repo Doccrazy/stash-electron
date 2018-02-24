@@ -1,17 +1,20 @@
 import EntryPtr from '../domain/EntryPtr';
+import { findHistoricEntry } from '../store/selectors';
+import { accessingRepository, createGitRepository } from '../utils/git';
 import * as Repository from './repository';
 import * as CurrentNode from './currentNode';
 import * as PrivateKey from './privateKey';
 import { afterAction } from '../store/eventMiddleware';
 import typeFor from '../fileType';
 import {State} from './types/currentEntry';
-import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
+import { GetState, TypedAction, TypedThunk, OptionalAction, RootState } from './types/index';
 import {toastr} from 'react-redux-toastr';
 import {isAccessible} from '../utils/repository';
 
 export enum Actions {
   SELECT = 'currentEntry/SELECT',
   RESELECT = 'currentEntry/RESELECT',
+  SELECT_HISTORY = 'currentEntry/SELECT_HISTORY',
   READ = 'currentEntry/READ',
   CLEAR = 'currentEntry/CLEAR',
   PREPARE_DELETE = 'currentEntry/PREPARE_DELETE',
@@ -42,17 +45,34 @@ export function reselect(ptr: EntryPtr): Action {
   };
 }
 
+export function selectHistory(oid?: string): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    if (!getState().currentEntry.ptr) {
+      return;
+    }
+
+    dispatch({
+      type: Actions.SELECT_HISTORY,
+      payload: oid
+    });
+
+    await dispatch(read());
+  };
+}
+
 export function read(contentBuffer?: Buffer): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentEntry, repository, privateKey } = getState();
-    if (!currentEntry.ptr || !isAccessible(repository.nodes, currentEntry.ptr.nodeId, privateKey.username)) {
+    if (!currentEntry.ptr || (!currentEntry.historyCommit && !isAccessible(repository.nodes, currentEntry.ptr.nodeId, privateKey.username))) {
       return;
     }
 
     const type = typeFor(currentEntry.ptr.entry);
     if (type.parse) {
       try {
-        const content = contentBuffer || await Repository.getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry);
+        const content = contentBuffer || (currentEntry.historyCommit
+          ? await readFromGit(getState(), currentEntry.ptr, currentEntry.historyCommit)
+          : await Repository.getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry));
         const parsedContent = type.parse(content as Buffer);
         dispatch({
           type: Actions.READ,
@@ -64,6 +84,16 @@ export function read(contentBuffer?: Buffer): Thunk<Promise<void>> {
       }
     }
   };
+}
+
+// TODO this does not belong here
+function readFromGit(state: RootState, ptr: EntryPtr, commitOid: string): Promise<Buffer> {
+  const ptrAtCommit = findHistoricEntry(ptr, state.git.history, commitOid);
+  return accessingRepository(state.repository.path!, async gitRepo => {
+    const repo = await createGitRepository(gitRepo, commitOid, state.privateKey.key);
+
+    return repo.readFile(ptrAtCommit.nodeId, ptrAtCommit.entry);
+  });
 }
 
 export function clear(): Action {
@@ -158,6 +188,7 @@ afterAction(PrivateKey.Actions.LOGIN, (dispatch, getState: GetState) => {
 type Action =
   TypedAction<Actions.SELECT, EntryPtr>
     | TypedAction<Actions.RESELECT, EntryPtr>
+    | OptionalAction<Actions.SELECT_HISTORY, string>
     | TypedAction<Actions.READ, any>
     | OptionalAction<Actions.CLEAR>
     | OptionalAction<Actions.PREPARE_DELETE, EntryPtr>
@@ -174,9 +205,11 @@ export default function reducer(state: State = {}, action: Action): State {
       return state;
     case Actions.RESELECT:
       if (action.payload instanceof EntryPtr) {
-        return { ...state, ptr: action.payload, deleting: undefined };
+        return { ...state, ptr: action.payload, deleting: undefined, historyCommit: undefined };
       }
       return state;
+    case Actions.SELECT_HISTORY:
+      return { ...state, historyCommit: action.payload, parsedContent: undefined };
     case Actions.READ:
       if (action.payload) {
         return { ...state, parsedContent: action.payload };

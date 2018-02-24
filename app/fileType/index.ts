@@ -3,8 +3,6 @@ import * as jsonParser from './parser/json';
 import { StringMatcher } from '../utils/StringMatcher';
 
 export interface PanelProps<C> {
-  node: any,
-  entry: string,
   parsedContent: C
 }
 

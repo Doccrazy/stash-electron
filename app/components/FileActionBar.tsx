@@ -1,20 +1,19 @@
 import * as React from 'react';
 import { Button, DropdownItem } from 'reactstrap';
 import BarsMenu from './BarsMenu';
-import EntryPtr from '../domain/EntryPtr';
-import { copyStashLink } from '../store/stashLinkHandler';
+import HistoryMenu, { Props as HistoryProps } from './HistoryMenu';
 
-export interface Props {
-  node: { id: string },
-  entry: string,
+export interface Props extends HistoryProps {
   accessible?: boolean,
   onEdit: () => void,
-  onDelete: () => void
+  onDelete: () => void,
+  onCopyLink: () => void,
 }
 
-export default ({ node, entry, accessible, onEdit, onDelete }: Props) => (<div>
-  {accessible && <Button size="sm" title="Edit" onClick={onEdit}><i className="fa fa-pencil" /></Button>}&nbsp;
-  <Button size="sm" title="Share link" onClick={() => copyStashLink(new EntryPtr(node.id, entry))}><i className="fa fa-share" /></Button>&nbsp;
+export default ({ accessible, history, selectedCommit, onEdit, onDelete, onCopyLink, onSelectHistory }: Props) => (<div>
+  {accessible && !selectedCommit && <Button size="sm" title="Edit" onClick={onEdit}><i className="fa fa-pencil" /></Button>}&nbsp;
+  <Button size="sm" title="Share link" onClick={onCopyLink}><i className="fa fa-share" /></Button>&nbsp;
+  {history.length > 1 && <HistoryMenu history={history} selectedCommit={selectedCommit} onSelectHistory={onSelectHistory} />}{history.length > 1 && ' '}
   {accessible && <BarsMenu up right size="sm">
     <DropdownItem onClick={onDelete}><i className="fa fa-trash-o" /> Delete</DropdownItem>
   </BarsMenu>}

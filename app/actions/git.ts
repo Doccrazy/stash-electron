@@ -21,7 +21,7 @@ import {
 import { RES_LOCAL_FILENAMES } from '../utils/repository';
 import * as Credentials from './credentials';
 import * as Repository from './repository';
-import { FetchResult, GitStatus, State } from './types/git';
+import { FetchResult, GitStatus, OidAndName, State } from './types/git';
 import { GetState, OptionalAction, TypedAction, TypedDispatch, TypedThunk } from './types/index';
 import { changeAndSave } from './settings';
 
@@ -182,9 +182,9 @@ function conservativeAutoMerge(filename: string, ours: Buffer, theirs: Buffer, a
     return Buffer.from(JSON.stringify(result, null, '  '));
   } else if (path.parse(filename).base === USERS_FILE) {
     console.log(`auto-merging ${filename}`);
-    const ourUsers = new UsersFile(ours);
-    const theirUsers = new UsersFile(theirs);
-    const baseUsers = new UsersFile(ancestor);
+    const ourUsers = UsersFile.forBuffer(ours);
+    const theirUsers = UsersFile.forBuffer(theirs);
+    const baseUsers = UsersFile.forBuffer(ancestor);
 
     // if master keys differ, we cannot merge
     if (!ourUsers.getHashedMasterKey()!.equals(theirUsers.getHashedMasterKey()!)) {
@@ -295,12 +295,17 @@ function refreshHistory(): Thunk<Promise<void>> {
 
 function buildHistory(history: GitCommitInfo[]) {
   let commits = OrderedMap<string, GitCommitInfo>();
-  let files = Map<string, List<string>>();
+  let files = Map<string, List<OidAndName>>();
+  let renameMap = Map<string, string>();
 
   for (const entry of history) {
     commits = commits.set(entry.hash, entry);
-    for (const filename of entry.changedFiles || []) {
-      files = files.update(filename, oidList => (oidList || List()).push(entry.hash));
+    for (const change of entry.changedFiles || []) {
+      const currentFile = renameMap.get(change, change);
+      files = files.update(currentFile, oidList => (oidList || List()).push({ oid: entry.hash, name: change }));
+    }
+    for (const filename of Object.keys(entry.renamedFiles || {})) {
+      renameMap = renameMap.set(entry.renamedFiles![filename], renameMap.get(filename, filename));
     }
   }
 

@@ -3,6 +3,11 @@ import { Minimatch } from 'minimatch';
 import * as Git from 'nodegit';
 import * as path from 'path';
 import { OrderedSet } from 'immutable';
+import * as SshPK from 'sshpk';
+import EncryptedRepository from '../repository/Encrypted';
+import GitFileSystem from '../repository/fs/GitFileSystem';
+import KeyFileKeyProvider from '../repository/KeyFileKeyProvider';
+import UsersFileAuthorizationProvider from '../repository/UsersFileAuthorizationProvider';
 import AwaitLock from './AwaitLock';
 
 export interface AheadBehindResult {
@@ -22,7 +27,8 @@ export interface GitCommitInfo {
   authorEmail: string,
   date: Date,
   pushed?: boolean,
-  changedFiles?: string[]
+  changedFiles?: string[],
+  renamedFiles?: { [newFn: string]: string }
 }
 
 export function isRepository(repoPath: string) {
@@ -337,18 +343,25 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
 
   const opts = new (Git as any).DiffOptions();
   opts.flags = Git.Diff.OPTION.FORCE_BINARY;
+  const simOpts: Git.DiffFindOptions = { flags: Git.Diff.FIND.RENAMES | Git.Diff.FIND.EXACT_MATCH_ONLY };  // tslint:disable-line
 
   const result: GitCommitInfo[] = [];
   let allCommits: Git.Commit[];
   do {
     allCommits = await walker.getCommits(BATCH_SIZE);
     const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts, null as any)));
+    await Promise.all(commitDiffs.reduce((acc, diffs) => { acc.push(...diffs); return acc; }, []).map(d => d.findSimilar(simOpts)));
     for (let i = 0; i < commitDiffs.length; i++) {
       const info = commitInfo(allCommits[i]);
       info.changedFiles = [];
+      info.renamedFiles = {};
       for (const diff of commitDiffs[i]) {
         for (let deltaIdx = 0; deltaIdx < diff.numDeltas(); deltaIdx++) {
           const entry = (diff.getDelta(deltaIdx).newFile as any)().path();
+          const oldEntry = (diff.getDelta(deltaIdx).oldFile as any)().path();
+          if (oldEntry !== entry) {
+            info.renamedFiles[entry] = oldEntry;
+          }
           info.changedFiles.push(entry);
         }
       }
@@ -365,4 +378,14 @@ export async function loadBlobs(gitRepo: Git.Repository, commits: GitCommitInfo[
   const entries = await Promise.all(gitCommits.map(c => c.getEntry(filename)));
   const blobs = await Promise.all(entries.map(e => e.getBlob()));
   return blobs.map(blob => blob.content());
+}
+
+export async function createGitRepository(gitRepo: Git.Repository, commitOid: string, privateKey: SshPK.PrivateKey | undefined) {
+  const gitFs = await GitFileSystem.create(gitRepo, commitOid);
+
+  const keyProvider = await KeyFileKeyProvider.create(gitRepo.workdir(), gitFs);
+  const authProvider = new UsersFileAuthorizationProvider(gitRepo.workdir(), keyProvider, gitFs);
+  authProvider.setCurrentUser(privateKey);
+
+  return new EncryptedRepository(gitRepo.workdir(), authProvider, gitFs);
 }

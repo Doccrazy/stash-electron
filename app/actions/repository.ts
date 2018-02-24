@@ -63,7 +63,7 @@ export function load(repoPath?: string): Thunk<Promise<void>> {
       return;
     }
 
-    keyProvider = new KeyFileKeyProvider(repoPath);
+    keyProvider = await KeyFileKeyProvider.create(repoPath);
     authProvider = new UsersFileAuthorizationProvider(repoPath, keyProvider);
     repo = new EncryptedRepository(repoPath, authProvider);
     dispatch({

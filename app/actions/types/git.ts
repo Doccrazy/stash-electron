@@ -27,7 +27,12 @@ export interface GitStatus {
 
 export interface GitHistory {
   commits: OrderedMap<string, GitCommitInfo>,
-  files: Map<string, List<string>>
+  files: Map<string, List<OidAndName>>
+}
+
+export interface OidAndName {
+  oid: string,
+  name: string
 }
 
 export interface FetchResult {

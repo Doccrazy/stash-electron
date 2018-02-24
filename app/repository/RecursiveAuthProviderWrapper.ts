@@ -14,19 +14,19 @@ export default class RecursiveAuthProviderWrapper {
     this.authProvider = authProvider;
   }
 
-  getAuthorizedUsers(nodeId: string): AuthInfo {
-    let users = this.authProvider.getAuthorizedUsers(nodeId);
+  async getAuthorizedUsers(nodeId: string): Promise<AuthInfo> {
+    let users = await this.authProvider.getAuthorizedUsers(nodeId);
     let authNodeId: string | undefined;
     while (!users.length && nodeId !== ROOT_ID) {
       nodeId = parentNodeId(nodeId);
-      users = this.authProvider.getAuthorizedUsers(nodeId);
+      users = await this.authProvider.getAuthorizedUsers(nodeId);
       authNodeId = nodeId;
     }
     return {users, authNodeId};
   }
 
-  getMasterKey(nodeId: string): Buffer {
-    const authInfo = this.getAuthorizedUsers(nodeId);
+  async getMasterKey(nodeId: string): Promise<Buffer> {
+    const authInfo = await this.getAuthorizedUsers(nodeId);
     return this.authProvider.getMasterKey(authInfo.authNodeId || nodeId);
   }
 }
