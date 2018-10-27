@@ -7,6 +7,7 @@ import * as webpack from 'webpack';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
@@ -22,18 +23,12 @@ const rendererProdConfig: webpack.Configuration = {
   entry: './app/index',
 
   output: {
-    path: path.join(__dirname, 'app/dist'),
+    path: path.join(__dirname, 'build/dist'),
     publicPath: '../dist/',
     filename: 'renderer.prod.js'
   },
 
-  externals: (context, request, callback) => {
-    if (/\.node$/.test(request)) {
-      const filename = path.relative(__dirname, path.resolve(context, request)).replace(/\\/g, '/');
-      return callback(null, `commonjs ./${filename}`);
-    }
-    (callback as any)();
-  },
+  externals: ['../build/Debug/nodegit.node'],
 
   module: {
     rules: [
@@ -87,64 +82,9 @@ const rendererProdConfig: webpack.Configuration = {
           'sass-loader'
         ]
       },
-      // WOFF Font
       {
-        test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/font-woff'
-          }
-        }
-      },
-      // WOFF2 Font
-      {
-        test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/font-woff'
-          }
-        }
-      },
-      // TTF Font
-      {
-        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/octet-stream'
-          }
-        }
-      },
-      // EOT Font
-      {
-        test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        use: 'file-loader'
-      },
-      // SVG Font
-      {
-        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'image/svg+xml'
-          }
-        }
-      },
-      // Common Image Formats
-      {
-        test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
-        use: 'url-loader'
-      },
-      // Markdown
-      {
-        test: /\.md$/,
-        use: ['html-loader', 'markdown-loader']
+        test: /\.node$/,
+        loader: 'native-ext-loader'
       }
     ]
   },
@@ -159,8 +99,22 @@ const rendererProdConfig: webpack.Configuration = {
       openAnalyzer: process.env.OPEN_ANALYZER === 'true'
     }),
 
-    new ForkTsCheckerWebpackPlugin()
-  ]
+    new ForkTsCheckerWebpackPlugin(),
+
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'app/app.html')
+    })
+  ],
+
+  /**
+   * Disables webpack processing of __dirname and __filename.
+   * If you run the bundle in node.js it falls back to these values of node.js.
+   * https://github.com/webpack/webpack/issues/2010
+   */
+  node: {
+    __dirname: false,
+    __filename: false
+  }
 };
 
 export default merge.smart(baseConfig, rendererProdConfig);

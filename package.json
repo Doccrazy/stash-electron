@@ -5,8 +5,8 @@
   "description": "Cryptographically secure team password manager built on open technologies and standardized encryption algorithms.",
   "main": "./main.prod.js",
   "scripts": {
+    "clean": "rimraf build/*",
     "build": "concurrently \"npm run build-main\" \"npm run build-renderer\"",
-    "build-dll": "cross-env NODE_ENV=development node --trace-warnings ./node_modules/webpack/bin/webpack --config webpack.config.renderer.dev.dll.ts --colors",
     "build-main": "cross-env NODE_ENV=production node --trace-warnings ./node_modules/webpack/bin/webpack --config webpack.config.main.prod.ts --colors",
     "build-renderer": "cross-env NODE_ENV=production node --trace-warnings ./node_modules/webpack/bin/webpack --config webpack.config.renderer.prod.ts --colors",
     "dev": "cross-env START_HOT=1 npm run start-renderer-dev",
@@ -15,8 +15,8 @@
     "lint-fix": "npm run lint -- --fix",
     "lint-styles": "stylelint app/*.css app/components/*.css --syntax scss",
     "lint-styles-fix": "stylefmt -r app/*.css app/components/*.css",
-    "package": "npm run build && node internals/scripts/build.js",
-    "postinstall": "concurrently \"npm run build-dll\" \"electron-builder install-app-deps\"",
+    "package": "npm run clean && npm run build && node internals/scripts/build.js",
+    "postinstall": "electron-builder install-app-deps",
     "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production electron ./app/",
     "start-main-dev": "cross-env HOT=1 NODE_ENV=development electron -r ts-node/register ./app/main.dev",
@@ -32,21 +32,10 @@
     "files": [
       "package.json",
       {
-        "from": "app",
-        "to": "",
-        "filter": [
-          "dist",
-          "app.html",
-          "icon.png",
-          "main.prod.js",
-          "main.prod.js.map"
-        ]
+        "from": "build",
+        "to": ""
       },
-      "!node_modules",
-      {
-        "from": "binaries",
-        "to": "node_modules"
-      }
+      "!node_modules"
     ],
     "dmg": {
       "contents": [
@@ -140,6 +129,7 @@
   "devDependencies": {
     "@types/chai": "^4.0.5",
     "@types/chai-as-promised": "^7.1.0",
+    "@types/html-webpack-plugin": "^3.2.0",
     "@types/mini-css-extract-plugin": "^0.2.0",
     "@types/mocha": "^2.2.44",
     "@types/semver": "^5.4.0",
@@ -148,6 +138,7 @@
     "@types/webpack-bundle-analyzer": "^2.13.0",
     "@types/webpack-dev-server": "^3.1.1",
     "@types/webpack-merge": "^4.1.3",
+    "autodll-webpack-plugin": "^0.4.2",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chalk": "^2.0.1",
@@ -174,6 +165,7 @@
     "mini-css-extract-plugin": "^0.4.4",
     "minimist": "^1.2.0",
     "mocha": "^4.0.1",
+    "native-ext-loader": "^2.2.0",
     "node-loader": "^0.6.0",
     "node-sass": "^4.9.4",
     "react-test-renderer": "^16.1.1",

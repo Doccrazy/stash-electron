@@ -2,6 +2,7 @@
  * Webpack config for production electron main process
  */
 
+import * as path from 'path';
 import * as webpack from 'webpack';
 import * as merge from 'webpack-merge';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
@@ -20,8 +21,8 @@ const mainProdConfig: webpack.Configuration = {
 
   // 'main.js' in root
   output: {
-    path: __dirname,
-    filename: './app/main.prod.js'
+    path: path.join(__dirname, 'build'),
+    filename: 'main.prod.js'
   },
 
   plugins: [

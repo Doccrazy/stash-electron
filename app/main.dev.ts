@@ -8,7 +8,7 @@
  */
 // tslint:disable-next-line
 /// <reference path="types.d.ts" />
-import { app, BrowserWindow, shell, Event } from 'electron';
+import { app, BrowserWindow, shell, Event, nativeImage } from 'electron';
 import logger from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import * as windowStateKeeper from 'electron-window-state';
@@ -108,14 +108,14 @@ app.on('ready', async () => {
     x: mainWindowState.x,
     y: mainWindowState.y,
     backgroundColor: '#ccc',
-    icon: process.platform === 'linux' ? `${__dirname}/icon.png` : undefined,
+    icon: process.platform === 'linux' ? nativeImage.createFromDataURL(require('./icon.png')) : undefined,
     autoHideMenuBar: true
     // frame: false
   });
 
   mainWindowState.manage(mainWindow);
 
-  mainWindow.loadURL(`file://${__dirname}/app.html`);
+  mainWindow.loadURL(process.env.DEV_SERVER_ROOT || `file://${__dirname}/dist/index.html`);
 
   mainWindow.once('ready-to-show', () => {
     if (!mainWindow) {

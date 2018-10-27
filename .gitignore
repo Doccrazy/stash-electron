@@ -36,6 +36,7 @@ flow-typed/npm/*
 !flow-typed/npm/module_vx.x.x.js
 
 # App packaged
+build
 release
 app/main.prod.js
 app/main.prod.js.map
@@ -52,4 +53,3 @@ main.js.map
 
 .idea
 npm-debug.log.*
-binaries

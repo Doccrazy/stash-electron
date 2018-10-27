@@ -49,14 +49,6 @@ function makeConfig(platform, version, snapshotNum) {
   };
 }
 
-function bin(fn) {
-  fs.mkdirpSync(path.join('binaries', path.dirname(fn)));
-  fs.copyFileSync(path.join('node_modules', fn), path.join('binaries', fn));
-}
-
-bin('keytar/build/Release/keytar.node');
-bin('nodegit/build/Release/nodegit.node');
-
 // tags must always begin with 'v' and may contain an optional commit index + build hash
 const DESCRIBE_PATTERN = /v([^-]+)(?:-(\d+)-\w+)?/;
 

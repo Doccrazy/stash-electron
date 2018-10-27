@@ -7,32 +7,21 @@
  * https://webpack.js.org/concepts/hot-module-replacement/
  */
 
+import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as path from 'path';
-import * as fs from 'fs';
 import * as webpack from 'webpack';
-import chalk from 'chalk';
 import * as merge from 'webpack-merge';
-import { spawn, execSync } from 'child_process';
+import { spawn } from 'child_process';
+import { omit } from 'lodash';
 import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import * as AutoDllPlugin from 'autodll-webpack-plugin';
 import baseConfig from './webpack.config.base';
+import dllConfig from './webpack.config.renderer.dev.dll';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
 
 CheckNodeEnv('development');
 
 const port = Number.parseInt(process.env.PORT || '1212', 10);
-const publicPath = `http://localhost:${port}/dist`;
-const dll = path.resolve(process.cwd(), 'dll');
-const manifest = path.resolve(dll, 'renderer.json');
-
-/**
- * Warn if the DLL is not built
- */
-if (!(fs.existsSync(dll) && fs.existsSync(manifest))) {
-  console.log(chalk.black.bgYellow.bold(
-    'The DLL files are missing. Sit back while we build them for you with "npm run build-dll"'
-  ));
-  execSync('npm run build-dll');
-}
 
 const rendererDevConfig: webpack.Configuration = {
   mode: 'development',
@@ -47,23 +36,12 @@ const rendererDevConfig: webpack.Configuration = {
   ],
 
   output: {
-    publicPath: `http://localhost:${port}/dist/`
+    path: path.join(__dirname, 'build', 'dist'),
+    filename: 'renderer.dev.js'
   },
 
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        use: [{
-          loader: 'ts-loader',
-          options: {
-            // disable type checker - we will use it in fork plugin
-            transpileOnly: true
-          }
-        }],
-        options: {}
-      },
       {
         test: /\.global\.css$/,
         use: [
@@ -137,76 +115,11 @@ const rendererDevConfig: webpack.Configuration = {
             loader: 'sass-loader'
           }
         ]
-      },
-      // WOFF Font
-      {
-        test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/font-woff'
-          }
-        }
-      },
-      // WOFF2 Font
-      {
-        test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/font-woff'
-          }
-        }
-      },
-      // TTF Font
-      {
-        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/octet-stream'
-          }
-        }
-      },
-      // EOT Font
-      {
-        test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        use: 'file-loader'
-      },
-      // SVG Font
-      {
-        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'image/svg+xml'
-          }
-        }
-      },
-      // Common Image Formats
-      {
-        test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
-        use: 'url-loader'
-      },
-      // Markdown
-      {
-        test: /\.md$/,
-        use: ['html-loader', 'markdown-loader']
       }
     ]
   },
 
   plugins: [
-    new webpack.DllReferencePlugin({
-      context: process.cwd(),
-      manifest: require(manifest),
-      sourceType: 'var'
-    }),
-
     /**
      * https://webpack.js.org/concepts/hot-module-replacement/
      */
@@ -235,7 +148,18 @@ const rendererDevConfig: webpack.Configuration = {
       debug: true
     }),
 
-    new ForkTsCheckerWebpackPlugin()
+    new ForkTsCheckerWebpackPlugin(),
+
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'app/app.html')
+    }),
+
+    new AutoDllPlugin({
+      inject: true, // will inject the DLL bundles to index.html
+      filename: '[name].js',
+      config: omit(dllConfig, 'entry'),
+      entry: dllConfig.entry
+    })
   ],
 
   optimization: {
@@ -249,7 +173,6 @@ const rendererDevConfig: webpack.Configuration = {
 
   devServer: {
     port,
-    publicPath,
     compress: true,
     noInfo: true,
     stats: 'errors-only',
@@ -257,7 +180,7 @@ const rendererDevConfig: webpack.Configuration = {
     lazy: false,
     hot: true,
     headers: { 'Access-Control-Allow-Origin': '*' },
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: false,
     watchOptions: {
       aggregateTimeout: 300,
       ignored: /node_modules/,
@@ -266,13 +189,13 @@ const rendererDevConfig: webpack.Configuration = {
     historyApiFallback: {
       disableDotRule: false
     },
-    setup() {
+    before() {
       if (process.env.START_HOT) {
         console.log('Staring Main Process...');
         spawn(
           'npm',
           ['run', 'start-main-dev', '--', process.env.MAIN_ARGS || ''],
-          { shell: true, env: process.env, stdio: 'inherit' }
+          { shell: true, env: { ...process.env, DEV_SERVER_ROOT: 'http://localhost:1212/' }, stdio: 'inherit' }
         )
         .on('close', code => process.exit(code))
         .on('error', spawnError => console.error(spawnError));
