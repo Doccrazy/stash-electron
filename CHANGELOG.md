@@ -6,6 +6,7 @@
   - A history popup has been added for user keys and folder permissions
   - The history of entries can now be accessed by a dropdown in the lower panel
 - SSH key format can now be toggled between fingerprint and full display, defaulting to SHA256 fingerprint
+- Public SSH keys can now copied to clipboard
 
 #### Changes
 - The *My Favorites* link and the tool icons now remain visible when scrolling

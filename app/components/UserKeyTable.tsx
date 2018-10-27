@@ -8,10 +8,11 @@ export interface Props {
   currentUser?: string | null,
   keyFormat: KeyFormat,
   onToggleKeyFormat: () => void
+  onCopyKey: (username: string) => void
   onDelete: (username: string) => void
 }
 
-export default ({ keysByUser, currentUser, keyFormat, onDelete, onToggleKeyFormat }: Props) => (
+export default ({ keysByUser, currentUser, keyFormat, onDelete, onToggleKeyFormat, onCopyKey }: Props) => (
   <table className={`table table-hover table-sm table-sticky ${styles.table}`}>
     <thead>
       <tr>
@@ -24,7 +25,7 @@ export default ({ keysByUser, currentUser, keyFormat, onDelete, onToggleKeyForma
     <tbody>
       {Object.keys(keysByUser).sort().map(username => (<tr key={username} className={username === currentUser ? 'table-success' : ''}>
         <td>{username}</td>
-        <td className={styles.keyCell}>
+        <td className={`${styles.keyCell} clickable`} title="Copy public key" onClick={() => onCopyKey(username)}>
           {keyFormat === KeyFormat.FULL
             ? keysByUser[username].toString('ssh').substr(8)
             : <span>

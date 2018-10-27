@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { deleteUser } from '../actions/keys';
+import { copyToClipboard, deleteUser } from '../actions/keys';
 import { changeAndSave } from '../actions/settings';
 import { Dispatch, RootState, Thunk } from '../actions/types';
 import { KeyFormat } from '../actions/types/settings';
@@ -12,6 +12,7 @@ export default connect((state: RootState, props: void) => ({
   keyFormat: state.settings.current.keyDisplayFormat
 }), (dispatch: Dispatch, props) => ({
   onToggleKeyFormat: () => dispatch(toggleKeyFormat()),
+  onCopyKey: (username: string) => dispatch(copyToClipboard(username)),
   onDelete: (username: string) => dispatch(deleteUser(username))
 }))(UserKeyTable);
 
