@@ -7,7 +7,7 @@ import * as PrivateKey from './privateKey';
 import { afterAction } from '../store/eventMiddleware';
 import typeFor from '../fileType';
 import {State} from './types/currentEntry';
-import { GetState, TypedAction, TypedThunk, OptionalAction, RootState } from './types/index';
+import { GetState, TypedAction, TypedThunk, OptionalAction, RootState, Dispatch } from './types/index';
 import {toastr} from 'react-redux-toastr';
 import {isAccessible} from '../utils/repository';
 
@@ -162,7 +162,7 @@ afterAction([Repository.Actions.DELETE_ENTRY, Repository.Actions.MOVE_ENTRY], (d
 });
 
 // when an entry is created within the current folder, select it
-afterAction(Repository.Actions.CREATE_ENTRY, (dispatch, getState: GetState, ptr) => {
+afterAction(Repository.Actions.CREATE_ENTRY, (dispatch: Dispatch, getState: GetState, ptr) => {
   const { currentNode } = getState();
   if (currentNode.nodeId === ptr.nodeId) {
     dispatch(select(ptr));
@@ -170,7 +170,7 @@ afterAction(Repository.Actions.CREATE_ENTRY, (dispatch, getState: GetState, ptr)
 });
 
 // when the current entry is updated, read new content
-afterAction(Repository.Actions.UPDATE_ENTRY, (dispatch, getState: GetState, { ptr, buffer }) => {
+afterAction(Repository.Actions.UPDATE_ENTRY, (dispatch: Dispatch, getState: GetState, { ptr, buffer }) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
     dispatch(read(buffer));
@@ -178,7 +178,7 @@ afterAction(Repository.Actions.UPDATE_ENTRY, (dispatch, getState: GetState, { pt
 });
 
 // when the login state changes, re-read current entry
-afterAction(PrivateKey.Actions.LOGIN, (dispatch, getState: GetState) => {
+afterAction(PrivateKey.Actions.LOGIN, (dispatch: Dispatch, getState: GetState) => {
   const { currentEntry } = getState();
   if (currentEntry.ptr) {
     dispatch(read());

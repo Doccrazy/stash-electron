@@ -4,7 +4,7 @@ import * as sshpk from 'sshpk';
 import * as os from 'os';
 import {toastr} from 'react-redux-toastr';
 import { remote } from 'electron';
-import {GetState, OptionalAction, TypedAction, TypedThunk} from './types/index';
+import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 import {KeyError, State} from './types/privateKey';
 import {afterAction} from '../store/eventMiddleware';
 import * as Settings from './settings';
@@ -163,7 +163,7 @@ export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
 }
 
 // when the private key setting changes, reload the private key
-afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState: GetState) => {
+afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch: Dispatch, getState: GetState) => {
   const { settings } = getState();
   if (settings.current.privateKeyFile && settings.current.privateKeyFile !== settings.previous.privateKeyFile) {
     dispatch(loadAndUnlockInteractive(getState().privateKey.generate.passphrase));

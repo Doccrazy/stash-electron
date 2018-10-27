@@ -5,7 +5,7 @@ import EntryPtr from '../domain/EntryPtr';
 import { afterAction } from '../store/eventMiddleware';
 import * as Repository from './repository';
 import { State } from './types/favorites';
-import { GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
+import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 
 export enum Actions {
   ADD = 'favorites/ADD',
@@ -83,7 +83,7 @@ export function saveForRepo(): Thunk<Promise<void>> {
   };
 }
 
-afterAction(Repository.Actions.FINISH_LOAD, (dispatch, getState: GetState) => {
+afterAction(Repository.Actions.FINISH_LOAD, (dispatch: Dispatch, getState: GetState) => {
   dispatch(loadForRepo());
 });
 

@@ -1,7 +1,7 @@
 import { Set } from 'immutable';
 import { connect } from 'react-redux';
 import { bulkToggle } from '../actions/authorizedUsers';
-import { RootState } from '../actions/types';
+import { Dispatch, RootState } from '../actions/types';
 import UserAccessTable from '../components/UserAccessTable';
 import Node from '../domain/Node';
 import { findUser } from '../repository/KeyProvider';
@@ -20,6 +20,6 @@ export default connect((state: RootState, props: void) => ({
   authorizationNodes: buildAuthNodes(state.repository.nodes),
   currentUser: state.privateKey.key ? findUser(state.keys.edited, state.privateKey.key) : null,
   modifications: state.authorizedUsers.bulkChanges
-}), (dispatch, props) => ({
+}), (dispatch: Dispatch, props) => ({
   onToggle: (node: Node, username: string) => { dispatch(bulkToggle({ nodeId: node.id, username })); }
 }))(UserAccessTable);

@@ -13,7 +13,7 @@ import * as Keys from './keys';
 import { maybeCommitChanges } from './git';
 import * as Repository from './repository';
 import { StatusType } from './types/fileImport';
-import { GetState, RootState } from './types/index';
+import { Dispatch, GetState, RootState } from './types/index';
 
 function fmtPtr(getState: GetState, ptr: EntryPtr) {
   const type = typeFor(ptr.entry);
@@ -25,45 +25,45 @@ function fmtNode(getState: GetState, node: Node | string) {
   return formatPath(hier);
 }
 
-afterAction(Edit.Actions.SAVED, (dispatch, getState: GetState, { ptr, isNew }: { ptr: EntryPtr, isNew: boolean }) => {
+afterAction(Edit.Actions.SAVED, (dispatch: Dispatch, getState: GetState, { ptr, isNew }: { ptr: EntryPtr, isNew: boolean }) => {
   dispatch(maybeCommitChanges(`${isNew ? 'Create' : 'Edit'} ${fmtPtr(getState, ptr)}`));
 });
 
-afterAction(Repository.Actions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }: { ptr: EntryPtr, newName: string }) => {
+afterAction(Repository.Actions.RENAME_ENTRY, (dispatch: Dispatch, getState: GetState, { ptr, newName }: { ptr: EntryPtr, newName: string }) => {
   const typeNew = typeFor(newName);
   dispatch(maybeCommitChanges(`Rename ${fmtPtr(getState, ptr)} to ${typeNew.toDisplayName(newName)}`));
 });
 
-afterAction(Repository.Actions.DELETE_ENTRY, (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
+afterAction(Repository.Actions.DELETE_ENTRY, (dispatch: Dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
   dispatch(maybeCommitChanges(`Delete ${fmtPtr(getState, ptr)}`));
 });
 
-afterAction(Repository.Actions.MOVE_ENTRY, (dispatch, getState: GetState, { ptr, newNodeId }: { ptr: EntryPtr, newNodeId: string }) => {
+afterAction(Repository.Actions.MOVE_ENTRY, (dispatch: Dispatch, getState: GetState, { ptr, newNodeId }: { ptr: EntryPtr, newNodeId: string }) => {
   dispatch(maybeCommitChanges(`Move ${fmtPtr(getState, ptr)} to ${fmtNode(getState, newNodeId)}`));
 });
 
-afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { node, newNode }: { node: Node, newNode: Node }) => {
+afterAction(Repository.Actions.MOVE_NODE, (dispatch: Dispatch, getState: GetState, { node, newNode }: { node: Node, newNode: Node }) => {
   const msg = node.parentId !== newNode.parentId ? `Move folder ${fmtNode(getState, newNode)} to ${fmtNode(getState, newNode.parentId!)}`
     : `Rename folder ${fmtNode(getState, node)} to ${newNode.name}`;
   dispatch(maybeCommitChanges(msg));
 });
 
-afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, node: Node) => {
+afterAction(Repository.Actions.DELETE_NODE, (dispatch: Dispatch, getState: GetState, node: Node) => {
   dispatch(maybeCommitChanges(`Delete folder ${fmtNode(getState, node)}`));
 });
 
-afterAction(AuthorizedUsers.Actions.SAVED, (dispatch, getState: GetState, nodeId: string) => {
+afterAction(AuthorizedUsers.Actions.SAVED, (dispatch: Dispatch, getState: GetState, nodeId: string) => {
   dispatch(maybeCommitChanges(`Update authorization for folder ${fmtNode(getState, nodeId)}`));
 });
 
-afterAction<RootState>(AuthorizedUsers.Actions.BULK_SAVED, (dispatch, getState, payload, preActionState) => {
+afterAction<RootState>(AuthorizedUsers.Actions.BULK_SAVED, (dispatch: Dispatch, getState, payload, preActionState) => {
   const nodes = preActionState.authorizedUsers.bulkChanges
     .groupBy(ch => ch!.nodeId)
     .map((g, nodeId) => fmtNode(getState, nodeId));
   dispatch(maybeCommitChanges(`Update authorization for folder${nodes.count() > 1 ? 's' : ''} ${nodes.join(', ')}`));
 });
 
-afterAction(Keys.Actions.SAVED, (dispatch, getState: GetState, payload, preActionState) => {
+afterAction(Keys.Actions.SAVED, (dispatch: Dispatch, getState: GetState, payload, preActionState) => {
   const oldUsers = Set(Object.keys(preActionState.keys.byUser));
   const newUsers = Set(Object.keys(getState().keys.byUser));
   const added = newUsers.subtract(oldUsers);
@@ -77,17 +77,17 @@ afterAction(Keys.Actions.SAVED, (dispatch, getState: GetState, payload, preActio
   dispatch(maybeCommitChanges(`Update known users: ${message}`));
 });
 
-afterAction(External.Actions.FILES_WRITTEN, (dispatch, getState: GetState, files: EntryPtr[]) => {
+afterAction(External.Actions.FILES_WRITTEN, (dispatch: Dispatch, getState: GetState, files: EntryPtr[]) => {
   const nodeIds: Set<string> = Set(files.map(ptr => ptr.nodeId));
   if (files.length === 1) {
     dispatch(maybeCommitChanges(`Add/edit external file ${fmtPtr(getState, files[0])}`));
   } else {
-    const nodeTxt = nodeIds.size === 1 ? fmtNode(getState, nodeIds.first()!) : 'multiple folders';
+    const nodeTxt = nodeIds.size === 1 ? fmtNode(getState, nodeIds.first('')) : 'multiple folders';
     dispatch(maybeCommitChanges(`Add/edit ${files.length} external files in ${nodeTxt}`));
   }
 });
 
-afterAction(FileImport.Actions.STATUS, (dispatch, getState: GetState, payload: { type: StatusType, message: string }) => {
+afterAction(FileImport.Actions.STATUS, (dispatch: Dispatch, getState: GetState, payload: { type: StatusType, message: string }) => {
   if (payload.type === 'success') {
     dispatch(maybeCommitChanges(`Import entries from 3rd party file format`));
   }

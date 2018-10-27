@@ -6,6 +6,8 @@
  * When running `npm run build` or `npm run build-main`, this file is compiled to
  * `./app/main.prod.js` using webpack. This gives us some performance wins.
  */
+// tslint:disable-next-line
+/// <reference path="types.d.ts" />
 import { app, BrowserWindow, shell, Event } from 'electron';
 import logger from 'electron-log';
 import { autoUpdater } from 'electron-updater';

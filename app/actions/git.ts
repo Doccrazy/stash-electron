@@ -22,7 +22,7 @@ import { RES_LOCAL_FILENAMES } from '../utils/repository';
 import * as Credentials from './credentials';
 import * as Repository from './repository';
 import { FetchResult, GitStatus, OidAndName, State } from './types/git';
-import { GetState, OptionalAction, TypedAction, TypedDispatch, TypedThunk } from './types/index';
+import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 import { changeAndSave } from './settings';
 
 export enum Actions {
@@ -213,7 +213,7 @@ function conservativeAutoMerge(filename: string, ours: Buffer, theirs: Buffer, a
   return null;
 }
 
-async function withCredentials(dispatch: TypedDispatch<Action>,
+async function withCredentials(dispatch: Dispatch<Action>,
                                cb: (credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) => any): Promise<string | null> {
   let credentialsContext: string | null = null;
   try {
@@ -571,7 +571,7 @@ export function closeSignaturePopup(): Action {
   };
 }
 
-afterAction(Repository.Actions.FINISH_LOAD, async (dispatch, getState: GetState, isReload) => {
+afterAction(Repository.Actions.FINISH_LOAD, async (dispatch: Dispatch, getState: GetState, isReload) => {
   if (!isReload) {
     await dispatch(updateStatus(false));
     dispatch(updateStatus(true));

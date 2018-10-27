@@ -5,7 +5,7 @@ import { expand } from './treeState';
 import { afterAction } from '../store/eventMiddleware';
 import { cleanFileName, hasChildOrEntry, RESERVED_FILENAMES } from '../utils/repository';
 import {State} from './types/currentNode';
-import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
+import { GetState, TypedAction, TypedThunk, OptionalAction, Dispatch } from './types/index';
 import Node, {ROOT_ID} from '../domain/Node';
 import {SpecialFolderId} from '../utils/specialFolders';
 
@@ -180,7 +180,7 @@ export function closeMove(): Action {
   return { type: Actions.CLOSE_MOVE };
 }
 
-afterAction(Repository.Actions.FINISH_LOAD, dispatch => {
+afterAction(Repository.Actions.FINISH_LOAD, (dispatch: Dispatch) => {
   dispatch(select('/'));
 });
 
@@ -188,21 +188,21 @@ afterAction(Repository.Actions.UNLOAD, dispatch => {
   dispatch(deselect());
 });
 
-afterAction(Repository.Actions.DELETE_NODE, (dispatch, getState: GetState, node: Node, preActionState) => {
+afterAction(Repository.Actions.DELETE_NODE, (dispatch: Dispatch, getState: GetState, node: Node, preActionState) => {
   const { currentNode } = getState();
   if (currentNode.nodeId === node.id && node.parentId) {
     dispatch(select(node.parentId));
   }
 });
 
-afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { node, newNode }) => {
+afterAction(Repository.Actions.MOVE_NODE, (dispatch: Dispatch, getState: GetState, { node, newNode }) => {
   const { currentNode } = getState();
   if (currentNode.nodeId === node.id) {
     dispatch(select(newNode.id));
   }
 });
 
-afterAction(Repository.Actions.CREATE_NODE, (dispatch, getState: GetState, newNode: Node) => {
+afterAction(Repository.Actions.CREATE_NODE, (dispatch: Dispatch, getState: GetState, newNode: Node) => {
   const { currentNode } = getState();
   if (currentNode.creating) {
     dispatch(closeEdit());
@@ -211,7 +211,7 @@ afterAction(Repository.Actions.CREATE_NODE, (dispatch, getState: GetState, newNo
 
 // when a currently selected node, that is not expanded, is re-read from disk, try to expand it
 // Note: this is mainly used when renaming nodes
-afterAction(Repository.Actions.READ_NODE_LIST, (dispatch, getState: GetState, nodes: List<Node>) => {
+afterAction(Repository.Actions.READ_NODE_LIST, (dispatch: Dispatch, getState: GetState, nodes: List<Node>) => {
   const { currentNode, treeState } = getState();
   if (currentNode.nodeId && !treeState.includes(currentNode.nodeId)) {
     const nodeFromList = nodes.find((n: Node) => n.id === currentNode.nodeId);

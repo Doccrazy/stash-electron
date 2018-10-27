@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import { routerReducer as router } from 'react-router-redux';
 import { reducer as toastr } from 'react-redux-toastr';
 import { RootState } from './types';
 import './gitHooks';
@@ -41,7 +40,7 @@ const rootReducer = combineReducers<RootState>({
   treeState,
   usersHistory,
 
-  router,
+  router: null as any,
   toastr
 });
 

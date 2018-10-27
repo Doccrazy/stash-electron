@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
 import * as crypto from 'crypto';
 import './utils/electronNoDrop';
 import './utils/errorHandler';
@@ -9,6 +8,7 @@ import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';
 import installLinkHandler from './store/stashLinkHandler';
 import registerHotkeys from './store/hotkeyHandlers';
+import './utils/immutable-set-map-patch.js';
 import './utils/sshpk-key-deriv-patch.js';
 import './app.global.scss';
 import setupInactivityLock from './store/inactivityLock';
@@ -34,20 +34,6 @@ setTimeout(() => {
 }, 1000);
 
 render(
-  <AppContainer>
-    <Root store={store} history={history} />
-  </AppContainer>,
+  <Root store={store} history={history} />,
   document.getElementById('root')
 );
-
-if ((module as any).hot) {
-  (module as any).hot.accept('./pages/Root', () => {
-    const NextRoot = require('./pages/Root').default; // eslint-disable-line global-require
-    render(
-      <AppContainer>
-        <NextRoot store={store} history={history} />
-      </AppContainer>,
-      document.getElementById('root')
-    );
-  });
-}

@@ -3,7 +3,7 @@ import {Set} from 'immutable';
 import { openAuth } from '../actions/usersHistory';
 import AuthorizedUsersPopup from '../components/AuthorizedUsersPopup';
 import { save, close, change, toggleInherit } from '../actions/authorizedUsers';
-import {RootState} from '../actions/types/index';
+import { Dispatch, RootState } from '../actions/types/index';
 import {findAuthParent, isAccessible} from '../utils/repository';
 
 export default connect((state: RootState) => {
@@ -23,7 +23,7 @@ export default connect((state: RootState) => {
     allUsers: Set(Object.keys(state.keys.byUser)),
     authParent
   });
-}, dispatch => ({
+}, (dispatch: Dispatch) => ({
   onChange: (users: Set<string>) => dispatch(change(users)),
   onToggleInherit: () => dispatch(toggleInherit()),
   onSave: () => dispatch(save()),

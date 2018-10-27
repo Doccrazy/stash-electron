@@ -6,7 +6,7 @@ import { open as openImport } from '../actions/fileImport';
 import { openCurrent as openPermissions } from '../actions/authorizedUsers';
 import { browseForAdd } from '../actions/external';
 import {ROOT_ID} from '../domain/Node';
-import {RootState} from '../actions/types/index';
+import { Dispatch, RootState } from '../actions/types/index';
 import {isAccessible} from '../utils/repository';
 
 export default connect((state: RootState) => ({
@@ -14,7 +14,7 @@ export default connect((state: RootState) => ({
   contentsEditable: state.currentNode.nodeId && !state.currentNode.specialId,
   accessible: state.currentNode.nodeId && !state.currentNode.specialId
     && isAccessible(state.repository.nodes, state.currentNode.nodeId, state.privateKey.username)
-}), dispatch => ({
+}), (dispatch: Dispatch) => ({
   onRename: () => dispatch(startRename()),
   onDelete: () => dispatch(prepareDelete()),
   onCreateNode: () => dispatch(startCreate()),

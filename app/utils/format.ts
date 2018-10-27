@@ -12,7 +12,7 @@ export function formatUserList(title: string, users: Collection.Set<string> |  C
   }
   while ((names.length < 4 || users2.size < 2) && users2.size) {
     names.push(users2.first());
-    users2 = users2.remove(users2.first()!);
+    users2 = users2.remove(users2.first(''));
   }
   let result = title + names.join(', ');
   if (users2.size) {

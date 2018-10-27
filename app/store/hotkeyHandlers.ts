@@ -8,7 +8,7 @@ import * as CurrentEntry from '../actions/currentEntry';
 import * as PrivateKey from '../actions/privateKey';
 
 export default function registerHotkeys(dispatch: Dispatch, getState: GetState) {
-  document.documentElement.addEventListener('paste', ev => {
+  document.documentElement!.addEventListener('paste', ev => {
     if (ev.clipboardData.types.includes('text/plain')) {
       const str = ev.clipboardData.getData('text/plain');
       try {

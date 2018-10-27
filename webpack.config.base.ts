@@ -1,6 +1,8 @@
 /**
  * Base webpack config used across other specific configs
  */
+// tslint:disable-next-line
+/// <reference path="webpack.config.d.ts" />
 
 import * as path from 'path';
 import * as webpack from 'webpack';
@@ -80,10 +82,7 @@ const baseConfig: webpack.Configuration = {
     modules: [
       path.join(__dirname, 'app'),
       'node_modules'
-    ],
-    alias: {
-      keytar: 'keytar-prebuild'
-    }
+    ]
   },
 
   plugins: [

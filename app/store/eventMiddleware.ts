@@ -18,7 +18,7 @@ const storeEvents = new class extends EventEmitter {
   }
 }();
 
-export default <S> ({ dispatch, getState }: MiddlewareAPI<S>) => (next: Dispatch<S>) => (action: AnyAction) => {
+export default <S> ({ dispatch, getState }: MiddlewareAPI<Dispatch, S>) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
   const preActionState = getState();
 
   const result = next(action);
@@ -30,7 +30,7 @@ export default <S> ({ dispatch, getState }: MiddlewareAPI<S>) => (next: Dispatch
   return result;
 };
 
-export type ActionListener<S> = (dispatch: Dispatch<S>, getState: () => S, payload: any, preActionState: S) => void;
+export type ActionListener<S> = (dispatch: Dispatch<AnyAction>, getState: () => S, payload: any, preActionState: S) => void;
 
 export function afterAction<S>(actionType: string | string[], listener: ActionListener<S>) {
   if (Array.isArray(actionType)) {

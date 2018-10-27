@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import ConfirmPopup from '../components/ConfirmPopup';
-import {RootState} from '../actions/types/index';
+import { Dispatch, RootState } from '../actions/types/index';
 import { changeSignature, confirmSignature } from '../actions/git';
 import GitSignatureForm from '../components/GitSignatureForm';
 
@@ -13,13 +13,23 @@ export default connect((state: RootState) => ({
   email: state.git.signature.email,
   local: state.git.signature.local,
   valid: !!state.git.signature.name && EMAIL_PATTERN.test(state.git.signature.email || '')
-}), dispatch => ({
+}), (dispatch: Dispatch) => ({
   onChange: (name: string, email: string, local: boolean) => dispatch(changeSignature(name, email, local)),
   onConfirm: () => dispatch(confirmSignature())
 }))(
-  ({ open, name, email, local, valid, onChange, onConfirm }) => (
+  ({ open, name, email, local, valid, onChange, onConfirm }: Props) => (
     <ConfirmPopup open={open} valid={valid} title="Configure your git signature" onConfirm={onConfirm}>
       <GitSignatureForm name={name} email={email} local={local} onChange={onChange} />
     </ConfirmPopup>
   )
 );
+
+interface Props {
+  open: boolean
+  name: string
+  email: string
+  local: boolean
+  valid: boolean
+  onChange: (name: string, email: string, local: boolean) => void
+  onConfirm: () => void
+}

@@ -1,6 +1,6 @@
 import { Set } from 'immutable';
 import { connect } from 'react-redux';
-import {RootState} from '../actions/types';
+import { Dispatch, RootState } from '../actions/types';
 import { close, setFilter } from '../actions/usersHistory';
 import AuthHistoryPopup from '../components/AuthHistoryPopup';
 import { formatPath } from '../utils/format';
@@ -19,7 +19,7 @@ export default connect((state: RootState) => {
       .toArray(),
     filterNodeId: state.usersHistory.filterNodeId
   });
-}, dispatch => ({
+}, (dispatch: Dispatch) => ({
   onFilter: (nodeId?: string) => dispatch(setFilter(nodeId)),
   onClose: () => dispatch(close())
 }))(AuthHistoryPopup);

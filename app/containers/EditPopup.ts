@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import EditPopup from '../components/EditPopup';
 import { change, changeState, changeName, save, close } from '../actions/edit';
-import {RootState} from '../actions/types/index';
+import { Dispatch, RootState } from '../actions/types/index';
 import {formatUserList} from '../utils/format';
 import {findAuthParent} from '../utils/repository';
 
@@ -17,7 +17,7 @@ export default connect((state: RootState) => {
     validationError: state.edit.validationError,
     authInfo: authParent && authParent.authorizedUsers && formatUserList('Accessible to ', authParent.authorizedUsers, state.privateKey.username)
   });
-}, dispatch => ({
+}, (dispatch: Dispatch) => ({
   onChangeName: (value: string) => dispatch(changeName(value)),
   onChange: (value: any) => dispatch(change(value)),
   onChangeState: (value: any) => dispatch(changeState(value)),

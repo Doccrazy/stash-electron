@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { deleteUser } from '../actions/keys';
 import { changeAndSave } from '../actions/settings';
-import { RootState, Thunk } from '../actions/types';
+import { Dispatch, RootState, Thunk } from '../actions/types';
 import { KeyFormat } from '../actions/types/settings';
 import UserKeyTable from '../components/UserKeyTable';
 import {findUser} from '../repository/KeyProvider';
@@ -10,7 +10,7 @@ export default connect((state: RootState, props: void) => ({
   keysByUser: state.keys.edited,
   currentUser: state.privateKey.key ? findUser(state.keys.edited, state.privateKey.key) : null,
   keyFormat: state.settings.current.keyDisplayFormat
-}), (dispatch, props) => ({
+}), (dispatch: Dispatch, props) => ({
   onToggleKeyFormat: () => dispatch(toggleKeyFormat()),
   onDelete: (username: string) => dispatch(deleteUser(username))
 }))(UserKeyTable);

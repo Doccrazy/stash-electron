@@ -1,18 +1,19 @@
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import { createStore, applyMiddleware, AnyAction } from 'redux';
+import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { createBrowserHistory } from 'history';
-import { routerMiddleware } from 'react-router-redux';
+import { connectRouter, routerMiddleware } from 'connected-react-router';
 import eventMiddleware from './eventMiddleware';
 import rootReducer from '../actions/index';
+import { RootState } from '../actions/types';
 
 const history = createBrowserHistory({
   basename: window.location.pathname
 });
 const router = routerMiddleware(history);
-const enhancer = applyMiddleware(thunk, eventMiddleware as any, router);
+const enhancer = applyMiddleware(thunk as ThunkMiddleware<RootState, AnyAction, void>, eventMiddleware, router);
 
 function configureStore(initialState?: any) {
-  return createStore(rootReducer, initialState, enhancer);
+  return createStore(connectRouter(history)(rootReducer), initialState, enhancer);
 }
 
 export default { configureStore, history };

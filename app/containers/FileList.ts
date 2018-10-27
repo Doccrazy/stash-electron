@@ -5,7 +5,7 @@ import { prepareDelete, select } from '../actions/currentEntry';
 import { select as selectNode } from '../actions/currentNode';
 import { open } from '../actions/edit';
 import { toggleAndSave as toggleFavorite } from '../actions/favorites';
-import { RootState } from '../actions/types/index';
+import { Dispatch, RootState } from '../actions/types/index';
 import FileList from '../components/FileList';
 import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';
@@ -28,7 +28,7 @@ export default connect((state: RootState) => ({
   selectedEntry: state.currentEntry.ptr,
   favorites: state.favorites,
   showPath: !!state.currentNode.specialId
-}), dispatch => ({
+}), (dispatch: Dispatch) => ({
   onSelect: (ptr: EntryPtr) => dispatch(select(ptr)),
   onEdit: (ptr: EntryPtr) => dispatch(open(ptr)),
   onDelete: (ptr: EntryPtr) => dispatch(prepareDelete(ptr)),

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { reload } from '../actions/repository';
+import { Dispatch } from '../actions/types';
 
-export default connect(null, dispatch => ({
+export default connect(null, (dispatch: Dispatch) => ({
   onClick: () => dispatch(reload())
 }))(
   ({ onClick }: { onClick: () => void }) => (

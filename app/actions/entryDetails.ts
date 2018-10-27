@@ -10,7 +10,7 @@ import * as CurrentNode from './currentNode';
 import * as Git from './git';
 import * as Repository from './repository';
 import * as PrivateKey from './privateKey';
-import {GetState, OptionalAction, RootState, TypedAction, TypedThunk} from './types';
+import { Dispatch, GetState, OptionalAction, RootState, TypedAction, TypedThunk } from './types';
 import {DetailMap, Details, Providers, State} from './types/entryDetails';
 
 export enum Actions {
@@ -129,16 +129,16 @@ afterAction([Repository.Actions.RENAME_ENTRY, Repository.Actions.DELETE_ENTRY, R
 
 afterAction([CurrentNode.Actions.SELECT, CurrentNode.Actions.SELECT_SPECIAL,
     Repository.Actions.RENAME_ENTRY, Repository.Actions.MOVE_ENTRY, Repository.Actions.UPDATE_ENTRY],
-  (dispatch, getState: GetState) => {
+  (dispatch: Dispatch, getState: GetState) => {
     dispatch(fetchForVisibleEntries());
   }
 );
 
-afterAction([PrivateKey.Actions.LOGIN], (dispatch, getState: GetState) => {
+afterAction([PrivateKey.Actions.LOGIN], (dispatch: Dispatch, getState: GetState) => {
   dispatch(fetchForVisibleEntries(true));
 });
 
-afterAction(Git.Actions.UPDATE_STATUS, (dispatch, getState: GetState, payload, preActionState) => {
+afterAction(Git.Actions.UPDATE_STATUS, (dispatch: Dispatch, getState: GetState, payload, preActionState) => {
   if (getState().git.status.initialized && !preActionState.git.status.initialized) {
     dispatch(fetchForVisibleEntries(true));
   }

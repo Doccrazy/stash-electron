@@ -37,12 +37,12 @@ export default class SearchField extends React.Component<Props, {}> {
       }
     });
 
-    document.documentElement.addEventListener('keypress', this.globalKeyPress);
+    document.documentElement!.addEventListener('keypress', this.globalKeyPress);
   }
 
   componentWillUnmount() {
     Mousetrap.unbind(['ctrl+f', 'meta+f']);
-    document.documentElement.removeEventListener('keypress', this.globalKeyPress);
+    document.documentElement!.removeEventListener('keypress', this.globalKeyPress);
   }
 
   globalKeyPress(ev: KeyboardEvent) {
@@ -71,7 +71,7 @@ export default class SearchField extends React.Component<Props, {}> {
       ev.preventDefault();
       this.props.onToggleScope();
     }
-  };
+  }
 
   render() {
     const { className, limitedScope, value, onChange, onToggleScope, onShowResults } = this.props;

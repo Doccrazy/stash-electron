@@ -3,8 +3,8 @@
  */
 
 function preventDrop(event: DragEvent) {
-  event.dataTransfer.effectAllowed = 'none';
-  event.dataTransfer.dropEffect = 'none';
+  event.dataTransfer!.effectAllowed = 'none';
+  event.dataTransfer!.dropEffect = 'none';
   event.preventDefault();
 }
 

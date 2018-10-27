@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import {RootState} from '../actions/types';
+import { Dispatch, RootState } from '../actions/types';
 import { close } from '../actions/usersHistory';
 import UsersHistoryPopup from '../components/UsersHistoryPopup';
 import { commitsFor } from '../store/selectors';
@@ -9,6 +9,6 @@ export default connect((state: RootState) => {
     open: state.usersHistory.usersOpen,
     history: commitsFor(state, '.keys.json').toArray()
   });
-}, dispatch => ({
+}, (dispatch: Dispatch) => ({
   onClose: () => dispatch(close())
 }))(UsersHistoryPopup);

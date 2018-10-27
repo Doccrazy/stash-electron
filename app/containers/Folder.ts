@@ -7,7 +7,7 @@ import { toggle } from '../actions/treeState';
 import { prepareMove, select } from '../actions/currentNode';
 import { moveEntry } from '../actions/repository';
 import { open as openPermissions } from '../actions/authorizedUsers';
-import {RootState} from '../actions/types/index';
+import { Dispatch, RootState } from '../actions/types/index';
 import Node, { ROOT_ID } from '../domain/Node';
 import { isAccessible, isParentOrSelf } from '../utils/repository';
 import {formatUserList} from '../utils/format';
@@ -50,7 +50,7 @@ export default connect((state: RootState, props: Props) => {
     onCheckDropEntry: (ptr: EntryPtr) => ptr.nodeId !== props.nodeId && accessible,
     onCheckDropNode: (nodeId: string) => !isParentOrSelf(state.repository.nodes, nodeId, props.nodeId) && accessible
   });
-}, (dispatch, props) => ({
+}, (dispatch: Dispatch, props) => ({
   onClickIcon: () => dispatch(toggle(props.nodeId)),
   onClickLabel: () => dispatch(select(props.nodeId)),
   onClickAuth: () => dispatch(openPermissions(props.nodeId)),

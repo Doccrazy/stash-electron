@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { deleteUser } from '../actions/keys';
-import {RootState} from '../actions/types';
+import { Dispatch, RootState } from '../actions/types';
 import UserPermissionTable, { PermissionMap } from '../components/UserPermissionTable';
 import {findUser} from '../repository/KeyProvider';
 import { hierarchy } from '../utils/repository';
@@ -23,6 +23,6 @@ function buildPermissionMap(state: RootState): PermissionMap {
 export default connect((state: RootState, props: void) => ({
   permissionsByUser: buildPermissionMap(state),
   currentUser: state.privateKey.key ? findUser(state.keys.edited, state.privateKey.key) : null
-}), (dispatch, props) => ({
+}), (dispatch: Dispatch, props) => ({
   onDelete: (username: string) => dispatch(deleteUser(username))
 }))(UserPermissionTable);

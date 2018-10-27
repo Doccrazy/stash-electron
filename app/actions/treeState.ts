@@ -1,5 +1,5 @@
 import { Set } from 'immutable';
-import { TypedAction, TypedThunk, TypedDispatch, GetState } from './types';
+import { TypedAction, TypedThunk, Dispatch, GetState } from './types';
 import { State } from './types/treeState';
 import * as Repository from './repository';
 import { hierarchy } from '../utils/repository';
@@ -14,7 +14,7 @@ export enum Actions {
 
 const MULTI_OPEN = false;
 
-function maybeExpand(dispatch: TypedDispatch<Action>, getState: GetState, nodeId: string) {
+function maybeExpand(dispatch: Dispatch<Action>, getState: GetState, nodeId: string) {
   const { repository, treeState } = getState();
   let node = repository.nodes[nodeId];
   // if node is a leaf, expand parent instead

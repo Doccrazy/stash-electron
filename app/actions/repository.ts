@@ -7,7 +7,7 @@ import EntryPtr from '../domain/EntryPtr';
 import Node, {ROOT_ID} from '../domain/Node';
 import { afterAction } from '../store/eventMiddleware';
 import {State} from './types/repository';
-import {GetState, TypedAction, TypedThunk, OptionalAction} from './types/index';
+import { GetState, TypedAction, TypedThunk, OptionalAction, Dispatch } from './types/index';
 import Repository from '../repository/Repository';
 import { hasChildOrEntry, readNodeRecursive, recursiveChildIds } from '../utils/repository';
 import KeyProvider from '../repository/KeyProvider';
@@ -365,7 +365,7 @@ export function createChildNode(parentNodeId: string, name: string): Thunk<Promi
   };
 }
 
-afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch, getState: GetState) => {
+afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch: Dispatch, getState: GetState) => {
   const { settings } = getState();
   if (settings.current.repositoryPath !== settings.previous.repositoryPath) {
     dispatch(load(settings.current.repositoryPath));

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button } from 'reactstrap';
 import { connect } from 'react-redux';
+import { Dispatch } from '../../actions/types';
 import { PanelProps } from '../index';
 import { browseForSaveAs, open as openExternal } from '../../actions/external';
 
@@ -17,7 +18,7 @@ const DefaultPanel = ({ onOpen, onSaveAs }: InnerProps) => (<div >
   <Button size="sm" onClick={onSaveAs}><i className="fa fa-save" /> Save as...</Button>
 </div>);
 
-export default connect(null, (dispatch, props: PanelProps<void>) => ({
+export default connect(null, (dispatch: Dispatch, props: PanelProps<void>) => ({
   onOpen: () => dispatch(openExternal()),
   onSaveAs: () => dispatch(browseForSaveAs())
 }))(DefaultPanel);

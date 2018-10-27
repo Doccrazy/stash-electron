@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { pick } from 'lodash';
 import { changeAndSave } from '../actions/settings';
-import { RootState } from '../actions/types/index';
+import { Dispatch, RootState } from '../actions/types/index';
 import { BoolSettings } from '../actions/types/settings';
 
 export interface Props {
@@ -33,6 +33,6 @@ const InnerLink = ({ iconOn, iconOff, title, titleOn, titleOff, on, onSet }: Inn
 export default connect((state: RootState, props: Props) => ({
   on: state.settings.current[props.field],
   ...pick(props, 'iconOn', 'iconOff', 'title', 'titleOn', 'titleOff')
-}), (dispatch, props) => ({
+}), (dispatch: Dispatch, props) => ({
   onSet: (on: boolean) => dispatch(changeAndSave(props.field, on))
 }))(InnerLink);

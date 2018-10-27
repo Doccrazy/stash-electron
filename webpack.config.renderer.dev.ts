@@ -41,7 +41,6 @@ const rendererDevConfig: webpack.Configuration = {
   target: 'electron-renderer',
 
   entry: [
-    'react-hot-loader/patch',
     `webpack-dev-server/client?http://localhost:${port}/`,
     'webpack/hot/only-dev-server',
     path.join(__dirname, 'app/index.tsx')
@@ -56,7 +55,7 @@ const rendererDevConfig: webpack.Configuration = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: ['react-hot-loader/webpack', {
+        use: [{
           loader: 'ts-loader',
           options: {
             // disable type checker - we will use it in fork plugin

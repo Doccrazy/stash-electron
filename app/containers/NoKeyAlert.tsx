@@ -2,15 +2,15 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Alert } from 'reactstrap';
 import { loadAndUnlockInteractive } from '../actions/privateKey';
-import {RootState} from '../actions/types/index';
+import { Dispatch, RootState } from '../actions/types/index';
 
 export default connect((state: RootState, props: void) => ({
   keyLoaded: !!state.privateKey.key,
   keyEncrypted: state.privateKey.encrypted,
   loggedIn: !!state.privateKey.username
-}), (dispatch, props) => ({
+}), (dispatch: Dispatch, props) => ({
   onUnlock: () => dispatch(loadAndUnlockInteractive())
-}))(({ keyLoaded, keyEncrypted, loggedIn, onUnlock }) => {
+}))(({ keyLoaded, keyEncrypted, loggedIn, onUnlock }: Props) => {
   if (loggedIn) {
     return <div />;
   } else if (keyLoaded) {
@@ -30,3 +30,10 @@ export default connect((state: RootState, props: void) => ({
     </Alert>);
   }
 });
+
+interface Props {
+  keyLoaded: boolean
+  keyEncrypted: boolean
+  loggedIn: boolean
+  onUnlock: () => void
+}

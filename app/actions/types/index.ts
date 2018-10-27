@@ -1,7 +1,7 @@
-import {ThunkAction} from 'redux-thunk';
-import {Action as ReduxAction, Dispatch as ReduxDispatch} from 'redux';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import {Action as ReduxAction} from 'redux';
 
-import {RouterState} from 'react-router-redux';
+import {RouterState} from 'connected-react-router';
 import {ToastrState} from 'react-redux-toastr';
 
 import { State as AuthorizedUsersState } from './authorizedUsers';
@@ -45,14 +45,14 @@ export interface RootState {
   toastr: ToastrState
 }
 
-export type Thunk<R> = ThunkAction<R, RootState, void>;
+export type Thunk<R> = TypedThunk<Action<any>, R>;
 
 export interface Action<P> extends ReduxAction {
   type: string,
   payload?: P
 }
 
-export type Dispatch = ReduxDispatch<RootState>;
+export type Dispatch<A extends Action<any> = Action<any>> = ThunkDispatch<RootState, void, A>;
 
 export type GetState = () => RootState;
 
@@ -65,9 +65,4 @@ export interface TypedAction<T extends string, P> extends GenericAction<T, P> {
 }
 export type OptionalAction<T extends string, P = void> = GenericAction<T, P>;
 
-export interface TypedDispatch<T> {
-  <A extends T>(action: A): A;
-  <R>(asyncAction: Thunk<R>): R;
-}
-
-export type TypedThunk<T, R> = (dispatch: TypedDispatch<T>, getState: GetState) => R;
+export type TypedThunk<A extends Action<any>, R> = ThunkAction<R, RootState, void, A>;

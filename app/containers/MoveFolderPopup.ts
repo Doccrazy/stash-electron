@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { closeMove, performMoveMerge } from '../actions/currentNode';
 import MoveFolderPopup from '../components/MoveFolderPopup';
-import {RootState} from '../actions/types';
+import { Dispatch, RootState } from '../actions/types';
 import { hasChildOrEntry, hierarchy, isFullyAccessible, isParentOrSelf } from '../utils/repository';
 
 // move is only possible if parent is actually changing, and no name conflict occurs
@@ -30,7 +30,7 @@ export default connect((state: RootState) => {
     canMove: canMove(state, state.currentNode.move.nodeId, state.currentNode.move.targetNodeId),
     canMerge: canMerge(state, state.currentNode.move.nodeId, state.currentNode.move.targetNodeId)
   });
-}, dispatch => ({
+}, (dispatch: Dispatch) => ({
   onMove: () => dispatch(performMoveMerge(false)),
   onMerge: () => dispatch(performMoveMerge(true)),
   onClose: () => dispatch(closeMove())
