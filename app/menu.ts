@@ -33,7 +33,7 @@ export default class MenuBuilder {
             this.mainWindow.webContents.devToolsWebContents.focus();
           }
         }])
-        .popup(this.mainWindow);
+        .popup({window: this.mainWindow});
     });
   }
 

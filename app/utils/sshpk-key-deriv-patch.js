@@ -25,7 +25,7 @@ function opensslKeyDeriv(cipher, salt, passphrase, count) {
   salt = salt.slice(0, PKCS5_SALT_LEN);
 
   var D, D_prev, bufs;
-  var material = new Buffer(0);
+  var material = Buffer.alloc(0);
   while (material.length < clen.key + clen.iv) {
     bufs = [];
     if (D_prev)

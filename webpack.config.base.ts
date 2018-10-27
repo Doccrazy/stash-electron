@@ -53,7 +53,11 @@ const baseConfig: webpack.Configuration = {
       GIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
       GIT_BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
       BUILD_DATE: JSON.stringify(new Date())
-    })
+    }),
+    new webpack.NormalModuleReplacementPlugin(
+      /[/\\]promisify-node[/\\]utils[/\\]args\.js$/,
+      path.join(__dirname, 'app/utils/promisify-node-args-patch.js')
+    )
   ],
 
   optimization: {

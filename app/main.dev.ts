@@ -24,10 +24,11 @@ function processCommandLine(argv: string[]) {
   }
 }
 
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 if (process.env.NODE_ENV === 'production') {
   app.setAsDefaultProtocolClient('stash');
 }
-const isSecondInstance = app.makeSingleInstance(commandLine => {
+app.on('second-instance', (ev, commandLine) => {
   // Someone tried to run a second instance, we should focus our window.
   if (mainWindow) {
     if (mainWindow.isMinimized()) {
@@ -38,7 +39,7 @@ const isSecondInstance = app.makeSingleInstance(commandLine => {
     processCommandLine(commandLine);
   }
 });
-if (isSecondInstance) {
+if (!app.requestSingleInstanceLock()) {
   app.quit();
 }
 

@@ -1,6 +1,8 @@
 const { build, CliOptions, createTargets, Platform } = require('electron-builder');
 const { exec } = require('child_process');
 const semver = require('semver');
+const fs = require('fs-extra');
+const path = require('path');
 
 let buildWin, buildLinux, buildMac;
 if (process.argv[2] === 'all' || process.argv.slice(2).includes('win') || (!process.argv[2] && process.platform === 'win32')) {
@@ -46,6 +48,14 @@ function makeConfig(platform, version, snapshotNum) {
     }
   };
 }
+
+function bin(fn) {
+  fs.mkdirpSync(path.join('binaries', path.dirname(fn)));
+  fs.copyFileSync(path.join('node_modules', fn), path.join('binaries', fn));
+}
+
+bin('keytar/build/Release/keytar.node');
+bin('nodegit/build/Release/nodegit.node');
 
 // tags must always begin with 'v' and may contain an optional commit index + build hash
 const DESCRIBE_PATTERN = /v([^-]+)(?:-(\d+)-\w+)?/;

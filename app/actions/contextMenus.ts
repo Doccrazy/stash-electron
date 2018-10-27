@@ -30,7 +30,7 @@ export function entryContextMenu(ptr: EntryPtr): Thunk<void> {
         dispatch(prepareDeleteEntry(ptr));
       }}));
     }
-    menu.popup(remote.getCurrentWindow());
+    menu.popup({window: remote.getCurrentWindow()});
   };
 }
 
@@ -48,6 +48,6 @@ export function nodeContextMenu(nodeId: string): Thunk<void> {
         dispatch(prepareDeleteNode(nodeId));
       }}));
     }
-    menu.popup(remote.getCurrentWindow());
+    menu.popup({window: remote.getCurrentWindow()});
   };
 }

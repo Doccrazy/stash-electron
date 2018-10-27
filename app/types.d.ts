@@ -27,16 +27,6 @@ declare module 'natural-compare' {
   export = naturalCompare;
 }
 
-declare module 'electron-unhandled' {
-  const unhandled: () => void;
-  export = unhandled;
-}
-
-declare module 'electron-window-state' {
-  const windowStateKeeper: (options: {}) => any;
-  export = windowStateKeeper;
-}
-
 declare module 'tai-password-strength/lib/password-strength.js' {
   type StrengthCode = 'VERY_WEAK' | 'WEAK' | 'REASONABLE' | 'STRONG' | 'VERY_STRONG';
 
