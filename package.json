@@ -79,7 +79,11 @@
     },
     "pacman": {
       "depends": [
-        "libcurl-gnutls"
+        "gtk2",
+        "libcurl-gnutls",
+        "libsecret",
+        "libxss",
+        "nss"
       ]
     },
     "deb": {
