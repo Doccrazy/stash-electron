@@ -13,14 +13,13 @@ import * as webpack from 'webpack';
 import chalk from 'chalk';
 import * as merge from 'webpack-merge';
 import { spawn, execSync } from 'child_process';
-import * as ExtractTextPlugin from 'extract-text-webpack-plugin';
 import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
 
 CheckNodeEnv('development');
 
-const port = process.env.PORT || 1212;
+const port = Number.parseInt(process.env.PORT || '1212', 10);
 const publicPath = `http://localhost:${port}/dist`;
 const dll = path.resolve(process.cwd(), 'dll');
 const manifest = path.resolve(dll, 'renderer.json');
@@ -36,6 +35,7 @@ if (!(fs.existsSync(dll) && fs.existsSync(manifest))) {
 }
 
 const rendererDevConfig: webpack.Configuration = {
+  mode: 'development',
   devtool: 'inline-source-map',
 
   target: 'electron-renderer',
@@ -62,7 +62,7 @@ const rendererDevConfig: webpack.Configuration = {
             transpileOnly: true
           }
         }],
-        options: null
+        options: {}
       },
       {
         test: /\.global\.css$/,
@@ -215,8 +215,6 @@ const rendererDevConfig: webpack.Configuration = {
       // multiStep: true
     }),
 
-    new webpack.NoEmitOnErrorsPlugin(),
-
     /**
      * Create global constants which can be configured at compile time.
      *
@@ -237,12 +235,12 @@ const rendererDevConfig: webpack.Configuration = {
       debug: true
     }),
 
-    new ExtractTextPlugin({
-      filename: '[name].css'
-    }),
-
     new ForkTsCheckerWebpackPlugin()
   ],
+
+  optimization: {
+    noEmitOnErrors: true
+  },
 
   node: {
     __dirname: false,
@@ -266,7 +264,6 @@ const rendererDevConfig: webpack.Configuration = {
       poll: 100
     },
     historyApiFallback: {
-      verbose: true,
       disableDotRule: false
     },
     setup() {

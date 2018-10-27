@@ -4,17 +4,17 @@
 
 import * as path from 'path';
 import * as webpack from 'webpack';
-import * as ExtractTextPlugin from 'extract-text-webpack-plugin';
+import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import * as merge from 'webpack-merge';
-import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
 
 CheckNodeEnv('production');
 
 const rendererProdConfig: webpack.Configuration = {
+  mode: 'production',
   devtool: 'nosources-source-map',
 
   target: 'electron-renderer',
@@ -40,16 +40,17 @@ const rendererProdConfig: webpack.Configuration = {
       // Extract all .global.css to style.css as is
       {
         test: /\.global\.css$/,
-        use: ExtractTextPlugin.extract({
-          use: 'css-loader',
-          fallback: 'style-loader'
-        })
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader'
+        ]
       },
       // Pipe other styles through css modules and append to style.css
       {
         test: /^((?!\.global).)*\.css$/,
-        use: ExtractTextPlugin.extract({
-          use: {
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
             loader: 'css-loader',
             options: {
               modules: true,
@@ -58,28 +59,23 @@ const rendererProdConfig: webpack.Configuration = {
               localIdentName: '[name]__[local]__[hash:base64:5]'
             }
           }
-        })
+        ]
       },
       // Add SASS support  - compile all .global.scss files and pipe it to style.css
       {
         test: /\.global\.scss$/,
-        use: ExtractTextPlugin.extract({
-          use: [
-            {
-              loader: 'css-loader'
-            },
-            {
-              loader: 'sass-loader'
-            }
-          ],
-          fallback: 'style-loader'
-        })
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader'
+        ]
       },
       // Add SASS support  - compile all other .scss files and pipe it to style.css
       {
         test: /^((?!\.global).)*\.scss$/,
-        use: ExtractTextPlugin.extract({
-          use: [{
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
             loader: 'css-loader',
             options: {
               modules: true,
@@ -88,10 +84,8 @@ const rendererProdConfig: webpack.Configuration = {
               localIdentName: '[name]__[local]__[hash:base64:5]'
             }
           },
-          {
-            loader: 'sass-loader'
-          }]
-        })
+          'sass-loader'
+        ]
       },
       // WOFF Font
       {
@@ -156,32 +150,9 @@ const rendererProdConfig: webpack.Configuration = {
   },
 
   plugins: [
-    /**
-     * Create global constants which can be configured at compile time.
-     *
-     * Useful for allowing different behaviour between development builds and
-     * release builds
-     *
-     * NODE_ENV should be production so that modules do not perform certain
-     * development checks
-     */
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+    new MiniCssExtractPlugin({
+      filename: 'style.css'
     }),
-
-    /**
-     * Minify using ES6 compatible UglifyJS
-     */
-    new UglifyJSPlugin({
-      sourceMap: true,
-      uglifyOptions: {
-        mangle: {
-          reserved: ['Key', 'PrivateKey']
-        }
-      }
-    }),
-
-    new ExtractTextPlugin('style.css'),
 
     new BundleAnalyzerPlugin({
       analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',

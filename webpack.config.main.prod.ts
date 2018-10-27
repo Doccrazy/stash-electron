@@ -4,7 +4,6 @@
 
 import * as webpack from 'webpack';
 import * as merge from 'webpack-merge';
-import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
@@ -12,6 +11,7 @@ import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
 CheckNodeEnv('production');
 
 const mainProdConfig: webpack.Configuration = {
+  mode: 'production',
   devtool: 'nosources-source-map',
 
   target: 'electron-main',
@@ -25,13 +25,6 @@ const mainProdConfig: webpack.Configuration = {
   },
 
   plugins: [
-    /**
-     * Minify using ES6 compatible UglifyJS
-     */
-    new UglifyJSPlugin({
-      sourceMap: true
-    }),
-
     new BundleAnalyzerPlugin({
       analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
       openAnalyzer: process.env.OPEN_ANALYZER === 'true'
@@ -47,7 +40,6 @@ const mainProdConfig: webpack.Configuration = {
      * development checks
      */
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
       'process.env.DEBUG_PROD': JSON.stringify(process.env.DEBUG_PROD || 'false')
     })
   ],
