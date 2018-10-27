@@ -272,7 +272,7 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
   const latestCommits: { [entry: string]: GitCommitInfo } = {};
   const oldestCommits: { [entry: string]: GitCommitInfo } = {};
 
-  const walker = gitRepo.createRevWalk('');
+  const walker = gitRepo.createRevWalk();
   walker.pushHead();
   walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME);  // tslint:disable-line
 
@@ -332,7 +332,7 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
  * Loads all commits in the given repository with changed files
  */
 export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInfo[]> {
-  const walker = gitRepo.createRevWalk('');
+  const walker = gitRepo.createRevWalk();
   walker.pushHead();
   walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME);  // tslint:disable-line
 
