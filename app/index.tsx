@@ -8,7 +8,6 @@ import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';
 import installLinkHandler from './store/stashLinkHandler';
 import registerHotkeys from './store/hotkeyHandlers';
-import './utils/immutable-set-map-patch.js';
 import './utils/sshpk-key-deriv-patch.js';
 import './app.global.scss';
 import setupInactivityLock from './store/inactivityLock';
