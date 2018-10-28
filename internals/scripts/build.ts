@@ -1,6 +1,7 @@
 import { build, CliOptions, createTargets, Platform, Configuration } from 'electron-builder';
 import { exec } from 'child_process';
 import * as semver from 'semver';
+import * as fs from 'fs';
 
 let buildWin: boolean, buildLinux: boolean, buildMac: boolean;
 if (process.argv[2] === 'all' || process.argv.slice(2).includes('win') || (!process.argv[2] && process.platform === 'win32')) {
@@ -19,6 +20,12 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
   const pkgVersion = version.format().replace(/-snapshot\.\d+$/, 'pre');
   const pkgIteration = `${snapshotNum || 1}`;
   const pkgName = snapshotNum ? 'stash-electron-git' : 'stash-electron';
+  const pacmanArtifactName = `${pkgName}-${pkgVersion}-${pkgIteration}.pkg.tar.xz`;
+  const debArtifactName = `${pkgName}_${pkgVersion}-${pkgIteration}_amd64.deb`;
+
+  // write version for AUR update script
+  try { fs.mkdirSync('release'); } catch { /* already exists */ }
+  fs.writeFileSync('release/PKGINFO', `PKG_VERSION=${pkgVersion}\nPKG_ITERATION=${pkgIteration}\nPKG_NAME=${pkgName}\nDEB_ARTIFACT_NAME=${debArtifactName}\n`);
 
   const bintraySnapshots: Configuration['publish'] = snapshotNum ? {
     provider: 'bintray',
@@ -29,7 +36,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
 
   return {
     targets: createTargets([platform], undefined, 'x64'),
-    publish: process.env.CI ? 'always' : undefined,
+    publish: process.env.DEPLOY_RELEASE ? 'always' : undefined,
     config: {
       publish: snapshotNum ? null : {
         provider: 'github'
@@ -49,7 +56,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
           '--version', pkgVersion,
           '--iteration', pkgIteration
         ],
-        artifactName: `${pkgName}-${pkgVersion}-${pkgIteration}.pkg.tar.xz`
+        artifactName: pacmanArtifactName
       },
       appImage: {
         publish: bintraySnapshots
@@ -60,7 +67,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
           '--version', pkgVersion,
           '--iteration', pkgIteration
         ],
-        artifactName: `${pkgName}_${pkgVersion}-${pkgIteration}_amd64.deb`,
+        artifactName: debArtifactName,
         publish: {
           provider: 'bintray',
           package: pkgName
