@@ -29,6 +29,8 @@ echo "deb https://dl.bintray.com/doccrazy/deb stable main" | sudo tee -a /etc/ap
 sudo apt update && sudo apt install stash-electron
 ```
 
+Official Arch Linux packages are available in AUR named `stash-electron` and `stash-electron-git`.
+
 Development snapshots are available for all platforms by installing the `stash-electron-git` package or downloading from the snapshots repository: [ ![Download](https://api.bintray.com/packages/doccrazy/bin/stash-electron-git/images/download.svg) ](https://bintray.com/doccrazy/bin/stash-electron-git/_latestVersion)
 
 ## Getting started
