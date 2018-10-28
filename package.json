@@ -15,7 +15,7 @@
     "lint-fix": "npm run lint -- --fix",
     "lint-styles": "stylelint app/*.css app/components/*.css --syntax scss",
     "lint-styles-fix": "stylefmt -r app/*.css app/components/*.css",
-    "package": "npm run clean && npm run build && node internals/scripts/build.js",
+    "package": "npm run clean && npm run build && node -r ts-node/register internals/scripts/build.ts",
     "postinstall": "electron-builder install-app-deps",
     "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production electron ./app/",

@@ -1,10 +1,8 @@
-const { build, CliOptions, createTargets, Platform } = require('electron-builder');
-const { exec } = require('child_process');
-const semver = require('semver');
-const fs = require('fs-extra');
-const path = require('path');
+import { build, CliOptions, createTargets, Platform } from 'electron-builder';
+import { exec } from 'child_process';
+import * as semver from 'semver';
 
-let buildWin, buildLinux, buildMac;
+let buildWin: boolean, buildLinux: boolean, buildMac: boolean;
 if (process.argv[2] === 'all' || process.argv.slice(2).includes('win') || (!process.argv[2] && process.platform === 'win32')) {
   buildWin = true;
 }
@@ -15,7 +13,7 @@ if (process.argv[2] === 'all' || process.argv.slice(2).includes('mac') || (!proc
   buildMac = true;
 }
 
-function makeConfig(platform, version, snapshotNum) {
+function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: number): CliOptions {
   // pacman versions may not contain dashes, so replace '-snapshot' by 'pre'
   // also remove snapshot number and put it into iteration counter
   const pkgVersion = version.format().replace(/-snapshot\.\d+$/, 'pre');
@@ -25,9 +23,11 @@ function makeConfig(platform, version, snapshotNum) {
     targets: createTargets([platform], undefined, 'x64'),
     publish: process.env.PUBLISH_URL ? 'always' : undefined,
     config: {
-      publish: {
-        provider: process.env.PUBLISH_URL ? 'generic' : 'github',
-        ...(process.env.PUBLISH_URL ? { url: process.env.PUBLISH_URL } : {})
+      publish: process.env.PUBLISH_URL ? {
+        provider: 'generic',
+        url: process.env.PUBLISH_URL
+      } : {
+        provider: 'github'
       },
       extraMetadata: {
         version: version.format()
@@ -84,7 +84,7 @@ exec('git describe --tags', async (error, stdout, stderr) => {
   }
 });
 
-function printErrorAndExit(error) {
+function printErrorAndExit(error: any) {
   console.error((error.stack || error).toString());
   process.exit(1);
 }
