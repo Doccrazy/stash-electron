@@ -18,12 +18,13 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
   // also remove snapshot number and put it into iteration counter
   const pkgVersion = version.format().replace(/-snapshot\.\d+$/, 'pre');
   const pkgIteration = `${snapshotNum || 1}`;
+  const pkgName = snapshotNum ? 'stash-electron-git' : 'stash-electron';
 
   const bintraySnapshots: Configuration['publish'] = snapshotNum ? {
     provider: 'bintray',
     repo: 'bin',
     owner: 'doccrazy',
-    package: 'stash-electron-git'
+    package: pkgName
   } : null;
 
   return {
@@ -44,22 +45,25 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
       },
       pacman: {
         fpm: [
+          '--name', pkgName,
           '--version', pkgVersion,
           '--iteration', pkgIteration
         ],
-        artifactName: `\${name}-${pkgVersion}-${pkgIteration}.pkg.tar.xz`
+        artifactName: `${pkgName}-${pkgVersion}-${pkgIteration}.pkg.tar.xz`
       },
       appImage: {
         publish: bintraySnapshots
       },
       deb: {
         fpm: [
+          '--name', pkgName,
           '--version', pkgVersion,
           '--iteration', pkgIteration
         ],
+        artifactName: `${pkgName}_${pkgVersion}-${pkgIteration}_amd64.deb`,
         publish: {
           provider: 'bintray',
-          package: snapshotNum ? 'stash-electron-git' : 'stash-electron'
+          package: pkgName
         }
       }
     }
