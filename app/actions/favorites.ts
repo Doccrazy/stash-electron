@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 import { Set } from 'immutable';
 import * as path from 'path';
 import EntryPtr from '../domain/EntryPtr';
+import StashLink from '../domain/StashLink';
 import { afterAction } from '../store/eventMiddleware';
 import * as Repository from './repository';
 import { State } from './types/favorites';
@@ -62,7 +63,7 @@ export function loadForRepo(): Thunk<Promise<void>> {
     if (fs.existsSync(filename)) {
       const parsed = JSON.parse(await fs.readFile(filename, 'utf8')) as FavoritesFile;
       if (parsed.favorites) {
-        dispatch(set(Set(parsed.favorites.map(href => EntryPtr.fromHref(href)))));
+        dispatch(set(Set(parsed.favorites.map(href => StashLink.parse(href).toEntryPtr()))));
       }
     } else {
       dispatch(set(Set()));
@@ -76,7 +77,7 @@ export function saveForRepo(): Thunk<Promise<void>> {
     const repoPath = getState().repository.path!;
     const filename = path.join(repoPath, FILENAME);
     const serialized: FavoritesFile = {
-      favorites: favorites.map((ptr: EntryPtr) => ptr.toHref()).toArray()
+      favorites: favorites.map((ptr: EntryPtr) => new StashLink(ptr).toUri()).toArray()
     };
     await fs.writeFile(filename, JSON.stringify(serialized, null, '  '));
     dispatch({ type: Actions.SAVED });

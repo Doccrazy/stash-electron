@@ -39,6 +39,9 @@ export function nodeContextMenu(nodeId: string): Thunk<void> {
     const nodeEditable = nodeId !== ROOT_ID;
 
     const menu = new Menu();
+    menu.append(new MenuItem({label: 'Share link', icon: remote.nativeImage.createFromDataURL(require('../icon-share.png')), click() {
+      copyStashLink(nodeId);
+    }}));
     menu.append(new MenuItem({label: 'Permissions', icon: remote.nativeImage.createFromDataURL(require('../icon-users.png')), click() {
       dispatch(openPermissions(nodeId));
     }}));

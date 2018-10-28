@@ -21,12 +21,12 @@ export enum Actions {
   CANCEL_DELETE = 'currentEntry/CANCEL_DELETE'
 }
 
-export function select(ptr: EntryPtr): Thunk<Promise<void>> {
+export function select(ptr: EntryPtr): Thunk<Promise<boolean>> {
   return async (dispatch, getState) => {
     const { repository } = getState();
     const node = repository.nodes[ptr.nodeId];
     if (!node || !node.entries || !node.entries.includes(ptr.entry)) {
-      return;
+      return false;
     }
 
     dispatch({
@@ -35,6 +35,7 @@ export function select(ptr: EntryPtr): Thunk<Promise<void>> {
     });
 
     await dispatch(read());
+    return true;
   };
 }
 

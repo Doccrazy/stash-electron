@@ -7,6 +7,7 @@ import { openCurrent as openPermissions } from '../actions/authorizedUsers';
 import { browseForAdd } from '../actions/external';
 import {ROOT_ID} from '../domain/Node';
 import { Dispatch, RootState } from '../actions/types/index';
+import { copyStashLink } from '../store/stashLinkHandler';
 import {isAccessible} from '../utils/repository';
 
 export default connect((state: RootState) => ({
@@ -21,5 +22,6 @@ export default connect((state: RootState) => ({
   onCreateItem: () => dispatch(createInCurrent('password')),
   onEditPermissions: () => dispatch(openPermissions()),
   onAddExternal: () => dispatch(browseForAdd()),
-  onImport: () => dispatch(openImport())
+  onImport: () => dispatch(openImport()),
+  onCopyLink: () => dispatch((_, getState) => copyStashLink(getState().currentNode.nodeId!))
 }))(FolderActionBar);

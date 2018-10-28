@@ -1,6 +1,6 @@
 import * as Mousetrap from 'mousetrap';
 import {Dispatch, GetState} from '../actions/types/index';
-import EntryPtr from '../domain/EntryPtr';
+import StashLink from '../domain/StashLink';
 import {openStashLink} from './stashLinkHandler';
 import * as Edit from '../actions/edit';
 import * as CurrentNode from '../actions/currentNode';
@@ -12,7 +12,7 @@ export default function registerHotkeys(dispatch: Dispatch, getState: GetState) 
     if (ev.clipboardData.types.includes('text/plain')) {
       const str = ev.clipboardData.getData('text/plain');
       try {
-        EntryPtr.fromHref(str);
+        StashLink.parse(str);
         // valid link pasted
         ev.preventDefault();
         dispatch(openStashLink(str));
