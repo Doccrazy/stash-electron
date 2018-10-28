@@ -20,7 +20,7 @@ Stash will always be **fully open-source** without any subscriptions, "premium" 
 
 ## Installation
 
-Download the latest release from the [releases page](https://github.com/Doccrazy/stash-electron/releases).
+Download the latest release from the releases page: [ ![GitHub release](https://img.shields.io/github/release/Doccrazy/stash-electron.svg) ](https://github.com/Doccrazy/stash-electron/releases).
 
 For Debian or Ubuntu, add our Bintray repository to your sources, then install the package:
 ```bash
@@ -29,7 +29,7 @@ echo "deb https://dl.bintray.com/doccrazy/deb stable main" | sudo tee -a /etc/ap
 sudo apt update && sudo apt install stash-electron
 ```
 
-Development snapshots are available for all platforms by installing the `stash-electron-git` package or [downloading from the snapshots repository](https://bintray.com/doccrazy/bin/stash-electron-git).
+Development snapshots are available for all platforms by installing the `stash-electron-git` package or downloading from the snapshots repository: [ ![Download](https://api.bintray.com/packages/doccrazy/bin/stash-electron-git/images/download.svg) ](https://bintray.com/doccrazy/bin/stash-electron-git/_latestVersion)
 
 ## Getting started
 
