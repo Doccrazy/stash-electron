@@ -18,9 +18,20 @@ Stash will always be **fully open-source** without any subscriptions, "premium" 
 - Git-based data integrity protection and audit log
 - Batteries included: No external tools, complex setup or command line usage required
 
-## Getting started
+## Installation
 
 Download the latest release from the [releases page](https://github.com/Doccrazy/stash-electron/releases).
+
+For Debian or Ubuntu, add our Bintray repository to your sources, then install the package:
+```bash
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
+echo "deb https://dl.bintray.com/doccrazy/deb stable main" | sudo tee -a /etc/apt/sources.list
+sudo apt update && sudo apt install stash-electron
+```
+
+Development snapshots are available for all platforms by installing the `stash-electron-git` package or [downloading from the snapshots repository](https://bintray.com/doccrazy/bin/stash-electron-git).
+
+## Getting started
 
 Stash requires a git repository to store its data. It is highly recommended to use a private, password-protected repository. All data is encrypted, the server owner will never get access to your secrets. Some free choices:
 - [Bitbucket.org](https://bitbucket.org), free private repository for up to 5 users
@@ -46,14 +57,14 @@ Stash is a Node.js/React application running on [Electron](https://electronjs.or
 First, clone the repo via git:
 
 ```bash
-$ git clone https://github.com/Doccrazy/stash-electron.git stash-electron
+git clone https://github.com/Doccrazy/stash-electron.git stash-electron
 ```
 
 And then install dependencies with npm.
 
 ```bash
-$ cd stash-electron
-$ npm install
+cd stash-electron
+npm install
 ```
 
 ### Run
@@ -61,7 +72,7 @@ $ npm install
 Start the app in the `dev` environment. This starts the renderer process in [hot-module-replacement](https://webpack.js.org/guides/hmr-react/) mode and starts a webpack dev server that sends hot updates to the renderer process:
 
 ```bash
-$ npm run dev
+npm run dev
 ```
 
 ### Packaging
@@ -69,7 +80,7 @@ $ npm run dev
 To package apps for the local platform:
 
 ```bash
-$ npm run package
+npm run package
 ```
 
 To package apps for all platforms:
@@ -79,7 +90,7 @@ First, refer to [Multi Platform Build](https://www.electron.build/multi-platform
 Then,
 
 ```bash
-$ npm run package all
+npm run package all
 ```
 
 ## License
