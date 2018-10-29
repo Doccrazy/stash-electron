@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        background-color: #666;
+        color: #eee;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      }
+      .logo {
+        padding-top: 100px;
+        margin-bottom: 15px;
+        width: 100%;
+        text-align: center;
+      }
+      .logo > span {
+        font-size: 96px;
+        padding-left: 30px;
+        font-weight: 300;
+      }
+      .logo > img {
+        width: 128px;
+        vertical-align: top;
+      }
+      .footer {
+        display: flex;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        padding: 15px;
+        box-sizing: border-box;
+        font-size: 12px;
+      }
+      .footer > div {
+        flex-grow: 1;
+      }
+      .footer > :last-child {
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo"><img src="./logo3.svg"/> <span>Stash</span></div>
+    <div class="footer">
+      <div>Initializing...</div>
+      <div id="version">Version 1.2.3</div>
+    </div>
+    <script>
+      const version = require('electron').remote.app.getVersion();
+      const buildDate = require('electron').remote.getCurrentWindow().buildDate.toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' });
+      document.getElementById('version').innerText = 'v' + version + ' built ' + buildDate;
+    </script>
+  </body>
+</html>

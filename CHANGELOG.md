@@ -8,6 +8,7 @@
 - SSH key format can now be toggled between fingerprint and full display, defaulting to SHA256 fingerprint
 - Public SSH keys can now copied to clipboard
 - Stash links can now also be shared for folders
+- A shiny new splashscreen now tries to mask the unfathomably long loading times
 
 #### Changes
 - The *My Favorites* link and the tool icons now remain visible when scrolling

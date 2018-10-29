@@ -12,6 +12,7 @@ import { app, BrowserWindow, shell, Event, nativeImage } from 'electron';
 import logger from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import * as windowStateKeeper from 'electron-window-state';
+import * as Splashscreen from '@trodi/electron-splashscreen';
 import { URL } from 'url';
 import MenuBuilder from './menu';
 
@@ -103,7 +104,7 @@ app.on('ready', async () => {
   });
 
   const appIcon = process.env.NODE_ENV === 'development' ? `${__dirname}/icon.png` : nativeImage.createFromDataURL(require('./icon.png'));
-  mainWindow = new BrowserWindow({
+  const mainOpts: Electron.BrowserWindowConstructorOptions = {
     width: mainWindowState.width,
     height: mainWindowState.height,
     x: mainWindowState.x,
@@ -112,7 +113,19 @@ app.on('ready', async () => {
     icon: process.platform === 'linux' ? appIcon : undefined,
     autoHideMenuBar: true
     // frame: false
-  });
+  };
+  const config: Splashscreen.Config = {
+    windowOpts: mainOpts,
+    templateUrl: `${__dirname}/splash-screen.html`,
+    delay: 250,
+    splashScreenOpts: {
+      width: 575,
+      height: 350
+    }
+  };
+  const splash = Splashscreen.initDynamicSplashScreen(config);
+  (splash.splashScreen as any).buildDate = typeof BUILD_DATE === 'undefined' ? new Date() : new Date(BUILD_DATE);
+  mainWindow = splash.main;
 
   mainWindowState.manage(mainWindow);
 
