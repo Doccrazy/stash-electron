@@ -102,13 +102,14 @@ app.on('ready', async () => {
     defaultHeight: 960
   });
 
+  const appIcon = process.env.NODE_ENV === 'development' ? `${__dirname}/icon.png` : nativeImage.createFromDataURL(require('./icon.png'));
   mainWindow = new BrowserWindow({
     width: mainWindowState.width,
     height: mainWindowState.height,
     x: mainWindowState.x,
     y: mainWindowState.y,
     backgroundColor: '#ccc',
-    icon: process.platform === 'linux' ? nativeImage.createFromDataURL(require('./icon.png')) : undefined,
+    icon: process.platform === 'linux' ? appIcon : undefined,
     autoHideMenuBar: true
     // frame: false
   });
