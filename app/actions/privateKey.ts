@@ -164,9 +164,10 @@ export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
 
 // when the private key setting changes, reload the private key
 afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch: Dispatch, getState: GetState) => {
-  const { settings } = getState();
-  if (settings.current.privateKeyFile && settings.current.privateKeyFile !== settings.previous.privateKeyFile) {
-    dispatch(loadAndUnlockInteractive(getState().privateKey.generate.passphrase));
+  const { settings, privateKey } = getState();
+  if (settings.current.privateKeyFile &&
+    (settings.current.privateKeyFile !== settings.previous.privateKeyFile || (!privateKey.key && !privateKey.error))) {
+    dispatch(loadAndUnlockInteractive(privateKey.generate.passphrase));
   }
 });
 
