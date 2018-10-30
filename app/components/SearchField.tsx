@@ -21,6 +21,7 @@ function shouldIgnore(ev: KeyboardEvent) {
 
 export default class SearchField extends React.Component<Props, {}> {
   input: HTMLInputElement;
+  button: HTMLButtonElement;
 
   componentWillMount() {
     this.globalKeyPress = this.globalKeyPress.bind(this);
@@ -83,10 +84,16 @@ export default class SearchField extends React.Component<Props, {}> {
           value={value}
           onChange={ev => onChange(ev.target.value)}
           onKeyDown={this.keyDown}
-          onFocus={() => { if (this.input) { this.input.select(); onShowResults(); } }}
+          onFocus={() => { if (this.input) { this.input.select(); onShowResults(); } this.forceUpdate(); }}
+          onBlur={() => this.forceUpdate()}
         />
         <InputGroupAddon addonType="append">
-          <Button onClick={onToggleScope}>{limitedScope ? 'within folder' : 'everywhere'}</Button>
+          <Button
+            innerRef={button => { this.button = button; }}
+            color={limitedScope && [this.input, this.button].includes(document.activeElement as any) ? 'info' : 'secondary'}
+            onClick={onToggleScope}>
+            {limitedScope ? 'within folder' : 'everywhere'}
+          </Button>
         </InputGroupAddon>
       </InputGroup>
     </Form>);
