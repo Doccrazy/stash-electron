@@ -1,9 +1,12 @@
 import * as fs from 'fs-extra';
 import { Set } from 'immutable';
 import * as path from 'path';
+import { isEqual } from 'lodash';
 import EntryPtr from '../domain/EntryPtr';
 import StashLink from '../domain/StashLink';
 import { afterAction } from '../store/eventMiddleware';
+import { openStashLink } from '../store/stashLinkHandler';
+import * as CurrentNode from './currentNode';
 import * as Repository from './repository';
 import { State } from './types/favorites';
 import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
@@ -18,7 +21,8 @@ export enum Actions {
 export const FILENAME = '.favorites.json';
 
 interface FavoritesFile {
-  favorites?: string[]
+  favorites?: string[],
+  lastSelection?: string
 }
 
 export function add(ptr: EntryPtr): Action {
@@ -65,27 +69,44 @@ export function loadForRepo(): Thunk<Promise<void>> {
       if (parsed.favorites) {
         dispatch(set(Set(parsed.favorites.map(href => StashLink.parse(href).toEntryPtr()))));
       }
+      if (!parsed.lastSelection || !await dispatch(openStashLink(parsed.lastSelection, true))) {
+        await dispatch(CurrentNode.select('/'));
+      }
     } else {
       dispatch(set(Set()));
+      await dispatch(CurrentNode.select('/'));
     }
   };
 }
 
 export function saveForRepo(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const { favorites } = getState();
+    const { favorites, currentNode } = getState();
     const repoPath = getState().repository.path!;
     const filename = path.join(repoPath, FILENAME);
     const serialized: FavoritesFile = {
-      favorites: favorites.map((ptr: EntryPtr) => new StashLink(ptr).toUri()).toArray()
+      favorites: favorites.map((ptr: EntryPtr) => new StashLink(ptr).toUri()).toArray(),
+      lastSelection: currentNode.nodeId && new StashLink(currentNode.nodeId).toUri()
     };
-    await fs.writeFile(filename, JSON.stringify(serialized, null, '  '));
-    dispatch({ type: Actions.SAVED });
+    let parsed;
+    try {
+      parsed = JSON.parse(await fs.readFile(filename, 'utf8')) as FavoritesFile;
+    } catch { /* ignore */ }
+    if (!isEqual(parsed, serialized)) {
+      await fs.writeFile(filename, JSON.stringify(serialized, null, '  '));
+      dispatch({type: Actions.SAVED});
+    }
   };
 }
 
 afterAction(Repository.Actions.FINISH_LOAD, (dispatch: Dispatch, getState: GetState) => {
   dispatch(loadForRepo());
+});
+
+afterAction(CurrentNode.Actions.SELECT, (dispatch: Dispatch, getState: GetState) => {
+  if (getState().repository.name && !getState().repository.loading) {
+    dispatch(saveForRepo());
+  }
 });
 
 type Action =

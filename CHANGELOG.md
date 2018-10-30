@@ -15,6 +15,7 @@
 
 #### Bugs fixed
 - Number settings fields no longer accept garbage input (and show a nice spinner as a bonus)
+- The current selection is now remembered on reload / git update
 
 ## v1.1.0 (2017-12-18)
 

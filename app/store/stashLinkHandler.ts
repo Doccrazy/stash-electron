@@ -10,12 +10,12 @@ import {onceAfterAction} from './eventMiddleware';
 import * as Repository from '../actions/repository';
 import {hierarchy} from '../utils/repository';
 
-export function openStashLink(link: string): Thunk<Promise<void>> {
+export function openStashLink(link: string, silent?: boolean): Thunk<Promise<boolean>> {
   return async (dispatch, getState) => {
     const { repository } = getState();
     if (repository.loading) {
       onceAfterAction(Repository.Actions.FINISH_LOAD, () => dispatch(openStashLink(link)));
-      return;
+      return true;
     }
 
     try {
@@ -24,8 +24,10 @@ export function openStashLink(link: string): Thunk<Promise<void>> {
       const stashLink = StashLink.parse(link);
       const hier = hierarchy(repository.nodes, stashLink.nodeId);
       if (!hier.length) {
-        toastr.error('Invalid link', 'Folder does not exist');
-        return;
+        if (!silent) {
+          toastr.error('Invalid link', 'Folder does not exist');
+        }
+        return false;
       }
 
       for (const node of hier.slice(0, -1)) {
@@ -36,13 +38,19 @@ export function openStashLink(link: string): Thunk<Promise<void>> {
         // TODO the delay is required because selectNode asynchronously clears the selection, and should of course be refactored ;)
         await new Promise(resolve => setTimeout(resolve, 250));
         if (!await dispatch(selectEntry(stashLink.toEntryPtr()))) {
-          toastr.error('Invalid link', 'Entry not found in folder');
+          if (!silent) {
+            toastr.error('Invalid link', 'Entry not found in folder');
+          }
         }
       }
+      return true;
     } catch (e) {
       // failed to parse, ignore
       console.error(e);
-      toastr.error('Invalid link', `${link}: ${e}`);
+      if (!silent) {
+        toastr.error('Invalid link', `${link}: ${e}`);
+      }
+      return false;
     }
   };
 }

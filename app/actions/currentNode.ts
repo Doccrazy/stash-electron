@@ -180,10 +180,6 @@ export function closeMove(): Action {
   return { type: Actions.CLOSE_MOVE };
 }
 
-afterAction(Repository.Actions.FINISH_LOAD, (dispatch: Dispatch) => {
-  dispatch(select('/'));
-});
-
 afterAction(Repository.Actions.UNLOAD, dispatch => {
   dispatch(deselect());
 });
