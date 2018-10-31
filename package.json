@@ -43,7 +43,8 @@
           "splash-screen.html"
         ]
       },
-      "!node_modules"
+      "!node_modules/**/*.!(node)",
+      "!node_modules/**/{*-*,LICENCE,LICENSE,license,License,Makefile,AUTHORS,README,version,changelog,semver,test,uuid,header,info,needle,which,vendor,gyp,scripts,bin,acquireOpenSSL.node,configureLibssh2.node}"
     ],
     "dmg": {
       "contents": [

@@ -28,7 +28,13 @@ const rendererProdConfig: webpack.Configuration = {
     filename: 'renderer.prod.js'
   },
 
-  externals: ['../build/Debug/nodegit.node'],
+  externals: (context, request, callback) => {
+    if (/\.node$/.test(request)) {
+      const filename = path.relative(__dirname, path.resolve(context, request)).replace(/\\/g, '/');
+      return callback(null, `commonjs ../${filename}`);
+    }
+    (callback as any)();
+  },
 
   module: {
     rules: [
@@ -81,10 +87,6 @@ const rendererProdConfig: webpack.Configuration = {
           },
           'sass-loader'
         ]
-      },
-      {
-        test: /\.node$/,
-        loader: 'native-ext-loader'
       }
     ]
   },
