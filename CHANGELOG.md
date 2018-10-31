@@ -13,6 +13,7 @@
 #### Changes
 - The *My Favorites* link and the tool icons now remain visible when scrolling
 - The search scope is now highlighted when set to *current folder*
+- UI scale now defaults to 15 for new installations
 
 #### Bugs fixed
 - Number settings fields no longer accept garbage input (and show a nice spinner as a bonus)

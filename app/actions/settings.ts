@@ -94,7 +94,7 @@ function applyDefaults(settings: Partial<SettingsMap>): SettingsMap {
   const inactivityTimeout = Number.parseInt(settings.inactivityTimeout as any, 10);
   return {
     ...settings,
-    rootFontSize: Math.min(Math.max(Number.parseInt(settings.rootFontSize as any, 10) || 16, 10), 20),
+    rootFontSize: Math.min(Math.max(Number.parseInt(settings.rootFontSize as any, 10) || 15, 10), 20),
     privateKeyFile: settings.privateKeyFile || (os.platform() === 'linux' ? path.join(os.homedir(), '.ssh/id_rsa') : ''),
     inactivityTimeout: Number.isNaN(inactivityTimeout) ? 15 : inactivityTimeout,
     keyDisplayFormat: Object.values(KeyFormat).includes(settings.keyDisplayFormat) ? settings.keyDisplayFormat! : KeyFormat.SHA256
