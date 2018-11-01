@@ -3,12 +3,12 @@ import { FormGroup, Label, Input, Col } from 'reactstrap';
 import { FormProps } from '../index';
 
 export default class DefaultForm extends React.Component<FormProps<void, void>, {}> {
-  nameInput: HTMLInputElement;
+  readonly nameInput = React.createRef<HTMLInputElement>();
 
   componentDidMount() {
     setTimeout(() => {
-      if (this.nameInput) {
-        this.nameInput.focus();
+      if (this.nameInput.current) {
+        this.nameInput.current.focus();
       }
     });
   }
@@ -21,7 +21,7 @@ export default class DefaultForm extends React.Component<FormProps<void, void>, 
           <Label sm={2} for="name">Filename</Label>
           <Col sm={10}>
             <Input
-              innerRef={c => { this.nameInput = c; }}
+              innerRef={this.nameInput}
               id="name"
               placeholder="Filename"
               value={name}

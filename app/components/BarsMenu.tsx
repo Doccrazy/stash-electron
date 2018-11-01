@@ -9,7 +9,7 @@ export interface Props {
 }
 
 export default ({ size, up = false, right = false, children }: Props) => (
-  <UncontrolledDropdown tag="span" dropup={up} size={size}>
+  <UncontrolledDropdown tag="span" direction={up ? 'up' : 'down'} size={size}>
     <DropdownToggle>
       <i className="fa fa-bars" />
     </DropdownToggle>

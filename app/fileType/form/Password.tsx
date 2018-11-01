@@ -10,8 +10,8 @@ type FormState = { mask: boolean, repeatPassword?: string };
 export default class PasswordForm extends React.Component<FormProps<Content, FormState>, {}> {
   static initFormState: (content: Content) => FormState;
   static validate: (name: string, content: Content, formState: FormState) => string | boolean;
-  nameInput: HTMLInputElement;
-  passwordInput: HTMLInputElement;
+  readonly nameInput = React.createRef<HTMLInputElement>();
+  readonly passwordInput = React.createRef<HTMLInputElement>();
 
   componentWillMount() {
     this.changeRepeatPassword = this.changeRepeatPassword.bind(this);
@@ -21,14 +21,14 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
 
   componentDidMount() {
     setTimeout(() => {
-      if (this.nameInput) {
-        this.nameInput.focus();
+      if (this.nameInput.current) {
+        this.nameInput.current.focus();
       }
     });
   }
 
   componentDidUpdate(prevProps: FormProps<Content, FormState>) {
-    const maskedInput = this.passwordInput;
+    const maskedInput = this.passwordInput.current;
     if (this.props.formState.mask !== prevProps.formState.mask && maskedInput) {
       maskedInput.focus();
       maskedInput.select();
@@ -62,7 +62,7 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
           <Label sm={2} for="name">Title</Label>
           <Col sm={10}>
             <Input
-              innerRef={c => { this.nameInput = c; }}
+              innerRef={this.nameInput}
               id="name"
               placeholder="Title"
               value={typeById('password').toDisplayName(name)}
@@ -87,7 +87,7 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
             <Row>
               <Col>
                 <Input
-                  innerRef={c => { this.passwordInput = c; }}
+                  innerRef={this.passwordInput}
                   type={this.props.formState.mask ? 'password' : 'text'}
                   id="password"
                   placeholder="Password"

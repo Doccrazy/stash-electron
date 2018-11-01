@@ -13,12 +13,12 @@ export interface Props {
  * Auto-focusing input with confirm and cancel buttons
  */
 export default class TextEditBox extends React.Component<Props, {}> {
-  input: HTMLInputElement;
+  readonly input = React.createRef<HTMLInputElement>();
 
   componentDidMount() {
-    if (this.input) {
-      this.input.focus();
-      this.input.select();
+    if (this.input.current) {
+      this.input.current.focus();
+      this.input.current.select();
     }
   }
 
@@ -37,7 +37,7 @@ export default class TextEditBox extends React.Component<Props, {}> {
         <InputGroup>
           <Input
             placeholder={placeholder}
-            innerRef={input => { this.input = input; }}
+            innerRef={this.input}
             value={value}
             onChange={ev => onChange(ev.target.value)}
             onKeyDown={this.inputKeyDown}

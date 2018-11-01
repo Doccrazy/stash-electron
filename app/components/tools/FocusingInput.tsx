@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { Input } from 'reactstrap';
-
-const _dummy: typeof Input.defaultProps = {};
-type InputProps = typeof _dummy;
+import { Input, InputProps } from 'reactstrap';
 
 type Props = InputProps & { focused?: boolean };
 
@@ -27,6 +24,6 @@ export default class FocusingInput extends React.Component<Props, {}> {
 
   render() {
     const { focused, innerRef, ...innerProps } = this.props;
-    return <Input innerRef={ref => { this.inputRef = ref; if (typeof innerRef === 'function') { innerRef(ref); } }} {...innerProps} />;
+    return <Input innerRef={ref => { this.inputRef = ref!; if (typeof innerRef === 'function') { innerRef(ref); } }} {...innerProps} />;
   }
 }

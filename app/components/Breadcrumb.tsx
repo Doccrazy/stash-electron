@@ -9,7 +9,7 @@ export interface Props {
   [propName: string]: any;
 }
 
-export default ({ nodes, onClick, onEdit, ...props }: Props) => (<Breadcrumb {...props} className={cx(props.className, 'hover-container')}>
+export default ({ nodes, onClick, onEdit, ...props }: Props) => (<Breadcrumb tag="div" listClassName={cx(props.className, 'hover-container')}>
   {nodes.map((node, idx) => (idx < nodes.length - 1
     ? <BreadcrumbItem key={node.id}><a href="" onClick={ev => { onClick && onClick(node.id); }}>{node.name}</a></BreadcrumbItem>
     : <BreadcrumbItem key={node.id} active>{node.name}</BreadcrumbItem>
