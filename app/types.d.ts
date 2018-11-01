@@ -82,7 +82,7 @@ declare module 'kdbxweb' {
       Notes?: string
     };
     binaries: {
-      [key: string]: ProtectedValue
+      [key: string]: ProtectedValue | ArrayBuffer | { key: string, value: ArrayBuffer }
     };
     autoType: {
       enabled: boolean, obfuscation: number, defaultSequence: any, items: any[]

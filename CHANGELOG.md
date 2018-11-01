@@ -9,6 +9,7 @@
 - Public SSH keys can now copied to clipboard
 - Stash links can now also be shared for folders
 - A shiny new splashscreen now tries to mask the unfathomably long loading times
+- KeePass import now creates entries for binary attachments
 
 #### Changes
 - The *My Favorites* link and the tool icons now remain visible when scrolling

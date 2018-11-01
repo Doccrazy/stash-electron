@@ -60,6 +60,26 @@ export default class KeePassImporter<T> {
       const buffer = this.passwordType.write(passwordContent);
 
       await this.callbacks.createEntry(targetNode, this.passwordType.toFileName(safeName), buffer);
+
+      // process binary attachments
+      for (const binaryName of Object.keys(entry.binaries)) {
+        this.entryCount++;
+
+        const safeBinaryName = cleanFileName(binaryName, '_').trim();
+        const binary = entry.binaries[safeBinaryName];
+
+        // WTF API
+        let data: ArrayBuffer;
+        if (binary instanceof kdbxweb.ProtectedValue) {
+          data = binary.getBinary();
+        } else if (binary instanceof ArrayBuffer) {
+          data = binary;
+        } else {
+          data = binary.value;
+        }
+
+        await this.callbacks.createEntry(targetNode, `${safeName} - ${safeBinaryName}`, Buffer.from(data));
+      }
     }
   }
 }
