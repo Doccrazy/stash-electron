@@ -4,7 +4,6 @@ import { List, Map, OrderedMap, Set } from 'immutable';
 import * as path from 'path';
 import * as Git from 'nodegit';
 import { toastr } from 'react-redux-toastr';
-import { remote } from 'electron';
 import { FILENAME as KEYS_FILE } from '../repository/KeyFileKeyProvider';
 import { FILENAME as USERS_FILE, default as UsersFile } from '../repository/UsersFile';
 import { afterAction, onceAfterAction } from '../store/eventMiddleware';
@@ -511,19 +510,6 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
       dispatch(changeAndSave('repositoryPath', cloneTarget));
     } catch (e) {
       dispatch({type: Actions.PROGRESS, payload: { done: true, message: `Error: ${e.message}` }});
-    }
-  };
-}
-
-export function browseForTarget(): Thunk<void> {
-  return dispatch => {
-    const file = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-      title: 'Select target folder',
-      properties: ['openDirectory']
-    });
-
-    if (file && file[0]) {
-      dispatch(changeCloneTarget(file[0]));
     }
   };
 }

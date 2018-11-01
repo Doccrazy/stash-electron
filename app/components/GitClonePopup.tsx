@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label } from 'reactstrap';
 import * as os from 'os';
 import * as path from 'path';
+import FileInput from './tools/FileInput';
 import FocusingInput from './tools/FocusingInput';
 
 export interface Props {
@@ -13,12 +14,11 @@ export interface Props {
   target?: string,
   onChangeUrl: (url: string) => void
   onChangeTarget: (target: string) => void
-  onBrowseTarget: () => void
   onClone: () => void
   onClose: () => void
 }
 
-export default ({ open, working, valid, feedback, url, target, onChangeUrl, onChangeTarget, onBrowseTarget, onClone, onClose }: Props) => {
+export default ({ open, working, valid, feedback, url, target, onChangeUrl, onChangeTarget, onClone, onClose }: Props) => {
   return (<Modal isOpen={open} toggle={() => { if (!working) { onClose(); } }}>
     <ModalHeader toggle={() => { if (!working) { onClose(); } }}>Clone remote git repository</ModalHeader>
     <ModalBody>
@@ -30,13 +30,9 @@ export default ({ open, working, valid, feedback, url, target, onChangeUrl, onCh
         </FormGroup>
         <FormGroup>
           <Label>Target folder</Label>
-          <InputGroup>
-            <Input placeholder={`ex. ${path.join(os.homedir(), 'Workspace')}`} valid={valid ? undefined : false} disabled={working}
-                   value={target || ''} onChange={ev => onChangeTarget(ev.target.value)} />
-            <InputGroupAddon addonType="append">
-              <Button onClick={onBrowseTarget}><i className="fa fa-folder-open" /></Button>
-            </InputGroupAddon>
-          </InputGroup>
+          <FileInput folder dialogTitle="Select target folder"
+                     placeholder={`ex. ${path.join(os.homedir(), 'Workspace')}`} valid={valid ? undefined : false} disabled={working}
+                     value={target || ''} onChange={ev => onChangeTarget(ev.target.value)}/>
           <small className="form-text text-muted">If target folder is not empty, a new subfolder will be created</small>
         </FormGroup>
       </Form>

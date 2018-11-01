@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, InputGroup } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import SettingsBrowseDirButton from '../containers/SettingsBrowseDirButton';
+import SettingFileField from '../containers/SettingFileField';
 import SettingField from '../containers/SettingField';
 import * as styles from './Welcome.scss';
 import PrivateKeyStatus from '../containers/PrivateKeyStatus';
 import GitInitializer from '../containers/welcome/GitInitializer';
-import SettingsBrowseFileButton from '../containers/SettingsBrowseFileButton';
 import ActionButton from '../containers/ActionButton';
 import { openGenerate } from '../actions/privateKey';
 
@@ -32,10 +31,7 @@ export default () => (<div className={`${styles.body} h-100 d-flex`}>
             <FormGroup>
               <Label>Where do you want your repository to be stored?</Label>
               <InputGroup>
-                <SettingField field="repositoryPath" instantSave />
-                <InputGroupAddon addonType="append">
-                  <SettingsBrowseDirButton field="repositoryPath" title="Select repository path"><i className="fa fa-folder" /></SettingsBrowseDirButton>
-                </InputGroupAddon>
+                <SettingFileField field="repositoryPath" instantSave folder dialogTitle="Select repository path"/>
               </InputGroup>
             </FormGroup>
             <GitInitializer />
@@ -51,9 +47,9 @@ export default () => (<div className={`${styles.body} h-100 d-flex`}>
               part with anyone.
             </p>
             <FormGroup className="d-flex justify-content-between">
-              <SettingsBrowseFileButton field="privateKeyFile" title="Browse for private key file" instantSave>
-                <i className="fa fa-folder-open" /> Load existing key
-              </SettingsBrowseFileButton>
+              {/*<SettingsBrowseFileButton field="privateKeyFile" title="Browse for private key file" instantSave>*/}
+                {/*<i className="fa fa-folder-open" /> Load existing key*/}
+              {/*</SettingsBrowseFileButton>*/}
               <ActionButton actionCreator={openGenerate}><i className="fa fa-cog" /> Generate new keypair</ActionButton>
             </FormGroup>
             <FormGroup>

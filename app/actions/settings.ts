@@ -1,5 +1,4 @@
 import * as os from 'os';
-import { remote } from 'electron';
 import * as electronSettings from 'electron-settings';
 import { KeyFormat, SettingsKeys, SettingsMap, State } from './types/settings';
 import {TypedAction, GetState, TypedThunk, OptionalAction} from './types/index';
@@ -50,37 +49,6 @@ export function save(): Thunk<void> {
     });
 
     electronSettings.setAll(getState().settings.current as any);
-  };
-}
-
-export function browseForFolder(key: SettingsKeys, title: string): Thunk<void> {
-  return (dispatch, getState) => {
-    const folder = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-      title,
-      properties: ['openDirectory']
-    });
-
-    if (folder && folder[0]) {
-      dispatch(changeSetting(key, folder[0]));
-    }
-  };
-}
-
-export function browseForFile(key: SettingsKeys, title: string, filters?: { extensions: string[], name: string }[], doSave?: boolean): Thunk<void> {
-  return (dispatch, getState) => {
-    const file = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-      title,
-      filters,
-      properties: ['openFile', 'showHiddenFiles']
-    });
-
-    if (file && file[0]) {
-      if (doSave) {
-        dispatch(changeAndSave(key, file[0]));
-      } else {
-        dispatch(changeSetting(key, file[0]));
-      }
-    }
   };
 }
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, CustomInput } from 'reactstrap';
 import {ImportSettings, StatusType} from '../actions/types/fileImport';
 
 const STATUS_COLOR = {
@@ -25,15 +25,15 @@ export default ({ open, settings = { masterKey: '', keyFile: '' }, status, statu
       <FormGroup>
         <div className="form-text text-muted">All items will be imported into the current folder. Existing items will be overwritten.</div>
         <Label for="file">File</Label>
-        <input type="file" id="file" className="form-control-file" accept=".kdbx" onChange={ev => ev.target.files && onChangeSettings({ ...settings, filePath: ev.target.files[0].path })} />
+        <CustomInput type="file" id="file" accept=".kdbx" label={settings.filePath} onChange={ev => ev.target.files && onChangeSettings({ ...settings, filePath: ev.target.files[0].path })} />
       </FormGroup>
       <FormGroup>
         <Label for="masterKey">Master key (if required)</Label>
-        <Input type="password" id="masterKey" value={settings.masterKey} onChange={ev => onChangeSettings({ ...settings, masterKey: ev.target.value })} />
+        <Input type="password" id="masterKey" value={settings.masterKey || ''} onChange={ev => onChangeSettings({ ...settings, masterKey: ev.target.value })} />
       </FormGroup>
       <FormGroup>
         <Label for="keyFile">Keyfile (if required)</Label>
-        <Input type="password" id="keyFile" onChange={ev => ev.target.files && onChangeSettings({ ...settings, keyFile: ev.target.files[0].path })} />
+        <CustomInput type="file" id="keyFile" label={settings.keyFile} onChange={ev => ev.target.files && onChangeSettings({ ...settings, keyFile: ev.target.files[0].path })} />
       </FormGroup>
     </Form>
   </ModalBody>

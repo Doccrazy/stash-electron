@@ -1,3 +1,5 @@
+// tslint:disable:max-classes-per-file interface-name
+
 declare const GIT_VERSION: string;
 declare const GIT_HASH: string;
 declare const GIT_BRANCH: string;
@@ -9,17 +11,86 @@ declare module 'font-awesome-filetypes' {
 }
 
 declare module 'kdbxweb' {
-  const Kdbx: any;
-  const KdbxUuid: any;
+  class Kdbx {
+    static load(dataAsArrayBuffer: ArrayBuffer | SharedArrayBuffer, credentials: Credentials): Promise<Kdbx>;
+    static create(credentials: Credentials, name?: string): Kdbx;
+    getDefaultGroup(): KdbxGroup;
+    createGroup(parentGroup: KdbxGroup, name: string): KdbxGroup;
+    createEntry(parentGroup: KdbxGroup): KdbxEntry;
+    save(): Promise<ArrayBuffer>;
+    saveXml(): Promise<string>;
+  }
+  interface KdbxUuid {}
   const KdbxError: any;
-  const Credentials: any;
+  class Credentials {
+    constructor(masterKey: ProtectedValue | null, keyFileArrayBuffer?: ArrayBuffer | SharedArrayBuffer | null);
+  }
   const Consts: any;
-  const ProtectedValue: any;
+  class ProtectedValue {
+    static fromString(value: string): ProtectedValue;
+    static fromBinary(data: ArrayBuffer | SharedArrayBuffer): ProtectedValue;
+    getText(): string;
+    getBinary(): ArrayBuffer;
+    includes(substring: string): boolean;
+  }
   const ByteUtils: any;
   const VarDictionary: any;
   const Int64: any;
   const Random: any;
   const CryptoEngine: any;
+  interface KdbxGroup {
+    uuid: KdbxUuid;
+    name: string;
+    notes?: string;
+    icon?: number;
+    customIcon?: KdbxUuid;
+    times: KdbxTimes;
+    expanded?: boolean;
+    defaultAutoTypeSeq?: string;
+    enableAutoType?: boolean;
+    enableSearching?: boolean;
+    lastTopVisibleEntry?: KdbxUuid;
+    groups: KdbxGroup[];
+    entries: KdbxEntry[];
+    parentGroup?: KdbxGroup;
+    customData: KdbxCustomData;
+  }
+  interface KdbxTimes {
+    creationTime?: Date;
+    lastModTime?: Date;
+    lastAccessTime?: Date;
+    expiryTime?: Date;
+    expires?: boolean;
+    usageCount?: number;
+    locationChanged?: Date;
+  }
+  interface KdbxCustomData {}
+  interface KdbxEntry {
+    uuid: KdbxUuid;
+    icon?: number;
+    customIcon?: KdbxUuid;
+    fgColor?: string;
+    bgColor?: string;
+    overrideUrl?: string;
+    tags: string[];
+    times: KdbxTimes;
+    fields: {
+      Title?: string
+      UserName?: string
+      Password?: string
+      URL?: string
+      Notes?: string
+    };
+    binaries: {
+      [key: string]: ProtectedValue
+    };
+    autoType: {
+      enabled: boolean, obfuscation: number, defaultSequence: any, items: any[]
+    };
+    history: any[];
+    parentGroup: KdbxGroup;
+    customData: KdbxCustomData;
+  }
 }
 
 declare module 'natural-compare' {

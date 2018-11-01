@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { Form, FormGroup, InputGroup, InputGroupAddon, Label } from 'reactstrap';
+import { Form, FormGroup, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { remote } from 'electron';
 import SettingField from '../containers/SettingField';
+import SettingFileField from '../containers/SettingFileField';
 import SaveSettingsButton from '../containers/SaveSettingsButton';
-import SettingsBrowseDirButton from '../containers/SettingsBrowseDirButton';
-import SettingsBrowseFileButton from '../containers/SettingsBrowseFileButton';
 import PrivateKeyStatus from '../containers/PrivateKeyStatus';
 import ActionButton from '../containers/ActionButton';
 import { openGenerate } from '../actions/privateKey';
@@ -18,12 +17,7 @@ export default () => (<div className="container">
     <FormGroup>
       <Label>Repository path</Label>
       <div className="d-flex">
-        <InputGroup>
-          <SettingField field="repositoryPath" />
-          <InputGroupAddon addonType="append">
-            <SettingsBrowseDirButton field="repositoryPath" title="Select repository path"><i className="fa fa-folder" /></SettingsBrowseDirButton>
-          </InputGroupAddon>
-        </InputGroup>
+        <SettingFileField field="repositoryPath" folder dialogTitle="Select repository path"/>
         <div className="text-nowrap col-form-label mx-2">- or -</div>
         <ActionButton actionCreator={openClonePopup} title="Will prompt for target folder">
           <i className="fa fa-git-square" /> Clone remote repository
@@ -33,12 +27,7 @@ export default () => (<div className="container">
     <FormGroup>
       <Label>Private key file (SSH / PEM / PPK)</Label>
       <div className="d-flex">
-        <InputGroup>
-          <SettingField field="privateKeyFile" />
-          <InputGroupAddon addonType="append">
-            <SettingsBrowseFileButton field="privateKeyFile" title="Select private key"><i className="fa fa-folder-open" /></SettingsBrowseFileButton>
-          </InputGroupAddon>
-        </InputGroup>
+        <SettingFileField field="privateKeyFile" dialogTitle="Select private key"/>
         <div className="text-nowrap col-form-label mx-2">- or -</div>
         <ActionButton actionCreator={openGenerate} title="Will prompt for save location"><i className="fa fa-cog" /> Generate new keypair</ActionButton>
       </div>

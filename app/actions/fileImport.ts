@@ -1,11 +1,11 @@
 /* eslint-disable no-await-in-loop,no-restricted-syntax,no-plusplus */
-import * as fs from 'fs-extra';
 import * as kdbxweb from 'kdbxweb';
+import * as path from 'path';
+import KeePassImporter from '../import/KeePassImporter';
 import {State, ImportSettings, StatusType} from './types/fileImport';
-import { childNodeByName, cleanFileName } from '../utils/repository';
+import { childNodeByName } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import { createChildNode, writeEntry } from './repository';
-import {InternalType, typeById} from '../fileType/index';
 import {OptionalAction, TypedAction, TypedThunk} from './types/index';
 
 export enum Actions {
@@ -36,8 +36,6 @@ export function changeSettings(settings: ImportSettings): Action {
 
 export function performImport(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const passwordType = typeById('password') as InternalType<any>;
-
     function status(type: StatusType, message: string) {
       dispatch({
         type: Actions.STATUS,
@@ -46,54 +44,6 @@ export function performImport(): Thunk<Promise<void>> {
           message
         }
       });
-    }
-
-    let groupCount = 0;
-    let entryCount = 0;
-
-    async function importGroup(group: any, nodeId: string) {
-      groupCount++;
-      status('progress', `Importing group ${group.name}`);
-
-      const targetNode = getState().repository.nodes[nodeId];
-      for (const childGroup of group.groups) {
-        // sanitize / de-conflict name
-        let safeName = cleanFileName(childGroup.name, '_').trim();
-        while (targetNode.entryByName(safeName)) {
-          // conflict
-          safeName += '_';
-        }
-
-        // create node if it does not exist
-        let childNodeId = childNodeByName(getState().repository.nodes, targetNode.id, safeName);
-        if (!childNodeId) {
-          await dispatch(createChildNode(targetNode.id, safeName));
-          childNodeId = childNodeByName(getState().repository.nodes, targetNode.id, safeName);
-        }
-        if (!childNodeId) {
-          throw new Error(`Group ${safeName} could not be created`);
-        }
-
-        await importGroup(childGroup, childNodeId);
-      }
-
-      let nameCtr = 1;
-      for (const entry of group.entries) {
-        entryCount++;
-
-        // sanitize / de-conflict name
-        let safeName = cleanFileName(entry.fields.Title || `Unnamed ${nameCtr++}`, '_').trim();
-        while (childNodeByName(getState().repository.nodes, targetNode.id, passwordType.toFileName(safeName))) {
-          // conflict
-          safeName += '_';
-        }
-
-        // transform content
-        const passwordContent = passwordType.fromKdbxEntry(entry);
-        const buffer = passwordType.write(passwordContent);
-
-        await dispatch(writeEntry(new EntryPtr(targetNode.id, passwordType.toFileName(safeName)), buffer));
-      }
     }
 
     const { currentNode, fileImport: { settings } } = getState();
@@ -113,16 +63,39 @@ export function performImport(): Thunk<Promise<void>> {
     status('progress', 'Starting import...');
 
     try {
-      const dataBuffer = await fs.readFile(settings.filePath);
-      const keyFileBuffer = settings.keyFile ? await fs.readFile(settings.keyFile) : null;
+      const importer = new KeePassImporter<string>(settings.filePath, settings, {
+        createNode: async (parentNode, name) => {
+          const targetNode = getState().repository.nodes[parentNode];
+          while (targetNode.entryByName(name)) {
+            // conflict
+            name += '_';
+          }
 
-      const credentials = new kdbxweb.Credentials(settings.masterKey ? kdbxweb.ProtectedValue.fromString(settings.masterKey) : null,
-        keyFileBuffer ? keyFileBuffer.buffer : null);
-      const kdbx = await kdbxweb.Kdbx.load(dataBuffer.buffer, credentials);
+          // create node if it does not exist
+          let childNodeId = childNodeByName(getState().repository.nodes, targetNode.id, name);
+          if (!childNodeId) {
+            await dispatch(createChildNode(targetNode.id, name));
+            childNodeId = childNodeByName(getState().repository.nodes, targetNode.id, name);
+          }
+          if (!childNodeId) {
+            throw new Error(`Group ${name} could not be created`);
+          }
+          return childNodeId;
+        },
+        createEntry: async (parentNode, fileName, content) => {
+          while (childNodeByName(getState().repository.nodes, parentNode, fileName)) {
+            // conflict
+            const parsed = path.parse(fileName);
+            fileName = `${parsed.name}_${parsed.ext}`;
+          }
+          await dispatch(writeEntry(new EntryPtr(parentNode, fileName), content));
+        },
+        progress: message => status('progress', message)
+      });
 
-      await importGroup(kdbx.getDefaultGroup(), currentNode.nodeId);
+      await importer.performImport(currentNode.nodeId);
 
-      status('success', `Import successful (${groupCount} groups, ${entryCount} entries).`);
+      status('success', `Import successful (${importer.groupCount} groups, ${importer.entryCount} entries).`);
     } catch (e) {
       const msg = e instanceof kdbxweb.KdbxError ? `${e.message}.` : `Error: ${e}`;
       status('error', msg);
