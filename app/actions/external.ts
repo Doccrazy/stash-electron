@@ -78,7 +78,7 @@ export function open(ptr?: EntryPtr): Thunk<Promise<void>> {
       return;
     }
 
-    const buffer = read(getState(), ptr);
+    const buffer = await read(getState(), ptr);
 
     let absPath = path.join(tempDir, ptr.entry);
     let ctr = 0;
@@ -115,7 +115,7 @@ export function browseForSaveAs(ptr?: EntryPtr): Thunk<Promise<void>> {
 function saveAs(ptr: EntryPtr, targetPath: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     try {
-      const buffer = read(getState(), ptr);
+      const buffer = await read(getState(), ptr);
 
       await fs.writeFile(targetPath, buffer);
       toastr.success('', `${ptr.entry} saved successfully.`, { timeOut: 2000 });
