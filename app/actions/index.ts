@@ -11,6 +11,7 @@ import edit from './edit';
 import entryDetails from './entryDetails';
 import external from './external';
 import favorites from './favorites';
+import fileExport from './fileExport';
 import fileImport from './fileImport';
 import git from './git';
 import keys from './keys';
@@ -30,6 +31,7 @@ const rootReducer = combineReducers<RootState>({
   entryDetails,
   external,
   favorites,
+  fileExport,
   fileImport,
   git,
   keys,

@@ -56,7 +56,11 @@ export default class KeePassImporter<T> {
       const safeName = cleanFileName(entry.fields.Title || `Unnamed ${nameCtr++}`, '_').trim();
 
       // transform content
-      const passwordContent = this.passwordType.fromKdbxEntry(entry);
+      const { Password, ...entryFields } = entry.fields;
+      if (entry.fields.Password) {
+        entryFields.Password = entry.fields.Password.getText();
+      }
+      const passwordContent = this.passwordType.fromKdbxEntry(entryFields);
       const buffer = this.passwordType.write(passwordContent);
 
       await this.callbacks.createEntry(targetNode, this.passwordType.toFileName(safeName), buffer);

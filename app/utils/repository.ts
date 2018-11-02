@@ -98,8 +98,19 @@ export function isFullyAccessible(nodes: { [id: string]: Node }, nodeId: string,
   return !recursiveChildIds(nodes, nodeId).find(childId => nodes[childId] && !isAuth(nodes[childId], username));
 }
 
+export function isAnyAccessible(nodes: { [id: string]: Node }, nodeId: string, username?: string) {
+  if (isAccessible(nodes, nodeId, username)) {
+    return true;
+  }
+  return !!recursiveChildIds(nodes, nodeId).find(childId => nodes[childId] && isDirectAuth(nodes[childId], username));
+}
+
 function isAuth(node: Node, username?: string) {
   return !node.authorizedUsers || (!!username && node.authorizedUsers.includes(username));
+}
+
+function isDirectAuth(node: Node, username?: string) {
+  return !!username && !!node.authorizedUsers && node.authorizedUsers.includes(username);
 }
 
 // these files are used for user-local settings and should not be shared

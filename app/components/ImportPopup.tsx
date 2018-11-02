@@ -19,7 +19,7 @@ export interface Props {
 }
 
 export default ({ open, settings = { masterKey: '', keyFile: '' }, status, statusMessage, onChangeSettings, onImport, onClose }: Props) => (<Modal isOpen={open} toggle={onClose}>
-  <ModalHeader toggle={onClose}>Import Keepass database</ModalHeader>
+  <ModalHeader toggle={onClose}>Import KeePass database</ModalHeader>
   <ModalBody>
     <Form>
       <FormGroup>

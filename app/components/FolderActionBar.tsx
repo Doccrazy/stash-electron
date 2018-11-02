@@ -13,15 +13,18 @@ export interface Props {
   onEditPermissions: () => void,
   onAddExternal: () => void,
   onImport: () => void,
+  onExport: () => void,
   onCopyLink: () => void
 }
 
-export default ({ nodeEditable, contentsEditable, accessible, onRename, onDelete, onCreateNode, onCreateItem, onEditPermissions, onAddExternal, onImport, onCopyLink}: Props) => (<div>
-  {<BarsMenu>
+export default ({ nodeEditable, contentsEditable, accessible, onRename, onDelete, onCreateNode, onCreateItem, onEditPermissions, onAddExternal, onImport, onExport, onCopyLink}: Props) => (<div>
+  {contentsEditable && <BarsMenu>
     {<DropdownItem onClick={onCopyLink}><i className="fa fa-share" /> Share link</DropdownItem>}
-    {contentsEditable && <DropdownItem onClick={onEditPermissions}><i className="fa fa-users" /> Permissions</DropdownItem>}
-    {contentsEditable && accessible && <DropdownItem onClick={onAddExternal}><i className="fa fa-file-o" /> Add external files</DropdownItem>}
-    {contentsEditable && accessible && <DropdownItem onClick={onImport}><i className="fa fa-download" /> KeePass Import</DropdownItem>}
+    {<DropdownItem onClick={onEditPermissions}><i className="fa fa-users" /> Permissions</DropdownItem>}
+    {accessible && <DropdownItem onClick={onAddExternal}><i className="fa fa-file-o" /> Add external files</DropdownItem>}
+    {accessible && <DropdownItem divider />}
+    {accessible && <DropdownItem onClick={onImport}><i className="fa fa-download" /> KeePass import</DropdownItem>}
+    {<DropdownItem onClick={onExport}><i className="fa fa-upload" /> KeePass export</DropdownItem>}
     {nodeEditable && <DropdownItem divider />}
     {nodeEditable && <DropdownItem onClick={onRename}><i className="fa fa-pencil" /> Rename folder</DropdownItem>}
     {nodeEditable && <DropdownItem onClick={onDelete}><i className="fa fa-trash-o" /> Delete folder</DropdownItem>}

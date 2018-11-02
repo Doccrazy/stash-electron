@@ -12,23 +12,30 @@ declare module 'font-awesome-filetypes' {
 
 declare module 'kdbxweb' {
   class Kdbx {
-    static load(dataAsArrayBuffer: ArrayBuffer | SharedArrayBuffer, credentials: Credentials): Promise<Kdbx>;
+    static load(dataAsArrayBuffer: ArrayBufferLike, credentials: Credentials): Promise<Kdbx>;
     static create(credentials: Credentials, name?: string): Kdbx;
     getDefaultGroup(): KdbxGroup;
+    getGroup(uuid: KdbxUuid): KdbxGroup | null;
     createGroup(parentGroup: KdbxGroup, name: string): KdbxGroup;
     createEntry(parentGroup: KdbxGroup): KdbxEntry;
+    createBinary(value: ArrayBufferLike): Promise<BinaryReference>;
     save(): Promise<ArrayBuffer>;
     saveXml(): Promise<string>;
   }
   interface KdbxUuid {}
   const KdbxError: any;
   class Credentials {
-    constructor(masterKey: ProtectedValue | null, keyFileArrayBuffer?: ArrayBuffer | SharedArrayBuffer | null);
+    constructor(masterKey: ProtectedValue | null, keyFileArrayBuffer?: ArrayBufferLike | null);
+    static createRandomKeyFile(): ArrayBuffer;
+    static createKeyFileWithHash(): ArrayBuffer;
+    setPassword(password: ProtectedValue | null);
+    setKeyFile(keyFile: ArrayBufferLike | null);
+    getHash(): Promise<ArrayBuffer>;
   }
   const Consts: any;
   class ProtectedValue {
     static fromString(value: string): ProtectedValue;
-    static fromBinary(data: ArrayBuffer | SharedArrayBuffer): ProtectedValue;
+    static fromBinary(data: ArrayBufferLike): ProtectedValue;
     getText(): string;
     getBinary(): ArrayBuffer;
     includes(substring: string): boolean;
@@ -77,12 +84,13 @@ declare module 'kdbxweb' {
     fields: {
       Title?: string
       UserName?: string
-      Password?: string
+      Password?: ProtectedValue
       URL?: string
       Notes?: string
+      [key: string]: string | ProtectedValue
     };
     binaries: {
-      [key: string]: ProtectedValue | ArrayBuffer | { key: string, value: ArrayBuffer }
+      [key: string]: ProtectedValue | ArrayBuffer | BinaryReference
     };
     autoType: {
       enabled: boolean, obfuscation: number, defaultSequence: any, items: any[]
@@ -90,6 +98,10 @@ declare module 'kdbxweb' {
     history: any[];
     parentGroup: KdbxGroup;
     customData: KdbxCustomData;
+  }
+  interface BinaryReference {
+    readonly key: string
+    readonly value: ArrayBuffer
   }
 }
 

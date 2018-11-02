@@ -2,6 +2,15 @@ import * as React from 'react';
 import * as jsonParser from './parser/json';
 import { StringMatcher } from '../utils/StringMatcher';
 
+export interface KeePassFields {
+  Title?: string
+  UserName?: string
+  Password?: string
+  URL?: string
+  Notes?: string
+  [key: string]: string | undefined
+}
+
 export interface PanelProps<C> {
   parsedContent: C
 }
@@ -33,7 +42,8 @@ export interface Type<C> extends ReactTypeExt {
   toFileName: (displayName: string) => string,
   initialize?: () => C,
   matches?: (content: C, matcher: StringMatcher) => boolean,
-  fromKdbxEntry?: (entry: any) => C,
+  fromKdbxEntry?: (fields: KeePassFields) => C,
+  toKdbxEntry?: (content: C) => KeePassFields,
   parse?: (buf: Buffer) => C,
   write?: (content: C) => Buffer
 }
@@ -55,11 +65,17 @@ const TYPES: Type<any>[] = [
     initialize: () => ({}),
     matches: (content, matcher) => (content.username && matcher.matches(content.username))
       || (content.description && matcher.matches(content.description)),
-    fromKdbxEntry: entry => ({
-      description: entry.fields.Notes,
-      username: entry.fields.UserName,
-      password: entry.fields.Password ? entry.fields.Password.getText() : undefined,
-      url: entry.fields.URL
+    fromKdbxEntry: fields => ({
+      description: fields.Notes,
+      username: fields.UserName,
+      password: fields.Password,
+      url: fields.URL
+    }),
+    toKdbxEntry: content => ({
+      Notes: content.description,
+      UserName: content.username,
+      Password: content.password,
+      URL: content.url
     }),
     ...jsonParser
   },

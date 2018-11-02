@@ -12,6 +12,7 @@ import { State as EditState } from './edit';
 import { State as EntryDetailsState } from './entryDetails';
 import { State as ExternalState } from './external';
 import { State as FavoritesState } from './favorites';
+import { State as FileExportState } from './fileExport';
 import { State as FileImportState } from './fileImport';
 import { State as GitState } from './git';
 import { State as KeysState } from './keys';
@@ -31,6 +32,7 @@ export interface RootState {
   entryDetails: EntryDetailsState,
   external: ExternalState,
   favorites: FavoritesState,
+  fileExport: FileExportState,
   fileImport: FileImportState,
   git: GitState,
   keys: KeysState,
