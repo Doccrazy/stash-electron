@@ -63,11 +63,10 @@ const rendererDevConfig: webpack.Configuration = {
             loader: 'style-loader'
           },
           {
-            loader: 'typings-for-css-modules-loader',
+            loader: 'css-loader',
             options: {
               modules: true,
               camelCase: true,
-              namedExport: true,
               sourceMap: true,
               importLoaders: 1,
               localIdentName: '[name]__[local]__[hash:base64:5]'
@@ -101,11 +100,10 @@ const rendererDevConfig: webpack.Configuration = {
             loader: 'style-loader'
           },
           {
-            loader: 'typings-for-css-modules-loader',
+            loader: 'css-loader',
             options: {
               modules: true,
               camelCase: true,
-              namedExport: true,
               sourceMap: true,
               importLoaders: 1,
               localIdentName: '[name]__[local]__[hash:base64:5]'
