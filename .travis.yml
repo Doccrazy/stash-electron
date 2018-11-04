@@ -12,6 +12,9 @@ matrix:
       services: docker
       language: generic
 
+git:
+  depth: false
+
 cache:
   directories:
     - node_modules
@@ -64,6 +67,8 @@ script:
     else
       npm run package mac
     fi
+
+after_success:
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ] && [ -n "$DEPLOY_RELEASE" ]; then
       bash dist/arch/update-aur.sh
