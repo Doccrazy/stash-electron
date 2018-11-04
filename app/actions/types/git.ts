@@ -19,6 +19,7 @@ export interface GitStatus {
   commitsAheadOrigin?: number,
   conflict?: boolean,
   branchName?: string,
+  rootCommit?: GitCommitInfo,
   upstreamName?: string,
   incomingCommits?: number,
   allowBackgroundFetch?: boolean,

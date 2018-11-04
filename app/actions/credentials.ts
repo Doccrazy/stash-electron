@@ -34,7 +34,7 @@ export function clearStoredLogin(context: string): Thunk<Promise<void>> {
     }
 
     try {
-      dispatch(Settings.changeAndSave(SETTINGS_KEY, (getState().settings.current.storedLogins || []).filter(ctx => ctx !== context)) as any);
+      dispatch(Settings.changeAndSave(SETTINGS_KEY, getState().settings.current.storedLogins.filter(ctx => ctx !== context)) as any);
 
       await keytar.deletePassword(KEYTAR_SERVICE, context);
     } catch (e) {
@@ -115,7 +115,7 @@ export function acceptCredentials(context: string): Thunk<Promise<void>> {
           password: formState.password
         }));
 
-        dispatch(Settings.changeAndSave(SETTINGS_KEY, [...(getState().settings.current.storedLogins || []), credentials.context]) as any);
+        dispatch(Settings.changeAndSave(SETTINGS_KEY, [...getState().settings.current.storedLogins, credentials.context]) as any);
       } catch (e) {
         // failed to save password
         console.error(e);

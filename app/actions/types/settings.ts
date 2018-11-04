@@ -18,8 +18,15 @@ export interface BoolSettings {
   hideInaccessible?: boolean
 }
 
+export interface RepositoryInfo {
+  path: string
+  name: string
+  id?: string
+}
+
 export type SettingsMap = StringSettings & BoolSettings & {
-  storedLogins?: string[]
+  storedLogins: string[],
+  repositories: RepositoryInfo[]
 };
 
 export interface State {

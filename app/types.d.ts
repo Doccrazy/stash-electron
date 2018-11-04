@@ -135,6 +135,31 @@ declare module 'tai-password-strength/lib/password-strength.js' {
   export = pws;
 }
 
+declare module 'jdenticon' {
+  export interface JdenticonConfig {
+    hues?: number[]
+    lightness?: {
+      color?: number[];
+      grayscale?: number[];
+    }
+    saturation?: {
+      color?: number;
+      grayscale?: number;
+    }
+    backColor?: string
+  }
+
+  export function drawIcon(ctx: CanvasRenderingContext2D, hash: string, size: number): void;
+
+  export function toSvg(hash: string, size: number, padding?: number): string;
+
+  export function update(el: Element | string, hash?: string, padding?: number): void;
+
+  export const config: JdenticonConfig;
+
+  export const version: string;
+}
+
 declare module '*.css' {
   interface IClassNames {
     [className: string]: string

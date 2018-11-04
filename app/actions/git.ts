@@ -12,7 +12,7 @@ import {
   addToGitIgnore,
   commitAllChanges, commitInfo,
   compareRefs,
-  fetchWithRetry, finishRebaseResolving, GitCommitInfo, GitCredentials,
+  fetchWithRetry, finishRebaseResolving, getRootCommit, GitCommitInfo, GitCredentials,
   hasUncommittedChanges, isSignatureConfigured, loadHistory,
   pushWithRetry, remoteNameFromRef,
   usingOurs
@@ -80,6 +80,8 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
 
         let currentRef = await gitRepo.head();
         status.branchName = currentRef.shorthand();
+
+        status.rootCommit = await getRootCommit(gitRepo);
 
         if (gitRepo.isRebasing() || gitRepo.isMerging()) {
           status.conflict = true;

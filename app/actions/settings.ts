@@ -1,4 +1,5 @@
 import * as os from 'os';
+import { remote } from 'electron';
 import * as electronSettings from 'electron-settings';
 import { KeyFormat, SettingsKeys, SettingsMap, State } from './types/settings';
 import {TypedAction, GetState, TypedThunk, OptionalAction} from './types/index';
@@ -15,7 +16,7 @@ export function load(): Thunk<void> {
   return (dispatch, getState) => {
     dispatch({
       type: Actions.LOAD,
-      payload: electronSettings.getAll() as SettingsMap
+      payload: electronSettings.getAll() as unknown as SettingsMap
     });
   };
 }
@@ -52,6 +53,23 @@ export function save(): Thunk<void> {
   };
 }
 
+export function browseForFolder(key: SettingsKeys, title: string, instantSave?: boolean): Thunk<void> {
+  return (dispatch, getState) => {
+    const folder = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+      title,
+      properties: ['openDirectory']
+    });
+
+    if (folder && folder[0]) {
+      if (instantSave) {
+        dispatch(changeAndSave(key, folder[0]));
+      } else {
+        dispatch(changeSetting(key, folder[0]));
+      }
+    }
+  };
+}
+
 afterAction([Actions.LOAD, Actions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
 
@@ -65,7 +83,9 @@ function applyDefaults(settings: Partial<SettingsMap>): SettingsMap {
     rootFontSize: Math.min(Math.max(Number.parseInt(settings.rootFontSize as any, 10) || 15, 10), 20),
     privateKeyFile: settings.privateKeyFile || (os.platform() === 'linux' ? path.join(os.homedir(), '.ssh/id_rsa') : ''),
     inactivityTimeout: Number.isNaN(inactivityTimeout) ? 15 : inactivityTimeout,
-    keyDisplayFormat: Object.values(KeyFormat).includes(settings.keyDisplayFormat) ? settings.keyDisplayFormat! : KeyFormat.SHA256
+    keyDisplayFormat: Object.values(KeyFormat).includes(settings.keyDisplayFormat) ? settings.keyDisplayFormat! : KeyFormat.SHA256,
+    storedLogins: settings.storedLogins || [],
+    repositories: settings.repositories || []
   };
 }
 

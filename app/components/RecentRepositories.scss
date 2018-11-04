@@ -1,0 +1,103 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~font-awesome/scss/mixins";
+@import "~font-awesome/scss/variables";
+@import "~font-awesome/scss/animated";
+
+$size: 6rem;
+$max-size: 10rem;
+$remove-size: 1.5rem;
+$remove-padding: 0.25rem;
+
+.repo {
+  margin-right: 1rem;
+  padding: 1rem;
+  position: relative;
+
+  .icon {
+    margin: auto;
+    background-color: $gray-400;
+    border: 1px solid $input-border-color;
+    width: $size;
+    height: $size;
+    position: relative;
+
+    > svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &.loading .icon::after {
+    @include fa-icon();
+    @extend .fa-spin;
+
+    content: $fa-var-spinner;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: $size;
+    height: $size;
+    line-height: $size;
+    text-align: center;
+    font-size: 3em;
+    color: white;
+  }
+
+  .title {
+    text-align: center;
+    max-width: $max-size;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &:global(.btn-info):disabled {
+    background-color: transparentize($info, 0.35);
+    border-color: transparentize($info, 0.35);
+    opacity: 1;
+  }
+
+  .remove {
+    padding: $remove-padding;
+    position: absolute;
+    top: -$remove-size/2 - $remove-padding;
+    right: -$remove-size/2 - $remove-padding;
+  }
+
+  .remove::before {
+    @include fa-icon();
+
+    content: $fa-var-times;
+    color: $body-bg;
+    background-color: $danger;
+    border-radius: $remove-size/2;
+    width: $remove-size;
+    height: $remove-size;
+    line-height: $remove-size;
+    font-size: $remove-size * 0.8;
+    display: none;
+    z-index: 999;
+  }
+
+  &:hover .remove::before {
+    display: inline-block;
+  }
+}
+
+.add {
+  .icon {
+    background-color: transparent;
+    line-height: $size;
+    text-align: center;
+    vertical-align: top;
+    font-size: 2em;
+    color: $input-border-color;
+    border: 1px solid $input-border-color;
+
+    &::before {
+      @include fa-icon();
+
+      content: $fa-var-plus;
+    }
+  }
+}

@@ -2,27 +2,21 @@ import * as React from 'react';
 import { Form, FormGroup, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { remote } from 'electron';
+import RecentRepositories from '../containers/RecentRepositories';
 import SettingField from '../containers/SettingField';
 import SettingFileField from '../containers/SettingFileField';
 import SaveSettingsButton from '../containers/SaveSettingsButton';
 import PrivateKeyStatus from '../containers/PrivateKeyStatus';
 import ActionButton from '../containers/ActionButton';
 import { openGenerate } from '../actions/privateKey';
-import { openClonePopup } from '../actions/git';
 
 export default () => (<div className="container">
   <h1 className="my-4">Application settings</h1>
 
   <Form>
     <FormGroup>
-      <Label>Repository path</Label>
-      <div className="d-flex">
-        <SettingFileField field="repositoryPath" folder dialogTitle="Select repository path"/>
-        <div className="text-nowrap col-form-label mx-2">- or -</div>
-        <ActionButton actionCreator={openClonePopup} title="Will prompt for target folder">
-          <i className="fa fa-git-square" /> Clone remote repository
-        </ActionButton>
-      </div>
+      <Label>Recent repositories</Label>
+      <RecentRepositories />
     </FormGroup>
     <FormGroup>
       <Label>Private key file (SSH / PEM / PPK)</Label>

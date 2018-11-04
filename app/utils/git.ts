@@ -255,8 +255,8 @@ export function commitInfo(commit: Git.Commit): GitCommitInfo {
   return {
     hash: commit.id().tostrS(),
     message: commit.message(),
-    authorName: (commit.author().name as any)(),  // error in typings and docs
-    authorEmail: (commit.author().email as any)(),  // error in typings and docs
+    authorName: commit.author().name(),
+    authorEmail: commit.author().email(),
     date: commit.date()
   };
 }
@@ -388,4 +388,13 @@ export async function createGitRepository(gitRepo: Git.Repository, commitOid: st
   authProvider.setCurrentUser(privateKey);
 
   return new EncryptedRepository(gitRepo.workdir(), authProvider, gitFs);
+}
+
+export async function getRootCommit(gitRepo: Git.Repository): Promise<GitCommitInfo | undefined> {
+  const walker = gitRepo.createRevWalk();
+  walker.pushHead();
+  walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME | Git.Revwalk.SORT.REVERSE);  // tslint:disable-line
+
+  const commits = await walker.getCommits(1);
+  return commits.length > 0 ? commitInfo(commits[0]) : undefined;
 }

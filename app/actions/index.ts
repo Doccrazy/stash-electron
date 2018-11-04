@@ -16,6 +16,7 @@ import fileImport from './fileImport';
 import git from './git';
 import keys from './keys';
 import privateKey from './privateKey';
+import './recentRepositories';
 import repository from './repository';
 import search from './search';
 import settings from './settings';
