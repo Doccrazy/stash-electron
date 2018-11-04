@@ -3,7 +3,7 @@
   "productName": "Stash",
   "version": "0.0.1-dev",
   "description": "Cryptographically secure team password manager built on open technologies and standardized encryption algorithms.",
-  "main": "./main.prod.js",
+  "main": "./main.js",
   "scripts": {
     "clean": "rimraf build/*",
     "build": "concurrently \"npm run build-main\" \"npm run build-renderer\"",
@@ -19,7 +19,7 @@
     "postinstall": "electron-builder install-app-deps",
     "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production electron ./app/",
-    "start-main-dev": "cross-env HOT=1 NODE_ENV=development electron -r ts-node/register ./app/main.dev",
+    "start-main-dev": "cross-env HOT=1 NODE_ENV=development electron -r ts-node/register ./app/main",
     "start-renderer-dev": "cross-env NODE_ENV=development node --trace-warnings ./node_modules/webpack-dev-server/bin/webpack-dev-server --config webpack.config.renderer.dev.ts",
     "test": "cross-env NODE_ENV=test TS_NODE_FILES=true mocha --trace-warnings -r ts-node/register -r test/register \"test/**/*.ts\"",
     "test-e2e": "cross-env NODE_ENV=test TS_NODE_FILES=true mocha --trace-warnings -r ts-node/register -r test/register \"test/e2e/**/*.ts\"",

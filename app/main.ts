@@ -4,7 +4,7 @@
  * through IPC.
  *
  * When running `npm run build` or `npm run build-main`, this file is compiled to
- * `./app/main.prod.js` using webpack. This gives us some performance wins.
+ * `../build/main.js` using webpack. This gives us some performance wins.
  */
 // tslint:disable-next-line
 /// <reference path="types.d.ts" />

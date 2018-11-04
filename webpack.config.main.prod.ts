@@ -17,12 +17,12 @@ const mainProdConfig: webpack.Configuration = {
 
   target: 'electron-main',
 
-  entry: './app/main.dev',
+  entry: './app/main',
 
   // 'main.js' in root
   output: {
     path: path.join(__dirname, 'build'),
-    filename: 'main.prod.js'
+    filename: 'main.js'
   },
 
   plugins: [
