@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
-import { typeById } from '../fileType';
+import { EntryForm } from '../fileType/Components';
 
 export interface Props {
   open?: boolean,
   isNew?: boolean,
-  typeId?: string,
+  typeId: string,
   name?: string,
   parsedContent: any,
   formState: any,
@@ -19,7 +19,6 @@ export interface Props {
 }
 
 export default ({ open, isNew, typeId, name, parsedContent, formState, validationError, authInfo, onChangeName, onChange, onChangeState, onSave, onClose }: Props) => {
-  const TypeForm = open && (typeById(typeId)).form;
   return (<Modal size="lg" isOpen={open} toggle={onClose}>
     <ModalHeader toggle={onClose}>
       {isNew ? 'Create new entry' : 'Edit entry'}
@@ -27,7 +26,8 @@ export default ({ open, isNew, typeId, name, parsedContent, formState, validatio
     </ModalHeader>
     <ModalBody>
       <Form id="editForm" onSubmit={onSave}>
-        {TypeForm && <TypeForm name={name || ''} onChangeName={onChangeName} value={parsedContent} onChange={onChange} formState={formState} onChangeState={onChangeState} />}
+        <EntryForm typeId={typeId} name={name || ''} onChangeName={onChangeName}
+                   value={parsedContent} onChange={onChange} formState={formState} onChangeState={onChangeState} />
       </Form>
     </ModalBody>
     <ModalFooter>

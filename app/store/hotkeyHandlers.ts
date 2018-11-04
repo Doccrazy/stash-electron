@@ -1,6 +1,7 @@
 import * as Mousetrap from 'mousetrap';
 import {Dispatch, GetState} from '../actions/types/index';
 import StashLink from '../domain/StashLink';
+import PasswordType from '../fileType/password';
 import {openStashLink} from './stashLinkHandler';
 import * as Edit from '../actions/edit';
 import * as CurrentNode from '../actions/currentNode';
@@ -54,7 +55,7 @@ export default function registerHotkeys(dispatch: Dispatch, getState: GetState) 
     dispatch(op());
   }
 
-  Mousetrap.bind(['ctrl+n', 'meta+n'], () => editOp(() => Edit.createInCurrent('password')));
+  Mousetrap.bind(['ctrl+n', 'meta+n'], () => editOp(() => Edit.createInCurrent(PasswordType.id)));
   Mousetrap.bind(['ctrl+shift+n', 'meta+shift+n'], () => editOp(CurrentNode.startCreate));
 
   Mousetrap.bind('ctrl+l', () => {

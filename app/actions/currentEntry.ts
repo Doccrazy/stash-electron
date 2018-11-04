@@ -5,7 +5,7 @@ import * as Repository from './repository';
 import * as CurrentNode from './currentNode';
 import * as PrivateKey from './privateKey';
 import { afterAction } from '../store/eventMiddleware';
-import typeFor from '../fileType';
+import { typeFor } from '../fileType';
 import {State} from './types/currentEntry';
 import { GetState, TypedAction, TypedThunk, OptionalAction, RootState, Dispatch } from './types/index';
 import {toastr} from 'react-redux-toastr';

@@ -7,7 +7,8 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { History } from 'history';
 import Routes from './routes';
-import '../fileType/registerComponents';
+import '../fileType/default/register';
+import '../fileType/password/register';
 
 export interface Props {
   store: Store<any>,

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
 import { valid } from '../actions/fileExport';
 import {ExportSettings, StatusType} from '../actions/types/fileExport';
-import StrengthMeter from '../fileType/form/StrengthMeter';
+import StrengthMeter from './shared/StrengthMeter';
 import FocusingInput from './tools/FocusingInput';
 
 const STATUS_COLOR = {

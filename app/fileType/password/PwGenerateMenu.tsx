@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { UncontrolledDropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 import generatePassword from '../../utils/generatePassword';
-import './StrengthMeter.scss';
+import '../../components/shared/StrengthMeter.scss';
 
 const LENGTHS = [8, 12, 16, 20, 24];
 const CLASS_NAMES = ['Aa9', '+#_', '" :'];

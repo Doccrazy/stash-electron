@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as kdbxweb from 'kdbxweb';
-import { InternalType, typeById } from '../fileType';
+import { KeePassFields } from '../fileType';
+import PasswordType from '../fileType/password';
 import { cleanFileName } from '../utils/repository';
 
 export interface Callbacks<T> {
@@ -17,7 +18,6 @@ export interface Credentials {
 export default class KeePassImporter<T> {
   groupCount = 0;
   entryCount = 0;
-  private readonly passwordType = typeById('password') as InternalType<any>;
 
   constructor(private databasePath: string, private credentials: Credentials, private callbacks: Callbacks<T>) {
   }
@@ -60,10 +60,10 @@ export default class KeePassImporter<T> {
       if (entry.fields.Password) {
         entryFields.Password = entry.fields.Password.getText();
       }
-      const passwordContent = this.passwordType.fromKdbxEntry(entryFields);
-      const buffer = this.passwordType.write(passwordContent);
+      const passwordContent = PasswordType.fromKdbxEntry(entryFields as KeePassFields);
+      const buffer = PasswordType.write(passwordContent);
 
-      await this.callbacks.createEntry(targetNode, this.passwordType.toFileName(safeName), buffer);
+      await this.callbacks.createEntry(targetNode, PasswordType.toFileName(safeName), buffer);
 
       // process binary attachments
       for (const binaryName of Object.keys(entry.binaries)) {

@@ -4,9 +4,9 @@ import * as cx from 'classnames';
 import { Set } from 'immutable';
 import * as moment from 'moment';
 import {Details} from '../actions/types/entryDetails';
-import typeFor from '../fileType';
 import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';
+import { EntryNameLabel } from '../fileType/Components';
 import { formatDateTime } from '../utils/format';
 import { EntryDragSource } from './tools/EntryPtrDrag';
 import * as styles from './FileList.scss';
@@ -49,7 +49,6 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
     </thead>
     <tbody>
       {files.map(file => {
-        const type = typeFor(file.ptr.entry);
         return (<tr
           key={file.ptr.toString()}
           className={cx('clickable', file.ptr.equals(selectedEntry) && 'table-active', !file.accessible && styles.inaccessible)}
@@ -67,7 +66,7 @@ export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, o
             }}
           /></td>
           <td><EntryDragSource item={file.ptr} dragAllowed={file.accessible}>
-            {type.format ? type.format(file.ptr.entry) : file.ptr.entry}
+            <EntryNameLabel fileName={file.ptr.entry}/>
           </EntryDragSource></td>
           {showPath && <td title={file.nodes.slice(1).map(node => node.name).join(' / ')} className={file.nodes.length > 3 ? styles.pathEllipsis : undefined}>
             {file.nodes.slice(1).slice(-2).map((node, idx) => <span key={idx} className={styles.pathSeg}>

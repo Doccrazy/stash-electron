@@ -8,6 +8,7 @@ import { openCurrent as openPermissions } from '../actions/authorizedUsers';
 import { browseForAdd } from '../actions/external';
 import {ROOT_ID} from '../domain/Node';
 import { Dispatch, RootState } from '../actions/types/index';
+import PasswordType from '../fileType/password';
 import { copyStashLink } from '../store/stashLinkHandler';
 import {isAccessible} from '../utils/repository';
 
@@ -20,7 +21,7 @@ export default connect((state: RootState) => ({
   onRename: () => dispatch(startRename()),
   onDelete: () => dispatch(prepareDelete()),
   onCreateNode: () => dispatch(startCreate()),
-  onCreateItem: () => dispatch(createInCurrent('password')),
+  onCreateItem: () => dispatch(createInCurrent(PasswordType.id)),
   onEditPermissions: () => dispatch(openPermissions()),
   onAddExternal: () => dispatch(browseForAdd()),
   onImport: () => dispatch(openImport()),

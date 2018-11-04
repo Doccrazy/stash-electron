@@ -6,7 +6,7 @@ import { toastr } from 'react-redux-toastr';
 import {childNodeByName, isAccessible} from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import * as repoActions from './repository';
-import typeFor from '../fileType/index';
+import { typeFor } from '../fileType/index';
 import {State} from './types/external';
 import { RootState, TypedAction, TypedThunk } from './types/index';
 

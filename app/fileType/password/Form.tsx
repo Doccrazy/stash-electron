@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { Button, FormGroup, Label, Input, Row, Col } from 'reactstrap';
+import PasswordType, { PasswordContent } from './index';
 import PwGenerateMenu from './PwGenerateMenu';
-import { typeById, FormProps } from '../index';
-import StrengthMeter from './StrengthMeter';
+import { FormProps } from '../index';
+import StrengthMeter from '../../components/shared/StrengthMeter';
 
-type Content = { username?: string, password?: string, url?: string, description?: string };
 type FormState = { mask: boolean, repeatPassword?: string };
 
-export default class PasswordForm extends React.Component<FormProps<Content, FormState>, {}> {
-  static initFormState: (content: Content) => FormState;
-  static validate: (name: string, content: Content, formState: FormState) => string | boolean;
+export default class PasswordForm extends React.Component<FormProps<PasswordContent, FormState>, {}> {
+  static initFormState: (content: PasswordContent) => FormState;
+  static validate: (name: string, content: PasswordContent, formState: FormState) => string | boolean;
   readonly nameInput = React.createRef<HTMLInputElement>();
   readonly passwordInput = React.createRef<HTMLInputElement>();
 
@@ -27,7 +27,7 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
     });
   }
 
-  componentDidUpdate(prevProps: FormProps<Content, FormState>) {
+  componentDidUpdate(prevProps: FormProps<PasswordContent, FormState>) {
     const maskedInput = this.passwordInput.current;
     if (this.props.formState.mask !== prevProps.formState.mask && maskedInput) {
       maskedInput.focus();
@@ -65,8 +65,8 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
               innerRef={this.nameInput}
               id="name"
               placeholder="Title"
-              value={typeById('password').toDisplayName(name)}
-              onChange={ev => onChangeName(typeById('password').toFileName(ev.target.value))}
+              value={PasswordType.toDisplayName(name)}
+              onChange={ev => onChangeName(PasswordType.toFileName(ev.target.value))}
             />
           </Col>
         </FormGroup>
@@ -144,7 +144,7 @@ export default class PasswordForm extends React.Component<FormProps<Content, For
 PasswordForm.initFormState = content => ({ mask: true, repeatPassword: content ? content.password : '' });
 
 PasswordForm.validate = (name, content, formState) => {
-  if (name === typeById('password').toFileName('')) {
+  if (name === PasswordType.toFileName('')) {
     return 'Please enter a title.';
   }
   if (!content.username && !content.password) {

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as jsonParser from './parser/json';
 import { StringMatcher } from '../utils/StringMatcher';
 
 export interface KeePassFields {
@@ -9,6 +8,10 @@ export interface KeePassFields {
   URL?: string
   Notes?: string
   [key: string]: string | undefined
+}
+
+export interface NameProps {
+  fileName: string
 }
 
 export interface PanelProps<C> {
@@ -29,15 +32,16 @@ export interface StaticFormMethods<C, S> {
   validate?: (name: string, content: C, formState: S) => string | boolean;
 }
 
-export interface ReactTypeExt {
-  format?: (name: string) => React.ReactNode
-  panel?: React.ComponentType<PanelProps<any>>,
-  form?: React.ComponentType<FormProps<any, any>> & StaticFormMethods<any, any>
+export interface TypeRenderer<C, S> {
+  NameLabel: React.ComponentType<NameProps>
+  Panel: React.ComponentType<PanelProps<C>>
+  Form: React.ComponentType<FormProps<C, S>> & StaticFormMethods<C, S>
 }
 
-export interface Type<C> extends ReactTypeExt {
-  id?: string,
-  test: (name: string) => boolean,
+export interface Type<C> {
+  id: string,
+  // returns the quality of the match (higher is better, default/fallback is 0)
+  test: (name: string) => number | null,
   toDisplayName: (name: string) => string,
   toFileName: (displayName: string) => string,
   initialize?: () => C,
@@ -48,53 +52,31 @@ export interface Type<C> extends ReactTypeExt {
   write?: (content: C) => Buffer
 }
 
-export type InternalType<C> = Type<C> & { matches: any, fromKdbxEntry: any, parse: any, write: any };
+const TYPES: { [id: string]: Type<any> } = {};
+const RENDERERS: { [id: string]: TypeRenderer<any, any> } = {};
 
-const DEFAULT_TYPE: Type<void> = {
-  test: () => true,
-  toDisplayName: name => name,
-  toFileName: name => name
-};
-
-const TYPES: Type<any>[] = [
-  {
-    id: 'password',
-    test: fn => fn.endsWith('.pass.json'),
-    toDisplayName: fn => fn.substr(0, fn.length - 10),
-    toFileName: name => `${name}.pass.json`,
-    initialize: () => ({}),
-    matches: (content, matcher) => (content.username && matcher.matches(content.username))
-      || (content.description && matcher.matches(content.description)),
-    fromKdbxEntry: fields => ({
-      description: fields.Notes,
-      username: fields.UserName,
-      password: fields.Password,
-      url: fields.URL
-    }),
-    toKdbxEntry: content => ({
-      Notes: content.description,
-      UserName: content.username,
-      Password: content.password,
-      URL: content.url
-    }),
-    ...jsonParser
-  },
-  DEFAULT_TYPE
-];
-
-export default function typeFor(entry: string) {
-  return TYPES.find(type => type.test(entry)) || DEFAULT_TYPE;
+export function typeFor(entry: string) {
+  const matches = Object.values(TYPES)
+    .map(type => ({ type, match: type.test(entry) }))
+    .filter(m => m.match !== null);
+  // best matches first
+  matches.sort((a, b) => b.match! - a.match!);
+  return matches[0].type;
 }
 
-export function typeForInt(entry: string) {
-  return typeFor(entry) as InternalType<any>;
+export function typeById(id: string) {
+  return TYPES[id];
 }
 
-export function typeById(id: string | undefined) {
-  return TYPES.find(type => type.id === id) || DEFAULT_TYPE;
+export function rendererById(id: string) {
+  return RENDERERS[id];
 }
 
-export function mergeConfig(id: string | undefined, config: ReactTypeExt) {
-  const type = typeById(id);
-  Object.assign(type, config);
+export function rendererFor(entry: string) {
+  return rendererById(typeFor(entry).id);
+}
+
+export function register<C>(type: Type<C>, typeRenderer: TypeRenderer<C, any>) {
+  TYPES[type.id] = type;
+  RENDERERS[type.id] = typeRenderer;
 }

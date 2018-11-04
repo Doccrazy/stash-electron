@@ -2,7 +2,7 @@ import * as React from 'react';
 import { clipboard } from 'electron';
 import { toastr } from 'react-redux-toastr';
 import HiddenText from '../../components/tools/HiddenText';
-import * as styles from './Password.scss';
+import * as styles from './Panel.scss';
 
 function sanitizeUrl(url: string) {
   if (!url) {

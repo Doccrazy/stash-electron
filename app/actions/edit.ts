@@ -2,7 +2,7 @@ import { fromJS, is } from 'immutable';
 import { toastr } from 'react-redux-toastr';
 import { cleanFileName, hasChildOrEntry, isAccessible, isValidFileName, RESERVED_FILENAMES } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
-import typeFor, { typeById } from '../fileType';
+import { rendererById, Type, typeById, typeFor } from '../fileType';
 import * as Repository from './repository';
 import { afterAction } from '../store/eventMiddleware';
 import {State} from './types/edit';
@@ -19,13 +19,13 @@ export enum Actions {
   CHANGE_NAME = 'edit/CHANGE_NAME'
 }
 
-export function open(ptr: EntryPtr, preParsedContent?: any): Thunk<Promise<void>> {
+export function open(ptr: EntryPtr, preParsedContent?: any, knownType?: Type<any>): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     if (!isAccessible(getState().repository.nodes, ptr.nodeId, getState().privateKey.username)) {
       return;
     }
 
-    const type = typeFor(ptr.entry);
+    const type = knownType || typeFor(ptr.entry);
     let parsedContent;
     if (type.parse) {
       parsedContent = preParsedContent;
@@ -42,13 +42,14 @@ export function open(ptr: EntryPtr, preParsedContent?: any): Thunk<Promise<void>
       }
     }
 
+    const renderer = rendererById(type.id);
     dispatch({
       type: Actions.OPEN,
       payload: {
         ptr,
         typeId: type.id,
         parsedContent,
-        formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
+        formState: renderer.Form.initFormState ? renderer.Form.initFormState(parsedContent) : undefined
       }
     });
   };
@@ -70,21 +71,7 @@ export function create(nodeId: string, typeId: string): Thunk<void> {
       throw new Error(`invalid type ${typeId} passed to create`);
     }
 
-    if (!isAccessible(getState().repository.nodes, nodeId, getState().privateKey.username)) {
-      return;
-    }
-
-    const parsedContent = type.initialize();
-
-    dispatch({
-      type: Actions.OPEN,
-      payload: {
-        ptr: new EntryPtr(nodeId, ''),
-        typeId,
-        parsedContent,
-        formState: (type.form && type.form.initFormState) ? type.form.initFormState(parsedContent) : undefined
-      }
-    });
+    dispatch(open(new EntryPtr(nodeId, ''), type.initialize(), type));
   };
 }
 
@@ -134,7 +121,7 @@ export function changeName(name: string): Action {
 export function save(closeAfter: boolean): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { repository, edit } = getState();
-    if (!edit.ptr) {
+    if (!edit.ptr || !edit.typeId) {
       return;
     }
     const node = repository.nodes[edit.ptr.nodeId];
@@ -167,8 +154,9 @@ export function save(closeAfter: boolean): Thunk<Promise<void>> {
 
     // validate content
     const type = typeById(edit.typeId);
-    if (type.form && type.form.validate) {
-      const validationError = type.form.validate(newName, edit.parsedContent, edit.formState);
+    const renderer = rendererById(type.id);
+    if (renderer.Form.validate) {
+      const validationError = renderer.Form.validate(newName, edit.parsedContent, edit.formState);
       dispatch({
         type: Actions.VALIDATE,
         payload: validationError

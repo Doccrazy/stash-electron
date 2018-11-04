@@ -4,7 +4,7 @@ import { getRepo, Actions as RepoActions } from './repository';
 import {deselectSpecial, selectSpecial} from './currentNode';
 import {hierarchy, isAccessible, recursiveChildIds} from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
-import typeFor, {typeForInt} from '../fileType/index';
+import { typeFor } from '../fileType/index';
 import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 import {SearchOptions, State} from './types/search';
 import {State as RepositoryState} from './types/repository';
@@ -63,8 +63,8 @@ export function changeFilter(filter: string): Thunk<void> {
 }
 
 function matches(ptr: EntryPtr, content: any, matcher: StringMatcher) {
-  const t = typeForInt(ptr.entry);
-  return matcher.matches(t.toDisplayName(ptr.entry)) || t.matches(content, matcher);
+  const t = typeFor(ptr.entry);
+  return matcher.matches(t.toDisplayName(ptr.entry)) || t.matches!(content, matcher);
 }
 
 type PtrWithBuffer = { ptr: EntryPtr, buffer: Buffer };
@@ -95,7 +95,7 @@ async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId: stri
   const buffers = await Promise.all(allSupportedEntries.map(readContentBuffer));
   console.timeEnd('readAll');
   console.time('parse');
-  const parsed = buffers.map(({ ptr, buffer }: PtrWithBuffer) => ({ ptr, content: typeForInt(ptr.entry).parse(buffer) }));
+  const parsed = buffers.map(({ ptr, buffer }: PtrWithBuffer) => ({ ptr, content: typeFor(ptr.entry).parse!(buffer) }));
   console.timeEnd('parse');
 
   console.time('filter');

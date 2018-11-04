@@ -1,7 +1,7 @@
 import { Set } from 'immutable';
 import EntryPtr from '../domain/EntryPtr';
 import Node from '../domain/Node';
-import typeFor from '../fileType/index';
+import { typeFor } from '../fileType/index';
 import { afterAction } from '../store/eventMiddleware';
 import { formatPath } from '../utils/format';
 import { hierarchy } from '../utils/repository';

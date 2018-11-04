@@ -1,6 +1,7 @@
 import * as React from 'react';
+import { EntryNameLabel, EntryPanel } from '../fileType/Components';
 import FileActionBar, { Props as ActionBarProps } from './FileActionBar';
-import typeFor from '../fileType';
+import { typeFor } from '../fileType';
 import AnimateHeight from './tools/AnimateHeight';
 import * as styles from './FileDetails.css';
 
@@ -9,32 +10,23 @@ export interface Props extends ActionBarProps {
   parsedContent: any
 }
 
-const Inaccessible = (props: void) => (<div>
+const Inaccessible = (props: {}) => (<div>
   You do not have permission to view/edit the contents of this item.
 </div>);
 
 export default ({ entry, parsedContent, accessible, history, selectedCommit, onEdit, onDelete, onCopyLink, onSelectHistory }: Props) => {
-  let TypePanel;
-  let type;
-  if (entry) {
-    type = typeFor(entry);
-    TypePanel = type.panel;
-  }
-  if (!accessible) {
-    TypePanel = Inaccessible;
-  }
   return (<AnimateHeight className={styles.animateContainer}>
-    {type && TypePanel && entry ? (<div>
+    {entry ? (<div>
       <div className={styles.headerWithButtons}>
         <div>
-          <h4 className="selectable">{type.format ? type.format(entry) : entry}</h4>
+          <h4 className="selectable"><EntryNameLabel fileName={entry}/></h4>
         </div>
         <div>
           <FileActionBar accessible={accessible} history={history} selectedCommit={selectedCommit}
                          onEdit={onEdit} onDelete={onDelete} onCopyLink={onCopyLink} onSelectHistory={onSelectHistory} />
         </div>
       </div>
-      <TypePanel parsedContent={parsedContent} />
+      {accessible ? <EntryPanel typeId={typeFor(entry).id} parsedContent={parsedContent} /> : <Inaccessible/>}
     </div>) : <div />}
   </AnimateHeight>);
 };

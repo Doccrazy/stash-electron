@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button } from 'reactstrap';
 import { connect } from 'react-redux';
-import { Dispatch } from '../../actions/types';
+import { Dispatch } from '../../actions/types/index';
 import { PanelProps } from '../index';
 import { browseForSaveAs, open as openExternal } from '../../actions/external';
 

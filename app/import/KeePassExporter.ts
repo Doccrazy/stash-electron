@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as kdbxweb from 'kdbxweb';
-import typeFor from '../fileType';
+import { typeFor } from '../fileType';
 
 export type ExportNodeId = unknown;
 
