@@ -28,7 +28,8 @@ export interface GitCommitInfo {
   date: Date,
   pushed?: boolean,
   changedFiles?: string[],
-  renamedFiles?: { [newFn: string]: string }
+  renamedFiles?: { [newFn: string]: string },
+  deletedFiles?: string[]
 }
 
 export function isRepository(repoPath: string) {
@@ -179,7 +180,7 @@ export async function fetchWithRetry(repo: Git.Repository, remote: string, crede
 }
 
 export async function pushWithRetry(repo: Git.Repository, remote: string, credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) {
-  const gitRemote = await repo.getRemote(remote, null as any);
+  const gitRemote = await repo.getRemote(remote);
   await gitRemote.push([(await repo.head()).name()], {
     callbacks: {
       credentials: async (url: string, usernameFromUrl: string) => {
@@ -188,7 +189,7 @@ export async function pushWithRetry(repo: Git.Repository, remote: string, creden
       },
       certificateCheck: () => 1
     }
-  }, null as any);
+  });
 }
 
 export async function hasUncommittedChanges(repo: Git.Repository) {
@@ -291,7 +292,7 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
   let allCommits: Git.Commit[];
   do {
     allCommits = await walker.getCommits(BATCH_SIZE);
-    const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts, null as any)));
+    const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts)));
     outer: for (let i = 0; i < commitDiffs.length; i++) {
       const commit = allCommits[i];
       const changedFiles: string[] = [];
@@ -349,20 +350,27 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
   let allCommits: Git.Commit[];
   do {
     allCommits = await walker.getCommits(BATCH_SIZE);
-    const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts, null as any)));
+    const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts)));
     await Promise.all(commitDiffs.reduce((acc, diffs) => { acc.push(...diffs); return acc; }, []).map(d => d.findSimilar(simOpts)));
     for (let i = 0; i < commitDiffs.length; i++) {
       const info = commitInfo(allCommits[i]);
       info.changedFiles = [];
       info.renamedFiles = {};
+      info.deletedFiles = [];
       for (const diff of commitDiffs[i]) {
         for (let deltaIdx = 0; deltaIdx < diff.numDeltas(); deltaIdx++) {
-          const entry = (diff.getDelta(deltaIdx).newFile as any)().path();
-          const oldEntry = (diff.getDelta(deltaIdx).oldFile as any)().path();
-          if (oldEntry !== entry) {
-            info.renamedFiles[entry] = oldEntry;
+          const diffDelta = diff.getDelta(deltaIdx);
+          const entry: string = (diffDelta.newFile as any)().path();
+          const oldEntry: string = (diffDelta.oldFile as any)().path();
+          const status: Git.Diff.DELTA = (diffDelta.status as any)();
+          if (status === Git.Diff.DELTA.DELETED) {
+            info.deletedFiles.push(entry);
+          } else {
+            if (status === Git.Diff.DELTA.RENAMED) {
+              info.renamedFiles[entry] = oldEntry;
+            }
+            info.changedFiles.push(entry);
           }
-          info.changedFiles.push(entry);
         }
       }
       result.push(info);
