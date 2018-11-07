@@ -1,4 +1,4 @@
-## upcoming release (no planned release date)
+## upcoming release (v1.2.0, planned Nov. 2018)
 
 #### New features
 - **Git history support**
@@ -6,7 +6,7 @@
   - A history popup has been added for user keys and folder permissions
   - The history of entries can now be accessed by a dropdown in the lower panel
 - SSH key format can now be toggled between fingerprint and full display, defaulting to SHA256 fingerprint
-- Public SSH keys can now copied to clipboard
+- Public SSH keys can now be copied to clipboard
 - Stash links can now also be shared for folders
 - A shiny new splashscreen now tries to mask the unfathomably long loading times
 - KeePass import now creates entries for binary attachments
