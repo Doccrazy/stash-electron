@@ -25,6 +25,8 @@ function processCommandLine(argv: string[]) {
   }
 }
 
+app.setAppUserModelId('de.doccrazy.Stash');
+
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 if (process.env.NODE_ENV === 'production') {
   app.setAsDefaultProtocolClient('stash');
