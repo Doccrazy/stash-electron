@@ -1,0 +1,91 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins/hover";
+@import "~font-awesome/scss/variables";
+@import "~font-awesome/scss/mixins";
+
+.container {
+  margin-left: $navbar-padding-x;
+  display: inline-block;
+  position: relative;
+}
+
+.link {
+  color: $gray-200;
+  font-size: 1.6em;
+
+  @include hover-focus {
+    color: darken($gray-200, 10%) !important;
+  }
+
+  &::before {
+    @include fa-icon();
+
+    content: $fa-var-user-circle;
+  }
+
+  &.valid {
+    color: $success;
+
+    @include hover-focus {
+      color: darken($success, 10%) !important;
+    }
+  }
+}
+
+.locked {
+  display: block;
+  position: absolute;
+  bottom: -0.4rem;
+  right: -0.25rem;
+  color: $warning;
+  font-size: 1.25em;
+
+  @include hover-focus {
+    color: darken($warning, 10%) !important;
+  }
+
+  &::after {
+    @include fa-icon();
+
+    content: $fa-var-lock;
+  }
+}
+
+.warning,
+.error {
+  position: absolute;
+  top: -0.1rem;
+  right: -0.25rem;
+  pointer-events: none;
+
+  &::after {
+    @include fa-icon();
+
+    content: $fa-var-exclamation-triangle;
+    position: absolute;
+    top: 0.1rem;
+    right: 0;
+  }
+
+  // add background to make icon non-transparent
+  &::before {
+    content: ' ';
+    position: absolute;
+    top: 0.1rem;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-left: 0.5rem solid transparent;
+    border-right: 0.5rem solid transparent;
+    border-bottom: 0.9rem solid black;
+  }
+}
+
+.warning {
+  color: $warning;
+}
+
+.error {
+  color: $danger;
+}
