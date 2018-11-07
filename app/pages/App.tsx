@@ -5,13 +5,13 @@ import { NavLink } from 'react-router-dom';
 import ReduxToastr from 'react-redux-toastr';
 import AuthHistoryPopup from '../containers/AuthHistoryPopup';
 import GitStatus from '../containers/GitStatus';
+import IdentityStatus from '../containers/IdentityStatus';
 import SearchField from '../containers/SearchField';
 import LoginPopup from '../containers/LoginPopup';
 import GitActionsPopup from '../containers/GitActionsPopup';
 import GenerateKeyPopup from '../containers/GenerateKeyPopup';
 import GitClonePopup from '../containers/GitClonePopup';
 import GitSignaturePopup from '../containers/GitSignaturePopup';
-import WorkspaceLock from '../containers/WorkspaceLock';
 import * as styles from './App.scss';
 
 export interface Props {
@@ -52,9 +52,9 @@ export default class App extends React.Component<Props, {}> {
             <Route path="/" exact children={animatedMount(SearchField)} />
           </div>
           <span className="navbar-text">
-            <WorkspaceLock />
             <GitStatus />
           </span>
+          <IdentityStatus />
         </Navbar>
         {this.props.children}
       </div>

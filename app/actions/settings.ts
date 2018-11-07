@@ -70,6 +70,24 @@ export function browseForFolder(key: SettingsKeys, title: string, instantSave?: 
   };
 }
 
+export function browseForFile(key: SettingsKeys, title: string, filters?: { extensions: string[], name: string }[], doSave?: boolean): Thunk<void> {
+  return (dispatch, getState) => {
+    const file = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+      title,
+      filters,
+      properties: ['openFile', 'showHiddenFiles']
+    });
+
+    if (file && file[0]) {
+      if (doSave) {
+        dispatch(changeAndSave(key, file[0]));
+      } else {
+        dispatch(changeSetting(key, file[0]));
+      }
+    }
+  };
+}
+
 afterAction([Actions.LOAD, Actions.SAVE], (dispatch, getState: GetState) => {
   const { settings } = getState();
 
@@ -85,7 +103,8 @@ function applyDefaults(settings: Partial<SettingsMap>): SettingsMap {
     inactivityTimeout: Number.isNaN(inactivityTimeout) ? 15 : inactivityTimeout,
     keyDisplayFormat: Object.values(KeyFormat).includes(settings.keyDisplayFormat) ? settings.keyDisplayFormat! : KeyFormat.SHA256,
     storedLogins: settings.storedLogins || [],
-    repositories: settings.repositories || []
+    repositories: settings.repositories || [],
+    privateKeys: settings.privateKeys || []
   };
 }
 

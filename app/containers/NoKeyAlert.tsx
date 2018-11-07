@@ -26,7 +26,7 @@ export default connect((state: RootState, props: void) => ({
     </Alert>);
   } else {
     return (<Alert color="danger">
-      No private key has been loaded or loading of the private key failed. Check settings.
+      No private key has been loaded or loading of the private key failed. Check <i className="fa fa-user-circle"/> account menu.
     </Alert>);
   }
 });

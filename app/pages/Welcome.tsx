@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import SettingFileField from '../containers/SettingFileField';
 import SettingField from '../containers/SettingField';
 import * as styles from './Welcome.scss';
-import PrivateKeyStatus from '../containers/PrivateKeyStatus';
 import GitInitializer from '../containers/welcome/GitInitializer';
 import ActionButton from '../containers/ActionButton';
 import { openGenerate } from '../actions/privateKey';
@@ -55,7 +54,7 @@ export default () => (<div className={`${styles.body} h-100 d-flex`}>
             <FormGroup>
               <Label>Selected private key file</Label>
               <SettingField field="privateKeyFile" readOnly />
-              <small className="form-text"><PrivateKeyStatus /></small>
+              {/*<small className="form-text"><PrivateKeyStatus /></small>*/}
             </FormGroup>
             <FormGroup check>
               <Label check>

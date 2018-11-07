@@ -4,11 +4,7 @@ import { Link } from 'react-router-dom';
 import { remote } from 'electron';
 import RecentRepositories from '../containers/RecentRepositories';
 import SettingField from '../containers/SettingField';
-import SettingFileField from '../containers/SettingFileField';
 import SaveSettingsButton from '../containers/SaveSettingsButton';
-import PrivateKeyStatus from '../containers/PrivateKeyStatus';
-import ActionButton from '../containers/ActionButton';
-import { openGenerate } from '../actions/privateKey';
 
 export default () => (<div className="container">
   <h1 className="my-4">Application settings</h1>
@@ -17,15 +13,6 @@ export default () => (<div className="container">
     <FormGroup>
       <Label>Recent repositories</Label>
       <RecentRepositories />
-    </FormGroup>
-    <FormGroup>
-      <Label>Private key file (SSH / PEM / PPK)</Label>
-      <div className="d-flex">
-        <SettingFileField field="privateKeyFile" dialogTitle="Select private key"/>
-        <div className="text-nowrap col-form-label mx-2">- or -</div>
-        <ActionButton actionCreator={openGenerate} title="Will prompt for save location"><i className="fa fa-cog" /> Generate new keypair</ActionButton>
-      </div>
-      <small className="form-text"><PrivateKeyStatus /></small>
     </FormGroup>
     <FormGroup>
       <Label>Inactivity lock (minutes)</Label>

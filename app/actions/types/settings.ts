@@ -24,9 +24,15 @@ export interface RepositoryInfo {
   id?: string
 }
 
+export interface PrivateKeyInfo {
+  path: string
+  publicKey: string
+}
+
 export type SettingsMap = StringSettings & BoolSettings & {
   storedLogins: string[],
-  repositories: RepositoryInfo[]
+  repositories: RepositoryInfo[],
+  privateKeys: PrivateKeyInfo[]
 };
 
 export interface State {
