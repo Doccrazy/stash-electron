@@ -13,6 +13,7 @@
 - **KeePass export** is now available in the folder bars menu
 - The settings page now remembers the list of recent repositories
 - Private key management has been moved from settings to the new **account status menu**, adding a list of recently used key files
+- The strength of a generated private key can now be selected (2048/4096 bits)
 
 #### Changes
 - The *My Favorites* link and the tool icons now remain visible when scrolling

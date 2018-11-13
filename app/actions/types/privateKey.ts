@@ -12,6 +12,7 @@ interface GenerateState {
   readonly working?: boolean,
   readonly passphrase?: string,
   readonly repeatPassphrase?: string
+  readonly strength?: number
 }
 
 export interface State {

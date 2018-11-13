@@ -52,12 +52,12 @@ export function parsePublicKey(key: string | Buffer, passphrase?: string): sshpk
  * Generate an RSA private key using the WebCrypto API
  * @returns {Promise<Buffer>} generated key in PKCS8 format
  */
-export async function generateRSAKeyPKCS8() {
+export async function generateRSAKeyPKCS8(modulusLength: number) {
   console.time('generateRSAKeyPKCS8');
 
   const key = await window.crypto.subtle.generateKey({
     name: 'RSASSA-PKCS1-v1_5',
-    modulusLength: 2048,
+    modulusLength,
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
     hash: {name: 'SHA-256'}
   }, true, ['sign', 'verify']);

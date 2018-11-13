@@ -22,6 +22,7 @@ export enum Actions {
   OPEN_GENERATE = 'privateKey/OPEN_GENERATE',
   CLOSE_GENERATE = 'privateKey/CLOSE_GENERATE',
   CHANGE_GEN_PASS = 'privateKey/CHANGE_GEN_PASS',
+  CHANGE_GEN_STRENGTH = 'privateKey/CHANGE_GEN_STRENGTH',
   GENERATE_WORKING = 'privateKey/GENERATE_WORKING'
 }
 
@@ -131,12 +132,24 @@ export function changeGeneratePassphrase(passphrase: string, repeat?: boolean): 
   };
 }
 
+export function changeGenerateStrength(strength: number): Action {
+  return {
+    type: Actions.CHANGE_GEN_STRENGTH,
+    payload: {
+      strength
+    }
+  };
+}
+
+export const STRENGTH_OPTIONS = [2048, 4096];
+export const DEFAULT_STRENGTH = 2048;
+
 export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     dispatch({ type: Actions.GENERATE_WORKING, payload: true });
 
     try {
-      const pkcs8Key = await generateRSAKeyPKCS8();
+      const pkcs8Key = await generateRSAKeyPKCS8(getState().privateKey.generate.strength || DEFAULT_STRENGTH);
       const passphrase = getState().privateKey.generate.passphrase;
       const finalKey = toPEM(pkcs8Key, passphrase);
 
@@ -200,6 +213,7 @@ type Action =
   | OptionalAction<Actions.OPEN_GENERATE>
   | OptionalAction<Actions.CLOSE_GENERATE>
   | TypedAction<Actions.CHANGE_GEN_PASS, { passphrase: string, repeat?: boolean }>
+  | TypedAction<Actions.CHANGE_GEN_STRENGTH, { strength: number }>
   | OptionalAction<Actions.GENERATE_WORKING, boolean>;
 
 type Thunk<R> = TypedThunk<Action, R>;
@@ -226,6 +240,8 @@ export default function reducer(state: State = { generate: {}}, action: Action):
         generate.passphrase = action.payload.passphrase;
       }
       return { ...state, generate };
+    case Actions.CHANGE_GEN_STRENGTH:
+      return { ...state, generate: { ...state.generate, strength: action.payload.strength } };
     case Actions.GENERATE_WORKING:
       return { ...state, generate: { ...state.generate, working: action.payload } };
     default:
