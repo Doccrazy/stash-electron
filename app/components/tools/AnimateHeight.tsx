@@ -26,7 +26,9 @@ export default class AnimateHeight extends React.Component<{ className?: string 
       }
       if (innerHeight) {
         this.timer = setTimeout(() => {
-          this.outer!.style.overflow = 'visible';
+          if (this.outer) {
+            this.outer.style.overflow = 'visible';
+          }
           this.timer = undefined;
         }, 250);
       }
