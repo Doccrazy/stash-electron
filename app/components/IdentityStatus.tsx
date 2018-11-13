@@ -25,10 +25,10 @@ function abbreviate(path: string) {
 }
 
 const KeyInfo = (props: Props) => <span>
-  {props.username && <span>{props.username} from&nbsp;</span>}
-  <span className="text-nowrap">{props.privateKeyPath ? abbreviate(props.privateKeyPath) : 'no private key loaded'}</span>
-  {props.privateKeyBits && <span>&nbsp;({props.privateKeyBits} bits)</span>}
-  {props.locked && <span>&nbsp;(locked)</span>}
+  {props.username && <span>{props.username} from</span>}{' '}
+  <span className="text-nowrap">{props.privateKeyPath ? abbreviate(props.privateKeyPath) : 'no private key loaded'}</span>{' '}
+  {props.privateKeyBits && <span>({props.privateKeyBits} bits)</span>}{' '}
+  {props.locked && <span>(locked)</span>}
 </span>;
 
 const ERRORS = {
@@ -62,8 +62,8 @@ export default (props: Props) => <div className={styles.container}>
   {!props.username && !props.locked && <div className={props.privateKeyBits ? styles.warning : styles.error}/>}
   {props.locked && <a href="" className={styles.locked} title="Unlock with your passphrase [Ctrl+L]" onClick={props.onUnlock}/>}
   <UncontrolledTooltip placement="bottom-end" target="identityStatusLink">
-    <KeyInfo {...props}/>
-    {!props.username && !props.locked && props.privateKeyBits && <span>&nbsp;(unauthorized)</span>}
-    {typeof props.error === 'number' && !props.locked && <span className="text-danger">&nbsp;({ERRORS[props.error]})</span>}
+    <KeyInfo {...props}/>{' '}
+    {!props.username && !props.locked && props.privateKeyBits && <span>(unauthorized)</span>}{' '}
+    {typeof props.error === 'number' && !props.locked && <span className="text-danger">({ERRORS[props.error]})</span>}
   </UncontrolledTooltip>
 </div>;
