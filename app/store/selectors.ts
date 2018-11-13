@@ -25,7 +25,7 @@ export function sortedFileList(state: RootState): EntryPtr[] {
   return result;
 }
 
-export function commitsFor(state: RootState, fileName: string | EntryPtr): List<GitCommitInfo> {
+export function commitsFor(state: RootState, fileName: string | EntryPtr, filter?: (c: GitCommitInfo) => boolean): List<GitCommitInfo> {
   if (!state.git.status.initialized) {
     return List<GitCommitInfo>();
   }
@@ -33,7 +33,13 @@ export function commitsFor(state: RootState, fileName: string | EntryPtr): List<
     fileName = getRepo().resolvePath(fileName.nodeId, fileName.entry);
   }
   return state.git.history.files.get(fileName, List<OidAndName>())
-    .map(oidAndName => state.git.history.commits.get(oidAndName.oid)!);
+    .map(oidAndName => state.git.history.commits.get(oidAndName.oid)!)
+    .filter(commit => !filter || filter(commit));
+}
+
+// filter excluding commits that changed folder authorization
+export function excludingAuth(commit: GitCommitInfo) {
+  return !!commit.changedFiles && !commit.changedFiles.find(fn => fn.endsWith('/.users.json'));
 }
 
 export function findHistoricEntry(ptr: EntryPtr, history: GitHistory, commitOid: string) {

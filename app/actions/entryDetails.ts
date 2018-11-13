@@ -4,8 +4,7 @@ import {mapValues} from 'lodash';
 import * as path from 'path';
 import EntryPtr from '../domain/EntryPtr';
 import {afterAction} from '../store/eventMiddleware';
-import {fileList} from '../store/selectors';
-import {accessingRepository, getLatestCommitsFor} from '../utils/git';
+import { commitsFor, excludingAuth, fileList } from '../store/selectors';
 import * as CurrentNode from './currentNode';
 import * as Git from './git';
 import * as Repository from './repository';
@@ -40,15 +39,16 @@ async function modified(state: RootState, entries: EntryPtr[]) {
     return entries.map(ptr => modifiedFromFs(repoPath, ptr));
   }
 
-  const lastCommits = await accessingRepository(repoPath,
-      gitRepo => getLatestCommitsFor(gitRepo, entries.map(relpath), '**/.users.json')
-  );
   return entries.map(ptr => {
-    const c = lastCommits ? lastCommits[relpath(ptr)] : undefined;
-    return c ? {
-      date: c.date,
-      user: c.authorName
-    } : {};
+    const commits = commitsFor(state, ptr, excludingAuth);
+    if (commits.size) {
+      const c = commits.get(0)!;
+      return {
+        date: c.date,
+        user: c.authorName
+      };
+    }
+    return modifiedFromFs(repoPath, ptr);
   });
 }
 
@@ -142,6 +142,10 @@ afterAction(Git.Actions.UPDATE_STATUS, (dispatch: Dispatch, getState: GetState, 
   if (getState().git.status.initialized && !preActionState.git.status.initialized) {
     dispatch(fetchForVisibleEntries(true));
   }
+});
+
+afterAction(Git.Actions.HISTORY, (dispatch: Dispatch, getState: GetState, payload, preActionState) => {
+  dispatch(fetchForVisibleEntries(true));
 });
 
 type Action =

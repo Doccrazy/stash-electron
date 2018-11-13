@@ -41,11 +41,13 @@ export enum Actions {
   SIGNATURE_CLOSE_POPUP = 'git/SIGNATURE_CLOSE_POPUP'
 }
 
-export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
+export function updateStatus(doFetch: boolean, updateHistory: boolean = true): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const repoPath = getState().repository.path!;
 
     const status = await dispatch(determineGitStatus(repoPath, doFetch));
+    const statusChanged = status.initialized !== getState().git.status.initialized
+      || status.commitsAheadOrigin !== getState().git.status.commitsAheadOrigin;
     dispatch({
       type: Actions.UPDATE_STATUS,
       payload: {
@@ -53,7 +55,9 @@ export function updateStatus(doFetch: boolean): Thunk<Promise<void>> {
         updated: new Date()
       }
     });
-    dispatch(refreshHistory());
+    if (updateHistory && (statusChanged || status.incomingCommits || !getState().git.history.commits.size)) {
+      dispatch(refreshHistory());
+    }
     if (status.incomingCommits) {
       toastr.info('', `${status.incomingCommits} commit(s) received from '${status.upstreamName}'.`);
 
@@ -110,6 +114,8 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
 
         // if not fetching or fetch fails, remember bg mode from last fetch
         status.allowBackgroundFetch = oldStatus.allowBackgroundFetch;
+        status.commitsAheadOrigin = oldStatus.commitsAheadOrigin;
+        status.commits = oldStatus.commits;
 
         if (doFetch && remoteName) {
           const fetchResult = await dispatch(gitFetchRemote(gitRepo, remoteName));
@@ -561,7 +567,7 @@ export function closeSignaturePopup(): Action {
 
 afterAction(Repository.Actions.FINISH_LOAD, async (dispatch: Dispatch, getState: GetState, isReload) => {
   if (!isReload) {
-    await dispatch(updateStatus(false));
+    await dispatch(updateStatus(false, false));
     dispatch(updateStatus(true));
   }
 });
@@ -598,7 +604,13 @@ const INITIAL_STATE: State = {
 export default function reducer(state: State = INITIAL_STATE, action: Action): State {
   switch (action.type) {
     case Actions.UPDATE_STATUS:
-      return { ...state, status: action.payload.status, lastStatusUpdate: action.payload.updated, markedForReset: undefined };
+      return {
+        ...state,
+        status: action.payload.status,
+        lastStatusUpdate: action.payload.updated,
+        markedForReset: undefined,
+        history: action.payload.status.initialized ? state.history : INITIAL_STATE.history
+      };
     case Actions.PROGRESS:
       return { ...state, working: !action.payload.done, progressStatus: action.payload.message };
     case Actions.HISTORY:
