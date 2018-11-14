@@ -160,10 +160,10 @@ export async function fetchWithRetry(repo: Git.Repository, remote: string, crede
     try {
       return await repo.fetch(remote, {
         callbacks: {
-          credentials: async (url: string, usernameFromUrl: string) => {
+          credentials: defaultCredCb(async (url: string, usernameFromUrl: string) => {
             lastCred = !lastCred && errorCred ? errorCred : await credentialsCb(url, usernameFromUrl);
-            return Git.Cred.userpassPlaintextNew(lastCred.username || usernameFromUrl, lastCred.password);
-          },
+            return lastCred;
+          }),
           certificateCheck: () => 1
         }
       });
@@ -183,13 +183,29 @@ export async function pushWithRetry(repo: Git.Repository, remote: string, creden
   const gitRemote = await repo.getRemote(remote);
   await gitRemote.push([(await repo.head()).name()], {
     callbacks: {
-      credentials: async (url: string, usernameFromUrl: string) => {
-        const cred = await credentialsCb(url, usernameFromUrl);
-        return Git.Cred.userpassPlaintextNew(cred.username || usernameFromUrl, cred.password);
-      },
+      credentials: defaultCredCb(credentialsCb),
       certificateCheck: () => 1
     }
   });
+}
+
+/**
+ * For use in Git.FetchOptions.callbacks.credentials
+ */
+export function defaultCredCb(credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) {
+  let sshAgentAttempted = false;
+  return async (url: string, usernameFromUrl: string, allowedTypes: number) => {
+    if (allowedTypes & Git.Cred.TYPE.SSH_KEY) {  // tslint:disable-line
+      if (sshAgentAttempted) {
+        // ssh agent did not provide valid credentials
+        throw new Error();
+      }
+      sshAgentAttempted = true;
+      return Git.Cred.sshKeyFromAgent(usernameFromUrl);
+    }
+    const cred = await credentialsCb(url, usernameFromUrl);
+    return Git.Cred.userpassPlaintextNew(cred.username || usernameFromUrl, cred.password);
+  };
 }
 
 export async function hasUncommittedChanges(repo: Git.Repository) {

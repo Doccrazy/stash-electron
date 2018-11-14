@@ -11,7 +11,7 @@ import {
   accessingRepository,
   addToGitIgnore,
   commitAllChanges, commitInfo,
-  compareRefs,
+  compareRefs, defaultCredCb,
   fetchWithRetry, finishRebaseResolving, getRootCommit, GitCommitInfo, GitCredentials,
   hasUncommittedChanges, isSignatureConfigured, loadHistory,
   pushWithRetry, remoteNameFromRef,
@@ -502,10 +502,7 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
         const gitRepo = await Git.Clone.clone(git.clone.remoteUrl!, cloneTarget, {
           fetchOpts: {
             callbacks: {
-              credentials: async (url: string, usernameFromUrl: string) => {
-                const cred = await credentialsCb(url, usernameFromUrl);
-                return Git.Cred.userpassPlaintextNew(cred.username || usernameFromUrl, cred.password);
-              },
+              credentials: defaultCredCb(credentialsCb),
               certificateCheck: () => 1
             }
           }
