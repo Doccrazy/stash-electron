@@ -3,6 +3,7 @@ import { DropdownItem, DropdownMenu, DropdownToggle, Button, Modal, ModalBody, M
 import { AuthHistory } from '../actions/types/usersHistory';
 import { formatDateTime, formatPathSpaced } from '../utils/format';
 import * as styles from './AuthHistoryPopup.scss';
+import ItemLimiter from './tools/ItemLimiter';
 
 export interface Props {
   open?: boolean,
@@ -45,7 +46,7 @@ export default ({ open, nodePath, history, filterOptions, filterNodeId, onFilter
           </tr>
           </thead>
           <tbody>
-          {history.map(entry => <tr key={`${entry.hash}/${entry.nodeId}`}>
+          <ItemLimiter items={history} item={entry => <tr key={`${entry.hash}/${entry.nodeId}`}>
             {!nodePath && <td>{formatPathSpaced(entry.path)}</td>}
             <td>
               <ul className={styles.userList}>
@@ -55,7 +56,9 @@ export default ({ open, nodePath, history, filterOptions, filterNodeId, onFilter
             </td>
             <td title={entry.authorEmail}>{entry.authorName}</td>
             <td className="text-nowrap">{formatDateTime(entry.date)}</td>
-          </tr>)}
+          </tr>} loadMore={(onLoadMore, remaining) => <tr key="_more">
+            <td colSpan={4} align="center"><a href="" onClick={ev => onLoadMore}>Show more ({remaining})</a></td>
+          </tr>} />
           </tbody>
         </table>
       </div>
