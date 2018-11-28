@@ -9,6 +9,7 @@ import EditPopup from '../containers/EditPopup';
 import DeletePopup from '../containers/DeletePopup';
 import DeleteNodePopup from '../containers/DeleteNodePopup';
 import CurrentFolder from '../containers/CurrentFolder';
+import FolderHistoryPopup from '../containers/FolderHistoryPopup';
 import ImportPopup from '../containers/ImportPopup';
 import ExportPopup from '../containers/ExportPopup';
 import AddFileDropAcceptor from '../containers/AddFileDropAcceptor';
@@ -31,6 +32,7 @@ export default class Home extends React.Component<{}, {}> {
         <ExportPopup />
         <AuthorizedUsersPopup />
         <MoveFolderPopup />
+        <FolderHistoryPopup />
         <ScrollWatch className={styles.sidebar} step={20} classes={['', styles.scroll1, styles.scroll2, styles.scroll3]}>
           <div className={styles.sideToolbar}>
             <span className="pull-right">

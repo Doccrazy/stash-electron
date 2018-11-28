@@ -98,8 +98,8 @@ export default class EncryptedRepository extends PlainRepository {
     await this.deleteFile(nodeId, name);
   }
 
-  resolvePath(nodeId: string, fileName: string): string {
-    return super.resolvePath(nodeId, `${fileName}.enc`);
+  resolvePath(nodeId: string, fileName?: string): string {
+    return super.resolvePath(nodeId, fileName && `${fileName}.enc`);
   }
 
   unresolvePath(resolvedPath: string) {

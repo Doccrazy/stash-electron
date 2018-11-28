@@ -6,6 +6,7 @@ import { open as openImport } from '../actions/fileImport';
 import { open as openExport } from '../actions/fileExport';
 import { openCurrent as openPermissions } from '../actions/authorizedUsers';
 import { browseForAdd } from '../actions/external';
+import { open as openNodeHistory } from '../actions/nodeHistory';
 import {ROOT_ID} from '../domain/Node';
 import { Dispatch, RootState } from '../actions/types/index';
 import PasswordType from '../fileType/password';
@@ -26,5 +27,6 @@ export default connect((state: RootState) => ({
   onAddExternal: () => dispatch(browseForAdd()),
   onImport: () => dispatch(openImport()),
   onExport: () => dispatch(openExport()),
-  onCopyLink: () => dispatch((_, getState) => copyStashLink(getState().currentNode.nodeId!))
+  onCopyLink: () => dispatch((_, getState) => copyStashLink(getState().currentNode.nodeId!)),
+  onShowHistory: () => dispatch((_, getState) => dispatch(openNodeHistory(getState().currentNode.nodeId!)))
 }))(FolderActionBar);

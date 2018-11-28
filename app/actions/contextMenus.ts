@@ -6,6 +6,7 @@ import { isAccessible } from '../utils/repository';
 import { open as openPermissions } from './authorizedUsers';
 import { prepareDelete as prepareDeleteEntry } from './currentEntry';
 import { prepareDelete as prepareDeleteNode } from './currentNode';
+import { open as openNodeHistory } from './nodeHistory';
 import { open } from './edit';
 import { Thunk } from './types';
 
@@ -44,6 +45,9 @@ export function nodeContextMenu(nodeId: string): Thunk<void> {
     }}));
     menu.append(new MenuItem({label: 'Permissions', icon: remote.nativeImage.createFromDataURL(require('../icon-users.png')), click() {
       dispatch(openPermissions(nodeId));
+    }}));
+    menu.append(new MenuItem({label: 'Show history', icon: remote.nativeImage.createFromDataURL(require('../icon-history.png')), click() {
+      dispatch(openNodeHistory(nodeId));
     }}));
     if (nodeEditable) {
       menu.append(new MenuItem({type: 'separator'}));

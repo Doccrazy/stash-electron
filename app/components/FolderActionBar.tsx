@@ -15,12 +15,15 @@ export interface Props {
   onImport: () => void,
   onExport: () => void,
   onCopyLink: () => void
+  onShowHistory: () => void
 }
 
-export default ({ nodeEditable, contentsEditable, accessible, onRename, onDelete, onCreateNode, onCreateItem, onEditPermissions, onAddExternal, onImport, onExport, onCopyLink}: Props) => (<div>
+export default ({ nodeEditable, contentsEditable, accessible, onRename, onDelete, onCreateNode, onCreateItem, onEditPermissions, onAddExternal,
+                  onImport, onExport, onCopyLink, onShowHistory}: Props) => (<div>
   {contentsEditable && <BarsMenu>
     {<DropdownItem onClick={onCopyLink}><i className="fa fa-share" /> Share link</DropdownItem>}
     {<DropdownItem onClick={onEditPermissions}><i className="fa fa-users" /> Permissions</DropdownItem>}
+    {<DropdownItem onClick={onShowHistory}><i className="fa fa-history" /> Show history</DropdownItem>}
     {accessible && <DropdownItem onClick={onAddExternal}><i className="fa fa-file-o" /> Add external files</DropdownItem>}
     {accessible && <DropdownItem divider />}
     {accessible && <DropdownItem onClick={onImport}><i className="fa fa-download" /> KeePass import</DropdownItem>}

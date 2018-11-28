@@ -180,11 +180,11 @@ export default class PlainRepository implements Repository {
     return absPath;
   }
 
-  resolvePath(nodeId: string, fileName: string): string {
-    if (!isValidFileName(fileName)) {
+  resolvePath(nodeId: string, fileName?: string): string {
+    if (fileName && !isValidFileName(fileName)) {
       throw new Error(`Invalid filename: ${fileName}`);
     }
-    return path.posix.join(nodeId, fileName).substr(1);
+    return (fileName ? path.posix.join(nodeId, fileName) : nodeId).substr(1);
   }
 
   unresolvePath(resolvedPath: string) {
