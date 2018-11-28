@@ -7,7 +7,7 @@ import { commitsFor } from '../store/selectors';
 export default connect((state: RootState) => {
   return ({
     open: state.usersHistory.usersOpen,
-    history: commitsFor(state, '.keys.json').toArray()
+    history: state.usersHistory.usersOpen ? commitsFor(state, '.keys.json').toArray() : []
   });
 }, (dispatch: Dispatch) => ({
   onClose: () => dispatch(close())
