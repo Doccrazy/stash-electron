@@ -7,6 +7,7 @@ export interface State {
   readonly working?: boolean,
   readonly progressStatus?: string,
   readonly popupOpen?: boolean,
+  readonly popupShowAll?: boolean,
   readonly markedForReset?: string,
   readonly clone: CloneState,
   readonly signature: SignatureState,

@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import * as cx from 'classnames';
 import { GitStatus } from '../actions/types/git';
-import { formatDateTime } from '../utils/format';
 import * as styles from './GitActionsPopup.scss';
 import { formatStatusLine } from '../utils/git';
+import GitCommitsTable from './GitCommitsTable';
 
 export interface Props {
   open?: boolean,
@@ -12,11 +12,13 @@ export interface Props {
   feedback?: string,
   status: GitStatus,
   markedForReset?: string,
+  allowShowAll?: boolean
   onMarkReset: (commitHash?: string) => void
   onPushRevert: () => void
   onRefresh: () => void
   onResolve: () => void
   onClose: () => void
+  onShowAll: () => void
 }
 
 function doFocus(ref: HTMLButtonElement) {
@@ -25,10 +27,10 @@ function doFocus(ref: HTMLButtonElement) {
   }
 }
 
-export default ({ open, disabled, feedback, status, markedForReset, onMarkReset, onPushRevert, onRefresh, onResolve, onClose }: Props) => {
+export default ({ open, disabled, feedback, status, markedForReset, allowShowAll,
+                  onMarkReset, onPushRevert, onRefresh, onResolve, onClose, onShowAll }: Props) => {
   const toReset = status.commits ? status.commits.findIndex(ci => ci.hash === markedForReset) + 1 : 0;
   const toPush = status.commitsAheadOrigin ? status.commitsAheadOrigin - toReset : 0;
-  const upstreamRef = status.commits ? (status.commits.filter(ci => ci.pushed)[0] || {}).hash : undefined;
   const revertClick = (commitHash: string) => {
     if (!disabled) {
       onMarkReset(markedForReset === commitHash ? undefined : commitHash);
@@ -49,30 +51,14 @@ export default ({ open, disabled, feedback, status, markedForReset, onMarkReset,
           you resolved the conflict manually.
         </p>
       </div>}
-      {status.commits && <table className="table table-sm">
-        <thead>
-        <tr>
-          <th>Hash</th>
-          <th>Message</th>
-          <th>Author</th>
-          <th>Date</th>
-          <th/>
-        </tr>
-        </thead>
-        <tbody>
-        {status.commits.map((commit, idx) =>
-          <tr key={commit.hash} className={cx(styles.commitRow, commit.pushed && 'table-secondary', !commit.pushed && toReset > idx && 'table-danger')}>
-            <td>{commit.hash.substr(0, 7)}</td>
-            <td>{commit.hash === upstreamRef && <i className="fa fa-tag" title={status.upstreamName} />} {commit.message}</td>
-            <td title={`${commit.authorName} <${commit.authorEmail}>`}>{commit.authorName}</td>
-            <td className="text-nowrap">{formatDateTime(commit.date)}</td>
-            <td>{!commit.pushed &&
-              <a href="" onClick={() => revertClick(commit.hash)}  title="Select for revert" className={cx('text-danger', styles.revert)}/>
-            }</td>
-          </tr>
-        )}
-        </tbody>
-      </table>}
+      <div style={{maxHeight: '60vh', overflowY: 'auto'}}>
+        {status.commits && <GitCommitsTable commits={status.commits} upstreamName={status.upstreamName}
+                                            rowClass={(commit, idx) => !commit.pushed && toReset > idx && 'table-danger'}
+                                            rowAction={commit => !commit.pushed &&
+                                              <a href="" onClick={() => revertClick(commit.hash)}  title="Select for revert"
+                                                 className={cx('text-danger', styles.revert)}/>}/>}
+      </div>
+      {allowShowAll && <div><a href="" onClick={onShowAll}>Show all commits</a></div>}
     </ModalBody>
     <ModalFooter>
       <div className="text-danger" style={{flexGrow: 1}}>{feedback}</div>

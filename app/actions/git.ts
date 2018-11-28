@@ -31,6 +31,7 @@ export enum Actions {
   OPEN_POPUP = 'git/OPEN_POPUP',
   MARK_FOR_RESET = 'git/MARK_FOR_RESET',
   CLOSE_POPUP = 'git/CLOSE_POPUP',
+  POPUP_SHOW_ALL = 'git/POPUP_SHOW_ALL',
   CLONE_OPEN_POPUP = 'git/OPEN_CLONE_POPUP',
   CLONE_CHANGE_URL = 'git/CHANGE_CLONE_URL',
   CLONE_CHANGE_TARGET = 'git/CHANGE_CLONE_TARGET',
@@ -56,7 +57,7 @@ export function updateStatus(doFetch: boolean, updateHistory: boolean = true): T
       }
     });
     if (updateHistory && (statusChanged || status.incomingCommits || !getState().git.history.commits.size)) {
-      dispatch(refreshHistory());
+      dispatch(refreshHistory(status.commitsAheadOrigin || 0));
     }
     if (status.incomingCommits) {
       toastr.info('', `${status.incomingCommits} commit(s) received from '${status.upstreamName}'.`);
@@ -279,7 +280,7 @@ function gitPushRemote(gitRepo: Git.Repository, remoteName: string): Thunk<Promi
   };
 }
 
-function refreshHistory(): Thunk<Promise<void>> {
+function refreshHistory(commitsAheadOrigin: number): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     if (!getState().git.status.initialized) {
       return;
@@ -288,7 +289,7 @@ function refreshHistory(): Thunk<Promise<void>> {
 
     try {
       await accessingRepository(repoPath, async gitRepo => {
-        const history = await loadHistory(gitRepo);
+        const history = await loadHistory(gitRepo, commitsAheadOrigin);
         dispatch({
           type: Actions.HISTORY,
           payload: history
@@ -447,6 +448,12 @@ export function closePopup(): Action {
   };
 }
 
+export function popupShowAll(): Action {
+  return {
+    type: Actions.POPUP_SHOW_ALL
+  };
+}
+
 export function openClonePopup(): Action {
   return {
     type: Actions.CLONE_OPEN_POPUP
@@ -580,6 +587,7 @@ type Action =
   OptionalAction<Actions.OPEN_POPUP> |
   OptionalAction<Actions.MARK_FOR_RESET, string> |
   OptionalAction<Actions.CLOSE_POPUP> |
+  OptionalAction<Actions.POPUP_SHOW_ALL> |
   OptionalAction<Actions.CLONE_OPEN_POPUP> |
   TypedAction<Actions.CLONE_CHANGE_URL, string> |
   TypedAction<Actions.CLONE_CHANGE_TARGET, string> |
@@ -613,11 +621,13 @@ export default function reducer(state: State = INITIAL_STATE, action: Action): S
     case Actions.HISTORY:
       return { ...state, history: buildHistory(action.payload) };
     case Actions.OPEN_POPUP:
-      return { ...state, popupOpen: true, markedForReset: undefined };
+      return { ...state, popupOpen: true, markedForReset: undefined, popupShowAll: false };
     case Actions.MARK_FOR_RESET:
       return { ...state, markedForReset: action.payload };
     case Actions.CLOSE_POPUP:
       return { ...state, popupOpen: false };
+    case Actions.POPUP_SHOW_ALL:
+      return { ...state, popupShowAll: true };
     case Actions.CLONE_OPEN_POPUP:
       return { ...state, clone: { open: true }, progressStatus: undefined };
     case Actions.CLONE_CHANGE_URL:

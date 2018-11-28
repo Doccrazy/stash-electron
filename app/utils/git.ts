@@ -348,7 +348,7 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
 /**
  * Loads all commits in the given repository with changed files
  */
-export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInfo[]> {
+export async function loadHistory(gitRepo: Git.Repository, commitsAheadOrigin: number): Promise<GitCommitInfo[]> {
   const walker = gitRepo.createRevWalk();
   walker.pushHead();
   walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME);  // tslint:disable-line
@@ -370,6 +370,7 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
     await Promise.all(commitDiffs.reduce((acc, diffs) => { acc.push(...diffs); return acc; }, []).map(d => d.findSimilar(simOpts)));
     for (let i = 0; i < commitDiffs.length; i++) {
       const info = commitInfo(allCommits[i]);
+      info.pushed = result.length >= commitsAheadOrigin;
       info.changedFiles = [];
       info.renamedFiles = {};
       info.deletedFiles = [];
