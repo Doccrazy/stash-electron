@@ -9,6 +9,7 @@ import * as CurrentNode from './currentNode';
 import * as Git from './git';
 import * as Repository from './repository';
 import * as PrivateKey from './privateKey';
+import * as Search from './search';
 import { Dispatch, GetState, OptionalAction, RootState, TypedAction, TypedThunk } from './types';
 import {DetailMap, Details, Providers, State} from './types/entryDetails';
 
@@ -127,7 +128,7 @@ afterAction([Repository.Actions.RENAME_ENTRY, Repository.Actions.DELETE_ENTRY, R
   }
 );
 
-afterAction([CurrentNode.Actions.SELECT, CurrentNode.Actions.SELECT_SPECIAL,
+afterAction([CurrentNode.Actions.SELECT, CurrentNode.Actions.SELECT_SPECIAL, Search.Actions.RESULTS,
     Repository.Actions.RENAME_ENTRY, Repository.Actions.MOVE_ENTRY, Repository.Actions.UPDATE_ENTRY],
   (dispatch: Dispatch, getState: GetState) => {
     dispatch(fetchForVisibleEntries());
