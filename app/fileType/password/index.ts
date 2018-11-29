@@ -18,6 +18,7 @@ const PasswordType: Required<Type<PasswordContent>> = {
   initialize: () => ({}),
   matches: (content, matcher) => (!!content.username && matcher.matches(content.username))
     || (!!content.description && matcher.matches(content.description)),
+  isValidKdbxEntry: fields => !!fields.Notes || !!fields.UserName || !!fields.Password || !!fields.URL,
   fromKdbxEntry: fields => ({
     description: fields.Notes,
     username: fields.UserName,

@@ -46,6 +46,7 @@ export interface Type<C> {
   toFileName: (displayName: string) => string,
   initialize?: () => C,
   matches?: (content: C, matcher: StringMatcher) => boolean,
+  isValidKdbxEntry?: (fields: KeePassFields) => boolean,
   fromKdbxEntry?: (fields: KeePassFields) => C,
   toKdbxEntry?: (content: C) => KeePassFields,
   parse?: (buf: Buffer) => C,

@@ -12,6 +12,7 @@ declare module 'font-awesome-filetypes' {
 
 declare module 'kdbxweb' {
   class Kdbx {
+    readonly meta: KdbxMeta;
     static load(dataAsArrayBuffer: ArrayBufferLike, credentials: Credentials): Promise<Kdbx>;
     static create(credentials: Credentials, name?: string): Kdbx;
     getDefaultGroup(): KdbxGroup;
@@ -22,7 +23,12 @@ declare module 'kdbxweb' {
     save(): Promise<ArrayBuffer>;
     saveXml(): Promise<string>;
   }
-  interface KdbxUuid {}
+  interface KdbxMeta {
+    readonly recycleBinUuid: KdbxUuid
+  }
+  interface KdbxUuid {
+    equals(other: KdbxUuid | string): boolean
+  }
   const KdbxError: any;
   class Credentials {
     constructor(masterKey: ProtectedValue | null, keyFileArrayBuffer?: ArrayBufferLike | null);
