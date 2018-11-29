@@ -52,7 +52,7 @@ export default ({ open, disabled, feedback, status, markedForReset, allowShowAll
         </p>
       </div>}
       <div style={{maxHeight: '60vh', overflowY: 'auto'}}>
-        {status.commits && <GitCommitsTable commits={status.commits} upstreamName={status.upstreamName}
+        {status.commits && <GitCommitsTable commits={status.commits}
                                             rowClass={(commit, idx) => !commit.pushed && toReset > idx && 'table-danger'}
                                             rowAction={commit => !commit.pushed &&
                                               <a href="" onClick={() => revertClick(commit.hash)}  title="Select for revert"

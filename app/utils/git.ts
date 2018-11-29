@@ -27,6 +27,7 @@ export interface GitCommitInfo {
   authorEmail: string,
   date: Date,
   pushed?: boolean,
+  remoteRef?: string,
   changedFiles?: string[],
   renamedFiles?: { [newFn: string]: string },
   deletedFiles?: string[]
@@ -348,7 +349,14 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
 /**
  * Loads all commits in the given repository with changed files
  */
-export async function loadHistory(gitRepo: Git.Repository, commitsAheadOrigin: number): Promise<GitCommitInfo[]> {
+export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInfo[]> {
+  let upstream: Git.Reference | undefined;
+  try {
+    upstream = await Git.Branch.upstream(await gitRepo.head());
+  } catch (e) {
+    // no tracked remote
+  }
+
   const walker = gitRepo.createRevWalk();
   walker.pushHead();
   walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME);  // tslint:disable-line
@@ -364,13 +372,18 @@ export async function loadHistory(gitRepo: Git.Repository, commitsAheadOrigin: n
 
   const result: GitCommitInfo[] = [];
   let allCommits: Git.Commit[];
+  let ahead = true;
   do {
     allCommits = await walker.getCommits(BATCH_SIZE);
     const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts)));
     await Promise.all(commitDiffs.reduce((acc, diffs) => { acc.push(...diffs); return acc; }, []).map(d => d.findSimilar(simOpts)));
     for (let i = 0; i < commitDiffs.length; i++) {
       const info = commitInfo(allCommits[i]);
-      info.pushed = result.length >= commitsAheadOrigin;
+      if (upstream && allCommits[i].id().equal(upstream.target())) {
+        ahead = false;
+        info.remoteRef = upstream.shorthand();
+      }
+      info.pushed = !ahead;
       info.changedFiles = [];
       info.renamedFiles = {};
       info.deletedFiles = [];

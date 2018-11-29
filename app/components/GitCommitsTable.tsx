@@ -7,14 +7,11 @@ import ItemLimiter from './tools/ItemLimiter';
 
 export interface Props {
   commits: GitCommitInfo[]
-  upstreamName?: string
   rowClass?: (commit: GitCommitInfo, idx: number) => string | null | undefined | false
   rowAction?: (commit: GitCommitInfo, idx: number) => React.ReactNode | null | undefined
 }
 
-export default ({ commits, upstreamName, rowClass, rowAction }: Props) => {
-  const upstreamRef = (commits.filter(ci => ci.pushed)[0] || {}).hash;
-
+export default ({ commits, rowClass, rowAction }: Props) => {
   return <table className="table table-sm table-sticky">
     <thead>
     <tr>
@@ -30,7 +27,7 @@ export default ({ commits, upstreamName, rowClass, rowAction }: Props) => {
       <tr key={commit.hash} className={cx(styles.commitRow, commit.pushed && '', rowClass && rowClass(commit, idx))}>
         <td className="selectable">{commit.hash.substr(0, 7)}</td>
         <td className="selectable">
-          {commit.hash === upstreamRef && <i className="fa fa-tag" title={upstreamName || 'origin/master'} />}{' '}
+          {commit.remoteRef && <i className="fa fa-tag" title={commit.remoteRef} />}{' '}
           {!commit.pushed && <span className="badge badge-danger">new</span>}{' '}
           {commit.message}
         </td>

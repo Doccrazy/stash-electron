@@ -57,7 +57,7 @@ export function updateStatus(doFetch: boolean, updateHistory: boolean = true): T
       }
     });
     if (updateHistory && (statusChanged || status.incomingCommits || !getState().git.history.commits.size)) {
-      dispatch(refreshHistory(status.commitsAheadOrigin || 0));
+      dispatch(refreshHistory());
     }
     if (status.incomingCommits) {
       toastr.info('', `${status.incomingCommits} commit(s) received from '${status.upstreamName}'.`);
@@ -154,6 +154,7 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
         for (let i = 0; i < status.commitsAheadOrigin + (status.incomingCommits || 0) + 1; i++) {
           status.commits.push({
             ...commitInfo(commit),
+            remoteRef: commit.id().equal(upstream.target()) ? status.upstreamName : undefined,
             pushed: i >= status.commitsAheadOrigin
           });
           if (commit.parentcount() === 0) {
@@ -280,7 +281,7 @@ function gitPushRemote(gitRepo: Git.Repository, remoteName: string): Thunk<Promi
   };
 }
 
-function refreshHistory(commitsAheadOrigin: number): Thunk<Promise<void>> {
+function refreshHistory(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     if (!getState().git.status.initialized) {
       return;
@@ -289,7 +290,7 @@ function refreshHistory(commitsAheadOrigin: number): Thunk<Promise<void>> {
 
     try {
       await accessingRepository(repoPath, async gitRepo => {
-        const history = await loadHistory(gitRepo, commitsAheadOrigin);
+        const history = await loadHistory(gitRepo);
         dispatch({
           type: Actions.HISTORY,
           payload: history
