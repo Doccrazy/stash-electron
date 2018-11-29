@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
 import { valid } from '../actions/fileExport';
 import {ExportSettings, StatusType} from '../actions/types/fileExport';
 import StrengthMeter from './shared/StrengthMeter';
@@ -26,7 +26,10 @@ export default ({ open, settings = { masterKey: '', repeatMasterKey: '' }, statu
   <ModalBody>
     <Form>
       <FormGroup>
-        <div className="form-text text-muted">All accessible items in the current folder will be exported into a new KeePass database.</div>
+        <p className="form-text text-muted">All accessible items in the current folder will be exported into a new KeePass database.</p>
+        <Alert color="warning">
+          Users and permissions will not be exported. This is not a replacement for a repository backup.
+        </Alert>
         <Label for="masterKey">Database master key</Label>
         <FocusingInput focused type="password" id="masterKey" invalid={!settings.masterKey}
                value={settings.masterKey || ''} onChange={ev => onChangeSettings({ ...settings, masterKey: ev.target.value })} />
