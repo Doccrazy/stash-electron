@@ -39,3 +39,13 @@ export function formatPath(path: string[]): string {
 export function formatPathSpaced(path: string[]): string {
   return path.length <= 1 ? '/' : path.slice(1).slice(-2).join(' / ');
 }
+
+export function sanitizeUrl(url: string) {
+  if (!url) {
+    return '#';
+  }
+  if (!/^[a-z]+:/.test(url)) {
+    return `http://${url}`;
+  }
+  return url;
+}

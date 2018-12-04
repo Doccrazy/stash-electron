@@ -1,33 +1,8 @@
 import * as React from 'react';
-import { clipboard } from 'electron';
-import { toastr } from 'react-redux-toastr';
+import { copyToClip } from '../../actions/currentEntry';
 import HiddenText from '../../components/tools/HiddenText';
+import { sanitizeUrl } from '../../utils/format';
 import * as styles from './Panel.scss';
-
-function sanitizeUrl(url: string) {
-  if (!url) {
-    return '#';
-  }
-  if (!/^[a-z]+:/.test(url)) {
-    return `http://${url}`;
-  }
-  return url;
-}
-
-let timeout: NodeJS.Timer | null;
-function copyToClip(name: string, text: string) {
-  clipboard.writeText(text);
-  if (timeout) {
-    clearTimeout(timeout);
-    timeout = null;
-  }
-  timeout = setTimeout(() => {
-    if (clipboard.readText() === text) {
-      clipboard.clear();
-    }
-  }, 30000);
-  toastr.success('', `${name} copied`, { timeOut: 2000 });
-}
 
 interface FieldProps {
   content: any,

@@ -1,15 +1,17 @@
+import { clipboard, shell } from 'electron';
+import { toastr } from 'react-redux-toastr';
 import EntryPtr from '../domain/EntryPtr';
+import { FIELD_NAMES, Type, typeFor, WellKnownField } from '../fileType';
+import { afterAction } from '../store/eventMiddleware';
 import { findHistoricEntry } from '../store/selectors';
+import { sanitizeUrl } from '../utils/format';
 import { accessingRepository, createGitRepository } from '../utils/git';
-import * as Repository from './repository';
+import { isAccessible } from '../utils/repository';
 import * as CurrentNode from './currentNode';
 import * as PrivateKey from './privateKey';
-import { afterAction } from '../store/eventMiddleware';
-import { typeFor } from '../fileType';
-import {State} from './types/currentEntry';
-import { GetState, TypedAction, TypedThunk, OptionalAction, RootState, Dispatch } from './types/index';
-import {toastr} from 'react-redux-toastr';
-import {isAccessible} from '../utils/repository';
+import * as Repository from './repository';
+import { State } from './types/currentEntry';
+import { Dispatch, GetState, OptionalAction, RootState, TypedAction, TypedThunk } from './types/index';
 
 export enum Actions {
   SELECT = 'currentEntry/SELECT',
@@ -129,6 +131,75 @@ export function confirmDelete(): Thunk<Promise<void>> {
 export function closeDelete(): Action {
   return {
     type: Actions.CANCEL_DELETE
+  };
+}
+
+export function copyToClipboard(field: WellKnownField, ptr?: EntryPtr): Thunk<Promise<void>> {
+  return withEntryOrCurrent(ptr, (type, content) => {
+    if (!type.readField) {
+      return;
+    }
+    const value = type.readField!(content, field);
+    if (value) {
+      copyToClip(FIELD_NAMES[field], value);
+    }
+  });
+}
+
+let timeout: NodeJS.Timer | null;
+export function copyToClip(name: string, text: string) {
+  clipboard.writeText(text);
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+  timeout = setTimeout(() => {
+    if (clipboard.readText() === text) {
+      clipboard.clear();
+    }
+  }, 30000);
+  toastr.success('', `${name} copied`, { timeOut: 2000 });
+}
+
+export function openUrl(ptr?: EntryPtr): Thunk<Promise<void>> {
+  return withEntryOrCurrent(ptr, (type, content) => {
+    if (!type.readField) {
+      return;
+    }
+    const url = type.readField!(content, WellKnownField.URL);
+    if (url) {
+      shell.openExternal(sanitizeUrl(url));
+    }
+  });
+}
+
+function withEntryOrCurrent(ptr: EntryPtr | undefined, cb: (type: Type<any>, content: any) => void | Promise<void>): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    let parsedContent: any;
+    let type: Type<any>;
+    if (ptr) {
+      const content = await Repository.getRepo().readFile(ptr.nodeId, ptr.entry);
+      type = typeFor(ptr.entry);
+      if (!type.parse) {
+        return;
+      }
+      parsedContent = type.parse(content as Buffer);
+    } else {
+      const {currentEntry} = getState();
+      if (!currentEntry.ptr) {
+        return;
+      }
+      if (!currentEntry.parsedContent) {
+        await dispatch(read());
+      }
+      if (!currentEntry.parsedContent) {
+        return;
+      }
+      parsedContent = currentEntry.parsedContent;
+      type = typeFor(currentEntry.ptr.entry);
+    }
+
+    await cb(type, parsedContent);
   };
 }
 

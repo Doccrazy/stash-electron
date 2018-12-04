@@ -1,12 +1,13 @@
 import * as Mousetrap from 'mousetrap';
-import {Dispatch, GetState} from '../actions/types/index';
-import StashLink from '../domain/StashLink';
-import PasswordType from '../fileType/password';
-import {openStashLink} from './stashLinkHandler';
-import * as Edit from '../actions/edit';
-import * as CurrentNode from '../actions/currentNode';
 import * as CurrentEntry from '../actions/currentEntry';
+import * as CurrentNode from '../actions/currentNode';
+import * as Edit from '../actions/edit';
 import * as PrivateKey from '../actions/privateKey';
+import { Dispatch, GetState } from '../actions/types/index';
+import StashLink from '../domain/StashLink';
+import { WellKnownField } from '../fileType';
+import PasswordType from '../fileType/password';
+import { openStashLink } from './stashLinkHandler';
 
 export default function registerHotkeys(dispatch: Dispatch, getState: GetState) {
   document.documentElement!.addEventListener('paste', ev => {
@@ -67,4 +68,9 @@ export default function registerHotkeys(dispatch: Dispatch, getState: GetState) 
       }
     }
   });
+
+  Mousetrap.bind('ctrl+b', () => dispatch(CurrentEntry.copyToClipboard(WellKnownField.USERNAME)));
+  Mousetrap.bind('ctrl+c', () => dispatch(CurrentEntry.copyToClipboard(WellKnownField.PASSWORD)));
+  Mousetrap.bind('ctrl+u', () => dispatch(CurrentEntry.openUrl()));
+  Mousetrap.bind('ctrl+shift+u', () => dispatch(CurrentEntry.copyToClipboard(WellKnownField.URL)));
 }

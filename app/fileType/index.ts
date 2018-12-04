@@ -50,7 +50,8 @@ export interface Type<C> {
   fromKdbxEntry?: (fields: KeePassFields) => C,
   toKdbxEntry?: (content: C) => KeePassFields,
   parse?: (buf: Buffer) => C,
-  write?: (content: C) => Buffer
+  write?: (content: C) => Buffer,
+  readField?: (content: C, field: WellKnownField) => string | null | undefined
 }
 
 const TYPES: { [id: string]: Type<any> } = {};
@@ -81,3 +82,15 @@ export function register<C>(type: Type<C>, typeRenderer: TypeRenderer<C, any>) {
   TYPES[type.id] = type;
   RENDERERS[type.id] = typeRenderer;
 }
+
+export enum WellKnownField {
+  USERNAME,
+  PASSWORD,
+  URL
+}
+
+export const FIELD_NAMES = {
+  [WellKnownField.USERNAME]: 'Username',
+  [WellKnownField.PASSWORD]: 'Password',
+  [WellKnownField.URL]: 'URL'
+};

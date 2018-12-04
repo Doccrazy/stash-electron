@@ -1,4 +1,4 @@
-import { Type } from '../index';
+import { Type, WellKnownField } from '../index';
 import * as jsonParser from '../parser/json';
 
 export interface PasswordContent {
@@ -31,6 +31,13 @@ const PasswordType: Required<Type<PasswordContent>> = {
     Password: content.password,
     URL: content.url
   }),
+  readField: (content, field) => {
+    switch (field) {
+      case WellKnownField.USERNAME: return content.username;
+      case WellKnownField.PASSWORD: return content.password;
+      case WellKnownField.URL: return content.url;
+    }
+  },
   ...jsonParser
 };
 
