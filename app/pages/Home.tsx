@@ -14,6 +14,7 @@ import ImportPopup from '../containers/ImportPopup';
 import ExportPopup from '../containers/ExportPopup';
 import AddFileDropAcceptor from '../containers/AddFileDropAcceptor';
 import MoveFolderPopup from '../containers/MoveFolderPopup';
+import NoPermissionsAlert from '../containers/NoPermissionsAlert';
 import SpecialFolderLink from '../containers/SpecialFolderLink';
 import * as styles from './Home.scss';
 import NoKeyAlert from '../containers/NoKeyAlert';
@@ -49,6 +50,7 @@ export default class Home extends React.Component<{}, {}> {
         </ScrollWatch>
         <div className={`${styles.main}`}>
           <NoKeyAlert />
+          <NoPermissionsAlert />
           <div className={styles.contentHeader}>
             <Row>
               <Col>
