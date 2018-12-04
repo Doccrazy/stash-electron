@@ -69,7 +69,7 @@ export function toggleInherit(): Thunk<void> {
     }
     if (authorizedUsers.inherited) {
       const authParent = findAuthParent(repository.nodes, authorizedUsers.nodeId);
-      if (!authParent.authorizedUsers || authParent.id === authorizedUsers.nodeId) {
+      if (!authParent || !authParent.authorizedUsers || authParent.id === authorizedUsers.nodeId) {
         return;
       }
       dispatch(change(authParent.authorizedUsers));

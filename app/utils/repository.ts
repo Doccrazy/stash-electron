@@ -80,7 +80,7 @@ export function findAuthParent(nodes: { [id: string]: Node }, nodeId: string) {
   while (!result.authorizedUsers && result.parentId) {
     result = nodes[result.parentId];
   }
-  return result;
+  return result.authorizedUsers ? result : null;
 }
 
 export function isAccessible(nodes: { [id: string]: Node }, nodeId: string, username?: string) {
@@ -88,6 +88,9 @@ export function isAccessible(nodes: { [id: string]: Node }, nodeId: string, user
     return false;
   }
   const authParent = findAuthParent(nodes, nodeId);
+  if (!authParent) {
+    return false;
+  }
   return isAuth(authParent, username);
 }
 
