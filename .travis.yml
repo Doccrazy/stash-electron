@@ -72,6 +72,7 @@ after_success:
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ] && [ -n "$DEPLOY_RELEASE" ]; then
       bash dist/arch/update-aur.sh
+      bash dist/bintray-cleanup.sh
     fi
 
 before_cache:
