@@ -65,15 +65,27 @@ export async function accessingRepository<T>(repoPath: string, callback: (repo: 
  * Compare two refs to see who is ahead/behind
  * @returns the number of commits each ref is ahead of the common base
  */
-export async function compareRefs(local: Git.Reference, origin: Git.Reference): Promise<AheadBehindResult> {
+export async function compareRefs(local: Git.Reference, origin?: Git.Reference): Promise<AheadBehindResult> {
   const repo = local.owner();
 
   const localCommit = await repo.getReferenceCommit(local);
+  if (!origin) {
+    return { ahead: await totalCommitCount(localCommit), behind: 0 };
+  }
   const originCommit = await repo.getReferenceCommit(origin);
   if (localCommit.id() === originCommit.id()) {
     return { ahead: 0, behind: 0 };
   }
   return (await Git.Graph.aheadBehind(repo, localCommit.id(), originCommit.id())) as any as AheadBehindResult;  // yet another nodegit foo
+}
+
+async function totalCommitCount(commit: Git.Commit) {
+  let commitCount = 1;
+  while (commit.parentcount() > 0) {
+    commit = await commit.parent(0);
+    commitCount++;
+  }
+  return commitCount;
 }
 
 interface ConflictEntry {
@@ -269,6 +281,10 @@ export function remoteNameFromRef(ref: Git.Reference) {
   return (/^refs\/remotes\/([^\/]+)\//.exec(ref.name()) || [])[1];
 }
 
+function remoteNameFromRefShortName(ref: string) {
+  return (/^([^\/]+)\//.exec(ref) || [])[1];
+}
+
 export function commitInfo(commit: Git.Commit): GitCommitInfo {
   return {
     hash: commit.id().tostrS(),
@@ -435,4 +451,33 @@ export async function getRootCommit(gitRepo: Git.Repository): Promise<GitCommitI
 
   const commits = await walker.getCommits(1);
   return commits.length > 0 ? commitInfo(commits[0]) : undefined;
+}
+
+export function upstreamNameFromNodegitError(e: any) {
+  // there is no function in nodegit to determine the upstream name without trying to resolve it
+  const upstreamGone = /reference 'refs\/remotes\/([^']+)' not found/.exec(e.message);
+  if (e.errno === Git.Error.CODE.ENOTFOUND && upstreamGone) {
+    return upstreamGone[1];
+  }
+  return null;
+}
+
+export async function getUpstreamStatus(ref: Git.Reference) {
+  let upstreamRef: Git.Reference | undefined;
+  let upstreamName: string | undefined;
+  let remoteName: string;
+  try {
+    upstreamRef = await Git.Branch.upstream(ref);
+    upstreamName = upstreamRef.shorthand();
+    remoteName = remoteNameFromRef(upstreamRef);
+  } catch (e) {
+    const us = upstreamNameFromNodegitError(e);
+    if (!us) {
+      return null;
+    }
+    upstreamName = us;
+    remoteName = remoteNameFromRefShortName(upstreamName);
+  }
+
+  return { ref: upstreamRef, shortName: upstreamName, remoteName };
 }

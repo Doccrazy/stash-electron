@@ -12,9 +12,9 @@ import {
   addToGitIgnore,
   commitAllChanges, commitInfo,
   compareRefs, defaultCredCb,
-  fetchWithRetry, finishRebaseResolving, getRootCommit, GitCommitInfo, GitCredentials,
+  fetchWithRetry, finishRebaseResolving, getRootCommit, getUpstreamStatus, GitCommitInfo, GitCredentials,
   hasUncommittedChanges, isSignatureConfigured, loadHistory,
-  pushWithRetry, remoteNameFromRef,
+  pushWithRetry,
   usingOurs
 } from '../utils/git';
 import { RES_LOCAL_FILENAMES } from '../utils/repository';
@@ -98,39 +98,31 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
           return;
         }
 
-        let upstream: Git.Reference;
-        try {
-          upstream = await Git.Branch.upstream(currentRef);
-        } catch (e) {
+        let upstream = await getUpstreamStatus(currentRef);
+        if (!upstream) {
           status.error = 'current branch is not tracking any remote';
           return;
         }
-        status.upstreamName = upstream.shorthand();
-        const remoteName = remoteNameFromRef(upstream);
-
-        if (!isSignatureConfigured(gitRepo) && (await compareRefs(currentRef, upstream)).ahead) {
-          status.error = 'git user name and email are not configured';
-          return;
-        }
+        status.upstreamName = upstream.shortName;
 
         // if not fetching or fetch fails, remember bg mode from last fetch
         status.allowBackgroundFetch = oldStatus.allowBackgroundFetch;
         status.commitsAheadOrigin = oldStatus.commitsAheadOrigin;
         status.commits = oldStatus.commits;
 
-        if (doFetch && remoteName) {
-          const fetchResult = await dispatch(gitFetchRemote(gitRepo, remoteName));
+        if (doFetch && upstream.ref) {
+          const fetchResult = await dispatch(gitFetchRemote(gitRepo, upstream.remoteName));
           // we can only do background updates if the user saved the credentials
           status.allowBackgroundFetch = fetchResult.allowNonInteractive;
-          upstream = await Git.Branch.upstream(currentRef);
+          upstream = (await getUpstreamStatus(currentRef))!;
         }
 
-        let trackingState = await compareRefs(currentRef, upstream);
-        if (trackingState.behind) {
+        let trackingState = await compareRefs(currentRef, upstream.ref);
+        if (trackingState.behind && upstream.ref) {
           status.incomingCommits = trackingState.behind;
           // if origin is ahead, we need to fast-forward or rebase (rebaseBranches will do the appropriate)
           try {
-            await gitRepo.rebaseBranches(currentRef.name(), upstream.name(), '', null as any, null as any);
+            await gitRepo.rebaseBranches(currentRef.name(), upstream.ref.name(), '', null as any, null as any);
           } catch (e) {
             if (e instanceof Git.Index) {
               // rebase failed due to conflicts
@@ -144,7 +136,7 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
             }
           }
           currentRef = await gitRepo.head();
-          trackingState = await compareRefs(currentRef, upstream);
+          trackingState = await compareRefs(currentRef, upstream.ref);
           assert.equal(trackingState.behind, 0, 'no commits on origin after successful rebase');
         }
         status.commitsAheadOrigin = trackingState.ahead;
@@ -154,7 +146,7 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
         for (let i = 0; i < status.commitsAheadOrigin + (status.incomingCommits || 0) + 1; i++) {
           status.commits.push({
             ...commitInfo(commit),
-            remoteRef: commit.id().equal(upstream.target()) ? status.upstreamName : undefined,
+            remoteRef: upstream.ref && commit.id().equal(upstream.ref.target()) ? status.upstreamName : undefined,
             pushed: i >= status.commitsAheadOrigin
           });
           if (commit.parentcount() === 0) {
@@ -407,13 +399,15 @@ export function revertAndPush(): Thunk<Promise<void>> {
           await Git.Reset.reset(gitRepo, resetToCommit as any, Git.Reset.TYPE.HARD, {});
         }
 
-        const upstream = await Git.Branch.upstream(await gitRepo.head());
-        const trackingState = await compareRefs(await gitRepo.head(), upstream);
+        const upstream = await getUpstreamStatus(await gitRepo.head());
+        if (!upstream) {
+          throw new Error('current branch is not tracking any remote');
+        }
+        const trackingState = await compareRefs(await gitRepo.head(), upstream.ref);
         if (trackingState.ahead) {
-          const remoteName = remoteNameFromRef(upstream);
-          await dispatch(gitPushRemote(gitRepo, remoteName));
+          await dispatch(gitPushRemote(gitRepo, upstream.remoteName));
 
-          toastr.success('', `Pushed ${trackingState.ahead} commit(s) to '${remoteName}'.`);
+          toastr.success('', `Pushed ${trackingState.ahead} commit(s) to '${upstream.remoteName}'.`);
         }
       });
 

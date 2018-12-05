@@ -27,6 +27,7 @@
 - The current selection is now remembered on reload / git update
 - Git clone from SSH (using agent) no longer fails with *unsupported credentials type* error
 - Fixed *create item* button being enabled before permissions have been initially set up (with warning message)
+- Pushing the initial commit to an empty repository should now work
 
 ## v1.1.0 (2017-12-18)
 
