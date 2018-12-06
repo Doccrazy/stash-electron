@@ -7,21 +7,31 @@ const MESSAGE = `You have committed some changes, but did not push them to the r
 Are you sure you want to quit?`;
 
 export default function installQuitHook(dispatch: Dispatch, getState: GetState) {
-  window.onbeforeunload = ev => {
+  // https://github.com/electron/electron/issues/7977#issuecomment-267430262
+  let closeWindow = false;
+
+  window.addEventListener('beforeunload', evt => {
+    if (closeWindow) { return; }
+
     if (getState().git.status.commitsAheadOrigin) {
-      const choice = remote.dialog.showMessageBox(remote.getCurrentWindow(), {
-        type: 'question',
-        buttons: ['Quit anyway', 'Return to Stash'],
-        defaultId: 0,
-        cancelId: 1,
-        title: 'Pending commits',
-        message: MESSAGE
+      evt.returnValue = false;
+
+      setTimeout(() => {
+        const choice = remote.dialog.showMessageBox(remote.getCurrentWindow(), {
+          type: 'question',
+          buttons: ['Quit anyway', 'Return to Stash'],
+          defaultId: 0,
+          cancelId: 1,
+          title: 'Pending commits',
+          message: MESSAGE
+        });
+        if (choice === 1) {
+          dispatch(openPopup());
+        } else {
+          closeWindow = true;
+          remote.getCurrentWindow().close();
+        }
       });
-      if (choice === 1) {
-        dispatch(openPopup());
-        return false;
-      }
     }
-    return undefined;
-  };
+  });
 }
