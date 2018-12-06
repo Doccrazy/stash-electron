@@ -20,7 +20,7 @@ export function entryContextMenu(ptr: EntryPtr): Thunk<void> {
     const menu = new Menu();
     if (accessible) {
       menu.append(new MenuItem({
-        label: 'Edit', icon: remote.nativeImage.createFromDataURL(require('../icon-pencil.png')), click() {
+        label: 'Edit', accelerator: 'F2', icon: remote.nativeImage.createFromDataURL(require('../icon-pencil.png')), click() {
           dispatch(open(ptr));
         }
       }));
