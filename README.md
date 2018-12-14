@@ -42,12 +42,12 @@ Stash requires a git repository to store its data. It is highly recommended to u
 - Self-hosted: Run `git init --bare` on any accessible server
 
 After creating the git repo, run Stash and navigate to the **Settings** page.
-1. Clone your repository to an empty folder using the provided button.
-2. Either load an existing private key (e.g. SSH key, all formats incl. Putty supported), or generate a new key by clicking the button. You should always **password-protect** your private key.  
+1. Clone your repository to an empty folder by clicking *Add*, then selecting the *Clone* option.
+2. Configure your private key by clicking the highlighted *Account status* icon in the top right corner. You may either load an existing private key (e.g. SSH key, all formats incl. Putty supported), or generate a new key by clicking the button. You should always **password-protect** your private key.  
 :warning: Your private key is your access pass to your secrets. If you lose your key, you lose access to all your secrets, and there is no way of recovery. So **keep your key safe and secure, back it up and never share it with anyone!**
-3. Save your changes.
-4. Add yourself to the list of known users on the **Users** page (add user -> use my key). All users and public keys must be known to Stash. Again, do not forget to **save your changes**.
-5. Open the **Browser** page and start creating folders and secrets!
+3. Add yourself to the list of known users on the **Users** page (add user -> use my key). All users and public keys must be known to Stash. Do not forget to **save your changes**.
+4. Open the **Browser** page and initialize the repository permissions by authorizing yourself on the root folder: Right-click on the root folder, select *Permissions*, toggle your user and confirm with *Save*.
+5. Your repository is now fully set up and ready for you to start creating folders and secrets!
 6. Every change you make automatically creates a git commit. Use the flashing icon in the top right to **push/share your changes**.
 
 ## Development
@@ -77,7 +77,7 @@ Start the app in the `dev` environment. This starts the renderer process in [hot
 npm run dev
 ```
 
-### Packaging
+### Package
 
 To package apps for the local platform:
 
@@ -94,6 +94,18 @@ Then,
 ```bash
 npm run package all
 ```
+
+### Release
+
+Versioning is done automatically based on git tags and commits. You should never have to set the version in `package.json` manually. Every git commit on master publishes a snapshot release to bintray.
+
+To create a final release, follow these steps to ensure the release is published correctly:
+1. Follow the guidelines of (Semantic Versioning)[https://semver.org/] to determine a version number.
+2. Ensure `CHANGELOG.md` is complete, then update the release date and version and push the changes.
+3. Wait for the Travis build to complete and publish a snapshot.
+4. Perform any necessary tests on the snapshot version.
+5. Draft a new Github release, using `vx.y.z` as the tag name and `x.y.z` as the release name.
+6. After Travis has uploaded the files, copy the notes from `CHANGELOG.md` and publish the release.
 
 ## License
 GPLv3 © [M. Piepkorn](https://github.com/Doccrazy)
