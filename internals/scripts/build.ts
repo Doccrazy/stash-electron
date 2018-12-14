@@ -27,28 +27,27 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
   try { fs.mkdirSync('release'); } catch { /* already exists */ }
   fs.writeFileSync('release/PKGINFO', `PKG_VERSION=${pkgVersion}\nPKG_ITERATION=${pkgIteration}\nPKG_NAME=${pkgName}\nDEB_ARTIFACT_NAME=${debArtifactName}\n`);
 
-  const bintraySnapshots: Configuration['publish'] = snapshotNum ? {
+  const defaultPublisher: Configuration['publish'] = snapshotNum ? {
     provider: 'bintray',
     repo: 'bin',
     owner: 'doccrazy',
     package: pkgName
-  } : null;
+  } : {
+    provider: 'github'
+  };
 
   return {
     targets: createTargets([platform], undefined, 'x64'),
     publish: process.env.DEPLOY_RELEASE ? 'always' : undefined,
     config: {
-      publish: snapshotNum ? null : {
-        provider: 'github'
-      },
       extraMetadata: {
         version: version.format()
       },
       win: {
-        publish: bintraySnapshots
+        publish: defaultPublisher
       },
       mac: {
-        publish: bintraySnapshots
+        publish: defaultPublisher
       },
       pacman: {
         fpm: [
@@ -59,7 +58,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
         artifactName: pacmanArtifactName
       },
       appImage: {
-        publish: bintraySnapshots
+        publish: defaultPublisher
       },
       deb: {
         fpm: [
@@ -68,7 +67,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
           '--iteration', pkgIteration
         ],
         artifactName: debArtifactName,
-        publish: {
+        publish: process.env.DEB_SKIP_PUBLISH ? null : {
           provider: 'bintray',
           package: pkgName
         }

@@ -70,7 +70,7 @@ script:
 
 after_success:
   - |
-    if [ "$TRAVIS_OS_NAME" == "linux" ] && [ -n "$DEPLOY_RELEASE" ]; then
+    if [ "$TRAVIS_OS_NAME" == "linux" ] && [ -n "$DEPLOY_RELEASE" ] && [ -z "$DEB_SKIP_PUBLISH" ]; then
       bash dist/arch/update-aur.sh
       bash dist/bintray-cleanup.sh
     fi
