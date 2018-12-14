@@ -1,4 +1,4 @@
-## upcoming release (v1.2.0, planned Nov. 2018)
+## v1.2.0 (2018-12-14)
 
 #### New features
 - **Git history support**
