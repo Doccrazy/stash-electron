@@ -20,7 +20,9 @@ setTimeout(() => {
   registerHotkeys(store.dispatch, store.getState);
   setupInactivityLock(store.dispatch, store.getState);
   setupGitPolling(store.dispatch, store.getState);
-  installQuitHook(store.dispatch, store.getState);
+  if (process.env.NODE_ENV === 'production') {
+    installQuitHook(store.dispatch, store.getState);
+  }
 });
 
 setTimeout(() => {
