@@ -2,6 +2,7 @@ import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ButtonGroup } from 'reactstrap';
 import { Route } from 'react-router';
+import Trans from '../containers/Trans';
 import UserAccessTable from '../containers/UserAccessTable';
 import UserKeyActionBar from '../containers/UserKeyActionBar';
 import NoKeyAlert from '../containers/NoKeyAlert';
@@ -17,11 +18,14 @@ export default (({}) => (<div className={`container ${styles.users}`}>
   <UsersHistoryPopup />
   <h1 className="my-4">Known users and keys</h1>
 
-  <p>
+  <div className="mb-3">
+    <Trans prop="test.key" markdown date={new Date()} user={<b>Username</b>}/>
+    <Trans prop="test.key2"/><br/>
+    <Trans prop="test.key3"/><br/>
     All users known to the current Stash repository are listed here.<br />
     That does not mean they are able to decrypt any content. Their username still needs to be explicitly
     granted access on one or more folders.
-  </p>
+  </div>
 
   <NoKeyAlert />
 
