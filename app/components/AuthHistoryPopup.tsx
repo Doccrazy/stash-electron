@@ -57,7 +57,7 @@ export default ({ open, nodePath, history, filterOptions, filterNodeId, onFilter
             <td title={entry.authorEmail}>{entry.authorName}</td>
             <td className="text-nowrap">{formatDateTime(entry.date)}</td>
           </tr>} loadMore={(onLoadMore, remaining) => <tr key="_more">
-            <td colSpan={4} align="center"><a href="" onClick={ev => onLoadMore}>Show more ({remaining})</a></td>
+            <td colSpan={4} align="center"><a href="" onClick={onLoadMore}>Show more ({remaining})</a></td>
           </tr>} />
           </tbody>
         </table>

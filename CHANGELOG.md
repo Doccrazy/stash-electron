@@ -1,3 +1,8 @@
+## upcoming release (no planned release date)
+
+#### Bugs fixed
+- *Show more* link in authorization history window now actually works
+
 ## v1.2.0 (2018-12-14)
 
 #### New features
