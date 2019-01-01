@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import * as crypto from 'crypto';
 import './utils/electronNoDrop';
 import './utils/errorHandler';
+import './initLocales';
 import Root from './pages/Root';
 import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';

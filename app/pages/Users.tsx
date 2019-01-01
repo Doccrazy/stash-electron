@@ -2,7 +2,7 @@ import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ButtonGroup } from 'reactstrap';
 import { Route } from 'react-router';
-import Trans from '../containers/Trans';
+import Trans from '../utils/i18n/Trans';
 import UserAccessTable from '../containers/UserAccessTable';
 import UserKeyActionBar from '../containers/UserKeyActionBar';
 import NoKeyAlert from '../containers/NoKeyAlert';
