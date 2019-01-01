@@ -27,8 +27,11 @@ function resolve(locale: string, prop: string, markdown?: boolean): ReactFormatt
 function createFormatter(locale: string, prop: string, markdown?: boolean): ReactFormatter {
   const message = getMessage(locale, prop);
   if (markdown) {
+    // render all 'text' elements in the markdown using IntlMessageFormat to enable formatting / context values
+    // here 'children' refers to the actual text value of the node
     const textRenderer = (context: Context<Extended>) => (props: { children: string }) => {
-      return renderToFragment(formatToReact(new IntlMessageFormat(props.children, locale), context));
+      // TODO not sure about supporting nested props here; let's call it a feature
+      return renderToFragment(resolve(locale, props.children, false)(context));
     };
     return context => React.createElement(ReactMarkdown, { source: message, renderers: { text: textRenderer(context) } });
   }
