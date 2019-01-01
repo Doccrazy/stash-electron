@@ -30,6 +30,9 @@ const rendererDevDllConfig: webpack.Configuration = {
         .keys(packageJson.dependencies || {})
         .filter(dependency => dependency !== 'font-awesome' && dependency !== 'react-hot-loader' && !dependency.startsWith('@types/'))
     )
+  },
+  resolve: {
+    aliasFields: []
   }
 };
 

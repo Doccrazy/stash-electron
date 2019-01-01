@@ -1,7 +1,6 @@
 import IntlMessageFormat from 'intl-messageformat';
 import * as React from 'react';
-import * as ReactMarkdown from 'react-markdown';
-import { renderToFragment } from './helper';
+import { createMarkdownFormatter } from './markdown';
 import { getMessage } from './message';
 
 type Plain = string | number | Date | boolean;
@@ -11,7 +10,7 @@ export interface Context<T extends Extended = Extended> {
 }
 export type PlainContext = Context<Plain>;
 
-type ReactFormatter = (context: Context<Extended>) => React.ReactNode;
+export type ReactFormatter = (context: Context<Extended>) => React.ReactNode;
 
 let formatterCache: {[key: string]: ReactFormatter} = {};
 
@@ -28,13 +27,7 @@ function resolve(locale: string, prop: string, markdown?: boolean): ReactFormatt
 function createFormatter(locale: string, prop: string, markdown?: boolean): ReactFormatter {
   const message = getMessage(locale, prop);
   if (markdown) {
-    // render all 'text' elements in the markdown using IntlMessageFormat to enable formatting / context values
-    // here 'children' refers to the actual text value of the node
-    const textRenderer = (context: Context<Extended>) => (props: { children: string }) => {
-      // TODO not sure about supporting nested props here; let's call it a feature
-      return renderToFragment(resolve(locale, props.children, false)(context));
-    };
-    return context => React.createElement(ReactMarkdown, { source: message, renderers: { text: textRenderer(context) } });
+    return createMarkdownFormatter(message, (p: string) => resolve(locale, p, false));
   }
   const intlFmt = new IntlMessageFormat(message, locale);
   return context => formatToReact(intlFmt, context);

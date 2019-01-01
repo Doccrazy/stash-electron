@@ -166,6 +166,8 @@ declare module 'jdenticon' {
   export const version: string;
 }
 
+declare module 'remark-generic-extensions';
+
 declare module '*.css' {
   interface IClassNames {
     [className: string]: string

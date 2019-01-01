@@ -16,3 +16,10 @@ page:
       All users known to the current Stash repository are listed here.  
       That does not mean they are able to decrypt any content. Their username still needs to be explicitly
       granted access on one or more folders.
+component:
+  noKeyAlert:
+    keyLoaded: You do not currently have access to the selected repository. You may either add yourself to the list of
+      known users and ask someone else to authorize you, or load a different key.
+    keyEncrypted: "!fa(lock) Your encrypted private key is locked. {link}."
+    unlockLink: Click here or press Ctrl+L to unlock with your passphrase
+    noKey: No private key has been loaded or loading of the private key failed. Check !fa(user-circle) account menu.

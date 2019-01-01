@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Alert } from 'reactstrap';
 import { loadAndUnlockInteractive } from '../actions/privateKey';
 import { Dispatch, RootState } from '../actions/types/index';
+import Trans from '../utils/i18n/Trans';
 
 export default connect((state: RootState, props: void) => ({
   keyLoaded: !!state.privateKey.key,
@@ -14,20 +15,15 @@ export default connect((state: RootState, props: void) => ({
   if (loggedIn) {
     return <div />;
   } else if (keyLoaded) {
-    return (<Alert color="warning">
-      You do not currently have access to the selected repository. You may either add yourself to the list of
-      known users and ask someone else to authorize you, or load a different key.
-    </Alert>);
+    return (<Alert color="warning"><Trans id="component.noKeyAlert.keyLoaded" markdown/></Alert>);
   } else if (keyEncrypted) {
     return (<Alert color="warning">
-      <i className="fa fa-lock" /> Your encrypted private key is locked. <a href="" className="alert-link" onClick={onUnlock}>
-        Click here or press Ctrl+L to unlock with your passphrase
-      </a>.
+      <Trans id="component.noKeyAlert.keyEncrypted" markdown link={<a href="" className="alert-link" onClick={onUnlock}>
+        <Trans id="component.noKeyAlert.unlockLink"/>
+      </a>}/>
     </Alert>);
   } else {
-    return (<Alert color="danger">
-      No private key has been loaded or loading of the private key failed. Check <i className="fa fa-user-circle"/> account menu.
-    </Alert>);
+    return (<Alert color="danger"><Trans id="component.noKeyAlert.noKey" markdown/></Alert>);
   }
 });
 
