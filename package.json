@@ -177,6 +177,7 @@
     "identity-obj-proxy": "^3.0.0",
     "imports-loader": "^0.8.0",
     "jsdom": "^11.0.0",
+    "json-loader": "^0.5.7",
     "markdown-loader": "^4.0.0",
     "mini-css-extract-plugin": "^0.4.4",
     "minimist": "^1.2.0",
@@ -205,7 +206,8 @@
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10",
-    "webpack-merge": "^4.1.4"
+    "webpack-merge": "^4.1.4",
+    "yaml-loader": "^0.5.0"
   },
   "dependencies": {
     "@trodi/electron-splashscreen": "^0.3.4",

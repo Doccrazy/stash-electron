@@ -15,7 +15,7 @@ export function setLocale(locale: string): Action {
 type Action =
   TypedAction<Actions.SET_LOCALE, string>;
 
-export default function reducer(state: State = { locale: 'en' }, action: Action): State {
+export default function reducer(state: State = { locale: 'de' }, action: Action): State {
   switch (action.type) {
     case Actions.SET_LOCALE:
       return { ...state, locale: action.payload };

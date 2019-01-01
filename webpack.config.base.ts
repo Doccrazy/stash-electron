@@ -86,6 +86,11 @@ const baseConfig: webpack.Configuration = {
       {
         test: /\.md$/,
         use: ['html-loader', 'markdown-loader']
+      },
+      // YAML
+      {
+        test: /\.ya?ml$/,
+        use: ['json-loader', 'yaml-loader']
       }
     ]
   },

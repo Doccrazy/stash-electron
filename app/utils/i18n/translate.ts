@@ -9,6 +9,7 @@ type Extended = Plain | React.ReactNode;
 export interface Context<T extends Extended = Extended> {
   [key: string]: T
 }
+export type PlainContext = Context<Plain>;
 
 type ReactFormatter = (context: Context<Extended>) => React.ReactNode;
 

@@ -12,6 +12,7 @@ import GitActionsPopup from '../containers/GitActionsPopup';
 import GenerateKeyPopup from '../containers/GenerateKeyPopup';
 import GitClonePopup from '../containers/GitClonePopup';
 import GitSignaturePopup from '../containers/GitSignaturePopup';
+import Trans from '../utils/i18n/Trans';
 import * as styles from './App.scss';
 
 export interface Props {
@@ -39,13 +40,13 @@ export default class App extends React.Component<Props, {}> {
           <NavLink to="/" className="navbar-brand"><span className={styles.logo} /> Stash</NavLink>
           <Nav className="mr-auto" navbar>
             <NavItem>
-              <NavLink to="/" exact className="nav-link">Browser</NavLink>
+              <NavLink to="/" exact className="nav-link"><Trans id="nav.home"/></NavLink>
             </NavItem>
             <NavItem>
-              <NavLink to="/users" className="nav-link">Users</NavLink>
+              <NavLink to="/users" className="nav-link"><Trans id="nav.users"/></NavLink>
             </NavItem>
             <NavItem>
-              <NavLink to="/settings" className="nav-link">Settings</NavLink>
+              <NavLink to="/settings" className="nav-link"><Trans id="nav.settings"/></NavLink>
             </NavItem>
           </Nav>
           <div className={`mr-3 ${styles.form}`}>

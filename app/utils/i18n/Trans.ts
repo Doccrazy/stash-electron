@@ -1,21 +1,21 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../actions/types';
 import { renderToFragment } from './helper';
-import { translate, Context } from './translate';
+import { Context, translate } from './translate';
 
 interface OwnProps extends Context {
-  prop: string
+  id: string
   markdown?: boolean
 }
 interface Props extends OwnProps {
   locale: string
 }
 
-const Trans = ({ locale, prop, markdown, ...context }: Props) => {
-  const translation = translate(locale, prop, context, markdown);
+const Trans = ({ locale, id, markdown, ...context }: Props) => {
+  const translation = translate(locale, id, context, markdown);
   return renderToFragment(translation);
 };
 
 export default connect((state: RootState, props: OwnProps) => ({
-  locale: 'de'
+  locale: state.i18n.locale
 }), () => ({}))(Trans);

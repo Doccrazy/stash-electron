@@ -1,30 +1,26 @@
 import * as React from 'react';
+import { Route } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { ButtonGroup } from 'reactstrap';
-import { Route } from 'react-router';
-import Trans from '../utils/i18n/Trans';
+import NoKeyAlert from '../containers/NoKeyAlert';
 import UserAccessTable from '../containers/UserAccessTable';
 import UserKeyActionBar from '../containers/UserKeyActionBar';
-import NoKeyAlert from '../containers/NoKeyAlert';
 import UserKeyAddPopup from '../containers/UserKeyAddPopup';
 import UserKeyTable from '../containers/UserKeyTable';
 import UserPermissionTable from '../containers/UserPermissionTable';
 import UsersHistoryButton from '../containers/UsersHistoryButton';
 import UsersHistoryPopup from '../containers/UsersHistoryPopup';
+import Trans from '../utils/i18n/Trans';
+import WithTrans from '../utils/i18n/WithTrans';
 import * as styles from './Users.scss';
 
 export default (({}) => (<div className={`container ${styles.users}`}>
   <UserKeyAddPopup />
   <UsersHistoryPopup />
-  <h1 className="my-4">Known users and keys</h1>
+  <h1 className="my-4"><Trans id="page.users.title"/></h1>
 
   <div className="mb-3">
-    <Trans prop="test.key" markdown date={new Date()} user={<b>Username</b>}/>
-    <Trans prop="test.key2"/><br/>
-    <Trans prop="test.key3"/><br/>
-    All users known to the current Stash repository are listed here.<br />
-    That does not mean they are able to decrypt any content. Their username still needs to be explicitly
-    granted access on one or more folders.
+    <Trans id="page.users.info" markdown/>
   </div>
 
   <NoKeyAlert />
@@ -32,11 +28,13 @@ export default (({}) => (<div className={`container ${styles.users}`}>
   <div className={`row ${styles.actionBar}`}>
     <div className="col">
       <ButtonGroup>
-        <NavLink to="/users" exact className="btn btn-outline-primary">Keys</NavLink>
-        <NavLink to="/users/permissions" className="btn btn-outline-primary">Permissions</NavLink>
-        <NavLink to="/users/access" className="btn btn-outline-primary">Folder access</NavLink>
+        <NavLink to="/users" exact className="btn btn-outline-primary"><Trans id="nav.users.keys"/></NavLink>
+        <NavLink to="/users/permissions" className="btn btn-outline-primary"><Trans id="nav.users.permissions"/></NavLink>
+        <NavLink to="/users/access" className="btn btn-outline-primary"><Trans id="nav.users.folderAccess"/></NavLink>
       </ButtonGroup>
-      <UsersHistoryButton color="link" title="History"><i className="fa fa-history"/></UsersHistoryButton>
+      <WithTrans value={t =>
+        <UsersHistoryButton color="link" title={t('common.history')}><i className="fa fa-history"/></UsersHistoryButton>
+      }/>
     </div>
     <div className="col text-right">
       <UserKeyActionBar />

@@ -17,11 +17,11 @@ export function loadMessages(messagesByLocale: {[locale: string]: {[prop: string
 
 interface WebpackContext {
   keys(): string[]
-  (key: string): { default: any }
+  (key: string): any
 }
 
 export function loadMessagesFromContext(localesContext: WebpackContext) {
   const messagesByLocale = (localesContext.keys() as string[])
-    .reduce((acc, key) => ({...acc, [key.match(/\/([^\/]+)\.js/)![1]]: localesContext(key).default}), {});
+    .reduce((acc, key) => ({...acc, [key.match(/\/([^\/]+)\.\w+$/)![1]]: localesContext(key)}), {});
   loadMessages(messagesByLocale);
 }

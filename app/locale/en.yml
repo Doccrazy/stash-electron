@@ -1,0 +1,18 @@
+test:
+  key: "**Test message** with *Markdown {date,date,short} support* + {date,time,short} for {user}"
+common:
+  history: History
+nav:
+  home: Browser
+  settings: Settings
+  users: Users
+  users.keys: Keys
+  users.permissions: Keys
+  users.folderAccess: Folder access
+page:
+  users:
+    title: Known users and keys
+    info: |
+      All users known to the current Stash repository are listed here.  
+      That does not mean they are able to decrypt any content. Their username still needs to be explicitly
+      granted access on one or more folders.
