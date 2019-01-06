@@ -17,5 +17,5 @@ const WithTrans = ({ locale, value }: Props) => {
 };
 
 export default connect((state: RootState, props: OwnProps) => ({
-  locale: state.i18n.locale
+  locale: state.settings.current.locale
 }), () => ({}))(WithTrans);

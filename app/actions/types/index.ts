@@ -16,7 +16,6 @@ import { State as FileExportState } from './fileExport';
 import { State as FileImportState } from './fileImport';
 import { State as GitState } from './git';
 import { State as KeysState } from './keys';
-import { State as I18nState } from './i18n';
 import { State as NodeHistoryState } from './nodeHistory';
 import { State as PrivateKeyState } from './privateKey';
 import { State as RepositoryState } from './repository';
@@ -38,7 +37,6 @@ export interface RootState {
   fileImport: FileImportState,
   git: GitState,
   keys: KeysState,
-  i18n: I18nState,
   nodeHistory: NodeHistoryState,
   privateKey: PrivateKeyState,
   repository: RepositoryState,

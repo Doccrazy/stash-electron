@@ -11,7 +11,8 @@ export interface StringSettings {
   rootFontSize: number,
   privateKeyFile?: string,
   inactivityTimeout: number,
-  keyDisplayFormat: KeyFormat
+  keyDisplayFormat: KeyFormat,
+  locale: string
 }
 
 export interface BoolSettings {

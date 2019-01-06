@@ -15,7 +15,6 @@ import fileExport from './fileExport';
 import fileImport from './fileImport';
 import git from './git';
 import keys from './keys';
-import i18n from './i18n';
 import nodeHistory from './nodeHistory';
 import privateKey from './privateKey';
 import './recentPrivateKeys';
@@ -39,7 +38,6 @@ const rootReducer = combineReducers<RootState>({
   fileImport,
   git,
   keys,
-  i18n,
   nodeHistory,
   privateKey,
   repository,
