@@ -1,4 +1,5 @@
-import { TypedAction } from './types';
+import { PlainContext, translate } from '../utils/i18n/translate';
+import { GetState, TypedAction } from './types';
 import { State } from './types/i18n';
 
 export enum Actions {
@@ -10,6 +11,18 @@ export function setLocale(locale: string): Action {
     type: Actions.SET_LOCALE,
     payload: locale
   };
+}
+
+let getState: GetState | undefined;
+export function t(messageId: string, context?: PlainContext): string {
+  if (!getState) {
+    return 'initialize using connectTranslateFunction(getState) before calling t()';
+  }
+  return translate(getState().i18n.locale, messageId, context);
+}
+
+export function connectTranslateFunction(getStateFn: GetState) {
+  getState = getStateFn;
 }
 
 type Action =
