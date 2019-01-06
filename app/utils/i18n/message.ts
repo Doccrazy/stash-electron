@@ -1,17 +1,17 @@
 import * as flatten from 'flat';
 
 const FALLBACK_LOCALE = 'en';
-let messages: {[locale: string]: {[prop: string]: string}} = {};
+let messages: {[locale: string]: {[messageId: string]: string}} = {};
 
 function fallbacks(locale: string) {
   return [locale, locale.split('-')[0], FALLBACK_LOCALE];
 }
 
-export function getMessage(locale: string, prop: string) {
-  return fallbacks(locale).map(loc => (messages[loc] || {})[prop]).filter(m => !!m)[0] || prop;
+export function getMessage(locale: string, messageId: string) {
+  return fallbacks(locale).map(loc => (messages[loc] || {})[messageId]).filter(m => !!m)[0] || messageId;
 }
 
-export function loadMessages(messagesByLocale: {[locale: string]: {[prop: string]: any}}) {
+export function loadMessages(messagesByLocale: {[locale: string]: {[messageId: string]: any}}) {
   messages = Object.keys(messagesByLocale).reduce((acc, key) => ({...acc, [key]: flatten(messagesByLocale[key])}), {});
 }
 

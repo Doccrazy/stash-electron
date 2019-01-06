@@ -4,7 +4,7 @@ import * as genericExtensions from 'remark-generic-extensions';
 import { renderToFragment } from './helper';
 import { Context, ReactFormatter } from './translate';
 
-export function createMarkdownFormatter(message: string, resolve: (prop: string) => ReactFormatter): ReactFormatter {
+export function createMarkdownFormatter(message: string, resolve: (messageId: string) => ReactFormatter): ReactFormatter {
   // render all 'text' elements in the markdown using IntlMessageFormat to enable formatting / context values
   // here 'children' refers to the actual text value of the node
   const textRenderer = (context: Context) => (props: { children: string }) => {
