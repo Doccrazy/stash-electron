@@ -25,3 +25,7 @@ export function loadMessagesFromContext(localesContext: WebpackContext) {
     .reduce((acc, key) => ({...acc, [key.match(/\/([^\/]+)\.\w+$/)![1]]: localesContext(key)}), {});
   loadMessages(messagesByLocale);
 }
+
+export function getLocales() {
+  return Object.keys(messages);
+}

@@ -258,6 +258,7 @@
     "jquery": "^3.2.1",
     "kdbxweb": "^1.2.4",
     "keytar": "^4.3.0",
+    "langmap": "0.0.16",
     "lodash": "^4.17.4",
     "minimatch": "^3.0.4",
     "moment": "^2.18.1",

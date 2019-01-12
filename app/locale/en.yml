@@ -7,9 +7,11 @@ nav:
   settings: Settings
   users: Users
   users.keys: Keys
-  users.permissions: Keys
+  users.permissions: Permissions
   users.folderAccess: Folder access
 page:
+  settings:
+    language: UI Language
   users:
     title: Known users and keys
     info: |

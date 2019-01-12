@@ -1,2 +1,12 @@
 test:
   key2: Auf Deutsch!
+nav:
+  home: Browser
+  settings: Einstellungen
+  users: Benutzer
+  users.keys: Schlüssel
+  users.permissions: Berechtigungen
+  users.folderAccess: Orderzugriff
+page:
+  settings:
+    language: Anzeigesprache

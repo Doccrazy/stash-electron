@@ -5,6 +5,8 @@ import { remote } from 'electron';
 import RecentRepositories from '../containers/RecentRepositories';
 import SettingField from '../containers/SettingField';
 import SaveSettingsButton from '../containers/SaveSettingsButton';
+import SettingLocaleChooser from '../containers/SettingLocaleChooser';
+import Trans from '../utils/i18n/Trans';
 
 export default () => (<div className="container">
   <h1 className="my-4">Application settings</h1>
@@ -13,6 +15,10 @@ export default () => (<div className="container">
     <FormGroup>
       <Label>Recent repositories</Label>
       <RecentRepositories />
+    </FormGroup>
+    <FormGroup>
+      <Label><Trans id="page.settings.language"/></Label>
+      <SettingLocaleChooser/>
     </FormGroup>
     <FormGroup>
       <Label>Inactivity lock (minutes)</Label>

@@ -194,6 +194,8 @@ declare module 'unist-util-map' {
   export = map;
 }
 
+declare module 'langmap';
+
 declare module '*.css' {
   interface IClassNames {
     [className: string]: string
