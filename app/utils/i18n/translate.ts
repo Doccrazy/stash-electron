@@ -1,16 +1,7 @@
-import IntlMessageFormat from 'intl-messageformat';
 import * as React from 'react';
+import { Context, createPlainFormatter, Plain, ReactFormatter } from './format';
 import { createMarkdownFormatter } from './markdown';
 import { getMessage } from './message';
-
-type Plain = string | number | Date | boolean;
-type Extended = Plain | React.ReactNode;
-export interface Context<T extends Extended = Extended> {
-  [key: string]: T
-}
-export type PlainContext = Context<Plain>;
-
-export type ReactFormatter = (context: Context<Extended>) => React.ReactNode;
 
 let formatterCache: {[key: string]: ReactFormatter} = {};
 
@@ -27,26 +18,9 @@ function resolve(locale: string, messageId: string, markdown?: boolean): ReactFo
 function createFormatter(locale: string, messageId: string, markdown?: boolean): ReactFormatter {
   const message = getMessage(locale, messageId);
   if (markdown) {
-    return createMarkdownFormatter(message, (p: string) => resolve(locale, p, false));
+    return createMarkdownFormatter(locale, message);
   }
-  const intlFmt = new IntlMessageFormat(message, locale);
-  return context => formatToReact(intlFmt, context);
-}
-
-function formatToReact(fmt: IntlMessageFormat, context: Context<Extended>): React.ReactNode {
-  const reactKeys = Object.keys(context).filter(key => React.isValidElement(context[key]));
-  if (reactKeys.length) {
-    // replace all react elements by simple string placeholders
-    const safeContext = { ...context, ...reactKeys.reduce((acc, key, idx) => ({...acc, [key]:  `__${idx}__`}), {}) };
-    const intermediate = fmt.format(safeContext);
-    // split result along placeholders, then map them back into react elements from context
-    return intermediate.split(/(__\d__)/).map(part => {
-      const m = part.match(/__(\d)__/);
-      return m ? context[reactKeys[parseInt(m[1], 10)]] as React.ReactElement<any> : part;
-    });
-  } else {
-    return fmt.format(context);
-  }
+  return createPlainFormatter(locale, message);
 }
 
 export function translate<CT = Plain, M extends boolean = false>(locale: string, messageId: string, context?: Context<CT>, markdown?: M)

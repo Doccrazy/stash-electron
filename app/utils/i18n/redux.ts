@@ -1,4 +1,5 @@
-import { PlainContext, translate } from './translate';
+import { PlainContext } from './format';
+import { translate } from './translate';
 
 let extractLocaleFromState: (() => string) | undefined;
 export function t(messageId: string, context?: PlainContext): string {

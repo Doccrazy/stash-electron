@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from '../../actions/types';
+import { PlainContext } from './format';
 import { renderToFragment } from './helper';
-import { PlainContext, translate } from './translate';
+import { translate } from './translate';
 
 interface OwnProps {
   value: (t: (id: string, context?: PlainContext) => string) => React.ReactNode

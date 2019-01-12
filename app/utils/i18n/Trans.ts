@@ -1,7 +1,8 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../actions/types';
+import { Context } from './format';
 import { renderToFragment } from './helper';
-import { Context, translate } from './translate';
+import { translate } from './translate';
 
 interface OwnProps extends Context {
   id: string

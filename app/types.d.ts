@@ -166,7 +166,33 @@ declare module 'jdenticon' {
   export const version: string;
 }
 
+declare module 'remark' {
+  import { Processor } from 'unified';
+
+  const remark: Processor;
+  export = remark;
+}
+
+declare module 'remark-react' {
+  import { Attacher } from 'unified';
+
+  const remark2react: Attacher;
+  export = remark2react;
+}
+
 declare module 'remark-generic-extensions';
+
+declare module 'trim-lines' {
+  const trimLines: (value: any) => string;
+  export = trimLines;
+}
+
+declare module 'unist-util-map' {
+  import * as Unist from 'unist';
+
+  const map: (ast: Unist.Parent, iteratee: (node: Unist.Node, index: number, parent: Unist.Parent) => Unist.Node) => Unist.Parent;
+  export = map;
+}
 
 declare module '*.css' {
   interface IClassNames {
