@@ -11,7 +11,6 @@ import UserPermissionTable from '../containers/UserPermissionTable';
 import UsersHistoryButton from '../containers/UsersHistoryButton';
 import UsersHistoryPopup from '../containers/UsersHistoryPopup';
 import Trans from '../utils/i18n/Trans';
-import WithTrans from '../utils/i18n/WithTrans';
 import * as styles from './Users.scss';
 
 export default (({}) => (<div className={`container ${styles.users}`}>
@@ -32,9 +31,9 @@ export default (({}) => (<div className={`container ${styles.users}`}>
         <NavLink to="/users/permissions" className="btn btn-outline-primary"><Trans id="nav.users.permissions"/></NavLink>
         <NavLink to="/users/access" className="btn btn-outline-primary"><Trans id="nav.users.folderAccess"/></NavLink>
       </ButtonGroup>
-      <WithTrans value={t =>
+      <Trans>{t =>
         <UsersHistoryButton color="link" title={t('common.history')}><i className="fa fa-history"/></UsersHistoryButton>
-      }/>
+      }</Trans>
     </div>
     <div className="col text-right">
       <UserKeyActionBar />
