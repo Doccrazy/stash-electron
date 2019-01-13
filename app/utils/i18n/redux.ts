@@ -1,14 +1,16 @@
 import { PlainContext } from './format';
 import { translate } from './translate';
 
-let extractLocaleFromState: (() => string) | undefined;
+let getState: (() => any) | undefined;
+export let extractLocaleFromState: ((state: any) => string) | undefined;
 export function t(messageId: string, context?: PlainContext): string {
-  if (!extractLocaleFromState) {
-    return 'initialize using connectTranslateFunction(getState) before calling t()';
+  if (!getState || !extractLocaleFromState) {
+    return 'initialize using connectTranslateFunction(getState, mapper) before calling t()';
   }
-  return translate(extractLocaleFromState(), messageId, context);
+  return translate(extractLocaleFromState(getState()), messageId, context);
 }
 
-export function connectTranslateFunction(extractLocaleFromStateFn: () => string) {
+export function connectTranslateFunction<S>(getStateFn: () => S, extractLocaleFromStateFn: (state: S) => string) {
+  getState = getStateFn;
   extractLocaleFromState = extractLocaleFromStateFn;
 }

@@ -18,7 +18,7 @@ import installQuitHook from './store/quitHook';
 const store = configureStore();
 setTimeout(() => {
   store.dispatch(loadSettings());
-  connectTranslateFunction(() => store.getState().settings.current.locale);
+  connectTranslateFunction(store.getState, state => state.settings.current.locale);
   installLinkHandler(store.dispatch);
   registerHotkeys(store.dispatch, store.getState);
   setupInactivityLock(store.dispatch, store.getState);

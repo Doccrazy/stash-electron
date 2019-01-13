@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { RootState } from '../../actions/types';
 import { Context, PlainContext } from './format';
 import { renderToFragment } from './helper';
+import { extractLocaleFromState } from './redux';
 import { translate } from './translate';
 
 type BoundTranslate = (id: string, context?: PlainContext) => string;
@@ -27,6 +27,6 @@ const Trans = ({ locale, id, markdown, children, ...context }: Props) => {
   throw new Error('Do not nest React components in Trans component! Either pass a message id, or nest a callback taking the t function.');
 };
 
-export default connect((state: RootState, props: OwnProps) => ({
-  locale: state.settings.current.locale
+export default connect((state: any, props: OwnProps) => ({
+  locale: extractLocaleFromState ? extractLocaleFromState(state) : 'unk'
 }), () => ({}))(Trans);
