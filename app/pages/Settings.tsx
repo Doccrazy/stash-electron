@@ -9,11 +9,11 @@ import SettingLocaleChooser from '../containers/SettingLocaleChooser';
 import Trans from '../utils/i18n/Trans';
 
 export default () => (<div className="container">
-  <h1 className="my-4">Application settings</h1>
+  <h1 className="my-4"><Trans id="page.settings.title"/></h1>
 
   <Form>
     <FormGroup>
-      <Label>Recent repositories</Label>
+      <Label><Trans id="repositories"/></Label>
       <RecentRepositories />
     </FormGroup>
     <FormGroup>
@@ -21,23 +21,24 @@ export default () => (<div className="container">
       <SettingLocaleChooser/>
     </FormGroup>
     <FormGroup>
-      <Label>Inactivity lock (minutes)</Label>
+      <Label><Trans id="page.settings.autoLock"/></Label>
       <SettingField field="inactivityTimeout" type="number" min={0} step={5} />
       <small className="form-text text-muted">
-        Lock workspace after some minutes of inactivity; 0 to disable.&nbsp;
-        <i className="fa fa-warning" /> Requires an encrypted private key.
+        <Trans id="page.settings.help.autoLock" markdown/>
       </small>
     </FormGroup>
     <FormGroup>
-      <Label>UI scale / root font size (px)</Label>
+      <Label><Trans id="page.settings.scale"/></Label>
       <SettingField field="rootFontSize" type="number" min={10} max={20} />
     </FormGroup>
     <FormGroup className="text-right">
-      <SaveSettingsButton color="success">Save</SaveSettingsButton>
+      <SaveSettingsButton color="success"><Trans id="common.button.save"/></SaveSettingsButton>
     </FormGroup>
   </Form>
-  <Link to="/changelog" className="text-muted" title="Show changelog">
-    <small>{remote.app.getName()} {remote.app.getVersion()} (
-      {GIT_VERSION} built {new Date(BUILD_DATE).toLocaleString()}, running on Electron {process.versions.electron})</small>
-  </Link>
+  <Trans>{t =>
+    <Link to="/changelog" className="text-muted" title={t('page.settings.changelog.title')}>
+      <small><Trans id="page.settings.appVersion" name={remote.app.getName()} version={remote.app.getVersion()}
+                    gitVersion={GIT_VERSION} buildDate={new Date(BUILD_DATE)} electronVersion={process.versions.electron}/></small>
+    </Link>
+  }</Trans>
 </div>);

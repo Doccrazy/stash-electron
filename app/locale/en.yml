@@ -1,6 +1,9 @@
 test:
   key: "**Test message** with *Markdown {date,date,short} support* + {date,time,short} for {user}"
 common:
+  button:
+    close: Close
+    save: Save
   history: History
 nav:
   home: Browser
@@ -10,8 +13,18 @@ nav:
   users.permissions: Permissions
   users.folderAccess: Folder access
 page:
+  changelog:
+    title: Changelog
   settings:
+    title: Application settings
+    repositories: Recent repositories
     language: UI Language
+    autoLock: Inactivity lock (minutes)
+    scale: UI scale / root font size (px)
+    changelog.title: Show changelog
+    appVersion: "{name} {version} ({gitVersion} built {buildDate, date, shortTimeMedium}, running on Electron {electronVersion})"
+    help:
+      autoLock: Lock workspace after some minutes of inactivity; 0 to disable. !fa(warning) Requires an encrypted private key.
   users:
     title: Known users and keys
     info: |
