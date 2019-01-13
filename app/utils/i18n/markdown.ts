@@ -2,9 +2,9 @@ import * as React from 'react';
 import * as unified from 'unified';
 import * as remark from 'remark';
 import * as remark2react from 'remark-react';
-import * as genericExtensions from 'remark-generic-extensions';
 import * as Unist from 'unist';
 import { renderToFragment } from './helper';
+import remarkFontAwesome from './remarkFontAwesome';
 import { createIntlMessageHandler, intlMessage, REACT_ELEMENT_TYPE } from './remarkIntlMessage';
 import { Context, ReactFormatter } from './format';
 
@@ -27,24 +27,7 @@ function processor(locale: string) {
 }
 
 function createProcessor(locale: string) {
-  return remark().use(genericExtensions, {
-    elements: {
-      fa: {
-        html: {
-          tagName: 'span',
-          children: [
-            {
-              type: 'element',
-              tagName: 'i',
-              properties: {
-                className: 'fa fa-::argument::'
-              }
-            }
-          ]
-        }
-      }
-    }
-  }).use(intlMessage, { locale }).freeze();
+  return remark().use(remarkFontAwesome).use(intlMessage, { locale }).freeze();
 }
 
 let localCtx: Context | null;
