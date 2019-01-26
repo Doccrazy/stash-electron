@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { Button, FormGroup, Label, Input, Row, Col } from 'reactstrap';
+import { t } from '../../utils/i18n/redux';
+import Trans from '../../utils/i18n/Trans';
 import PasswordType, { PasswordContent } from './index';
 import PwGenerateMenu from './PwGenerateMenu';
 import { FormProps } from '../index';
@@ -57,32 +59,32 @@ export default class PasswordForm extends React.Component<FormProps<PasswordCont
   render() {
     const { name, onChangeName, value, onChange } = this.props;
     return (
-      <div>
+      <Trans>{t => <div> {/* tslint:disable-line:no-shadowed-variable */}
         <FormGroup row>
-          <Label sm={2} for="name">Title</Label>
+          <Label sm={2} for="name"><Trans id="fileType.password.field.name"/></Label>
           <Col sm={10}>
             <Input
               innerRef={this.nameInput}
               id="name"
-              placeholder="Title"
+              placeholder={t('fileType.password.field.name')}
               value={PasswordType.toDisplayName(name)}
               onChange={ev => onChangeName(PasswordType.toFileName(ev.target.value))}
             />
           </Col>
         </FormGroup>
         <FormGroup row>
-          <Label sm={2} for="username">Username</Label>
+          <Label sm={2} for="username"><Trans id="fileType.password.field.username"/></Label>
           <Col sm={10}>
             <Input
               id="username"
-              placeholder="Username"
+              placeholder={t('fileType.password.field.username')}
               value={value.username || ''}
               onChange={ev => onChange({ ...value, username: ev.target.value })}
             />
           </Col>
         </FormGroup>
         <FormGroup row>
-          <Label sm={2} for="password">Password</Label>
+          <Label sm={2} for="password"><Trans id="fileType.password.field.password"/></Label>
           <Col sm={10}>
             <Row>
               <Col>
@@ -90,53 +92,55 @@ export default class PasswordForm extends React.Component<FormProps<PasswordCont
                   innerRef={this.passwordInput}
                   type={this.props.formState.mask ? 'password' : 'text'}
                   id="password"
-                  placeholder="Password"
+                  placeholder={t('fileType.password.field.password')}
                   value={value.password || ''}
                   onChange={ev => onChange({ ...value, password: ev.target.value })}
                 />
                 <StrengthMeter value={value.password} />
               </Col>
-              <Col xs="auto"><Button outline title="Toggle password masking" tabIndex={-1} active={this.props.formState.mask} onClick={this.toggleMask}><i className="fa fa-ellipsis-h" /></Button></Col>
+              <Col xs="auto"><Button outline title={t('fileType.password.form.toggleMasking')} tabIndex={-1}
+                                     active={this.props.formState.mask} onClick={this.toggleMask}><i className="fa fa-ellipsis-h" /></Button></Col>
             </Row>
           </Col>
         </FormGroup>
         <FormGroup row>
-          <Label sm={2} for="repeatPassword">Repeat</Label>
+          <Label sm={2} for="repeatPassword"><Trans id="fileType.password.form.repeatPassword.short"/></Label>
           <Col sm={10}>
             <Row>
               <Col><Input
                 type="password"
                 id="repeatPassword"
                 className={this.props.formState.mask && (this.props.formState.repeatPassword || '') !== (value.password || '') ? 'is-invalid' : undefined}
-                placeholder={this.props.formState.mask ? 'Repeat password' : ''}
+                placeholder={this.props.formState.mask ? t('fileType.password.form.repeatPassword') : ''}
                 disabled={!this.props.formState.mask}
                 value={this.props.formState.mask ? this.props.formState.repeatPassword || '' : ''}
                 onChange={this.changeRepeatPassword}
               /></Col>
-              <Col xs="auto"><PwGenerateMenu onGenerate={this.setPassword} /></Col>
+              <Col xs="auto"><PwGenerateMenu title={t('fileType.password.form.generatePassword.title')} onGenerate={this.setPassword} /></Col>
             </Row>
           </Col>
         </FormGroup>
         <FormGroup row>
-          <Label sm={2} for="url">URL</Label>
+          <Label sm={2} for="url"><Trans id="fileType.password.field.url"/></Label>
           <Col sm={10}>
-            <Input id="url" placeholder="URL" value={value.url || ''} onChange={ev => onChange({ ...value, url: ev.target.value })} />
+            <Input id="url" placeholder={t('fileType.password.field.url')}
+                   value={value.url || ''} onChange={ev => onChange({ ...value, url: ev.target.value })} />
           </Col>
         </FormGroup>
         <FormGroup row>
-          <Label sm={2} for="description">Description</Label>
+          <Label sm={2} for="description"><Trans id="fileType.password.field.description"/></Label>
           <Col sm={10}>
             <Input
               type="textarea"
               id="description"
-              placeholder="Description"
+              placeholder={t('fileType.password.field.description')}
               style={{ height: 150 }}
               value={value.description || ''}
               onChange={ev => onChange({ ...value, description: ev.target.value })}
             />
           </Col>
         </FormGroup>
-      </div>
+      </div>}</Trans>
     );
   }
 }
@@ -145,13 +149,13 @@ PasswordForm.initFormState = content => ({ mask: true, repeatPassword: content ?
 
 PasswordForm.validate = (name, content, formState) => {
   if (name === PasswordType.toFileName('')) {
-    return 'Please enter a title.';
+    return t('fileType.password.form.validate.emptyName');
   }
   if (!content.username && !content.password) {
-    return 'Please provide either a username or a password.';
+    return t('fileType.password.form.validate.noData');
   }
   if (formState.mask && content.password !== formState.repeatPassword) {
-    return 'Password and repeated value do not match.';
+    return t('fileType.password.form.validate.wrongRepeat');
   }
   return false;
 };

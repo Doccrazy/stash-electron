@@ -6,6 +6,7 @@ import { expand } from '../actions/treeState';
 import {Dispatch, Thunk} from '../actions/types/index';
 import {toastr} from 'react-redux-toastr';
 import StashLink from '../domain/StashLink';
+import { t } from '../utils/i18n/redux';
 import {onceAfterAction} from './eventMiddleware';
 import * as Repository from '../actions/repository';
 import {hierarchy} from '../utils/repository';
@@ -25,7 +26,7 @@ export function openStashLink(link: string, silent?: boolean): Thunk<Promise<boo
       const hier = hierarchy(repository.nodes, stashLink.nodeId);
       if (!hier.length) {
         if (!silent) {
-          toastr.error('Invalid link', 'Folder does not exist');
+          toastr.error(t('utils.stashLink.error.title'), t('utils.stashLink.error.noFolder'));
         }
         return false;
       }
@@ -39,7 +40,7 @@ export function openStashLink(link: string, silent?: boolean): Thunk<Promise<boo
         await new Promise(resolve => setTimeout(resolve, 250));
         if (!await dispatch(selectEntry(stashLink.toEntryPtr()))) {
           if (!silent) {
-            toastr.error('Invalid link', 'Entry not found in folder');
+            toastr.error(t('utils.stashLink.error.title'), t('utils.stashLink.error.notFound'));
           }
         }
       }
@@ -48,7 +49,7 @@ export function openStashLink(link: string, silent?: boolean): Thunk<Promise<boo
       // failed to parse, ignore
       console.error(e);
       if (!silent) {
-        toastr.error('Invalid link', `${link}: ${e}`);
+        toastr.error(t('utils.stashLink.error.title'), `${link}: ${e}`);
       }
       return false;
     }
@@ -57,7 +58,7 @@ export function openStashLink(link: string, silent?: boolean): Thunk<Promise<boo
 
 export function copyStashLink(ptrOrNodeId: EntryPtr | string) {
   clipboard.writeText(new StashLink(ptrOrNodeId).toUri());
-  toastr.success('', `Stash link to ${typeof ptrOrNodeId === 'string' ? 'folder' : 'entry'} copied`, {timeOut: 2000});
+  toastr.success('', t('utils.stashLink.copied', {type: typeof ptrOrNodeId === 'string' ? 'folder' : 'entry'}), {timeOut: 2000});
 }
 
 export default function(dispatch: Dispatch) {

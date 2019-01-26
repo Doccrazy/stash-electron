@@ -5,6 +5,13 @@ common:
     close: Close
     save: Save
   history: History
+  specialFolder:
+    favorites: My Favorites
+    searchResults: Search results ({size})
+  WellKnownField:
+    USERNAME: Username
+    PASSWORD: Password
+    URL: URL
 nav:
   home: Browser
   settings: Settings
@@ -15,6 +22,13 @@ nav:
 page:
   changelog:
     title: Changelog
+  home:
+    hideInaccessible:
+      on: Inaccessible files/folders are hidden; click to toggle
+      off: Inaccessible files/folders are shown; click to toggle
+  noRepository:
+    loading: Loading repository...
+    notLoaded: No repository loaded, check settings.
   settings:
     title: Application settings
     repositories: Recent repositories
@@ -32,9 +46,55 @@ page:
       That does not mean they are able to decrypt any content. Their username still needs to be explicitly
       granted access on one or more folders.
 component:
+  shared:
+    strengthMeter:
+      strength: "{length} chars / {entropy} bits"
   noKeyAlert:
     keyLoaded: You do not currently have access to the selected repository. You may either add yourself to the list of
       known users and ask someone else to authorize you, or load a different key.
     keyEncrypted: "!fa(lock) Your encrypted private key is locked. {link}."
     unlockLink: Click here or press Ctrl+L to unlock with your passphrase
     noKey: No private key has been loaded or loading of the private key failed. Check !fa(user-circle) account menu.
+fileType:
+  default:
+    field:
+      name: Filename
+    panel:
+      title: No viewer available for file type.
+      button:
+        open: Open in default application
+        save: Save as...
+  password:
+    field:
+      name: Title
+      username: Username
+      password: Password
+      url: URL
+      description: Description
+    form:
+      toggleMasking: Toggle password masking
+      repeatPassword: Repeat password
+      repeatPassword.short: Repeat
+      generatePassword.title: Generate password
+      validate:
+        emptyName: Please enter a title.
+        noData: Please provide either a username or a password.
+        wrongRepeat: Password and repeated value do not match.
+    panel:
+      copyToClip: Copy to clipboard
+utils:
+  quitHook:
+    title: Pending commits
+    message: |
+      You have committed some changes, but did not push them to the remote repository. Only pushed commits are visible to others.
+
+      Are you sure you want to quit?
+    button:
+      quit: Quit anyway
+      return: Return to Stash
+  stashLink:
+    error:
+      title: Invalid link
+      noFolder: Folder does not exist
+      notFound: Entry not found in folder
+    copied: Stash link to {type, select, folder { folder } entry { entry }} copied
