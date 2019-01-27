@@ -122,7 +122,8 @@ app.on('ready', async () => {
     delay: 250,
     splashScreenOpts: {
       width: 575,
-      height: 350
+      height: 350,
+      webPreferences: {devTools: false}
     }
   };
   const splash = Splashscreen.initDynamicSplashScreen(config);

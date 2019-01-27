@@ -1,3 +1,5 @@
+import { connectRouter } from 'connected-react-router';
+import { History } from 'history';
 import { combineReducers } from 'redux';
 import { reducer as toastr } from 'react-redux-toastr';
 import { RootState } from './types';
@@ -25,7 +27,7 @@ import settings from './settings';
 import treeState from './treeState';
 import usersHistory from './usersHistory';
 
-const rootReducer = combineReducers<RootState>({
+export default (history?: History) => combineReducers<RootState>({
   authorizedUsers,
   credentials,
   currentEntry,
@@ -46,8 +48,6 @@ const rootReducer = combineReducers<RootState>({
   treeState,
   usersHistory,
 
-  router: null as any,
+  router: history ? connectRouter(history) : null as any,
   toastr
 });
-
-export default rootReducer;
