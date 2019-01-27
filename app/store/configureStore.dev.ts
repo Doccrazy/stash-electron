@@ -1,11 +1,11 @@
 import { createStore, applyMiddleware, compose, AnyAction, StoreEnhancer } from 'redux';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 import { createHashHistory } from 'history';
-import { routerMiddleware, connectRouter, routerActions } from 'connected-react-router';
+import { routerMiddleware, routerActions } from 'connected-react-router';
 import { createLogger } from 'redux-logger';
 import { RootState } from '../actions/types';
 import eventMiddleware from './eventMiddleware';
-import rootReducer from '../actions/index';
+import createRootReducer from '../actions/index';
 
 const history = createHashHistory();
 
@@ -49,7 +49,7 @@ const configureStore = (initialState?: any) => {
   const enhancer = composeEnhancers(...enhancers) as StoreEnhancer<{dispatch: ThunkDispatch<RootState, void, AnyAction>}>;
 
   // Create Store
-  const store = createStore(connectRouter(history)(rootReducer), initialState, enhancer);
+  const store = createStore(createRootReducer(history), initialState, enhancer);
 
   if ((module as any).hot) {
     (module as any).hot.accept('../actions', () =>

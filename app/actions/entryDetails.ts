@@ -66,7 +66,7 @@ async function provideDetails(state: RootState, entries: EntryPtr[]): Promise<De
 
   let entryDetails: DetailMap = Map();
   for (let i = 0; i < entries.length; i++) {
-    const details = mapValues(detailMap, d => d[i]);
+    const details: Details = mapValues(detailMap, d => d[i]) as any;
     entryDetails = entryDetails.set(entries[i], details);
   }
 

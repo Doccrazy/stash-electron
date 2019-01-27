@@ -394,7 +394,7 @@ export function revertAndPush(): Thunk<Promise<void>> {
       await accessingRepository(repoPath, async gitRepo => {
         if (resetCommitHash) {
           const lastCommitToRemove = await gitRepo.getCommit(resetCommitHash);
-          const resetToCommit = await lastCommitToRemove.parent(0);
+          const resetToCommit = await gitRepo.getCommit(lastCommitToRemove.parentId(0));
 
           await Git.Reset.reset(gitRepo, resetToCommit as any, Git.Reset.TYPE.HARD, {});
         }
