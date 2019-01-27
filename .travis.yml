@@ -1,9 +1,9 @@
 matrix:
   include:
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode9.4
       language: node_js
-      node_js: "9"
+      node_js: "10"
       env:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
@@ -62,7 +62,7 @@ script:
         -v ~/.cache/electron:/root/.cache/electron \
         -v ~/.cache/electron-builder:/root/.cache/electron-builder \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
-        electronuserland/builder:wine \
+        electronuserland/builder:wine-05.18 \
         /bin/bash -c "npm install && npm test && DISPLAY= npm run package linux win"
     else
       npm run package mac
