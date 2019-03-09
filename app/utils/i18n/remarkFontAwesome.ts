@@ -1,4 +1,4 @@
-import * as genericExtensions from 'remark-generic-extensions';
+import genericExtensions from 'remark-generic-extensions';
 import { PluggableList } from 'unified';
 
 // adds support for !fa(icon-name) syntax to remark, rendered as <i> tag

@@ -180,7 +180,12 @@ declare module 'remark-react' {
   export = remark2react;
 }
 
-declare module 'remark-generic-extensions';
+declare module 'remark-generic-extensions' {
+  import { Attacher } from 'unified';
+
+  const remarkGenericExtensions: Attacher;
+  export default remarkGenericExtensions;
+}
 
 declare module 'trim-lines' {
   const trimLines: (value: any) => string;
