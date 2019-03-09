@@ -32,7 +32,7 @@ export default (({}) => (<div className={`container ${styles.users}`}>
         <NavLink to="/users/access" className="btn btn-outline-primary"><Trans id="nav.users.folderAccess"/></NavLink>
       </ButtonGroup>
       <Trans>{t =>
-        <UsersHistoryButton color="link" title={t('common.history')}><i className="fa fa-history"/></UsersHistoryButton>
+        <UsersHistoryButton color="link" title={t('action.common.history')}><i className="fa fa-history"/></UsersHistoryButton>
       }</Trans>
     </div>
     <div className="col text-right">

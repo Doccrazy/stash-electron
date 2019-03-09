@@ -32,7 +32,7 @@ export default () => (<div className="container">
       <SettingField field="rootFontSize" type="number" min={10} max={20} />
     </FormGroup>
     <FormGroup className="text-right">
-      <SaveSettingsButton color="success"><Trans id="common.button.save"/></SaveSettingsButton>
+      <SaveSettingsButton color="success"><Trans id="action.common.save"/></SaveSettingsButton>
     </FormGroup>
   </Form>
   <Trans>{t =>

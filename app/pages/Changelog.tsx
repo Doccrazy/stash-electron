@@ -8,7 +8,7 @@ const changelogHtml = require('../../CHANGELOG.md');
 export default () => (
   <div className={`container ${styles.changelog}`}>
     <h1>
-      <Link to="/settings" className="btn btn-secondary pull-right"><Trans id="common.button.close"/></Link>
+      <Link to="/settings" className="btn btn-secondary pull-right"><Trans id="action.common.close"/></Link>
       <Trans id="page.changelog.title"/>
     </h1>
     <div className={styles.content}>

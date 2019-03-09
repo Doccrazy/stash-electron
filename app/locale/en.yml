@@ -1,10 +1,14 @@
 test:
   key: "**Test message** with *Markdown {date,date,short} support* + {date,time,short} for {user}"
 common:
-  button:
-    close: Close
-    save: Save
-  history: History
+  column:
+    author: Author
+    date: Date
+    folder: Folder
+  filter:
+    set: Filter
+    clear: Clear filter
+  loadMore: Show more ({remaining})
   specialFolder:
     favorites: My Favorites
     searchResults: Search results ({size})
@@ -12,6 +16,25 @@ common:
     USERNAME: Username
     PASSWORD: Password
     URL: URL
+action:
+  common:
+    cancel: Cancel
+    close: Close
+    delete: Delete
+    edit: Edit
+    export: Export
+    history: Show history
+    save: Save
+    shareLink: Share link
+  folder:
+    permissions: Permissions
+    addExternal: Add external files
+    import: KeePass import
+    export: KeePass export
+    rename: Rename folder
+    delete: Delete folder
+    create: New folder
+    createItem: Create item
 nav:
   home: Browser
   settings: Settings
@@ -49,6 +72,38 @@ component:
   shared:
     strengthMeter:
       strength: "{length} chars / {entropy} bits"
+  authHistoryPopup:
+    title: Authorization history {nodePath, select, _NONE {} other { for {nodePath} }}
+    column:
+      users: Users {added}/{removed}
+      users.added: added
+      users.removed: removed
+  authorizedUsersPopup:
+    title: Permissions for {nodeName}
+    status: "Authorized users{inheritedFrom, select, _NONE {} other {\xa0(inherited from {inheritedFrom})}}: {users}"
+    generalWarning: Revoking a permission usually requires changing all passwords. Be mindful who you grant access to.
+    resetWarning: "Reset to parent not possible: unauthorized."
+    button:
+      override: Override
+      resetToParent: Reset to parent
+  currentFolder:
+    namePlaceholder: Enter folder name
+  editPopup:
+    create: Create new entry
+    edit: Edit entry
+  exportPopup:
+    title: Export to KeePass database
+    info: All accessible items in the current folder will be exported into a new KeePass database.
+    backupWarning: Users and permissions will not be exported. This is not a replacement for a repository backup.
+    masterKey: Database master key
+    repeatMasterKey: Master key (repeat)
+  fileList:
+    column:
+      favorite: Fav
+      filename: Filename
+      path: Path
+      modified: Modified
+    modifiedTitle: "{date, date, shortTime} by {user, select, _NONE {} other {user}}"
   noKeyAlert:
     keyLoaded: You do not currently have access to the selected repository. You may either add yourself to the list of
       known users and ask someone else to authorize you, or load a different key.
