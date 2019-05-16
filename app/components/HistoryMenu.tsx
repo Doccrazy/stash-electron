@@ -4,6 +4,7 @@ import {  DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } fro
 import { formatDate, formatDateTime } from '../utils/format';
 import { GitCommitInfo } from '../utils/git';
 import * as styles from './HistoryMenu.scss';
+import withTrans from '../utils/i18n/withTrans';
 
 export interface Props {
   history: GitCommitInfo[],
@@ -31,9 +32,11 @@ function commitAuthor(history: GitCommitInfo[], selectedCommit?: string) {
   return '';
 }
 
-export default ({ history, selectedCommit, onSelectHistory }: Props) => <UncontrolledDropdown tag="span">
+export default withTrans<Props>('component.historyMenu')(({ t, history, selectedCommit, onSelectHistory }) => <UncontrolledDropdown tag="span">
   <DropdownToggle size="sm" color={selectedCommit ? 'primary' : 'secondary'}
-                  title={selectedCommit ? `Showing commit ${selectedCommit.substr(0, 7)} by ${commitAuthor(history, selectedCommit)}` : 'History'}
+                  title={selectedCommit
+                    ? t('.titleWithCommit', {hash: selectedCommit.substr(0, 7), author: commitAuthor(history, selectedCommit)})
+                    : t('.title')}
                   onContextMenu={ev => {
     if (selectedCommit) {
       ev.preventDefault();
@@ -50,4 +53,4 @@ export default ({ history, selectedCommit, onSelectHistory }: Props) => <Uncontr
       <div>{formatDateTime(commit.date)}</div>
     </DropdownItem>)}
   </DropdownMenu>
-</UncontrolledDropdown>;
+</UncontrolledDropdown>);

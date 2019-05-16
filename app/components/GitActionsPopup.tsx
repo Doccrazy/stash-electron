@@ -5,6 +5,8 @@ import { GitStatus } from '../actions/types/git';
 import * as styles from './GitActionsPopup.scss';
 import { formatStatusLine } from '../utils/git';
 import GitCommitsTable from './GitCommitsTable';
+import withTrans from '../utils/i18n/withTrans';
+import Trans from '../utils/i18n/Trans';
 
 export interface Props {
   open?: boolean,
@@ -27,8 +29,9 @@ function doFocus(ref: HTMLButtonElement) {
   }
 }
 
-export default ({ open, disabled, feedback, status, markedForReset, allowShowAll,
-                  onMarkReset, onPushRevert, onRefresh, onResolve, onClose, onShowAll }: Props) => {
+export default withTrans<Props>('component.gitActionsPopup')(
+  ({ t, open, disabled, feedback, status, markedForReset, allowShowAll,
+     onMarkReset, onPushRevert, onRefresh, onResolve, onClose, onShowAll }) => {
   const toReset = status.commits ? status.commits.findIndex(ci => ci.hash === markedForReset) + 1 : 0;
   const toPush = status.commitsAheadOrigin ? status.commitsAheadOrigin - toReset : 0;
   const revertClick = (commitHash: string) => {
@@ -38,38 +41,35 @@ export default ({ open, disabled, feedback, status, markedForReset, allowShowAll
   };
 
   return (<Modal size="lg" isOpen={open} toggle={() => { if (!status.conflict) { onClose(); } }}>
-    <ModalHeader toggle={() => { if (!status.conflict) { onClose(); } }}>Git repository status</ModalHeader>
+    <ModalHeader toggle={() => { if (!status.conflict) { onClose(); } }}>{t('.title')}</ModalHeader>
     <ModalBody>
       {!status.conflict && !status.error && status.upstreamName && <p>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName)}</p>}
-      {status.incomingCommits && <p className="text-success">{status.incomingCommits} new commit(s) received on last pull.</p>}
-      {status.error && <p className="text-danger">Error: {status.error}.</p>}
+      {status.incomingCommits && <p className="text-success">{t('common.git.newCommits', {incomingCommits: status.incomingCommits})}</p>}
+      {status.error && <p className="text-danger">{t('common.git.error', {error: status.error})}</p>}
       {status.conflict && <div>
-        <p className="text-danger">Your repository is in a conflicting state, possibly because remote changes could not be automatically merged.</p>
-        <p>
-          Before working with the repository, the conflict has to be resolved. Please choose either <b>Resolve using 'theirs'</b> to
-          accept the incoming change for all conflicting files (non-conflicting changes will be preserved), or <b>Pull &amp; refresh</b> if
-          you resolved the conflict manually.
-        </p>
+        <p className="text-danger">{t('.conflict.title')}</p>
+        <p><Trans id="'.conflict.text'" markdown/></p>
       </div>}
       <div style={{maxHeight: '60vh', overflowY: 'auto'}}>
         {status.commits && <GitCommitsTable commits={status.commits}
                                             rowClass={(commit, idx) => !commit.pushed && toReset > idx && 'table-danger'}
                                             rowAction={commit => !commit.pushed &&
-                                              <a href="" onClick={() => revertClick(commit.hash)}  title="Select for revert"
+                                              <a href="" onClick={() => revertClick(commit.hash)}  title={t('.action.selectRevert')}
                                                  className={cx('text-danger', styles.revert)}/>}/>}
       </div>
-      {allowShowAll && <div><a href="" onClick={onShowAll}>Show all commits</a></div>}
+      {allowShowAll && <div><a href="" onClick={onShowAll}>{t('.action.showAll')}</a></div>}
     </ModalBody>
     <ModalFooter>
       <div className="text-danger" style={{flexGrow: 1}}>{feedback}</div>
       {(!!toPush || !!toReset) && <Button innerRef={doFocus} color={toPush ? 'success' : 'danger'} onClick={onPushRevert} disabled={disabled}>
-        {!!toPush && <span><i className="fa fa-long-arrow-up" /> Push {toPush}</span>}
-        {!toPush && !!toReset && <span><i className="fa fa-undo" /> Revert {toReset}</span>}
-        {!!toPush && !!toReset && `, revert ${toReset}`} commit(s)
+        <i className={`fa fa-${toPush ? 'long-arrow-up' : 'undo'}`} />{' '}
+        {!!toPush && !!toReset && t('.action.pushRevert', { toPush, toReset })}
+        {!toReset && t('.action.push', { toPush })}
+        {!toPush && t('.action.revert', { toReset })}
       </Button>}{' '}
-      {status.conflict && <Button color="warning" onClick={onResolve} disabled={disabled}>Resolve using 'theirs'</Button>}
-      <Button color="info" onClick={onRefresh} disabled={disabled}><i className="fa fa-refresh" /> Pull &amp; refresh</Button>{' '}
-      {!status.conflict && <Button color="secondary" onClick={onClose} disabled={disabled}>Close</Button>}
+      {status.conflict && <Button color="warning" onClick={onResolve} disabled={disabled}>{t('action.git.resolveTheirs')}</Button>}
+      <Button color="info" onClick={onRefresh} disabled={disabled}><i className="fa fa-refresh" /> {t('action.git.pull')}</Button>{' '}
+      {!status.conflict && <Button color="secondary" onClick={onClose} disabled={disabled}>{t('action.common.close')}</Button>}
     </ModalFooter>
   </Modal>);
-};
+});

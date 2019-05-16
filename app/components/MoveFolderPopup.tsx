@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import PathLabel from './PathLabel';
+import withTrans from '../utils/i18n/withTrans';
+import Trans from '../utils/i18n/Trans';
 
 export interface Props {
   open?: boolean,
@@ -13,36 +15,34 @@ export interface Props {
   onClose?: () => void
 }
 
-export default ({ open, sourcePath, targetPath, canMove, canMerge, onMove, onMerge, onClose }: Props) => (
+export default withTrans<Props>('component.moveFolderPopup')(({ t, open, sourcePath, targetPath, canMove, canMerge, onMove, onMerge, onClose }) => (
   <Modal isOpen={open} toggle={onClose}>
-    <ModalHeader toggle={onClose}>Confirm {canMove || !canMerge ? 'moving' : 'merging'} folder</ModalHeader>
+    <ModalHeader toggle={onClose}>{t(`.title.${canMove || !canMerge ? 'move' : 'merge'}`)}</ModalHeader>
     <ModalBody>
-      {canMove && <p>
-        Are you sure you want to move folder <PathLabel path={sourcePath} /> to <PathLabel path={targetPath} />?<br/>
-        This may change the folder's access rights. However, overridden permissions of subfolders will not be modified.
-      </p>}
+      {canMove && <div className="mb-3">
+        <Trans id=".confirm.move" markdown source={<PathLabel path={sourcePath} />} target={<PathLabel path={targetPath} />}/>
+      </div>}
       {!canMove && <p className="text-warning">
-        Move not possible: Folder or entry already exists (try merging into subfolder instead).
+        {t('.warning.cannotMove')}
       </p>}
       {canMerge && <p>
         {canMove && <span>
-          If you choose to <em>merge</em> the folders instead, the items of <PathLabel path={sourcePath} /> will
-          be recursively integrated into <PathLabel path={targetPath} />, overwriting possible duplicates.
+          <Trans id=".info.merge" markdown source={<PathLabel path={sourcePath} />} target={<PathLabel path={targetPath} />}/>
         </span>}
         {!canMove && <span>
-          Are you sure you want to merge folder <PathLabel path={sourcePath} /> into <PathLabel path={targetPath} />?
+          <Trans id=".confirm.merge" markdown source={<PathLabel path={sourcePath} />} target={<PathLabel path={targetPath} />}/>
         </span>}
         <br/>
-        Merging requires full access to both folder trees.
+        {t('.info.mergePermissions')}
       </p>}
       {!canMerge && <p className="text-warning">
-        Merge not possible: Full access to both folder trees is required.
+        {t('.warning.cannotMerge')}
       </p>}
     </ModalBody>
     <ModalFooter>
-      {canMerge && <Button autoFocus={!canMove} color="warning" onClick={onMerge}><i className="fa fa-code-fork" /> Merge</Button>}{' '}
-      {canMove && <Button autoFocus color="primary" onClick={onMove}><i className="fa fa-arrow-left" /> Move</Button>}{' '}
-      <Button autoFocus={!canMove && !canMerge} color="secondary" onClick={onClose}>Cancel</Button>
+      {canMerge && <Button autoFocus={!canMove} color="warning" onClick={onMerge}><i className="fa fa-code-fork" /> {t('.action.merge')}</Button>}{' '}
+      {canMove && <Button autoFocus color="primary" onClick={onMove}><i className="fa fa-arrow-left" /> {t('.action.move')}</Button>}{' '}
+      <Button autoFocus={!canMove && !canMerge} color="secondary" onClick={onClose}>{t('action.common.cancel')}</Button>
     </ModalFooter>
   </Modal>
-);
+));

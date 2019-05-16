@@ -8,6 +8,11 @@ common:
   filter:
     set: Filter
     clear: Clear filter
+  git:
+    conflict: Conflicts need to be resolved.
+    newCommits: "{incomingCommits} new commit(s) received on last pull."
+    noRepository: No git repository found.
+    error: "Error: {error}."
   loadMore: Show more ({remaining})
   specialFolder:
     favorites: My Favorites
@@ -18,6 +23,7 @@ common:
     URL: URL
 action:
   common:
+    add: Add
     cancel: Cancel
     close: Close
     delete: Delete
@@ -35,6 +41,10 @@ action:
     delete: Delete folder
     create: New folder
     createItem: Create item
+  git:
+    clone: Clone
+    pull: Pull & refresh
+    resolveTheirs: Resolve using 'theirs'
 nav:
   home: Browser
   settings: Settings
@@ -104,6 +114,130 @@ component:
       path: Path
       modified: Modified
     modifiedTitle: "{date, date, shortTime} by {user, select, _NONE {} other {user}}"
+  generateKeyPopup:
+    title: Generate private key
+    info: |
+      This form allows you to generate a new RSA key for use within Stash.
+      
+      While optional, it is **highly recommended** to protect your key with a **passphrase**.  
+      This passphrase will prevent unauthorized access to your secrets, and will be required every time you open Stash.
+    strength: Strength
+    strengthBits: "{bits} bits"
+    passphrase: Passphrase
+    repeatPassphrase: Repeat passphrase
+    error:
+      emptyPassphrase: Passphrase is empty
+    action:
+      generate: Generate & Export
+  gitActionsPopup:
+    title: Git repository status
+    conflict:
+      title: Your repository is in a conflicting state, possibly because remote changes could not be automatically merged.
+      text: |
+        Before working with the repository, the conflict has to be resolved. Please choose either **Resolve using 'theirs'** to
+        accept the incoming change for all conflicting files (non-conflicting changes will be preserved), or **Pull & refresh** if
+        you resolved the conflict manually.
+    action:
+      selectRevert: Select for revert
+      showAll: Show all commits
+      push: Push {toPush} commit(s)
+      pushRevert: Push {toPush}, revert {toReset} commit(s)
+      revert: Revert {toReset} commit(s)
+  gitClonePopup:
+    title: Clone remote git repository
+    field:
+      remoteUrl: Remote repository URL
+      remoteUrl.placeholder: ex. https://git.mycompany.com/passwords.git
+      targetFolder: Target folder
+      targetFolder.dialogTitle: Select target folder
+      targetFolder.placeholder: "ex. {example}"
+      targetFolder.info: If target folder is not empty, a new subfolder will be created
+  gitCommitsTable:
+    col:
+      hash: Hash
+      message: Message
+      author: Author
+      date: Date
+    new: new
+  gitSignatureForm:
+    info: |
+      To commit your changes, a valid git signature must be configured.
+
+      Your "signature" is what identifies your git commits to others.
+      The name and email you enter here will be set as the author of your commits.
+    field:
+      name: Username or full name
+      email: Email address
+      local: Save for local repository only
+  historyMenu:
+    title: History
+    titleWithCommit: Showing commit {hash} by {author}
+  identityStatus:
+    keyInfo:
+      bits: "{bits} bits"
+      from: from
+      noKey: no private key loaded
+      locked: locked
+    unauthorized: unauthorized
+    warning:
+      notEncrypted: Key is not encrypted; workspace locking unavailable
+    error:
+      FILE: File not found or file could not be opened.
+      ENCRYPTED: Key is encrypted, but no passphrase was provided.
+      PASSPHRASE: Invalid passphrase.
+      CANCELLED: Cancelled by user.
+    action:
+      lock: Lock workspace [Ctrl+L]
+      unlock: Unlock with your passphrase [Ctrl+L]
+      loadKey: Load key from file (SSH/PEM/PPK)
+      generateKey: Generate new keypair
+  importPopup:
+    title: Import KeePass database
+    info: All items will be imported into the current folder. Existing items will be overwritten.
+    field:
+      file: File
+      masterKey: Master key (if required)
+      keyFile: Keyfile (if required)
+    action:
+      import: Import
+  loginPopup:
+    title: Enter credentials
+    info: Please enter your credentials below.
+    field:
+      username: Username
+      password: Password
+      remember: Use system keystore to remember this password
+  moveFolderPopup:
+    title:
+      move: Confirm moving folder
+      merge: Confirm merging folder
+    info:
+      merge: |
+        If you choose to *merge* the folders instead, the items of {source} will
+        be recursively integrated into {target}, overwriting possible duplicates.
+      mergePermissions: Merging requires full access to both folder trees.
+    confirm:
+      move: |
+        Are you sure you want to move folder {source} to {target}?  
+        This may change the folder's access rights. However, overridden permissions of subfolders will not be modified.
+      merge: Are you sure you want to merge folder {source} into {target}?
+    warning:
+      cannotMove: "Move not possible: Folder or entry already exists (try merging into subfolder instead)."
+      cannotMerge: "Merge not possible: Full access to both folder trees is required."
+    action:
+      move: Move
+      merge: Merge
+  recentRepositories:
+    path: "Path: {repositoryPath}"
+    action:
+      browse: Browse for local repository
+      clone: Clone remote repository
+      remove: Remove from list
+  searchField:
+    placeholder: Type to search, enter for fulltext
+    scope:
+      full: everywhere
+      limited: within folder
   noKeyAlert:
     keyLoaded: You do not currently have access to the selected repository. You may either add yourself to the list of
       known users and ask someone else to authorize you, or load a different key.

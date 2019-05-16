@@ -4,6 +4,7 @@ import * as jdenticon from 'jdenticon';
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import { SettingsMap } from '../actions/types/settings';
 import * as styles from './RecentRepositories.scss';
+import withTrans from '../utils/i18n/withTrans';
 
 export interface Props {
   repositories: SettingsMap['repositories'],
@@ -29,13 +30,14 @@ const JDentIcon = ({ hash, className }: { hash: string, className?: string }) =>
   return <div className={className} dangerouslySetInnerHTML={{__html: jdenticon.toSvg(hash, 128, 0)}}/>;
 };
 
-export default ({ repositories, repositoryPath, loading, onClick, onRemove, onBrowseLocal, onCloneRemote }: Props) => (<div className={styles.box}>
+export default withTrans<Props>('component.recentRepositories')(
+  ({ t, repositories, repositoryPath, loading, onClick, onRemove, onBrowseLocal, onCloneRemote }) => (<div className={styles.box}>
   {repositories.map(info =>
     <button key={info.path} disabled={info.path === repositoryPath || loading} onClick={() => onClick(info.path)} title={info.path}
             className={cx('btn', styles.repo, info.path === repositoryPath ? 'btn-info' : 'btn-outline-secondary',
               loading && info.path === repositoryPath && styles.loading)}>
       {!loading && info.path !== repositoryPath && <div onClick={ev => { onRemove(info.path); ev.stopPropagation(); }}
-                                                        className={styles.remove} title="Remove from list"/>}
+                                                        className={styles.remove} title={t('.action.remove')}/>}
       <JDentIcon className={styles.icon} hash={info.id || info.path}/>
       <div className={styles.title}>{info.name}</div>
     </button>
@@ -43,12 +45,12 @@ export default ({ repositories, repositoryPath, loading, onClick, onRemove, onBr
   <UncontrolledDropdown tag="span">
     <DropdownToggle disabled={loading} className={cx(styles.repo, styles.add)} color="outline-secondary">
       <div className={styles.icon}/>
-      <div className={styles.title}>Add...</div>
+      <div className={styles.title}>{t('action.common.add')}...</div>
     </DropdownToggle>
     <DropdownMenu>
-      <DropdownItem onClick={onBrowseLocal}><i className="fa fa-folder-open"/> Browse for local repository</DropdownItem>
-      <DropdownItem onClick={onCloneRemote}><i className="fa fa-git-square"/> Clone remote repository</DropdownItem>
+      <DropdownItem onClick={onBrowseLocal}><i className="fa fa-folder-open"/> {t('.action.browse')}</DropdownItem>
+      <DropdownItem onClick={onCloneRemote}><i className="fa fa-git-square"/> {t('.action.clone')}</DropdownItem>
     </DropdownMenu>
   </UncontrolledDropdown>
-  <small className="form-text text-muted selectable">{repositoryPath ? `Path: ${repositoryPath}` : <span>&nbsp;</span>}</small>
-</div>);
+  <small className="form-text text-muted selectable">{repositoryPath ? t('.path', {repositoryPath}) : <span>&nbsp;</span>}</small>
+</div>));
