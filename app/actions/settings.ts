@@ -5,6 +5,7 @@ import { KeyFormat, SettingsKeys, SettingsMap, State } from './types/settings';
 import {TypedAction, GetState, TypedThunk, OptionalAction} from './types/index';
 import {afterAction} from '../store/eventMiddleware';
 import * as path from 'path';
+import {bestSupportedLocale} from '../utils/i18n/message';
 
 export enum Actions {
   LOAD = 'settings/LOAD',
@@ -102,7 +103,7 @@ function applyDefaults(settings: Partial<SettingsMap>): SettingsMap {
     privateKeyFile: settings.privateKeyFile || (os.platform() === 'linux' ? path.join(os.homedir(), '.ssh/id_rsa') : ''),
     inactivityTimeout: Number.isNaN(inactivityTimeout) ? 15 : inactivityTimeout,
     keyDisplayFormat: Object.values(KeyFormat).includes(settings.keyDisplayFormat) ? settings.keyDisplayFormat! : KeyFormat.SHA256,
-    locale: settings.locale || remote.app.getLocale(),
+    locale: settings.locale || bestSupportedLocale(remote.app.getLocale()),
     storedLogins: settings.storedLogins || [],
     repositories: settings.repositories || [],
     privateKeys: settings.privateKeys || []

@@ -29,3 +29,12 @@ export function loadMessagesFromContext(localesContext: WebpackContext) {
 export function getLocales() {
   return Object.keys(messages);
 }
+
+export function bestSupportedLocale(userLocale?: string) {
+  if (!userLocale) {
+    return FALLBACK_LOCALE;
+  }
+  return getLocales().find(l => l.toLowerCase() === userLocale.toLowerCase())
+    || getLocales().find(l => userLocale.toLowerCase().startsWith(l.toLowerCase()))
+    || FALLBACK_LOCALE;
+}
