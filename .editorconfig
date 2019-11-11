@@ -12,6 +12,9 @@ insert_final_newline = true
 indent_style = space
 indent_size = 2
 
+[*.{yaml,yml}]
+trim_trailing_whitespace = false
+
 [.eslintrc]
 indent_style = space
 indent_size = 2

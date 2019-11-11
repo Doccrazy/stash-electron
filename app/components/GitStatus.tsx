@@ -4,6 +4,7 @@ import * as cx from 'classnames';
 import * as styles from './GitStatus.css';
 import { GitStatus } from '../actions/types/git';
 import { formatStatusLine } from '../utils/git';
+import withTrans from '../utils/i18n/withTrans';
 
 function color(status: GitStatus) {
   if (!status.initialized) {
@@ -24,7 +25,7 @@ export interface Props {
   onClick: () => void
 }
 
-export default ({ status, working, onClick }: Props) => (<span>
+export default withTrans<Props>()(({ t, status, working, onClick }) => (<span>
   <a href="" id="gitStatusLink" onClick={onClick} className={cx(color(status), styles.container)}>
     <i className={cx('fa fa-git-square', styles.git, working && styles.working, status.commitsAheadOrigin && styles.attention)} />
     {status.conflict && <span className="text-danger">!</span>}
@@ -35,9 +36,9 @@ export default ({ status, working, onClick }: Props) => (<span>
     {!status.conflict && !status.error && status.upstreamName &&
       <div>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName, true)}</div>
     }
-    {status.incomingCommits && <div className="text-success">{status.incomingCommits} new commit(s) received on last pull.</div>}
-    {!status.initialized && <div>No git repository found.</div>}
-    {status.error && <div className="text-danger">Error: {status.error}.</div>}
-    {status.conflict && <div className="text-danger">Conflicts need to be resolved.</div>}
+    {status.incomingCommits && <div className="text-success">{t('common.git.newCommits', {incomingCommits: status.incomingCommits})}</div>}
+    {!status.initialized && <div>{t('common.git.noRepository')}</div>}
+    {status.error && <div className="text-danger">{t('common.git.error', {error: status.error})}</div>}
+    {status.conflict && <div className="text-danger">{t('common.git.conflict')}</div>}
     </UncontrolledTooltip>
-</span>);
+</span>));

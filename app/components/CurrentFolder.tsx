@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as cx from 'classnames';
+import withTrans from '../utils/i18n/withTrans';
 import Breadcrumb from './Breadcrumb';
 import { hierarchy } from '../utils/repository';
 import * as styles from './CurrentFolder.scss';
@@ -25,22 +26,22 @@ export interface Props {
   onConfirmEdit: () => void
 }
 
-export default ({ nodes, currentNodeId, specialFolder, nodeEditable, editing, currentName,
-                  onSelectFolder, onRename, onChangeName, onCancelEdit, onConfirmEdit }: Props) => {
+export default withTrans<Props>('component.currentFolder')(
+  ({ t, nodes, currentNodeId, specialFolder, nodeEditable, editing, currentName, onSelectFolder, onRename, onChangeName, onCancelEdit, onConfirmEdit }) => {
   const nodeHierarchy = hierarchy(nodes, currentNodeId);
   return (<div>
     {specialFolder && <Breadcrumb
       className={cx(styles.breadcrumb, `icon-${specialFolder.icon}`)}
       nodes={[{ id: 'special', name: specialFolder.title }]}
     />}
-    {currentNodeId && !editing && <Breadcrumb className={styles.breadcrumb} nodes={nodeHierarchy}
-                                              onClick={onSelectFolder} onEdit={nodeEditable ? onRename : undefined} />}
+    {currentNodeId && !editing && <Breadcrumb className={styles.breadcrumb} nodes={nodeHierarchy} onClick={onSelectFolder} editLink={nodeEditable ?
+      <a href="" className="text-dark hover-content" title={t('action.folder.rename')} onClick={onRename}><i className="fa fa-pencil" /></a> : undefined} />}
     {currentNodeId && editing && <TextEditBox
-      placeholder="Enter folder name"
+      placeholder={t('.namePlaceholder')}
       value={currentName || ''}
       onChange={onChangeName}
       onConfirm={onConfirmEdit}
       onCancel={onCancelEdit}
     />}
   </div>);
-};
+});

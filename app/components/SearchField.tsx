@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Form, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 import * as Mousetrap from 'mousetrap';
+import Trans from '../utils/i18n/Trans';
 
 export interface Props {
   className?: string,
@@ -78,21 +79,21 @@ export default class SearchField extends React.Component<Props, {}> {
     const { className, limitedScope, value, onChange, onToggleScope, onShowResults } = this.props;
     return (<Form inline className={className}>
       <InputGroup className="w-100">
-        <Input
+        <Trans>{t => <Input
           innerRef={this.input}
-          placeholder="Type to search, enter for fulltext"
+          placeholder={t('component.searchField.placeholder')}
           value={value}
           onChange={ev => onChange(ev.target.value)}
           onKeyDown={this.keyDown}
           onFocus={() => { if (this.input.current) { this.input.current.select(); onShowResults(); } this.forceUpdate(); }}
           onBlur={() => this.forceUpdate()}
-        />
+        />}</Trans>
         <InputGroupAddon addonType="append">
           <Button
             innerRef={this.button}
             color={limitedScope && [this.input.current, this.button.current].includes(document.activeElement as any) ? 'info' : 'secondary'}
             onClick={onToggleScope}>
-            {limitedScope ? 'within folder' : 'everywhere'}
+            <Trans id={`component.searchField.scope.${limitedScope ? 'limited' : 'full'}`}/>
           </Button>
         </InputGroupAddon>
       </InputGroup>

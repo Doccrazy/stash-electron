@@ -16,6 +16,7 @@ import AddFileDropAcceptor from '../containers/AddFileDropAcceptor';
 import MoveFolderPopup from '../containers/MoveFolderPopup';
 import NoPermissionsAlert from '../containers/NoPermissionsAlert';
 import SpecialFolderLink from '../containers/SpecialFolderLink';
+import Trans from '../utils/i18n/Trans';
 import * as styles from './Home.scss';
 import NoKeyAlert from '../containers/NoKeyAlert';
 import AuthorizedUsersPopup from '../containers/AuthorizedUsersPopup';
@@ -37,8 +38,10 @@ export default class Home extends React.Component<{}, {}> {
         <ScrollWatch className={styles.sidebar} step={20} classes={['', styles.scroll1, styles.scroll2, styles.scroll3]}>
           <div className={styles.sideToolbar}>
             <span className="pull-right">
-              <SettingsToggleLink field="hideInaccessible" iconOn="eye-slash" titleOn="Inaccessible files/folders are hidden; click to toggle"
-                                  iconOff="eye" titleOff="Inaccessible files/folders are shown; click to toggle"/>
+              <Trans>
+                {t => <SettingsToggleLink field="hideInaccessible" iconOn="eye-slash" titleOn={t('page.home.hideInaccessible.on')}
+                                    iconOff="eye" titleOff={t('page.home.hideInaccessible.off')}/>}
+              </Trans>
               &nbsp;&nbsp;
               <RefreshLink />
             </span>

@@ -12,7 +12,7 @@ export default connect((state: RootState) => {
   const authParent = parentNodeId ? findAuthParent(state.repository.nodes, parentNodeId) : undefined;
   return ({
     open: !!node,
-    nodeName: node ? node.name : '',
+    nodeName: node && node.name,
     inherited: state.authorizedUsers.inherited,
     editable: !!node && (isAccessible(state.repository.nodes, node.id, state.privateKey.username)
       || (node.childIds.isEmpty() && node.entries.isEmpty())),

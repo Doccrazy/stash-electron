@@ -1,11 +1,12 @@
 import { clipboard, shell } from 'electron';
 import { toastr } from 'react-redux-toastr';
 import EntryPtr from '../domain/EntryPtr';
-import { FIELD_NAMES, Type, typeFor, WellKnownField } from '../fileType';
+import { Type, typeFor, WellKnownField } from '../fileType';
 import { afterAction } from '../store/eventMiddleware';
 import { findHistoricEntry } from '../store/selectors';
 import { sanitizeUrl } from '../utils/format';
 import { accessingRepository, createGitRepository } from '../utils/git';
+import { t } from '../utils/i18n/redux';
 import { isAccessible } from '../utils/repository';
 import * as CurrentNode from './currentNode';
 import * as PrivateKey from './privateKey';
@@ -141,7 +142,7 @@ export function copyToClipboard(field: WellKnownField, ptr?: EntryPtr): Thunk<Pr
     }
     const value = type.readField!(content, field);
     if (value) {
-      copyToClip(FIELD_NAMES[field], value);
+      copyToClip(t(`common.WellKnownField.${WellKnownField[field]}`), value);
     }
   });
 }

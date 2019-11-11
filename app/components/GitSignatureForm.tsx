@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { FormGroup, Input, Label } from 'reactstrap';
 import FocusingInput from './tools/FocusingInput';
+import withTrans from '../utils/i18n/withTrans';
+import Trans from '../utils/i18n/Trans';
 
 export interface Props {
   name?: string,
@@ -9,26 +11,22 @@ export interface Props {
   onChange: (name: string, email: string, local: boolean) => void
 }
 
-export default ({ name = '', email = '', local = false, onChange }: Props) => (<div>
+export default withTrans<Props>('.component.gitSignatureForm')(({ t, name = '', email = '', local = false, onChange }) => (<div>
   <p>
-    To commit your changes, a valid git signature must be configured.
-  </p>
-  <p>
-    Your "signature" is what identifies your git commits to others.
-    The name and email you enter here will be set as the author of your commits.
+    <Trans id=".info" markdown/>
   </p>
   <FormGroup>
-    <Label>Username or full name</Label>
+    <Label>{t('.field.name')}</Label>
     <FocusingInput focused value={name} onChange={ev => onChange(ev.target.value, email, local)} maxLength={100} />
   </FormGroup>
   <FormGroup>
-    <Label>Email address</Label>
+    <Label>{t('.field.email')}</Label>
     <Input value={email} onChange={ev => onChange(name, ev.target.value, local)} maxLength={100} />
   </FormGroup>
   <FormGroup check>
     <Label check>
       <Input type="checkbox" checked={local} onChange={ev => onChange(name, email, ev.target.checked)} />
-      Save for local repository only
+      {t('.field.local')}
     </Label>
   </FormGroup>
-</div>);
+</div>));

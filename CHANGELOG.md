@@ -1,5 +1,9 @@
 ## upcoming release (no planned release date)
 
+#### New features
+- Stash is now fully translatable, with a German translation available initially  
+  Pull requests welcome!
+
 #### Bugs fixed
 - *Show more* link in authorization history window now actually works
 

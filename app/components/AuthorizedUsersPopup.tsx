@@ -3,6 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reacts
 import {Set} from 'immutable';
 import * as cx from 'classnames';
 import Node from '../domain/Node';
+import withTrans from '../utils/i18n/withTrans';
 import * as styles from './AuthorizedUsersPopup.scss';
 
 export interface Props {
@@ -31,13 +32,14 @@ function mayToggle(username: string, currentUser: string | undefined, users: Set
   return username !== currentUser || (currentUser && !users.includes(currentUser));
 }
 
-export default ({ open, nodeName, inherited, editable, modified, currentUser, users = Set(), allUsers, authParent, onChange, onToggleInherit, onSave, onHistory, onClose }: Props) => {
+export default withTrans<Props>('component.authorizedUsersPopup')(({ t, open, nodeName = '', inherited, editable, modified, currentUser, users = Set(),
+                                                                     allUsers, authParent, onChange, onToggleInherit, onSave, onHistory, onClose }) => {
   const resolvedUsers = ((inherited && authParent ? authParent.authorizedUsers : users) || Set()).sort() as Set<string>;
   return (<Modal size="lg" isOpen={open} toggle={onClose}>
-    <ModalHeader toggle={onClose}>Permissions for {nodeName}</ModalHeader>
+    <ModalHeader toggle={onClose}>{t('.title', {nodeName})}</ModalHeader>
     <ModalBody>
       <span className="selectable">
-        Authorized users{inherited && authParent && ` (inherited from ${authParent.name})`}: {resolvedUsers.join(', ')}
+        {t('.status', { inheritedFrom: inherited && authParent ? authParent.name : '_NONE', users: resolvedUsers.join(', ') })}
       </span>
       <Form id="editForm" onSubmit={onSave}>
         <div className={styles.usersTable}>
@@ -52,18 +54,16 @@ export default ({ open, nodeName, inherited, editable, modified, currentUser, us
           ))}
         </div>
         {editable && (mayInherit(authParent, inherited, currentUser)
-          ? <Button onClick={onToggleInherit}>{inherited ? 'Override' : 'Reset to parent'}</Button>
-          : <i>Reset to parent not possible: unauthorized.</i>
+          ? <Button onClick={onToggleInherit}>{inherited ? t('.button.override') : t('.button.resetToParent')}</Button>
+          : <i>{t('.resetWarning')}</i>
         )}
       </Form>
-      {editable && <div className="mt-3">
-        <i className="fa fa-warning text-warning" /> Revoking a permission usually requires changing all passwords. Be mindful who you grant access to.
-      </div>}
+      {editable && <div className="mt-3"><i className="fa fa-warning text-warning" /> {t('.generalWarning')}</div>}
     </ModalBody>
     <ModalFooter>
-      <div style={{ flexGrow: 1 }}><Button color="link" title="Show history" onClick={onHistory}><i className="fa fa-history"/></Button></div>
-      {editable && <Button type="submit" form="editForm" color="primary" disabled={!modified}>Save</Button>}{' '}
-      <Button autoFocus form="editForm" color="secondary" onClick={onClose}>{editable ? 'Cancel' : 'Close'}</Button>
+      <div style={{ flexGrow: 1 }}><Button color="link" title={t('action.common.history')} onClick={onHistory}><i className="fa fa-history"/></Button></div>
+      {editable && <Button type="submit" form="editForm" color="primary" disabled={!modified}>{t('action.common.save')}</Button>}{' '}
+      <Button autoFocus form="editForm" color="secondary" onClick={onClose}>{editable ? t('action.common.cancel') : t('action.common.close')}</Button>
     </ModalFooter>
   </Modal>);
-};
+});

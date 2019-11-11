@@ -19,12 +19,13 @@ function generatePw(len: number, charClassIdx: number) {
 }
 
 export interface Props {
+  title: string
   onGenerate: (pw: string) => void
 }
 
-export default ({ onGenerate }: Props) => (
+export default ({ title, onGenerate }: Props) => (
   <UncontrolledDropdown tag="span">
-    <DropdownToggle title="Generate password" tabIndex={-1}>
+    <DropdownToggle title={title} tabIndex={-1}>
       <i className="fa fa-cog" />
     </DropdownToggle>
     <DropdownMenu right>

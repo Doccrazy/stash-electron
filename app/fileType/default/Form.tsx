@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { FormGroup, Label, Input, Col } from 'reactstrap';
+import Trans from '../../utils/i18n/Trans';
 import { FormProps } from '../index';
 
 export default class DefaultForm extends React.Component<FormProps<void, void>, {}> {
@@ -18,15 +19,15 @@ export default class DefaultForm extends React.Component<FormProps<void, void>, 
     return (
       <div>
         <FormGroup row>
-          <Label sm={2} for="name">Filename</Label>
+          <Label sm={2} for="name"><Trans id="fileType.default.field.name"/></Label>
           <Col sm={10}>
-            <Input
+            <Trans>{t => <Input
               innerRef={this.nameInput}
               id="name"
-              placeholder="Filename"
+              placeholder={t('fileType.default.field.name')}
               value={name}
               onChange={ev => onChangeName(ev.target.value)}
-            />
+            />}</Trans>
           </Col>
         </FormGroup>
       </div>

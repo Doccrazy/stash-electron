@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import { EntryForm } from '../fileType/Components';
+import withTrans from '../utils/i18n/withTrans';
 
 export interface Props {
   open?: boolean,
@@ -18,10 +19,11 @@ export interface Props {
   onClose: () => void
 }
 
-export default ({ open, isNew, typeId, name, parsedContent, formState, validationError, authInfo, onChangeName, onChange, onChangeState, onSave, onClose }: Props) => {
+export default withTrans<Props>('component.editPopup')(
+  ({ t, open, isNew, typeId, name, parsedContent, formState, validationError, authInfo, onChangeName, onChange, onChangeState, onSave, onClose }) => {
   return (<Modal size="lg" isOpen={open} toggle={onClose}>
     <ModalHeader toggle={onClose}>
-      {isNew ? 'Create new entry' : 'Edit entry'}
+      {isNew ? t('.create') : t('.edit')}
       {authInfo && <div style={{ fontWeight: 'normal', fontSize: 'medium' }}>{authInfo}</div>}
     </ModalHeader>
     <ModalBody>
@@ -32,8 +34,8 @@ export default ({ open, isNew, typeId, name, parsedContent, formState, validatio
     </ModalBody>
     <ModalFooter>
       <div className="text-danger" style={{ flexGrow: 1 }}>{validationError}</div>
-      <Button type="submit" form="editForm" color="primary">Save</Button>{' '}
-      <Button form="editForm" color="secondary" onClick={onClose}>Cancel</Button>
+      <Button type="submit" form="editForm" color="primary">{t('action.common.save')}</Button>{' '}
+      <Button form="editForm" color="secondary" onClick={onClose}>{t('action.common.cancel')}</Button>
     </ModalFooter>
   </Modal>);
-};
+});

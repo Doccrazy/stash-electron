@@ -3,6 +3,8 @@ import { render } from 'react-dom';
 import * as crypto from 'crypto';
 import './utils/electronNoDrop';
 import './utils/errorHandler';
+import './initLocales';
+import { connectTranslateFunction } from './utils/i18n/redux';
 import Root from './pages/Root';
 import { configureStore, history } from './store/configureStore';
 import { load as loadSettings } from './actions/settings';
@@ -16,6 +18,7 @@ import installQuitHook from './store/quitHook';
 const store = configureStore();
 setTimeout(() => {
   store.dispatch(loadSettings());
+  connectTranslateFunction(store.getState, state => state.settings.current.locale);
   installLinkHandler(store.dispatch);
   registerHotkeys(store.dispatch, store.getState);
   setupInactivityLock(store.dispatch, store.getState);

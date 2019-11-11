@@ -88,9 +88,3 @@ export enum WellKnownField {
   PASSWORD,
   URL
 }
-
-export const FIELD_NAMES = {
-  [WellKnownField.USERNAME]: 'Username',
-  [WellKnownField.PASSWORD]: 'Password',
-  [WellKnownField.URL]: 'URL'
-};

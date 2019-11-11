@@ -1,0 +1,319 @@
+test:
+  key: "**Test message** with *Markdown {date,date,short} support* + {date,time,short} for {user}"
+common:
+  column:
+    action: Action
+    author: Author
+    date: Date
+    folder: Folder
+    username: Username
+  filter:
+    set: Filter
+    clear: Clear filter
+  git:
+    conflict: Conflicts need to be resolved.
+    newCommits: "{incomingCommits} new commit(s) received on last pull."
+    noRepository: No git repository found.
+    error: "Error: {error}."
+  loadMore: Show more ({remaining})
+  specialFolder:
+    favorites: My Favorites
+    searchResults: Search results ({size})
+  WellKnownField:
+    USERNAME: Username
+    PASSWORD: Password
+    URL: URL
+  accessibleTo: "Accessible to "
+  yourself: yourself
+  andMore: "and {count} more"
+action:
+  common:
+    add: Add
+    cancel: Cancel
+    close: Close
+    delete: Delete
+    edit: Edit
+    export: Export
+    history: Show history
+    save: Save
+    shareLink: Share link
+    saveChanges: Save changes
+    revertChanges: Revert changes
+  folder:
+    permissions: Permissions
+    addExternal: Add external files
+    import: KeePass import
+    export: KeePass export
+    rename: Rename folder
+    delete: Delete folder
+    create: New folder
+    createItem: Create item
+    toggleAccess: Toggle access
+  git:
+    clone: Clone
+    pull: Pull & refresh
+    resolveTheirs: Resolve using 'theirs'
+  user:
+    add: Add user
+nav:
+  home: Browser
+  settings: Settings
+  users: Users
+  users.keys: Keys
+  users.permissions: Permissions
+  users.folderAccess: Folder access
+page:
+  changelog:
+    title: Changelog
+  home:
+    hideInaccessible:
+      on: Inaccessible files/folders are hidden; click to toggle
+      off: Inaccessible files/folders are shown; click to toggle
+  noRepository:
+    loading: Loading repository...
+    notLoaded: No repository loaded, check settings.
+  settings:
+    title: Application settings
+    repositories: Recent repositories
+    language: UI Language
+    autoLock: Inactivity lock (minutes)
+    scale: UI scale / root font size (px)
+    changelog.title: Show changelog
+    appVersion: "{name} {version} ({gitVersion} built {buildDate, date, shortTimeMedium}, running on Electron {electronVersion})"
+    help:
+      autoLock: Lock workspace after some minutes of inactivity; 0 to disable. !fa(warning) Requires an encrypted private key.
+  users:
+    title: Known users and keys
+    info: |
+      All users known to the current Stash repository are listed here.  
+      That does not mean they are able to decrypt any content. Their username still needs to be explicitly
+      granted access on one or more folders.
+component:
+  shared:
+    strengthMeter:
+      strength: "{length} chars / {entropy} bits"
+  authHistoryPopup:
+    title: Authorization history {nodePath, select, _NONE {} other { for {nodePath} }}
+    column:
+      users: Users {added}/{removed}
+      users.added: added
+      users.removed: removed
+  authorizedUsersPopup:
+    title: Permissions for {nodeName}
+    status: "Authorized users{inheritedFrom, select, _NONE {} other {\xa0(inherited from {inheritedFrom})}}: {users}"
+    generalWarning: Revoking a permission usually requires changing all passwords. Be mindful who you grant access to.
+    resetWarning: "Reset to parent not possible: unauthorized."
+    button:
+      override: Override
+      resetToParent: Reset to parent
+  currentFolder:
+    namePlaceholder: Enter folder name
+  editPopup:
+    create: Create new entry
+    edit: Edit entry
+  exportPopup:
+    title: Export to KeePass database
+    info: All accessible items in the current folder will be exported into a new KeePass database.
+    backupWarning: Users and permissions will not be exported. This is not a replacement for a repository backup.
+    masterKey: Database master key
+    repeatMasterKey: Master key (repeat)
+  fileList:
+    column:
+      favorite: Fav
+      filename: Filename
+      path: Path
+      modified: Modified
+    modifiedTitle: "{date, date, shortTime} {user, select, _NONE {} other {by {user}}}"
+  generateKeyPopup:
+    title: Generate private key
+    info: |
+      This form allows you to generate a new RSA key for use within Stash.
+      
+      While optional, it is **highly recommended** to protect your key with a **passphrase**.  
+      This passphrase will prevent unauthorized access to your secrets, and will be required every time you open Stash.
+    strength: Strength
+    strengthBits: "{bits} bits"
+    passphrase: Passphrase
+    repeatPassphrase: Repeat passphrase
+    error:
+      emptyPassphrase: Passphrase is empty
+    action:
+      generate: Generate & Export
+  gitActionsPopup:
+    title: Git repository status
+    conflict:
+      title: Your repository is in a conflicting state, possibly because remote changes could not be automatically merged.
+      text: |
+        Before working with the repository, the conflict has to be resolved. Please choose either **Resolve using 'theirs'** to
+        accept the incoming change for all conflicting files (non-conflicting changes will be preserved), or **Pull & refresh** if
+        you resolved the conflict manually.
+    action:
+      selectRevert: Select for revert
+      showAll: Show all commits
+      push: Push {toPush} commit(s)
+      pushRevert: Push {toPush}, revert {toReset} commit(s)
+      revert: Revert {toReset} commit(s)
+  gitClonePopup:
+    title: Clone remote git repository
+    field:
+      remoteUrl: Remote repository URL
+      remoteUrl.placeholder: ex. https://git.mycompany.com/passwords.git
+      targetFolder: Target folder
+      targetFolder.dialogTitle: Select target folder
+      targetFolder.placeholder: "ex. {example}"
+      targetFolder.info: If target folder is not empty, a new subfolder will be created
+  gitCommitsTable:
+    col:
+      hash: Hash
+      message: Message
+      author: Author
+      date: Date
+    new: new
+  gitSignatureForm:
+    info: |
+      To commit your changes, a valid git signature must be configured.
+
+      Your "signature" is what identifies your git commits to others.
+      The name and email you enter here will be set as the author of your commits.
+    field:
+      name: Username or full name
+      email: Email address
+      local: Save for local repository only
+  historyMenu:
+    title: History
+    titleWithCommit: Showing commit {hash} by {author}
+  identityStatus:
+    keyInfo:
+      bits: "{bits} bits"
+      from: from
+      noKey: no private key loaded
+      locked: locked
+    unauthorized: unauthorized
+    warning:
+      notEncrypted: Key is not encrypted; workspace locking unavailable
+    error:
+      FILE: File not found or file could not be opened.
+      ENCRYPTED: Key is encrypted, but no passphrase was provided.
+      PASSPHRASE: Invalid passphrase.
+      CANCELLED: Cancelled by user.
+    action:
+      lock: Lock workspace [Ctrl+L]
+      unlock: Unlock with your passphrase [Ctrl+L]
+      loadKey: Load key from file (SSH/PEM/PPK)
+      generateKey: Generate new keypair
+  importPopup:
+    title: Import KeePass database
+    info: All items will be imported into the current folder. Existing items will be overwritten.
+    field:
+      file: File
+      masterKey: Master key (if required)
+      keyFile: Keyfile (if required)
+    action:
+      import: Import
+  loginPopup:
+    title: Enter credentials
+    info: Please enter your credentials below.
+    field:
+      username: Username
+      password: Password
+      remember: Use system keystore to remember this password
+  moveFolderPopup:
+    title:
+      move: Confirm moving folder
+      merge: Confirm merging folder
+    info:
+      merge: |
+        If you choose to *merge* the folders instead, the items of {source} will
+        be recursively integrated into {target}, overwriting possible duplicates.
+      mergePermissions: Merging requires full access to both folder trees.
+    confirm:
+      move: |
+        Are you sure you want to move folder {source} to {target}?  
+        This may change the folder's access rights. However, overridden permissions of subfolders will not be modified.
+      merge: Are you sure you want to merge folder {source} into {target}?
+    warning:
+      cannotMove: "Move not possible: Folder or entry already exists (try merging into subfolder instead)."
+      cannotMerge: "Merge not possible: Full access to both folder trees is required."
+    action:
+      move: Move
+      merge: Merge
+  recentRepositories:
+    path: "Path: {repositoryPath}"
+    action:
+      browse: Browse for local repository
+      clone: Clone remote repository
+      remove: Remove from list
+  searchField:
+    placeholder: Type to search, enter for fulltext
+    scope:
+      full: everywhere
+      limited: within folder
+  noKeyAlert:
+    keyLoaded: You do not currently have access to the selected repository. You may either add yourself to the list of
+      known users and ask someone else to authorize you, or load a different key.
+    keyEncrypted: "!fa(lock) Your encrypted private key is locked. {link}."
+    unlockLink: Click here or press Ctrl+L to unlock with your passphrase
+    noKey: No private key has been loaded or loading of the private key failed. Check !fa(user-circle) account menu.
+  userKeyAddPopup:
+    title: Add user key
+    label:
+      username: Username
+      publicKey: Public key (SSH / PEM / PPK)
+      keyName: Key name (optional; used to identify the key later)
+    action:
+      usePrivateKey: Use my key
+      loadKey: Load file
+  userKeyTable:
+    column:
+      publicKey: Public key (SSH)
+      keyName: Key name
+    action:
+      copyPublicKey: Copy public key
+  userPermissionTable:
+    column:
+      folders: Authorized folders
+  usersHistoryPopup:
+    title: Known users history
+fileType:
+  default:
+    field:
+      name: Filename
+    panel:
+      title: No viewer available for file type.
+      button:
+        open: Open in default application
+        save: Save as...
+  password:
+    field:
+      name: Title
+      username: Username
+      password: Password
+      url: URL
+      description: Description
+    form:
+      toggleMasking: Toggle password masking
+      repeatPassword: Repeat password
+      repeatPassword.short: Repeat
+      generatePassword.title: Generate password
+      validate:
+        emptyName: Please enter a title.
+        noData: Please provide either a username or a password.
+        wrongRepeat: Password and repeated value do not match.
+    panel:
+      copyToClip: Copy to clipboard
+utils:
+  quitHook:
+    title: Pending commits
+    message: |
+      You have committed some changes, but did not push them to the remote repository. Only pushed commits are visible to others.
+
+      Are you sure you want to quit?
+    button:
+      quit: Quit anyway
+      return: Return to Stash
+  stashLink:
+    error:
+      title: Invalid link
+      noFolder: Folder does not exist
+      notFound: Entry not found in folder
+    copied: Stash link to {type, select, folder { folder } entry { entry }} copied

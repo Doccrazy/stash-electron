@@ -7,7 +7,7 @@ import {Details} from '../actions/types/entryDetails';
 import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';
 import { EntryNameLabel } from '../fileType/Components';
-import { formatDateTime } from '../utils/format';
+import withTrans from '../utils/i18n/withTrans';
 import { EntryDragSource } from './tools/EntryPtrDrag';
 import * as styles from './FileList.scss';
 
@@ -27,23 +27,28 @@ interface ChromeMouseEvent extends React.MouseEvent<HTMLTableRowElement> {
   detail: number  // Click index (1 for first, 2 for second)
 }
 
-const ModifiedHeader = () => (<th className="text-right">Modified</th>);
+interface ExtraColProps {
+  details?: Details
+}
 
-const ModifiedColumn = ({ details }: { details?: Details }) => details && details.modified ? <td
+const ModifiedHeader = withTrans()(({t}) => (<th className="text-right">{t('.column.modified')}</th>));
+
+const ModifiedColumn = withTrans<ExtraColProps>()(({ t, details }) => details && details.modified ? <td
   className="text-right"
   style={{ whiteSpace: 'nowrap' }}
-  title={`${details.modified.date ? formatDateTime(details.modified.date) : ''}${details.modified.user ? ` by ${details.modified.user}` : ''}`}
+  title={details.modified.date && t('.modifiedTitle', { date: details.modified.date, user: details.modified.user || '_NONE' })}
 >
-  {details.modified.date && moment(details.modified.date).fromNow()}
-</td> : <td/>;
+  {details.modified.date && moment(details.modified.date, undefined, t.locale).fromNow()}
+</td> : <td/>);
 
-export default ({ files, selectedEntry, favorites, showPath, onSelect, onEdit, onToggleFavorite, onSelectNode, onContextMenu }: Props) => (<div>
+export default withTrans<Props>('component.fileList')(
+  ({ t, files, selectedEntry, favorites, showPath, onSelect, onEdit, onToggleFavorite, onSelectNode, onContextMenu }) => <div>
   <Table hover className={`table-sm table-sticky`}>
     <thead>
       <tr>
-        <th style={{ width: '5%' }}>Fav</th>
-        <th>Filename</th>
-        {showPath && <th>Path</th>}
+        <th style={{ width: '5%' }}>{t('.column.favorite')}</th>
+        <th>{t('.column.filename')}</th>
+        {showPath && <th>{t('.column.path')}</th>}
         <ModifiedHeader />
       </tr>
     </thead>

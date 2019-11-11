@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { GitCommitInfo } from '../utils/git';
 import GitCommitsTable from './GitCommitsTable';
+import Trans from '../utils/i18n/Trans';
 
 export interface Props {
   open?: boolean
@@ -19,7 +20,7 @@ export default ({ open, title, commits, onClose }: Props) => {
       </div>
     </ModalBody>
     <ModalFooter>
-      <Button autoFocus color="secondary" onClick={onClose}>Close</Button>
+      <Button autoFocus color="secondary" onClick={onClose}><Trans id="action.common.close"/></Button>
     </ModalFooter>
   </Modal>);
 };

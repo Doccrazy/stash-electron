@@ -46,7 +46,7 @@ export default connect((state: RootState, props: Props) => {
     marked: !!state.currentNode.specialId && state.currentNode.nodeId === props.nodeId,
     nodeEditable: props.nodeId !== ROOT_ID,
     accessible,
-    authInfo: node.authorizedUsers && formatUserList('Accessible to ', node.authorizedUsers, state.privateKey.username),
+    authInfo: node.authorizedUsers && formatUserList('common.accessibleTo', node.authorizedUsers, state.privateKey.username),
     onCheckDropEntry: (ptr: EntryPtr) => ptr.nodeId !== props.nodeId && accessible,
     onCheckDropNode: (nodeId: string) => !isParentOrSelf(state.repository.nodes, nodeId, props.nodeId) && accessible
   });
