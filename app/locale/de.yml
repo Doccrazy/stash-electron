@@ -150,4 +150,4 @@ utils:
       title: Ungültiger Link
       noFolder: Ordner existiert nicht
       notFound: Eintrag ist im Ordner nicht vorhanden
-    copied: Stash-Link auf {type, select, Ordner { folder } Eintrag { entry }} kopiert
+    copied: Stash-Link auf {type, select, folder { Ordner } entry { Eintrag }} kopiert
