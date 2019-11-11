@@ -13,7 +13,7 @@ export default () => (<div className="container">
 
   <Form>
     <FormGroup>
-      <Label><Trans id="repositories"/></Label>
+      <Label><Trans id="page.settings.repositories"/></Label>
       <RecentRepositories />
     </FormGroup>
     <FormGroup>

@@ -44,7 +44,9 @@ export default withTrans<Props>('component.importPopup')(
   <ModalFooter>
     <div className={status ? STATUS_COLOR[status] : ''} style={{ flexGrow: 1 }}>{statusMessage}</div>
     {status !== 'success' && <Button color="primary" disabled={status === 'progress'} onClick={onImport}>{t('.action.import')}</Button>}{' '}
-    <Button color="secondary" disabled={status === 'progress'} onClick={onClose}>{t(status === 'success' ? 'action.close' : 'action.cancel')}</Button>
+    <Button color="secondary" disabled={status === 'progress'} onClick={onClose}>
+      {t(status === 'success' ? 'action.common.close' : 'action.common.cancel')}
+    </Button>
   </ModalFooter>
 </Modal>
 );

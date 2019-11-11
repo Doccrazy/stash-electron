@@ -3,6 +3,8 @@ import * as React from 'react';
 import * as cx from 'classnames';
 import { AccessToggle } from '../actions/types/authorizedUsers';
 import Node from '../domain/Node';
+import Trans from '../utils/i18n/Trans';
+import withTrans from '../utils/i18n/withTrans';
 import * as styles from './UserAccessTable.scss';
 
 export interface Props {
@@ -13,11 +15,11 @@ export interface Props {
   onToggle: (node: Node, username: string) => void
 }
 
-export default ({ users, authorizationNodes, modifications, currentUser, onToggle }: Props) => (
+export default withTrans<Props>()(({ users, authorizationNodes, modifications, currentUser, onToggle, t }) => (
   <table className={`table table-hover table-sm table-sticky ${styles.table}`}>
     <thead>
       <tr>
-        <th className="sticky-y">Folder</th>
+        <th className="sticky-y"><Trans id="common.column.folder"/></th>
         {users.map(username =>
           <th key={username} className={username === currentUser ? 'table-success' : ''}>{username}</th>
         )}
@@ -37,10 +39,11 @@ export default ({ users, authorizationNodes, modifications, currentUser, onToggl
             authorized = !authorized;
           }
           return <td key={username} onClick={() => { if (mayEdit) { onToggle(node, username); } }}
-                     title={mayEdit ? 'Toggle access' : ''} className={cx(auth.relevant && (authorized ? styles.authorized : styles.unauthorized),
+                     title={mayEdit ? t('action.folder.toggleAccess') : ''}
+                     className={cx(auth.relevant && (authorized ? styles.authorized : styles.unauthorized),
                       mayEdit ? 'clickable' : styles.readonly, modified && styles.modified, username === currentUser && 'table-success')}/>;
         })}
       </tr>))}
     </tbody>
   </table>
-);
+));

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
 import {FormState} from '../actions/types/keys';
+import withTrans from '../utils/i18n/withTrans';
 
 export interface Props {
   open?: boolean,
@@ -21,32 +22,34 @@ function focusOnRender(ref: HTMLInputElement) {
   }
 }
 
-export default ({ open, feedback, valid = true, value, privateKeyLoaded,
-                  onChange, onUsePrivateKey, onLoadKey, onConfirm, onClose }: Props) => (<Modal isOpen={open} toggle={onClose}>
-  <ModalHeader toggle={onClose}>Add user key</ModalHeader>
+export default withTrans<Props>('component.userKeyAddPopup')(
+  ({ t, open, feedback, valid = true, value, privateKeyLoaded,
+     onChange, onUsePrivateKey, onLoadKey, onConfirm, onClose }) => (<Modal isOpen={open} toggle={onClose}>
+  <ModalHeader toggle={onClose}>{t('.title')}</ModalHeader>
   <ModalBody>
     <Form id="editForm" onSubmit={onConfirm}>
       <FormGroup>
-        <Label>Username</Label>
-        <Input innerRef={value.username ? undefined : focusOnRender} value={value.username || ''} onChange={ev => onChange({ ...value, username: ev.target.value })} />
+        <Label>{t('common.column.username')}</Label>
+        <Input innerRef={value.username ? undefined : focusOnRender} value={value.username || ''}
+               onChange={ev => onChange({ ...value, username: ev.target.value })} />
       </FormGroup>
       <FormGroup>
         <div className="pull-right">
-          {privateKeyLoaded && <Button size="sm" onClick={onUsePrivateKey}>Use my key</Button>}{' '}
-          <Button size="sm" onClick={onLoadKey}>Load file</Button>
+          {privateKeyLoaded && <Button size="sm" onClick={onUsePrivateKey}>{t('.action.usePrivateKey')}</Button>}{' '}
+          <Button size="sm" onClick={onLoadKey}>{t('.action.loadKey')}</Button>
         </div>
-        <Label>Public key (SSH / PEM / PPK)</Label>
+        <Label>{t('.label.publicKey')}</Label>
         <Input type="textarea" value={value.publicKey || ''} onChange={ev => onChange({ ...value, publicKey: ev.target.value })} style={{ height: 160 }} />
       </FormGroup>
       <FormGroup>
-        <Label>Key name (optional; used to identify the key later)</Label>
+        <Label>{t('.label.keyName')}</Label>
         <Input value={value.keyName || ''} onChange={ev => onChange({ ...value, keyName: ev.target.value })} />
       </FormGroup>
     </Form>
   </ModalBody>
   <ModalFooter>
     <div className="text-danger" style={{ flexGrow: 1 }}>{feedback}</div>
-    <Button type="submit" form="editForm" color="success" disabled={!valid}>Add user</Button>{' '}
-    <Button color="secondary" onClick={onClose}>Cancel</Button>
+    <Button type="submit" form="editForm" color="success" disabled={!valid}>{t('action.user.add')}</Button>{' '}
+    <Button color="secondary" onClick={onClose}>{t('action.common.cancel')}</Button>
   </ModalFooter>
-</Modal>);
+</Modal>));

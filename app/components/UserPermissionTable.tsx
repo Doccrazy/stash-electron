@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { formatPath } from '../utils/format';
+import withTrans from '../utils/i18n/withTrans';
 import * as styles from './UserKeyTable.css';
 
 export interface PermissionMap  {
@@ -11,12 +12,12 @@ export interface Props {
   currentUser?: string | null
 }
 
-export default ({ permissionsByUser, currentUser }: Props) => (
+export default withTrans<Props>('component.userPermissionTable')(({ t, permissionsByUser, currentUser }) => (
   <table className={`table table-hover table-sm table-sticky ${styles.table}`}>
     <thead>
       <tr>
-        <th>Username</th>
-        <th>Authorized folders</th>
+        <th>{t('common.column.username')}</th>
+        <th>{t('.column.folders')}</th>
       </tr>
     </thead>
     <tbody>
@@ -26,4 +27,4 @@ export default ({ permissionsByUser, currentUser }: Props) => (
       </tr>))}
     </tbody>
   </table>
-);
+));

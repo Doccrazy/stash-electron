@@ -2,9 +2,11 @@ test:
   key: "**Test message** with *Markdown {date,date,short} support* + {date,time,short} for {user}"
 common:
   column:
+    action: Action
     author: Author
     date: Date
     folder: Folder
+    username: Username
   filter:
     set: Filter
     clear: Clear filter
@@ -32,6 +34,8 @@ action:
     history: Show history
     save: Save
     shareLink: Share link
+    saveChanges: Save changes
+    revertChanges: Revert changes
   folder:
     permissions: Permissions
     addExternal: Add external files
@@ -41,10 +45,13 @@ action:
     delete: Delete folder
     create: New folder
     createItem: Create item
+    toggleAccess: Toggle access
   git:
     clone: Clone
     pull: Pull & refresh
     resolveTheirs: Resolve using 'theirs'
+  user:
+    add: Add user
 nav:
   home: Browser
   settings: Settings
@@ -244,6 +251,26 @@ component:
     keyEncrypted: "!fa(lock) Your encrypted private key is locked. {link}."
     unlockLink: Click here or press Ctrl+L to unlock with your passphrase
     noKey: No private key has been loaded or loading of the private key failed. Check !fa(user-circle) account menu.
+  userKeyAddPopup:
+    title: Add user key
+    label:
+      username: Username
+      publicKey: Public key (SSH / PEM / PPK)
+      keyName: Key name (optional; used to identify the key later)
+    action:
+      usePrivateKey: Use my key
+      loadKey: Load file
+  userKeyTable:
+    column:
+      publicKey: Public key (SSH)
+      keyName: Key name
+    action:
+      copyPublicKey: Copy public key
+  userPermissionTable:
+    column:
+      folders: Authorized folders
+  usersHistoryPopup:
+    title: Known users history
 fileType:
   default:
     field:
