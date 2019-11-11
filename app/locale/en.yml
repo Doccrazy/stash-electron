@@ -120,7 +120,7 @@ component:
       filename: Filename
       path: Path
       modified: Modified
-    modifiedTitle: "{date, date, shortTime} by {user, select, _NONE {} other {user}}"
+    modifiedTitle: "{date, date, shortTime} {user, select, _NONE {} other {by {user}}}"
   generateKeyPopup:
     title: Generate private key
     info: |

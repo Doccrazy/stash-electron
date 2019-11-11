@@ -1,5 +1,57 @@
 test:
   key2: Auf Deutsch!
+common:
+  column:
+    action: Aktion
+    author: Author
+    date: Datum
+    folder: Ordner
+    username: Benutzer
+  filter:
+    set: Filter
+    clear: Filter löschen
+  git:
+    conflict: Konflikte müssen aufgelöst werden.
+    newCommits: "{incomingCommits} neue Commits bei letztem Pull empfangen."
+    noRepository: Kein Git-Repository.
+    error: "Fehler: {error}."
+  loadMore: Mehr anzeigen ({remaining})
+  specialFolder:
+    favorites: Favoriten
+    searchResults: Suchergebnisse ({size})
+  WellKnownField:
+    USERNAME: Benutzername
+    PASSWORD: Passwort
+    URL: URL
+action:
+  common:
+    add: Hinzufügen
+    cancel: Abbrechen
+    close: Schließen
+    delete: Löschen
+    edit: Bearbeiten
+    export: Exportieren
+    history: Verlauf anzeigen
+    save: Speichern
+    shareLink: Link teilen
+    saveChanges: Speichern
+    revertChanges: Änderungen verwerfen
+  folder:
+    permissions: Berechtigugen
+    addExternal: Dateien hinzufügen
+    import: KeePass-Import
+    export: KeePass-Export
+    rename: Ordner umbenennen
+    delete: Ordner löschen
+    create: Neuer Ordner
+    createItem: Eintrag anlegen
+    toggleAccess: Zugriff umschalten
+  git:
+    clone: Klonen
+    pull: Pull & aktualisieren
+    resolveTheirs: Eingehende Änderung übernehmen
+  user:
+    add: Neuer Benutzer
 nav:
   home: Browser
   settings: Einstellungen
@@ -8,5 +60,91 @@ nav:
   users.permissions: Berechtigungen
   users.folderAccess: Orderzugriff
 page:
+  changelog:
+    title: Liste der Änderungen
+  home:
+    hideInaccessible:
+      on: Inaccessible files/folders are hidden; click to toggle
+      off: Inaccessible files/folders are shown; click to toggle
+  noRepository:
+    loading: Repository wird geladen...
+    notLoaded: Kein Repository geladen, bitte Einstellunge überprüfen.
   settings:
+    title: Anwendungseinstellungen
+    repositories: Letzte Repositories
     language: Anzeigesprache
+    autoLock: Inaktivitätssperre (minuten)
+    scale: UI-Skalierung / Font-Größe (px)
+    changelog.title: Liste der Änderungen anzeigen
+    appVersion: "{name} {version} ({gitVersion} erstellt am {buildDate, date, shortTimeMedium}, basiert auf Electron {electronVersion})"
+    help:
+      autoLock: Arbeitsbereich bei Inaktivität sperren; 0 zum Deaktivieren. !fa(warning) Benötigt einen verschlüsselten privaten Schlüssel.
+  users:
+    title: Bekannte Benutzer und Schlüssel
+    info: |
+      Alle im aktuellen Stash-Repository bekannten Benutzer werden hier aufgelistet.  
+      Zusätzlich müssen Benutzer in der Verzeichnisstruktur separat berechtigt werden, damit sie in der
+      Lage sind, Inhalte zu entschlüsseln.
+component:
+  fileList:
+    column:
+      favorite: Fav
+      filename: Dateiname
+      path: Pfad
+      modified: Geändert
+    modifiedTitle: "{date, date, shortTime} {user, select, _NONE {} other {von {user}}}"
+  loginPopup:
+    title: Zugangsdaten eingeben
+    info: Bitte geben Sie Ihre Zugangsdaten ein.
+    field:
+      username: Benutzername
+      password: Passwort
+      remember: Passwort im System-Keystore speichern
+  searchField:
+    placeholder: Suchbegriff eingeben (Enter für Volltextsuche)
+    scope:
+      full: gesamt
+      limited: aktueller Ordner
+fileType:
+  default:
+    field:
+      name: Dateiname
+    panel:
+      title: Kein Anzeigemodul für Dateityp verfügbar.
+      button:
+        open: In Standardanwendung öffnen
+        save: Speichern unter...
+  password:
+    field:
+      name: Titel
+      username: Benutzername
+      password: Passwort
+      url: URL
+      description: Beschreibung
+    form:
+      toggleMasking: Maskierung umschalten
+      repeatPassword: Passwort wiederholen
+      repeatPassword.short: Wiederholen
+      generatePassword.title: Passwort generieren
+      validate:
+        emptyName: Bitte geben Sie einen Titel ein.
+        noData: Bitte geben Sie entweder einen Benutzernamen oder ein Passwort ein.
+        wrongRepeat: Passwort und Wiederholung stimmen nicht überein.
+    panel:
+      copyToClip: In Zwischenablage kopieren
+utils:
+  quitHook:
+    title: Ausstehende Commits
+    message: |
+      Sie haben Änderungen committet, aber noch nicht ins entfernte Repository gepusht. Nur gepushte Commits sind für andere Benutzer sichtbar.
+
+      Möchten Sie Stash trotzdem beenden?
+    button:
+      quit: Trotzdem beenden
+      return: Zurück zu Stash
+  stashLink:
+    error:
+      title: Ungültiger Link
+      noFolder: Ordner existiert nicht
+      notFound: Eintrag ist im Ordner nicht vorhanden
+    copied: Stash-Link auf {type, select, Ordner { folder } Eintrag { entry }} kopiert

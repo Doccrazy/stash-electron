@@ -25,7 +25,7 @@ export default (({}) => (<div className={`container ${styles.users}`}>
   <NoKeyAlert />
 
   <div className={`row ${styles.actionBar}`}>
-    <div className="col">
+    <div className="col-auto">
       <ButtonGroup>
         <NavLink to="/users" exact className="btn btn-outline-primary"><Trans id="nav.users.keys"/></NavLink>
         <NavLink to="/users/permissions" className="btn btn-outline-primary"><Trans id="nav.users.permissions"/></NavLink>
