@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as sshpk from 'sshpk';
-import { utils } from 'ssh2-streams';
+import { ParsedKey, utils } from 'ssh2-streams';
 
 function isPutty(key: string | Buffer) {
   const str = key instanceof Buffer ? key.toString('utf8') : key;
@@ -9,22 +9,16 @@ function isPutty(key: string | Buffer) {
 
 export function parsePrivateKey(key: string | Buffer, passphrase?: string) {
   if (isPutty(key)) {
-    const parsed = utils.parseKey(key);
+    const parsed = utils.parseKey(key, passphrase) as ParsedKey;
     if (parsed instanceof Error) {
+      if (parsed.message.includes('no passphrase')) {
+        throw new sshpk.KeyEncryptedError('(unnamed)', 'PPK');
+      } else if (parsed.message.includes('bad passphrase')) {
+        throw new sshpk.KeyParseError('(unnamed)', 'PPK', new Error('Incorrect passphrase'));
+      }
       throw parsed;
     }
-    if (parsed.encryption) {
-      if (passphrase) {
-        try {
-          utils.decryptKey(parsed, passphrase);
-        } catch {
-          throw new sshpk.KeyParseError('(unnamed)', 'PPK', new Error('Incorrect passphrase'));
-        }
-      } else {
-        throw new sshpk.KeyEncryptedError('(unnamed)', 'PPK');
-      }
-    }
-    return sshpk.parsePrivateKey(parsed.privateOrig, 'pem');
+    return sshpk.parsePrivateKey(parsed.getPrivatePEM(), 'pem');
   }
   return sshpk.parsePrivateKey(key, 'auto', {passphrase});
 }

@@ -23,7 +23,7 @@ export interface Props {
 }
 
 export default withTrans<Props>('component.exportPopup')(
-  ({ t, open, settings = { masterKey: '', repeatMasterKey: '' }, status, statusMessage, onChangeSettings, onExport, onClose }) => <Modal isOpen={open} toggle={onClose}>
+  ({ t, open, settings = { masterKey: '', repeatMasterKey: '' }, status, statusMessage, onChangeSettings, onExport, onClose }) => <Modal isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
   <ModalHeader toggle={onClose}>{t('.title')}</ModalHeader>
   <ModalBody>
     <Form>

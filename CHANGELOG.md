@@ -4,6 +4,9 @@
 - Stash is now fully translatable, with a German translation available initially  
   Pull requests welcome!
 
+#### Changes
+- Ubuntu 19 should now be supported, support for Ubuntu <= 14 has been dropped
+
 #### Bugs fixed
 - *Show more* link in authorization history window now actually works
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import * as unified from 'unified';
-import * as remark from 'remark';
-import * as remark2react from 'remark-react';
+import unified from 'unified';
+import remark from 'remark';
+import remark2react from 'remark-react';
 import * as Unist from 'unist';
 import { renderToFragment } from './helper';
 import remarkFontAwesome from './remarkFontAwesome';

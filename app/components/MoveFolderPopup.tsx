@@ -16,7 +16,7 @@ export interface Props {
 }
 
 export default withTrans<Props>('component.moveFolderPopup')(({ t, open, sourcePath, targetPath, canMove, canMerge, onMove, onMerge, onClose }) => (
-  <Modal isOpen={open} toggle={onClose}>
+  <Modal isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
     <ModalHeader toggle={onClose}>{t(`.title.${canMove || !canMerge ? 'move' : 'merge'}`)}</ModalHeader>
     <ModalBody>
       {canMove && <div className="mb-3">

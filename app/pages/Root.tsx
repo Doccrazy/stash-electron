@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DragDropContextProvider  } from 'react-dnd';
+import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { hot } from 'react-hot-loader';
 import { Store } from 'redux';
@@ -16,11 +16,11 @@ export interface Props {
 }
 
 const Root = ({ store, history }: Props) => <Provider store={store}>
-  <DragDropContextProvider backend={HTML5Backend}>
+  <DndProvider backend={HTML5Backend}>
     <ConnectedRouter history={history}>
       <Routes />
     </ConnectedRouter>
-  </DragDropContextProvider>
+  </DndProvider>
 </Provider>;
 
 export default hot(module)(Root);

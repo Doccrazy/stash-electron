@@ -6,7 +6,7 @@ import { Dispatch, RootState } from '../actions/types/index';
 import { ROOT_ID } from '../domain/Node';
 import { findAuthParent } from '../utils/repository';
 
-export default connect((state: RootState, props: void) => ({
+export default connect((state: RootState, props: {}) => ({
   keysAvailable: Object.keys(state.keys.byUser).length > 0,
   permissionsDefined: !!findAuthParent(state.repository.nodes, ROOT_ID)
 }), (dispatch: Dispatch, props) => ({

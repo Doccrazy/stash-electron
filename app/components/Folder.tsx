@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as cx from 'classnames';
+import cx from 'classnames';
 import { EntryDropTarget } from './tools/EntryPtrDrag';
 import { NodeDragSource, NodeDropTarget } from './tools/NodeDrag';
 import TreeNode from './TreeNode';

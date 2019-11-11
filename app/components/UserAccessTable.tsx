@@ -1,6 +1,6 @@
 import { Set } from 'immutable';
 import * as React from 'react';
-import * as cx from 'classnames';
+import cx from 'classnames';
 import { AccessToggle } from '../actions/types/authorizedUsers';
 import Node from '../domain/Node';
 import Trans from '../utils/i18n/Trans';

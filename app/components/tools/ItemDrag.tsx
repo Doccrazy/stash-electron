@@ -1,4 +1,4 @@
-import * as cx from 'classnames';
+import cx from 'classnames';
 import * as React from 'react';
 import { ConnectDragSource, ConnectDropTarget, DragSource, DropTarget, DropTargetMonitor } from 'react-dnd';
 

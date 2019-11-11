@@ -15,7 +15,7 @@ function buildAuthNodes(nodes: { [nodeId: string]: Node }) {
     .toArray();
 }
 
-export default connect((state: RootState, props: void) => ({
+export default connect((state: RootState, props: {}) => ({
   users: Object.keys(state.keys.edited).sort(),
   authorizationNodes: buildAuthNodes(state.repository.nodes),
   currentUser: state.privateKey.key ? findUser(state.keys.edited, state.privateKey.key) : null,

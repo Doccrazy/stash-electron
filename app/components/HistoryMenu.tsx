@@ -1,4 +1,4 @@
-import * as cx from 'classnames';
+import cx from 'classnames';
 import * as React from 'react';
 import {  DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import { formatDate, formatDateTime } from '../utils/format';

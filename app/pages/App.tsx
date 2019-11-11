@@ -19,7 +19,7 @@ export interface Props {
   children: React.ReactNode
 }
 
-function animatedMount(C: React.ComponentType<{}>): React.ComponentType<RouteComponentProps<any>> {
+function animatedMount(C: React.ComponentType<any>): React.ComponentType<RouteComponentProps<any>> {
   return ({ match }) => <Fade in={!!match} timeout={{ enter: 0, exit: 150 }} mountOnEnter unmountOnExit>
     <C />
   </Fade>;

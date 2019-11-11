@@ -1,4 +1,4 @@
-import * as cx from 'classnames';
+import cx from 'classnames';
 import * as React from 'react';
 
 function raf(cb: () => void): () => void {
@@ -22,7 +22,8 @@ export default class ScrollWatch extends React.Component<React.HTMLAttributes<HT
 
   element: HTMLDivElement | null;
 
-  componentWillMount() {
+  constructor(props: ScrollWatch['props']) {
+    super(props);
     this.onScroll = raf(this.onScroll.bind(this));
   }
 

@@ -3,7 +3,7 @@ import { openPopup } from '../../actions/git';
 import {RootState} from '../../actions/types/index';
 import GitInitializer, { GitInitAction } from '../../components/welcome/GitInitializer';
 
-export default connect((state: RootState, props: void) => ({
+export default connect((state: RootState, props: {}) => ({
   repoLoading: state.repository.loading,
   repoLoaded: !!state.repository.path && !state.repository.loading,
   status: state.git.status,

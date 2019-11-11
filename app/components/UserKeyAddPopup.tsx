@@ -24,7 +24,7 @@ function focusOnRender(ref: HTMLInputElement) {
 
 export default withTrans<Props>('component.userKeyAddPopup')(
   ({ t, open, feedback, valid = true, value, privateKeyLoaded,
-     onChange, onUsePrivateKey, onLoadKey, onConfirm, onClose }) => (<Modal isOpen={open} toggle={onClose}>
+     onChange, onUsePrivateKey, onLoadKey, onConfirm, onClose }) => (<Modal isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
   <ModalHeader toggle={onClose}>{t('.title')}</ModalHeader>
   <ModalBody>
     <Form id="editForm" onSubmit={onConfirm}>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import {Set} from 'immutable';
-import * as cx from 'classnames';
+import cx from 'classnames';
 import Node from '../domain/Node';
 import withTrans from '../utils/i18n/withTrans';
 import * as styles from './AuthorizedUsersPopup.scss';
@@ -35,7 +35,7 @@ function mayToggle(username: string, currentUser: string | undefined, users: Set
 export default withTrans<Props>('component.authorizedUsersPopup')(({ t, open, nodeName = '', inherited, editable, modified, currentUser, users = Set(),
                                                                      allUsers, authParent, onChange, onToggleInherit, onSave, onHistory, onClose }) => {
   const resolvedUsers = ((inherited && authParent ? authParent.authorizedUsers : users) || Set()).sort() as Set<string>;
-  return (<Modal size="lg" isOpen={open} toggle={onClose}>
+  return (<Modal size="lg" isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
     <ModalHeader toggle={onClose}>{t('.title', {nodeName})}</ModalHeader>
     <ModalBody>
       <span className="selectable">

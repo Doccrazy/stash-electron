@@ -1,4 +1,4 @@
-import * as flatten from 'flat';
+import flatten from 'flat';
 
 const FALLBACK_LOCALE = 'en';
 let messages: {[locale: string]: {[messageId: string]: string}} = {};

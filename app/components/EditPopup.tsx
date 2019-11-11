@@ -21,7 +21,7 @@ export interface Props {
 
 export default withTrans<Props>('component.editPopup')(
   ({ t, open, isNew, typeId, name, parsedContent, formState, validationError, authInfo, onChangeName, onChange, onChangeState, onSave, onClose }) => {
-  return (<Modal size="lg" isOpen={open} toggle={onClose}>
+  return (<Modal size="lg" isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
     <ModalHeader toggle={onClose}>
       {isNew ? t('.create') : t('.edit')}
       {authInfo && <div style={{ fontWeight: 'normal', fontSize: 'medium' }}>{authInfo}</div>}

@@ -4,7 +4,7 @@ import { browseForFile, changeAndSave } from '../actions/settings';
 import { Dispatch, RootState } from '../actions/types/index';
 import IdentityStatus from '../components/IdentityStatus';
 
-export default connect((state: RootState, props: void) => ({
+export default connect((state: RootState, props: {}) => ({
   username: state.privateKey.username,
   privateKeyPath: state.settings.current.privateKeyFile,
   privateKeyBits: state.privateKey.key && state.privateKey.key.toPublic().size,

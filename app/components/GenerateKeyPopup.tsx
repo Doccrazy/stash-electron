@@ -22,7 +22,7 @@ export interface Props {
 export default withTrans<Props>('component.generateKeyPopup')(
   ({ t, open, disabled, passphrase, passphraseRepeat, strength, valid = true,
      onChangePassphrase, onChangePassphraseRepeat, onChangeStrength, onGenerate, onClose }) => (
-  <Modal isOpen={open} toggle={onClose}>
+  <Modal isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
     <ModalHeader toggle={onClose}>{t('.title')}</ModalHeader>
     <ModalBody>
       <div className="mb-3">

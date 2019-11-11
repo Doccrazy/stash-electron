@@ -1,4 +1,4 @@
-import * as cx from 'classnames';
+import cx from 'classnames';
 import * as React from 'react';
 import { formatDateTime } from '../utils/format';
 import { GitCommitInfo } from '../utils/git';

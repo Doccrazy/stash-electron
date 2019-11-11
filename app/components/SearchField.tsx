@@ -24,7 +24,8 @@ export default class SearchField extends React.Component<Props, {}> {
   readonly input = React.createRef<HTMLInputElement>();
   readonly button = React.createRef<HTMLButtonElement>();
 
-  componentWillMount() {
+  constructor(props: Props) {
+    super(props);
     this.globalKeyPress = this.globalKeyPress.bind(this);
     this.keyDown = this.keyDown.bind(this);
   }

@@ -15,7 +15,8 @@ export default class PasswordForm extends React.Component<FormProps<PasswordCont
   readonly nameInput = React.createRef<HTMLInputElement>();
   readonly passwordInput = React.createRef<HTMLInputElement>();
 
-  componentWillMount() {
+  constructor(props: PasswordForm['props']) {
+    super(props);
     this.changeRepeatPassword = this.changeRepeatPassword.bind(this);
     this.setPassword = this.setPassword.bind(this);
     this.toggleMask = this.toggleMask.bind(this);

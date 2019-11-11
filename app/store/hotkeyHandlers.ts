@@ -11,7 +11,7 @@ import { openStashLink } from './stashLinkHandler';
 
 export default function registerHotkeys(dispatch: Dispatch, getState: GetState) {
   document.documentElement!.addEventListener('paste', ev => {
-    if (ev.clipboardData.types.includes('text/plain')) {
+    if (ev.clipboardData && ev.clipboardData.types.includes('text/plain')) {
       const str = ev.clipboardData.getData('text/plain');
       try {
         StashLink.parse(str);

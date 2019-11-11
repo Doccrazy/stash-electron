@@ -15,7 +15,7 @@ function m(keysAction: () => any, bulkAction: () => any): Thunk<void> {
   };
 }
 
-export default connect((state: RootState, props: void) => ({
+export default connect((state: RootState, props: {}) => ({
   modified: state.keys.modified || !state.authorizedUsers.bulkChanges.isEmpty()
 }), (dispatch: Dispatch, props) => ({
   onAdd: () => dispatch(openAdd()),

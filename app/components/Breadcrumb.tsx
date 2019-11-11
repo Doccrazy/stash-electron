@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
-import * as cx from 'classnames';
+import cx from 'classnames';
 
 export interface Props {
   nodes: { id: string, name: string }[],

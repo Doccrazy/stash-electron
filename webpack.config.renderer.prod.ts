@@ -4,10 +4,10 @@
 
 import * as path from 'path';
 import * as webpack from 'webpack';
-import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import * as HtmlWebpackPlugin from 'html-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
@@ -54,10 +54,11 @@ const rendererProdConfig: webpack.Configuration = {
           {
             loader: 'css-loader',
             options: {
-              modules: true,
-              camelCase: true,
+              localsConvention: 'camelCase',
               importLoaders: 1,
-              localIdentName: '[name]__[local]__[hash:base64:5]'
+              modules: {
+                localIdentName: '[name]__[local]__[hash:base64:5]'
+              }
             }
           }
         ]
@@ -79,10 +80,11 @@ const rendererProdConfig: webpack.Configuration = {
           {
             loader: 'css-loader',
             options: {
-              modules: true,
-              camelCase: true,
+              localsConvention: 'camelCase',
               importLoaders: 1,
-              localIdentName: '[name]__[local]__[hash:base64:5]'
+              modules: {
+                localIdentName: '[name]__[local]__[hash:base64:5]'
+              }
             }
           },
           'sass-loader'

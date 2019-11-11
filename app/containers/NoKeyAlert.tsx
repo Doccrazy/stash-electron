@@ -5,7 +5,7 @@ import { loadAndUnlockInteractive } from '../actions/privateKey';
 import { Dispatch, RootState } from '../actions/types/index';
 import Trans from '../utils/i18n/Trans';
 
-export default connect((state: RootState, props: void) => ({
+export default connect((state: RootState, props: {}) => ({
   keyLoaded: !!state.privateKey.key,
   keyEncrypted: state.privateKey.encrypted,
   loggedIn: !!state.privateKey.username

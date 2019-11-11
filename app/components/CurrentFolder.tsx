@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as cx from 'classnames';
+import cx from 'classnames';
 import withTrans from '../utils/i18n/withTrans';
 import Breadcrumb from './Breadcrumb';
 import { hierarchy } from '../utils/repository';

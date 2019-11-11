@@ -20,7 +20,7 @@ export interface Props {
 }
 
 export default withTrans<Props>('component.gitClonePopup')(({ t, open, working, valid, feedback, url, target, onChangeUrl, onChangeTarget, onClone, onClose }) => {
-  return (<Modal isOpen={open} toggle={() => { if (!working) { onClose(); } }}>
+  return (<Modal isOpen={open} toggle={() => { if (!working) { onClose(); } }} returnFocusAfterClose={false}>
     <ModalHeader toggle={() => { if (!working) { onClose(); } }}>{t('.title')}</ModalHeader>
     <ModalBody>
       <Form>

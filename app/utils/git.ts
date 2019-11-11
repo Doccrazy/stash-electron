@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import { Minimatch } from 'minimatch';
-import * as Git from 'nodegit';
+import Git from 'nodegit';
 import * as path from 'path';
 import { OrderedSet } from 'immutable';
 import * as SshPK from 'sshpk';
@@ -37,8 +37,9 @@ export function isRepository(repoPath: string) {
   return fs.existsSync(path.join(repoPath, '.git/index'));
 }
 
-export function isSignatureConfigured(repo: Git.Repository) {
-  return !!Git.Signature.default(repo) && !!(Git.Signature.default(repo).name as any)() && !!(Git.Signature.default(repo).email as any)();
+export async function isSignatureConfigured(repo: Git.Repository) {
+  const defaultSignature = await Git.Signature.default(repo);
+  return !!defaultSignature && !!defaultSignature.name() && !!defaultSignature.email();
 }
 
 /**
@@ -245,7 +246,7 @@ export async function commitAllChanges(repo: Git.Repository, message: string): P
     if (!repo.headUnborn()) {
       parents.push(await repo.getHeadCommit());
     }
-    return repo.createCommit('HEAD', repo.defaultSignature(), repo.defaultSignature(), message, oid, parents);
+    return repo.createCommit('HEAD', await repo.defaultSignature(), await repo.defaultSignature(), message, oid, parents);
   }
   return null;
 }

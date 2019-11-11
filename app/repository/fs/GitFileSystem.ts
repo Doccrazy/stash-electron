@@ -1,6 +1,6 @@
 import { Stats } from 'fs';
 import { MoveOptions } from 'fs-extra';
-import * as Git from 'nodegit';
+import Git from 'nodegit';
 import { relative, sep as pathsep } from 'path';
 import FileSystem from './FileSystem';
 

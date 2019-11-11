@@ -6,8 +6,8 @@
 
 import * as path from 'path';
 import * as webpack from 'webpack';
-import * as GitRevisionPlugin from 'git-revision-webpack-plugin';
-import * as TerserPlugin from 'terser-webpack-plugin';
+import GitRevisionPlugin from 'git-revision-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 // import { dependencies as externals } from './app/package.json';
 
 const gitRevisionPlugin = new GitRevisionPlugin();
@@ -109,7 +109,10 @@ const baseConfig: webpack.Configuration = {
       path.join(__dirname, 'app'),
       'node_modules'
     ],
-    aliasFields: []
+    aliasFields: [],
+    alias: {
+      'react-dom': '@hot-loader/react-dom'
+    }
   },
 
   plugins: [

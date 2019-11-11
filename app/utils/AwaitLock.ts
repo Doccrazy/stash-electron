@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import assert from 'assert';
 
 export default class AwaitLock {
   private acquired: boolean = false;

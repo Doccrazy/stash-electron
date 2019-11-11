@@ -1,6 +1,6 @@
 import * as Unist from 'unist';
-import * as map from 'unist-util-map';
-import * as trimLines from 'trim-lines';
+import map from 'unist-util-map';
+import trimLines from 'trim-lines';
 import { createPlainFormatter, ReactFormatter } from './format';
 
 interface Options {

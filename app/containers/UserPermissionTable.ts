@@ -20,7 +20,7 @@ function buildPermissionMap(state: RootState): PermissionMap {
   return result;
 }
 
-export default connect((state: RootState, props: void) => ({
+export default connect((state: RootState, props: {}) => ({
   permissionsByUser: buildPermissionMap(state),
   currentUser: state.privateKey.key ? findUser(state.keys.edited, state.privateKey.key) : null
 }), (dispatch: Dispatch, props) => ({

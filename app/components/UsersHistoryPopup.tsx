@@ -11,7 +11,7 @@ export interface Props {
 }
 
 export default withTrans<Props>('component.usersHistoryPopup')(({ t, open, history, onClose }) => {
-  return (<Modal size="lg" isOpen={open} toggle={onClose}>
+  return (<Modal size="lg" isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
     <ModalHeader toggle={onClose}>{t('.title')}</ModalHeader>
     <ModalBody>
       <div style={{maxHeight: '60vh', overflowY: 'auto'}}>

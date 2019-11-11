@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { UncontrolledTooltip } from 'reactstrap';
-import * as cx from 'classnames';
+import cx from 'classnames';
 import * as styles from './GitStatus.css';
 import { GitStatus } from '../actions/types/git';
 import { formatStatusLine } from '../utils/git';

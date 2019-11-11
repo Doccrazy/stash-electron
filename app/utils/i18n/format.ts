@@ -27,7 +27,7 @@ function formatToReact(fmt: IntlMessageFormat, context: Context<Extended>): Reac
       return m ? context[reactKeys[parseInt(m[1], 10)]] as React.ReactElement<any> : part;
     });
   } else {
-    return fmt.format(context);
+    return fmt.format(context as Context<Plain>);
   }
 }
 

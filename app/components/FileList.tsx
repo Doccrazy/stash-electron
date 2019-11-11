@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Table } from 'reactstrap';
-import * as cx from 'classnames';
+import cx from 'classnames';
 import { Set } from 'immutable';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Details} from '../actions/types/entryDetails';
 import EntryPtr from '../domain/EntryPtr';
 import FileListEntry from '../domain/FileListEntry';

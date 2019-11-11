@@ -6,7 +6,7 @@ import { KeyFormat } from '../actions/types/settings';
 import UserKeyTable from '../components/UserKeyTable';
 import {findUser} from '../repository/KeyProvider';
 
-export default connect((state: RootState, props: void) => ({
+export default connect((state: RootState, props: {}) => ({
   keysByUser: state.keys.edited,
   currentUser: state.privateKey.key ? findUser(state.keys.edited, state.privateKey.key) : null,
   keyFormat: state.settings.current.keyDisplayFormat

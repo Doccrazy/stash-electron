@@ -11,7 +11,7 @@
 import { app, BrowserWindow, shell, Event, nativeImage } from 'electron';
 import logger from 'electron-log';
 import { autoUpdater } from 'electron-updater';
-import * as windowStateKeeper from 'electron-window-state';
+import windowStateKeeper from 'electron-window-state';
 import * as Splashscreen from '@trodi/electron-splashscreen';
 import { URL } from 'url';
 import MenuBuilder from './menu';

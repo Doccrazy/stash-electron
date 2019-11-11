@@ -7,14 +7,14 @@
  * https://webpack.js.org/concepts/hot-module-replacement/
  */
 
-import * as HtmlWebpackPlugin from 'html-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as path from 'path';
 import * as webpack from 'webpack';
 import * as merge from 'webpack-merge';
 import { spawn } from 'child_process';
 import { omit } from 'lodash';
-import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import * as AutoDllPlugin from 'autodll-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import AutoDllPlugin from 'autodll-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import dllConfig from './webpack.config.renderer.dev.dll';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
@@ -65,11 +65,12 @@ const rendererDevConfig: webpack.Configuration = {
           {
             loader: 'css-loader',
             options: {
-              modules: true,
-              camelCase: true,
+              localsConvention: 'camelCase',
               sourceMap: true,
               importLoaders: 1,
-              localIdentName: '[name]__[local]__[hash:base64:5]'
+              modules: {
+                localIdentName: '[name]__[local]__[hash:base64:5]'
+              }
             }
           }
         ]
@@ -102,11 +103,12 @@ const rendererDevConfig: webpack.Configuration = {
           {
             loader: 'css-loader',
             options: {
-              modules: true,
-              camelCase: true,
+              localsConvention: 'camelCase',
               sourceMap: true,
               importLoaders: 1,
-              localIdentName: '[name]__[local]__[hash:base64:5]'
+              modules: {
+                localIdentName: '[name]__[local]__[hash:base64:5]'
+              }
             }
           },
           {
@@ -183,9 +185,6 @@ const rendererDevConfig: webpack.Configuration = {
       aggregateTimeout: 300,
       ignored: /node_modules/,
       poll: 100
-    },
-    historyApiFallback: {
-      disableDotRule: false
     },
     before() {
       if (process.env.START_HOT) {

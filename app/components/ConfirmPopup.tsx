@@ -18,7 +18,7 @@ function doFocus(ref: HTMLButtonElement) {
   }
 }
 
-export default ({ open, disabled, title, feedback, valid = true, children, onConfirm, onClose }: Props) => (<Modal isOpen={open} toggle={onClose}>
+export default ({ open, disabled, title, feedback, valid = true, children, onConfirm, onClose }: Props) => (<Modal isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
   <ModalHeader toggle={onClose}>{title}</ModalHeader>
   <ModalBody>
     <Form id="editForm" onSubmit={onConfirm}>

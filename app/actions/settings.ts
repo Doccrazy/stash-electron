@@ -1,6 +1,6 @@
 import * as os from 'os';
 import { remote } from 'electron';
-import * as electronSettings from 'electron-settings';
+import electronSettings from 'electron-settings';
 import { KeyFormat, SettingsKeys, SettingsMap, State } from './types/settings';
 import {TypedAction, GetState, TypedThunk, OptionalAction} from './types/index';
 import {afterAction} from '../store/eventMiddleware';
@@ -102,7 +102,7 @@ function applyDefaults(settings: Partial<SettingsMap>): SettingsMap {
     rootFontSize: Math.min(Math.max(Number.parseInt(settings.rootFontSize as any, 10) || 15, 10), 20),
     privateKeyFile: settings.privateKeyFile || (os.platform() === 'linux' ? path.join(os.homedir(), '.ssh/id_rsa') : ''),
     inactivityTimeout: Number.isNaN(inactivityTimeout) ? 15 : inactivityTimeout,
-    keyDisplayFormat: Object.values(KeyFormat).includes(settings.keyDisplayFormat) ? settings.keyDisplayFormat! : KeyFormat.SHA256,
+    keyDisplayFormat: settings.keyDisplayFormat && Object.values(KeyFormat).includes(settings.keyDisplayFormat) ? settings.keyDisplayFormat : KeyFormat.SHA256,
     locale: settings.locale || bestSupportedLocale(remote.app.getLocale()),
     storedLogins: settings.storedLogins || [],
     repositories: settings.repositories || [],

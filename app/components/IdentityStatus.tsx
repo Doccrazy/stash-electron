@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown, UncontrolledTooltip } from 'reactstrap';
-import * as cx from 'classnames';
+import cx from 'classnames';
 import { KeyError } from '../actions/types/privateKey';
 import { PrivateKeyInfo } from '../actions/types/settings';
 import * as styles from './IdentityStatus.scss';

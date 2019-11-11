@@ -12,7 +12,7 @@ export interface Props {
 }
 
 export default ({ open, title, commits, onClose }: Props) => {
-  return (<Modal size="lg" isOpen={open} toggle={onClose}>
+  return (<Modal size="lg" isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
     <ModalHeader toggle={onClose}>{title}</ModalHeader>
     <ModalBody>
       <div style={{maxHeight: '60vh', overflowY: 'auto'}}>

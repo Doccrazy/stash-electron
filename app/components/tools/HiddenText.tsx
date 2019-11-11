@@ -12,7 +12,8 @@ export default class HiddenText extends React.Component<Props, { visible: boolea
     visible: false
   };
 
-  componentWillMount() {
+  constructor(props: Props) {
+    super(props);
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
   }

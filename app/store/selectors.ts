@@ -1,5 +1,5 @@
 import { List } from 'immutable';
-import * as naturalCompare from 'natural-compare';
+import naturalCompare from 'natural-compare';
 import { getRepo } from '../actions/repository';
 import {RootState} from '../actions/types';
 import { GitHistory, OidAndName } from '../actions/types/git';

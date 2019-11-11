@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import * as cx from 'classnames';
+import cx from 'classnames';
 import { GitStatus } from '../actions/types/git';
 import * as styles from './GitActionsPopup.scss';
 import { formatStatusLine } from '../utils/git';
@@ -40,7 +40,7 @@ export default withTrans<Props>('component.gitActionsPopup')(
     }
   };
 
-  return (<Modal size="lg" isOpen={open} toggle={() => { if (!status.conflict) { onClose(); } }}>
+  return (<Modal size="lg" isOpen={open} toggle={() => { if (!status.conflict) { onClose(); } }} returnFocusAfterClose={false}>
     <ModalHeader toggle={() => { if (!status.conflict) { onClose(); } }}>{t('.title')}</ModalHeader>
     <ModalBody>
       {!status.conflict && !status.error && status.upstreamName && <p>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName)}</p>}

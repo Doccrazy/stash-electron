@@ -22,7 +22,7 @@ export interface AuthHistoryDTO extends AuthHistory {
 }
 
 export default withTrans<Props>('component.authHistoryPopup')(({ t, open, nodePath, history, filterOptions, filterNodeId, onFilter, onClose }) => {
-  return (<Modal size="lg" isOpen={open} toggle={onClose}>
+  return (<Modal size="lg" isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
     <ModalHeader toggle={onClose}>{t('.title', { nodePath: nodePath ? formatPathSpaced(nodePath) : '_NONE' })}</ModalHeader>
     <ModalBody>
       {!nodePath && <UncontrolledDropdown tag="span" className={styles.filter}>

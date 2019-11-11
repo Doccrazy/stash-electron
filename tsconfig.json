@@ -6,6 +6,7 @@
     "sourceMap": true,
     "module": "CommonJS",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "target": "es2017",
     "jsx": "react",
     "declaration": false,
@@ -13,6 +14,7 @@
     "typeRoots": [
       "./node_modules/@types"
     ],
+    "outDir": "./build/app",
 
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
