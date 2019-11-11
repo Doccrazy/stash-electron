@@ -5,7 +5,10 @@ import { contextualize, renderToFragment, withContext } from './helper';
 import { extractLocaleFromState } from './redux';
 import { translate } from './translate';
 
-export type BoundTranslate = (id: string, context?: PlainContext) => string;
+export interface BoundTranslate {
+  (id: string, context?: PlainContext): string;
+  locale?: string;
+}
 
 interface OwnProps extends Context {
   id?: string
@@ -22,6 +25,7 @@ const Trans = contextualize(({ locale, id, markdown, children, ...context }: Pro
   if (typeof children === 'function') {
     const boundTranslate: BoundTranslate = (innerId, innerContext) =>
       translate(locale, innerId.startsWith('.') ? `${id}${innerId}` : innerId, { ...(context as PlainContext), ...innerContext }, false);
+    boundTranslate.locale = locale;
     const frag = renderToFragment(children(boundTranslate));
     return id ? withContext(frag, IdContext, id) : frag;
   } else if (id && !children) {

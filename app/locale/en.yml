@@ -23,6 +23,9 @@ common:
     USERNAME: Username
     PASSWORD: Password
     URL: URL
+  accessibleTo: "Accessible to "
+  yourself: yourself
+  andMore: "and {count} more"
 action:
   common:
     add: Add

@@ -23,6 +23,9 @@ common:
     USERNAME: Benutzername
     PASSWORD: Passwort
     URL: URL
+  accessibleTo: "Zugriff erlaubt für "
+  yourself: Sie selbst
+  andMore: "und {count} weitere"
 action:
   common:
     add: Hinzufügen
@@ -64,8 +67,8 @@ page:
     title: Liste der Änderungen
   home:
     hideInaccessible:
-      on: Inaccessible files/folders are hidden; click to toggle
-      off: Inaccessible files/folders are shown; click to toggle
+      on: Nicht verfügbare Dateien/Ordner werden ausgeblendet; klicken zum Umschalten
+      off: Nicht verfügbare Dateien/Ordner werden angezeigt; klicken zum Umschalten
   noRepository:
     loading: Repository wird geladen...
     notLoaded: Kein Repository geladen, bitte Einstellunge überprüfen.

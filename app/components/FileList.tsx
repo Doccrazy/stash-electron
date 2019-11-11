@@ -38,7 +38,7 @@ const ModifiedColumn = withTrans<ExtraColProps>()(({ t, details }) => details &&
   style={{ whiteSpace: 'nowrap' }}
   title={details.modified.date && t('.modifiedTitle', { date: details.modified.date, user: details.modified.user || '_NONE' })}
 >
-  {details.modified.date && moment(details.modified.date).fromNow()}
+  {details.modified.date && moment(details.modified.date, undefined, t.locale).fromNow()}
 </td> : <td/>);
 
 export default withTrans<Props>('component.fileList')(

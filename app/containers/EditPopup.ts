@@ -15,7 +15,7 @@ export default connect((state: RootState) => {
     parsedContent: state.edit.parsedContent,
     formState: state.edit.formState || {},
     validationError: state.edit.validationError,
-    authInfo: authParent && authParent.authorizedUsers && formatUserList('Accessible to ', authParent.authorizedUsers, state.privateKey.username)
+    authInfo: authParent && authParent.authorizedUsers && formatUserList('common.accessibleTo', authParent.authorizedUsers, state.privateKey.username)
   });
 }, (dispatch: Dispatch) => ({
   onChangeName: (value: string) => dispatch(changeName(value)),
