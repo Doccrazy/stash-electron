@@ -113,8 +113,10 @@ app.on('ready', async () => {
     y: mainWindowState.y,
     backgroundColor: '#ccc',
     icon: process.platform === 'linux' ? appIcon : undefined,
-    autoHideMenuBar: true
-    // frame: false
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: true
+    }
   };
   const config: Splashscreen.Config = {
     windowOpts: mainOpts,
@@ -147,7 +149,7 @@ app.on('ready', async () => {
   // prevent internal navigation, open external links in default browser
   function handleNavigate(e: Event, url: string) {
     e.preventDefault();
-    const currentCleanedUrl = cleanUrl(e.sender.getURL());
+    const currentCleanedUrl = cleanUrl(mainWindow!.webContents.getURL());
     const newCleanedUrl = cleanUrl(url);
     if (process.env.NODE_ENV === 'development') {
       console.log('navigate', url);

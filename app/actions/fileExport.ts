@@ -58,10 +58,10 @@ export function performExport(): Thunk<Promise<void>> {
       return;
     }
 
-    const targetFile = remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
+    const targetFile = (await remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
       title: 'Save KeePass database',
       filters: [{name: 'KeePass database file', extensions: ['kdbx']}]
-    });
+    })).filePath;
     if (!targetFile) {
       return;
     }

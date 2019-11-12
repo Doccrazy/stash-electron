@@ -5,18 +5,21 @@ import OpenDialogOptions = Electron.OpenDialogOptions;
 
 function browse(title: string, folder?: boolean, filters?: OpenDialogOptions['filters'],
                 onChange?: React.ChangeEventHandler<HTMLInputElement>, onSelect?: FileInputProps['onSelect']) {
-  const selectedFiles = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+  const promise = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
     title,
     filters,
     properties: folder ? ['openDirectory'] : ['openFile', 'showHiddenFiles']
   });
 
-  if (selectedFiles && selectedFiles[0] && onChange) {
-    onChange({ target: { value: selectedFiles[0] }} as any);
-    if (onSelect) {
-      onSelect();
+  promise.then(dialogResult => {
+    const selectedFiles = dialogResult.filePaths;
+    if (selectedFiles && selectedFiles[0] && onChange) {
+      onChange({ target: { value: selectedFiles[0] }} as any);
+      if (onSelect) {
+        onSelect();
+      }
     }
-  }
+  });
 }
 
 export interface FileInputProps {
