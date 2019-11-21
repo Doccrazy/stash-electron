@@ -14,7 +14,7 @@ import {hierarchy} from '../utils/repository';
 export function openStashLink(link: string, silent?: boolean): Thunk<Promise<boolean>> {
   return async (dispatch, getState) => {
     const { repository } = getState();
-    if (repository.loading) {
+    if (!repository.path || repository.loading) {
       onceAfterAction(Repository.Actions.FINISH_LOAD, () => dispatch(openStashLink(link)));
       return true;
     }

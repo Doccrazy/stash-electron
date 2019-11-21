@@ -9,6 +9,7 @@
 
 #### Bugs fixed
 - *Show more* link in authorization history window now actually works
+- Navigating to the clicked Stash link on application start has been fixed
 
 ## v1.2.0 (2018-12-14)
 

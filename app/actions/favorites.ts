@@ -69,12 +69,15 @@ export function loadForRepo(): Thunk<Promise<void>> {
       if (parsed.favorites) {
         dispatch(set(Set(parsed.favorites.map(href => StashLink.parse(href).toEntryPtr()))));
       }
-      if (!parsed.lastSelection || !await dispatch(openStashLink(parsed.lastSelection, true))) {
+      if (!getState().currentNode.nodeId
+        && (!parsed.lastSelection || !await dispatch(openStashLink(parsed.lastSelection, true)))) {
         await dispatch(CurrentNode.select('/'));
       }
     } else {
       dispatch(set(Set()));
-      await dispatch(CurrentNode.select('/'));
+      if (!getState().currentNode.nodeId) {
+        await dispatch(CurrentNode.select('/'));
+      }
     }
   };
 }
