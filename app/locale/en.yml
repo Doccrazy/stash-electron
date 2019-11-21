@@ -217,6 +217,10 @@ component:
       username: Username
       password: Password
       remember: Use system keystore to remember this password
+    error:
+      storeCredentials:
+        title: Failed to store credentials
+        message: The system keystore could not be accessed
   moveFolderPopup:
     title:
       move: Confirm moving folder

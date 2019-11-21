@@ -113,8 +113,10 @@ app.on('ready', async () => {
     y: mainWindowState.y,
     backgroundColor: '#ccc',
     icon: process.platform === 'linux' ? appIcon : undefined,
-    autoHideMenuBar: true
-    // frame: false
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: true
+    }
   };
   const config: Splashscreen.Config = {
     windowOpts: mainOpts,
@@ -132,7 +134,14 @@ app.on('ready', async () => {
 
   mainWindowState.manage(mainWindow);
 
-  mainWindow.loadURL(process.env.DEV_SERVER_ROOT || `file://${__dirname}/dist/index.html`);
+  if (process.env.DEV_SERVER_ROOT) {
+    // workaround for https://github.com/electron/electron/issues/19554
+    setTimeout(() => {
+      mainWindow!.loadURL(process.env.DEV_SERVER_ROOT!);
+    });
+  } else {
+    mainWindow.loadFile('dist/index.html');
+  }
 
   mainWindow.once('ready-to-show', () => {
     if (!mainWindow) {
@@ -147,7 +156,7 @@ app.on('ready', async () => {
   // prevent internal navigation, open external links in default browser
   function handleNavigate(e: Event, url: string) {
     e.preventDefault();
-    const currentCleanedUrl = cleanUrl(e.sender.getURL());
+    const currentCleanedUrl = cleanUrl(mainWindow!.webContents.getURL());
     const newCleanedUrl = cleanUrl(url);
     if (process.env.NODE_ENV === 'development') {
       console.log('navigate', url);

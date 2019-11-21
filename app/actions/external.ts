@@ -16,11 +16,11 @@ export enum Actions {
 
 export function browseForAdd(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+    const files = (await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
       title: 'Select file(s) to encrypt into Stash',
       properties: ['openFile', 'multiSelections']
-    });
-    if (files) {
+    })).filePaths;
+    if (files && files.length) {
       await dispatch(addFiles(files));
     }
   };
@@ -102,10 +102,10 @@ export function browseForSaveAs(ptr?: EntryPtr): Thunk<Promise<void>> {
       return;
     }
 
-    const targetPath = remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
+    const targetPath = (await remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
       title: 'Save as *UNENCRYPTED*',
       defaultPath: ptr.entry
-    });
+    })).filePath;
     if (targetPath) {
       dispatch(saveAs(ptr, targetPath));
     }

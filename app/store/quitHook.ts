@@ -14,7 +14,7 @@ export default function installQuitHook(dispatch: Dispatch, getState: GetState) 
       evt.returnValue = false;
 
       setTimeout(() => {
-        const choice = remote.dialog.showMessageBox(remote.getCurrentWindow(), {
+        const choice = remote.dialog.showMessageBoxSync(remote.getCurrentWindow(), {
           type: 'question',
           buttons: [t('utils.quitHook.button.quit'), t('utils.quitHook.button.return')],
           defaultId: 0,

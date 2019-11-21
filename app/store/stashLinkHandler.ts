@@ -62,7 +62,7 @@ export function copyStashLink(ptrOrNodeId: EntryPtr | string) {
 }
 
 export default function(dispatch: Dispatch) {
-  ipcRenderer.on('stashLink', (event: string, message: string) => {
+  ipcRenderer.on('stashLink', (event, message: string) => {
     dispatch(openStashLink(message));
   });
 }

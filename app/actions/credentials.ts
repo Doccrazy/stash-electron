@@ -1,8 +1,9 @@
-import * as keytar from 'keytar';
+import { toastr } from 'react-redux-toastr';
 import { GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 import {Credentials, State, FormState} from './types/credentials';
 import * as Settings from './settings';
 import { onceAfterAction } from '../store/eventMiddleware';
+import { t } from '../utils/i18n/redux';
 
 export enum Actions {
   OPEN = 'credentials/OPEN',
@@ -36,6 +37,7 @@ export function clearStoredLogin(context: string): Thunk<Promise<void>> {
     try {
       dispatch(Settings.changeAndSave(SETTINGS_KEY, getState().settings.current.storedLogins.filter(ctx => ctx !== context)) as any);
 
+      const keytar = await import('keytar');
       await keytar.deletePassword(KEYTAR_SERVICE, context);
     } catch (e) {
       // failed to delete password
@@ -49,6 +51,7 @@ export function requestCredentials(context: string, title: string, text: string,
   return async (dispatch, getState) => {
     if (hasStoredLogin(getState, context)) {
       try {
+        const keytar = await import('keytar');
         const userPass = keytarDecode(await keytar.getPassword(KEYTAR_SERVICE, context));
         if (userPass && userPass.password) {
           return userPass;
@@ -110,6 +113,7 @@ export function acceptCredentials(context: string): Thunk<Promise<void>> {
     const formState = credentials.state;
     if (credentials.context && formState.savePassword && formState.password) {
       try {
+        const keytar = await import('keytar');
         await keytar.setPassword(KEYTAR_SERVICE, credentials.context, keytarEncode({
           username: formState.username,
           password: formState.password
@@ -118,6 +122,8 @@ export function acceptCredentials(context: string): Thunk<Promise<void>> {
         dispatch(Settings.changeAndSave(SETTINGS_KEY, [...getState().settings.current.storedLogins, credentials.context]) as any);
       } catch (e) {
         // failed to save password
+        toastr.error(t('component.loginPopup.error.storeCredentials.title'),
+          t('component.loginPopup.error.storeCredentials.message'));
         console.error(e);
       }
     }

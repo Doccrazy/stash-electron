@@ -103,6 +103,10 @@ component:
       username: Benutzername
       password: Passwort
       remember: Passwort im System-Keystore speichern
+    error:
+      storeCredentials:
+        title: Fehler beim Speichern der Zugangsdaten
+        message: Zugriff auf den System-Keystore fehlgeschlagen
   searchField:
     placeholder: Suchbegriff eingeben (Enter für Volltextsuche)
     scope:

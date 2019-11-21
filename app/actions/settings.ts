@@ -54,12 +54,12 @@ export function save(): Thunk<void> {
   };
 }
 
-export function browseForFolder(key: SettingsKeys, title: string, instantSave?: boolean): Thunk<void> {
-  return (dispatch, getState) => {
-    const folder = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+export function browseForFolder(key: SettingsKeys, title: string, instantSave?: boolean): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const folder = (await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
       title,
       properties: ['openDirectory']
-    });
+    })).filePaths;
 
     if (folder && folder[0]) {
       if (instantSave) {
@@ -71,13 +71,13 @@ export function browseForFolder(key: SettingsKeys, title: string, instantSave?: 
   };
 }
 
-export function browseForFile(key: SettingsKeys, title: string, filters?: { extensions: string[], name: string }[], doSave?: boolean): Thunk<void> {
-  return (dispatch, getState) => {
-    const file = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+export function browseForFile(key: SettingsKeys, title: string, filters?: { extensions: string[], name: string }[], doSave?: boolean): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const file = (await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
       title,
       filters,
       properties: ['openFile', 'showHiddenFiles']
-    });
+    })).filePaths;
 
     if (file && file[0]) {
       if (doSave) {

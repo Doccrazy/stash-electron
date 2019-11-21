@@ -166,11 +166,11 @@ export function browseLoadKey(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { keys } = getState();
 
-    const files = remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+    const files = (await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
       title: 'Select public key',
       properties: ['openFile']
-    });
-    if (files) {
+    })).filePaths;
+    if (files && files[0]) {
       const publicKey = await fs.readFile(files[0], 'utf8');
       dispatch(change({ ...keys.formState, publicKey }));
     }

@@ -5,7 +5,7 @@
   Pull requests welcome!
 
 #### Changes
-- Ubuntu 19 should now be supported, support for Ubuntu <= 14 has been dropped
+- Ubuntu 18.04 is now the minimum required version
 
 #### Bugs fixed
 - *Show more* link in authorization history window now actually works

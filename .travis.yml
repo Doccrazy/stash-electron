@@ -3,7 +3,7 @@ matrix:
     - os: osx
       osx_image: xcode9.4
       language: node_js
-      node_js: "10"
+      node_js: "12"
       env:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
@@ -62,10 +62,10 @@ script:
         -v ~/.cache/electron:/root/.cache/electron \
         -v ~/.cache/electron-builder:/root/.cache/electron-builder \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
-        electronuserland/builder:wine-05.18 \
-        /bin/bash -c "npm install && npm test && DISPLAY= npm run package linux win"
+        electronuserland/builder:wine-01.19 \
+        /bin/bash -c 'export NODE_VERSION=12.13.0 && curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz -C /usr/local --strip-components=1 && yarn install && yarn test && DISPLAY= yarn run package linux win'
     else
-      npm run package mac
+      yarn run package mac
     fi
 
 after_success:

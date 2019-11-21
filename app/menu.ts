@@ -46,7 +46,7 @@ export default class MenuBuilder {
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         { label: 'Hide Stash', accelerator: 'Command+H', role: 'hide' },
-        { label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideothers' },
+        { label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideOthers' },
         { label: 'Show All', role: 'unhide' },
         { type: 'separator' },
         { label: 'Quit', accelerator: 'Command+Q', click: () => { app.quit(); } }
