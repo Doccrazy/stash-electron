@@ -134,7 +134,14 @@ app.on('ready', async () => {
 
   mainWindowState.manage(mainWindow);
 
-  mainWindow.loadURL(process.env.DEV_SERVER_ROOT || `file://${__dirname}/dist/index.html`);
+  if (process.env.DEV_SERVER_ROOT) {
+    // workaround for https://github.com/electron/electron/issues/19554
+    setTimeout(() => {
+      mainWindow!.loadURL(process.env.DEV_SERVER_ROOT!);
+    });
+  } else {
+    mainWindow.loadFile('dist/index.html');
+  }
 
   mainWindow.once('ready-to-show', () => {
     if (!mainWindow) {
