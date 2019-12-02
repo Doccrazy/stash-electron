@@ -2,25 +2,24 @@ import * as crypto from 'crypto';
 import * as sshpk from 'sshpk';
 import { ParsedKey, utils } from 'ssh2-streams';
 
-function isPutty(key: string | Buffer) {
-  const str = key instanceof Buffer ? key.toString('utf8') : key;
-  return str.startsWith('PuTTY-User-Key-File-2');
-}
-
 export function parsePrivateKey(key: string | Buffer, passphrase?: string) {
-  if (isPutty(key)) {
-    const parsed = utils.parseKey(key, passphrase) as ParsedKey;
-    if (parsed instanceof Error) {
-      if (parsed.message.includes('no passphrase')) {
-        throw new sshpk.KeyEncryptedError('(unnamed)', 'PPK');
-      } else if (parsed.message.includes('bad passphrase')) {
-        throw new sshpk.KeyParseError('(unnamed)', 'PPK', new Error('Incorrect passphrase'));
-      }
-      throw parsed;
-    }
-    return sshpk.parsePrivateKey(parsed.getPrivatePEM(), 'pem');
+  let parsed = utils.parseKey(key, passphrase);
+  if (Array.isArray(parsed)) {
+    parsed = parsed[0] as ParsedKey;
   }
-  return sshpk.parsePrivateKey(key, 'auto', {passphrase});
+  if (parsed instanceof Error) {
+    if (parsed.message.toLowerCase().includes('no passphrase')) {
+      throw new sshpk.KeyEncryptedError('(unnamed)', 'RSA');
+    } else if (parsed.message.toLowerCase().includes('bad passphrase')) {
+      throw new sshpk.KeyParseError('(unnamed)', 'RSA', new Error('Incorrect passphrase'));
+    }
+    throw parsed;
+  }
+  const privatePem = parsed.getPrivatePEM();
+  if (!privatePem) {
+    throw new sshpk.KeyParseError('(unnamed)', parsed.type, new Error('key is not a private key'));
+  }
+  return sshpk.parsePrivateKey(privatePem, 'pem');
 }
 
 export function parseKey(key: string | Buffer, passphrase?: string) {
