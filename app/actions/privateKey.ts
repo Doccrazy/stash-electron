@@ -9,7 +9,7 @@ import {KeyError, State} from './types/privateKey';
 import {afterAction} from '../store/eventMiddleware';
 import * as Settings from './settings';
 import { requestCredentials, acceptCredentials, rejectCredentials, clearStoredLogin } from './credentials';
-import { generateRSAKeyPKCS8, parsePrivateKey, toPEM } from '../utils/rsa';
+import {generateRSAKeyPKCS8, parsePrivateKey, testPrivateKey, toPEM} from '../utils/rsa';
 import * as Keys from './keys';
 import * as Repository from './repository';
 import {findUser} from '../repository/KeyProvider';
@@ -71,6 +71,7 @@ export function load(filename: string, passphrase?: string): Thunk<Promise<void>
 
     try {
       const privateKey = parsePrivateKey(keyData, passphrase);
+      testPrivateKey(privateKey);
       console.log('key size => %d bits', privateKey.toPublic().size);
 
       dispatch({

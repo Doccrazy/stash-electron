@@ -107,3 +107,11 @@ function deriveKey(password: string, iv: Buffer) {
     .update(iv.slice(0, 8))  // PKCS5 salt length
     .digest();
 }
+
+/**
+ * Even though a private key loads and decrypts correctly, it may still be rejected by OpenSSL.
+ * @throws Error if the key fails to load into OpenSSL
+ */
+export function testPrivateKey(key: sshpk.PrivateKey) {
+  crypto.createPrivateKey(key.toBuffer('pem', null).toString());
+}
