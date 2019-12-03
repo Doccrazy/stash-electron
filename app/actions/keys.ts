@@ -192,7 +192,7 @@ export function loadPrivateKey(): Thunk<void> {
 export function copyToClipboard(username: string): Thunk<void> {
   return (dispatch, getState) => {
     const { keys } = getState();
-    clipboard.writeText(keys.byUser[username].toString('ssh'));
+    clipboard.writeText(keys.edited[username].toString('ssh'));
     toastr.success('', `Public key of ${username} copied to clipboard`, { timeOut: 2000 });
   };
 }
