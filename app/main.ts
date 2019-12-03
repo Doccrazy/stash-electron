@@ -157,13 +157,18 @@ app.on('ready', async () => {
   function handleNavigate(e: Event, url: string) {
     e.preventDefault();
     const currentCleanedUrl = cleanUrl(mainWindow!.webContents.getURL());
-    const newCleanedUrl = cleanUrl(url);
-    if (process.env.NODE_ENV === 'development') {
-      console.log('navigate', url);
-    }
-    if (currentCleanedUrl !== newCleanedUrl) {
-      // external link
-      shell.openExternal(url);
+    try {
+      const newCleanedUrl = cleanUrl(url);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('navigate', url);
+      }
+      if (currentCleanedUrl !== newCleanedUrl) {
+        // external link
+        shell.openExternal(url);
+      }
+    } catch (err) {
+      // invalid url
+      console.error(err);
     }
   }
   mainWindow.webContents.on('will-navigate', handleNavigate);
