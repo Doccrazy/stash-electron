@@ -11,6 +11,7 @@
 - *Show more* link in authorization history window now actually works
 - Navigating to the clicked Stash link on application start has been fixed
 - On multi-monitor setups, the window should no longer open on a disconnected screen
+- Errors on push due to failed remote hooks are no longer ignored
 
 ## v1.2.0 (2018-12-14)
 

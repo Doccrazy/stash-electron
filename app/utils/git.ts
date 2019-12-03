@@ -191,12 +191,21 @@ export async function fetchWithRetry(repo: Git.Repository, remote: string, crede
 
 export async function pushWithRetry(repo: Git.Repository, remote: string, credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) {
   const gitRemote = await repo.getRemote(remote);
+  let errorMessage;
   await gitRemote.push([(await repo.head()).name()], {
     callbacks: {
       credentials: defaultCredCb(credentialsCb),
-      certificateCheck: () => 1
+      certificateCheck: () => 1,
+      pushUpdateReference: (refname, status) => {
+        if (status) {
+          errorMessage = status;
+        }
+      }
     }
   });
+  if (errorMessage) {
+    throw new Error(errorMessage);
+  }
 }
 
 /**
