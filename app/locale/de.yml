@@ -139,6 +139,9 @@ fileType:
         wrongRepeat: Passwort und Wiederholung stimmen nicht überein.
     panel:
       copyToClip: In Zwischenablage kopieren
+    contextMenu:
+      copyUsername: Benutzernamen kopieren
+      copyPassword: Passwort kopieren
 utils:
   quitHook:
     title: Ausstehende Commits

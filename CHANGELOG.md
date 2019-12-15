@@ -7,6 +7,7 @@
 #### Changes
 - Electron has been upgraded to v7.1.5
 - Ubuntu 18.04 is now the minimum required version
+- The folder context menu is now also shown in the free space of the file list
 
 #### Bugs fixed
 - *Show more* link in authorization history window now actually works

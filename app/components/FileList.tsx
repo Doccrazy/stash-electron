@@ -60,7 +60,7 @@ export default withTrans<Props>('component.fileList')(
           onClick={(ev: ChromeMouseEvent) => { if (ev.detail === 1) { onSelect(file.ptr); } }}
           onMouseDown={(ev: ChromeMouseEvent) => { if (ev.detail > 1) { ev.preventDefault(); } }}
           onDoubleClick={() => onEdit(file.ptr)}
-          onContextMenu={ev => { ev.preventDefault(); onContextMenu(file.ptr); }}
+          onContextMenu={ev => { ev.preventDefault(); ev.stopPropagation(); onContextMenu(file.ptr); }}
           onKeyDown={ev => console.log(ev)}
         >
           <td><i

@@ -305,6 +305,9 @@ fileType:
         wrongRepeat: Password and repeated value do not match.
     panel:
       copyToClip: Copy to clipboard
+    contextMenu:
+      copyUsername: Copy username
+      copyPassword: Copy password
 utils:
   quitHook:
     title: Pending commits
