@@ -15,6 +15,7 @@
 - Errors on push due to failed remote hooks are no longer ignored
 - Invalid URLs in entries are now silently ignored
 - Authorization changes in the 'Folder access' view are now correctly saved
+- Display of long description values has been improved
 
 ## v1.2.0 (2018-12-14)
 

@@ -33,6 +33,10 @@ const DefRenderer = ({ value }: RendererProps) => (
   <span>{value}</span>
 );
 
+const PreRenderer = ({ value }: RendererProps) => (
+  <span className={styles.pre}>{value}</span>
+);
+
 const URLRenderer = ({ value }: RendererProps) => (<div className={styles.ellipsis}>
   <a href={sanitizeUrl(value)} title={sanitizeUrl(value)}>{value}</a>
 </div>);
@@ -46,7 +50,7 @@ export interface Props {
 }
 
 export default ({ parsedContent }: Props) => (<div>
-  <Field id="description" wide content={parsedContent} />
+  <Field id="description" wide content={parsedContent} Renderer={PreRenderer} />
   <div className={styles.row}>
     <Field id="username" content={parsedContent} />
     <Field id="url" content={parsedContent} Renderer={URLRenderer} />

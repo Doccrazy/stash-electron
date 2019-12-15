@@ -30,6 +30,8 @@
   .content {
     width: calc(100% * 5 / 6);
     user-select: text;
+    max-height: 30vh;
+    overflow: auto;
   }
 }
 
@@ -47,4 +49,8 @@
       width: calc(100% * 2 / 3);
     }
   }
+}
+
+.pre {
+  white-space: pre-wrap;
 }
