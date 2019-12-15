@@ -14,6 +14,7 @@
 - On multi-monitor setups, the window should no longer open on a disconnected screen
 - Errors on push due to failed remote hooks are no longer ignored
 - Invalid URLs in entries are now silently ignored
+- Authorization changes in the 'Folder access' view are now correctly saved
 
 ## v1.2.0 (2018-12-14)
 

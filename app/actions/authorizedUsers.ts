@@ -114,12 +114,13 @@ export function bulkSave(): Thunk<Promise<void>> {
           authorizedUsers = authorizedUsers.includes(ch.username) ? authorizedUsers.remove(ch.username) : authorizedUsers.add(ch.username);
         });
         return repo.setAuthorizedUsers(nodeId, authorizedUsers!.toArray());
-      }).toArray()
+      })
+      .valueSeq().toArray()
     );
     // refresh all changed nodes
     await Promise.all(bulkChanges.groupBy(v => v!.nodeId)
       .map((g, nodeId: string) => dispatch(readNode(nodeId)))
-      .toArray()
+      .valueSeq().toArray()
     );
 
     dispatch({
