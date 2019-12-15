@@ -5,6 +5,7 @@
   Pull requests welcome!
 
 #### Changes
+- Electron has been upgraded to v7.1.5
 - Ubuntu 18.04 is now the minimum required version
 
 #### Bugs fixed
