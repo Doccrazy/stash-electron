@@ -1,9 +1,9 @@
 matrix:
   include:
     - os: osx
-      osx_image: xcode9.4
+      osx_image: xcode10.2
       language: node_js
-      node_js: "12"
+      node_js: '12'
       env:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
@@ -62,8 +62,8 @@ script:
         -v ~/.cache/electron:/root/.cache/electron \
         -v ~/.cache/electron-builder:/root/.cache/electron-builder \
         -v /tmp/.X11-unix:/tmp/.X11-unix \
-        electronuserland/builder:wine-01.19 \
-        /bin/bash -c 'export NODE_VERSION=12.13.0 && curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz -C /usr/local --strip-components=1 && yarn install && yarn test && DISPLAY= yarn run package linux win'
+        electronuserland/builder:wine-mono-11.19 \
+        /bin/bash -c 'yarn install && yarn lint && yarn test && DISPLAY= yarn run package linux win'
     else
       yarn run package mac
     fi
