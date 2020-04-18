@@ -27,27 +27,28 @@ import settings from './settings';
 import treeState from './treeState';
 import usersHistory from './usersHistory';
 
-export default (history?: History) => combineReducers<RootState>({
-  authorizedUsers,
-  credentials,
-  currentEntry,
-  currentNode,
-  edit,
-  entryDetails,
-  external,
-  favorites,
-  fileExport,
-  fileImport,
-  git,
-  keys,
-  nodeHistory,
-  privateKey,
-  repository,
-  search,
-  settings,
-  treeState,
-  usersHistory,
+export default (history?: History) =>
+  combineReducers<RootState>({
+    authorizedUsers,
+    credentials,
+    currentEntry,
+    currentNode,
+    edit,
+    entryDetails,
+    external,
+    favorites,
+    fileExport,
+    fileImport,
+    git,
+    keys,
+    nodeHistory,
+    privateKey,
+    repository,
+    search,
+    settings,
+    treeState,
+    usersHistory,
 
-  router: history ? connectRouter(history) : null as any,
-  toastr
-});
+    router: history ? connectRouter(history) : (null as any),
+    toastr
+  });

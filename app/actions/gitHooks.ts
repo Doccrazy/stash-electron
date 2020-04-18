@@ -21,30 +21,38 @@ function fmtPtr(getState: GetState, ptr: EntryPtr) {
 }
 
 function fmtNode(getState: GetState, node: Node | string) {
-  const hier = hierarchy(getState().repository.nodes, node).map(n => n.name);
+  const hier = hierarchy(getState().repository.nodes, node).map((n) => n.name);
   return formatPath(hier);
 }
 
-afterAction(Edit.Actions.SAVED, (dispatch: Dispatch, getState: GetState, { ptr, isNew }: { ptr: EntryPtr, isNew: boolean }) => {
+afterAction(Edit.Actions.SAVED, (dispatch: Dispatch, getState: GetState, { ptr, isNew }: { ptr: EntryPtr; isNew: boolean }) => {
   dispatch(maybeCommitChanges(`${isNew ? 'Create' : 'Edit'} ${fmtPtr(getState, ptr)}`));
 });
 
-afterAction(Repository.Actions.RENAME_ENTRY, (dispatch: Dispatch, getState: GetState, { ptr, newName }: { ptr: EntryPtr, newName: string }) => {
-  const typeNew = typeFor(newName);
-  dispatch(maybeCommitChanges(`Rename ${fmtPtr(getState, ptr)} to ${typeNew.toDisplayName(newName)}`));
-});
+afterAction(
+  Repository.Actions.RENAME_ENTRY,
+  (dispatch: Dispatch, getState: GetState, { ptr, newName }: { ptr: EntryPtr; newName: string }) => {
+    const typeNew = typeFor(newName);
+    dispatch(maybeCommitChanges(`Rename ${fmtPtr(getState, ptr)} to ${typeNew.toDisplayName(newName)}`));
+  }
+);
 
 afterAction(Repository.Actions.DELETE_ENTRY, (dispatch: Dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
   dispatch(maybeCommitChanges(`Delete ${fmtPtr(getState, ptr)}`));
 });
 
-afterAction(Repository.Actions.MOVE_ENTRY, (dispatch: Dispatch, getState: GetState, { ptr, newNodeId }: { ptr: EntryPtr, newNodeId: string }) => {
-  dispatch(maybeCommitChanges(`Move ${fmtPtr(getState, ptr)} to ${fmtNode(getState, newNodeId)}`));
-});
+afterAction(
+  Repository.Actions.MOVE_ENTRY,
+  (dispatch: Dispatch, getState: GetState, { ptr, newNodeId }: { ptr: EntryPtr; newNodeId: string }) => {
+    dispatch(maybeCommitChanges(`Move ${fmtPtr(getState, ptr)} to ${fmtNode(getState, newNodeId)}`));
+  }
+);
 
-afterAction(Repository.Actions.MOVE_NODE, (dispatch: Dispatch, getState: GetState, { node, newNode }: { node: Node, newNode: Node }) => {
-  const msg = node.parentId !== newNode.parentId ? `Move folder ${fmtNode(getState, newNode)} to ${fmtNode(getState, newNode.parentId!)}`
-    : `Rename folder ${fmtNode(getState, node)} to ${newNode.name}`;
+afterAction(Repository.Actions.MOVE_NODE, (dispatch: Dispatch, getState: GetState, { node, newNode }: { node: Node; newNode: Node }) => {
+  const msg =
+    node.parentId !== newNode.parentId
+      ? `Move folder ${fmtNode(getState, newNode)} to ${fmtNode(getState, newNode.parentId!)}`
+      : `Rename folder ${fmtNode(getState, node)} to ${newNode.name}`;
   dispatch(maybeCommitChanges(msg));
 });
 
@@ -57,9 +65,7 @@ afterAction(AuthorizedUsers.Actions.SAVED, (dispatch: Dispatch, getState: GetSta
 });
 
 afterAction<RootState>(AuthorizedUsers.Actions.BULK_SAVED, (dispatch: Dispatch, getState, payload, preActionState) => {
-  const nodes = preActionState.authorizedUsers.bulkChanges
-    .groupBy(ch => ch!.nodeId)
-    .map((g, nodeId) => fmtNode(getState, nodeId));
+  const nodes = preActionState.authorizedUsers.bulkChanges.groupBy((ch) => ch.nodeId).map((g, nodeId) => fmtNode(getState, nodeId));
   dispatch(maybeCommitChanges(`Update authorization for folder${nodes.count() > 1 ? 's' : ''} ${nodes.join(', ')}`));
 });
 
@@ -70,7 +76,8 @@ afterAction(Keys.Actions.SAVED, (dispatch: Dispatch, getState: GetState, payload
   const removed = oldUsers.subtract(newUsers);
   let message = 'change public keys.';
   if (added.size || removed.size) {
-    message = (added.size ? `add ${added.join(',')}` : '') +
+    message =
+      (added.size ? `add ${added.join(',')}` : '') +
       (added.size && removed.size ? ', ' : '') +
       (removed.size ? `remove ${removed.join(',')}` : '');
   }
@@ -78,7 +85,7 @@ afterAction(Keys.Actions.SAVED, (dispatch: Dispatch, getState: GetState, payload
 });
 
 afterAction(External.Actions.FILES_WRITTEN, (dispatch: Dispatch, getState: GetState, files: EntryPtr[]) => {
-  const nodeIds: Set<string> = Set(files.map(ptr => ptr.nodeId));
+  const nodeIds: Set<string> = Set(files.map((ptr) => ptr.nodeId));
   if (files.length === 1) {
     dispatch(maybeCommitChanges(`Add/edit external file ${fmtPtr(getState, files[0])}`));
   } else {
@@ -87,7 +94,7 @@ afterAction(External.Actions.FILES_WRITTEN, (dispatch: Dispatch, getState: GetSt
   }
 });
 
-afterAction(FileImport.Actions.STATUS, (dispatch: Dispatch, getState: GetState, payload: { type: StatusType, message: string }) => {
+afterAction(FileImport.Actions.STATUS, (dispatch: Dispatch, getState: GetState, payload: { type: StatusType; message: string }) => {
   if (payload.type === 'success') {
     dispatch(maybeCommitChanges(`Import entries from 3rd party file format`));
   }

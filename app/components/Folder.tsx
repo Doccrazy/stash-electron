@@ -8,31 +8,54 @@ import EntryPtr from '../domain/EntryPtr';
 import * as styles from './Folder.scss';
 
 export interface Props {
-  nodeId: string,
-  label: string,
-  childIds: string[],
-  expanded?: boolean,
-  selected?: boolean,
-  marked?: boolean,
-  accessible?: boolean,
-  nodeEditable?: boolean,
-  authInfo?: string,
-  onClickIcon: () => void,
-  onClickLabel: () => void,
-  onClickAuth: () => void,
-  onCheckDropEntry: (ptr: EntryPtr) => boolean,
-  onDropEntry: (ptr: EntryPtr) => void,
-  onCheckDropNode: (nodeId: string) => boolean,
-  onDropNode: (nodeId: string) => void,
-  onContextMenu: () => void
+  nodeId: string;
+  label: string;
+  childIds: string[];
+  expanded?: boolean;
+  selected?: boolean;
+  marked?: boolean;
+  accessible?: boolean;
+  nodeEditable?: boolean;
+  authInfo?: string;
+  onClickIcon: () => void;
+  onClickLabel: () => void;
+  onClickAuth: () => void;
+  onCheckDropEntry: (ptr: EntryPtr) => boolean;
+  onDropEntry: (ptr: EntryPtr) => void;
+  onCheckDropNode: (nodeId: string) => boolean;
+  onDropNode: (nodeId: string) => void;
+  onContextMenu: () => void;
 }
 
-export default ({ nodeId, label, childIds, expanded, selected, marked, accessible, nodeEditable, authInfo,
-                  onClickIcon, onClickLabel, onClickAuth, onCheckDropEntry, onDropEntry, onCheckDropNode, onDropNode, onContextMenu }: Props): any => {
+const Folder = ({
+  nodeId,
+  label,
+  childIds,
+  expanded,
+  selected,
+  marked,
+  accessible,
+  nodeEditable,
+  authInfo,
+  onClickIcon,
+  onClickLabel,
+  onClickAuth,
+  onCheckDropEntry,
+  onDropEntry,
+  onCheckDropNode,
+  onDropNode,
+  onContextMenu
+}: Props): any => {
   if (label) {
     return (
       <TreeNode
-        label={<span onContextMenu={ev => { ev.preventDefault(); onContextMenu(); }}>
+        label={
+          <span
+            onContextMenu={(ev) => {
+              ev.preventDefault();
+              onContextMenu();
+            }}
+          >
             <span className={cx(selected && styles.nameSelected, marked && styles.nameMarked)}>
               <EntryDropTarget acceptClassName={styles.nameDrop} onCheckDrop={onCheckDropEntry} onDrop={onDropEntry}>
                 <NodeDragSource item={nodeId} dragAllowed={accessible && nodeEditable}>
@@ -42,8 +65,9 @@ export default ({ nodeId, label, childIds, expanded, selected, marked, accessibl
                 </NodeDragSource>
               </EntryDropTarget>
             </span>
-            <span className={cx(authInfo && styles.authIcon)} title={authInfo}/>
-          </span>}
+            <span className={cx(authInfo && styles.authIcon)} title={authInfo} />
+          </span>
+        }
         canExpand={!!childIds.length}
         {...{ expanded, accessible, onClickIcon, onClickLabel, onShiftClick: onClickAuth }}
       >
@@ -53,3 +77,5 @@ export default ({ nodeId, label, childIds, expanded, selected, marked, accessibl
   }
   return <div />;
 };
+
+export default Folder;

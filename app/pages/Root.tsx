@@ -11,16 +11,18 @@ import '../fileType/default/register';
 import '../fileType/password/register';
 
 export interface Props {
-  store: Store<any>,
-  history: History
+  store: Store<any>;
+  history: History;
 }
 
-const Root = ({ store, history }: Props) => <Provider store={store}>
-  <DndProvider backend={HTML5Backend}>
-    <ConnectedRouter history={history}>
-      <Routes />
-    </ConnectedRouter>
-  </DndProvider>
-</Provider>;
+const Root = ({ store, history }: Props) => (
+  <Provider store={store}>
+    <DndProvider backend={HTML5Backend}>
+      <ConnectedRouter history={history}>
+        <Routes />
+      </ConnectedRouter>
+    </DndProvider>
+  </Provider>
+);
 
 export default hot(module)(Root);

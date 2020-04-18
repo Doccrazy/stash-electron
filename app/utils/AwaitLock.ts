@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 export default class AwaitLock {
-  private acquired: boolean = false;
+  private acquired = false;
   private waitingResolvers: (() => void)[] = [];
 
   acquireAsync(): Promise<void> {
@@ -10,7 +10,7 @@ export default class AwaitLock {
       return Promise.resolve();
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.waitingResolvers.push(resolve);
     });
   }

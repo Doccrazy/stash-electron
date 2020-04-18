@@ -10,10 +10,19 @@ import { afterAction, onceAfterAction } from '../store/eventMiddleware';
 import {
   accessingRepository,
   addToGitIgnore,
-  commitAllChanges, commitInfo,
-  compareRefs, defaultCredCb,
-  fetchWithRetry, finishRebaseResolving, getRootCommit, getUpstreamStatus, GitCommitInfo, GitCredentials,
-  hasUncommittedChanges, isSignatureConfigured, loadHistory,
+  commitAllChanges,
+  commitInfo,
+  compareRefs,
+  defaultCredCb,
+  fetchWithRetry,
+  finishRebaseResolving,
+  getRootCommit,
+  getUpstreamStatus,
+  GitCommitInfo,
+  GitCredentials,
+  hasUncommittedChanges,
+  isSignatureConfigured,
+  loadHistory,
   pushWithRetry,
   usingOurs
 } from '../utils/git';
@@ -42,13 +51,13 @@ export enum Actions {
   SIGNATURE_CLOSE_POPUP = 'git/SIGNATURE_CLOSE_POPUP'
 }
 
-export function updateStatus(doFetch: boolean, updateHistory: boolean = true): Thunk<Promise<void>> {
+export function updateStatus(doFetch: boolean, updateHistory = true): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const repoPath = getState().repository.path!;
 
     const status = await dispatch(determineGitStatus(repoPath, doFetch));
-    const statusChanged = status.initialized !== getState().git.status.initialized
-      || status.commitsAheadOrigin !== getState().git.status.commitsAheadOrigin;
+    const statusChanged =
+      status.initialized !== getState().git.status.initialized || status.commitsAheadOrigin !== getState().git.status.commitsAheadOrigin;
     dispatch({
       type: Actions.UPDATE_STATUS,
       payload: {
@@ -75,7 +84,7 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
     const oldStatus = getState().git.status;
     const status: GitStatus = { initialized: false };
     try {
-      await accessingRepository(repoPath, async gitRepo => {
+      await accessingRepository(repoPath, async (gitRepo) => {
         status.initialized = true;
 
         if (gitRepo.headUnborn()) {
@@ -178,7 +187,9 @@ function conservativeAutoMerge(filename: string, ours: Buffer, theirs: Buffer, a
 
     // apply user removals from both
     const removed = Set(Object.keys(baseKeys)).subtract(Set(Object.keys(ourKeys)).intersect(Set(Object.keys(theirKeys))));
-    removed.forEach(r => { delete result[r!]; });
+    removed.forEach((r) => {
+      delete result[r];
+    });
 
     return Buffer.from(JSON.stringify(result, null, '  '));
   } else if (path.parse(filename).base === USERS_FILE) {
@@ -195,8 +206,11 @@ function conservativeAutoMerge(filename: string, ours: Buffer, theirs: Buffer, a
 
     // merge their user updates into ours
     for (const username of theirUsers.listUsers()) {
-      if (baseUsers.listUsers().includes(username) && !baseUsers.internalGet(username)!.equals(theirUsers.internalGet(username)!)
-      && baseUsers.internalGet(username)!.equals(ourUsers.internalGet(username)!)) {
+      if (
+        baseUsers.listUsers().includes(username) &&
+        !baseUsers.internalGet(username)!.equals(theirUsers.internalGet(username)!) &&
+        baseUsers.internalGet(username)!.equals(ourUsers.internalGet(username)!)
+      ) {
         ourUsers.internalAdd(username, theirUsers.internalGet(username)!);
       }
     }
@@ -214,8 +228,10 @@ function conservativeAutoMerge(filename: string, ours: Buffer, theirs: Buffer, a
   return null;
 }
 
-async function withCredentials(dispatch: Dispatch<Action>,
-                               cb: (credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) => any): Promise<string | null> {
+async function withCredentials(
+  dispatch: Dispatch<Action>,
+  cb: (credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) => any
+): Promise<string | null> {
   let credentialsContext: string | null = null;
   try {
     await cb(async (url: string, usernameFromUrl: string) => {
@@ -223,9 +239,17 @@ async function withCredentials(dispatch: Dispatch<Action>,
         await dispatch(Credentials.rejectCredentials(credentialsContext, 'Authentication failed'));
       }
       credentialsContext = null;
-      const result = await dispatch(Credentials.requestCredentials(url, 'Authenticate to git repository',
-        `The git repository at ${url} has requested authentication.
-             Please enter your credentials below.`, usernameFromUrl, true, true));
+      const result = await dispatch(
+        Credentials.requestCredentials(
+          url,
+          'Authenticate to git repository',
+          `The git repository at ${url} has requested authentication.
+             Please enter your credentials below.`,
+          usernameFromUrl,
+          true,
+          true
+        )
+      );
       credentialsContext = url;
       return result;
     });
@@ -236,7 +260,7 @@ async function withCredentials(dispatch: Dispatch<Action>,
   } catch (e) {
     if (credentialsContext) {
       await dispatch(Credentials.rejectCredentials(credentialsContext, 'Operation failed'));
-      await dispatch(Credentials.close());
+      dispatch(Credentials.close());
     }
     throw e;
   }
@@ -246,7 +270,7 @@ function gitFetchRemote(gitRepo: Git.Repository, remoteName: string): Thunk<Prom
   return async (dispatch, getState) => {
     dispatch({ type: Actions.PROGRESS, payload: { message: `Fetching from ${remoteName}` } });
     try {
-      const credentialsContext = await withCredentials(dispatch, async credentialsCb => {
+      const credentialsContext = await withCredentials(dispatch, async (credentialsCb) => {
         await fetchWithRetry(gitRepo, remoteName, credentialsCb);
       });
       return {
@@ -264,7 +288,7 @@ function gitPushRemote(gitRepo: Git.Repository, remoteName: string): Thunk<Promi
   return async (dispatch, getState) => {
     dispatch({ type: Actions.PROGRESS, payload: { message: `Pushing to ${remoteName}` } });
     try {
-      await withCredentials(dispatch, async credentialsCb => {
+      await withCredentials(dispatch, async (credentialsCb) => {
         await pushWithRetry(gitRepo, remoteName, credentialsCb);
       });
     } finally {
@@ -281,7 +305,7 @@ function refreshHistory(): Thunk<Promise<void>> {
     const repoPath = getState().repository.path!;
 
     try {
-      await accessingRepository(repoPath, async gitRepo => {
+      await accessingRepository(repoPath, async (gitRepo) => {
         const history = await loadHistory(gitRepo);
         dispatch({
           type: Actions.HISTORY,
@@ -303,7 +327,7 @@ function buildHistory(history: GitCommitInfo[]) {
     commits = commits.set(entry.hash, entry);
     for (const change of entry.changedFiles || []) {
       const currentFile = renameMap.get(change, change);
-      files = files.update(currentFile, oidList => (oidList || List()).push({ oid: entry.hash, name: change }));
+      files = files.update(currentFile, (oidList) => (oidList || List()).push({ oid: entry.hash, name: change }));
     }
     for (const filename of Object.keys(entry.renamedFiles || {})) {
       renameMap = renameMap.set(entry.renamedFiles![filename], renameMap.get(filename, filename));
@@ -330,7 +354,7 @@ export function resolveConflict(): Thunk<Promise<void>> {
     const repoPath = getState().repository.path!;
 
     try {
-      await accessingRepository(repoPath, async gitRepo => {
+      await accessingRepository(repoPath, async (gitRepo) => {
         if (gitRepo.isMerging()) {
           toastr.error('Manual resolution required', 'Merge not implemented');
           return;
@@ -356,15 +380,15 @@ export function maybeCommitChanges(message: string): Thunk<Promise<void>> {
     }
 
     try {
-      await accessingRepository(repoPath, async gitRepo => {
+      await accessingRepository(repoPath, async (gitRepo) => {
         if (!(await hasUncommittedChanges(gitRepo))) {
           return;
         }
 
-        if (!isSignatureConfigured(gitRepo)) {
+        if (!(await isSignatureConfigured(gitRepo))) {
           try {
             const signature = await dispatch(requestSignature());
-            const cfg = signature.local ? (await gitRepo.config()) : (await Git.Config.openDefault());
+            const cfg = signature.local ? await gitRepo.config() : await Git.Config.openDefault();
             await cfg.setString('user.name', signature.name);
             await cfg.setString('user.email', signature.email);
           } catch (e) {
@@ -391,7 +415,7 @@ export function revertAndPush(): Thunk<Promise<void>> {
     const resetCommitHash = getState().git.markedForReset;
 
     try {
-      await accessingRepository(repoPath, async gitRepo => {
+      await accessingRepository(repoPath, async (gitRepo) => {
         if (resetCommitHash) {
           const lastCommitToRemove = await gitRepo.getCommit(resetCommitHash);
           const resetToCommit = await gitRepo.getCommit(lastCommitToRemove.parentId(0));
@@ -477,7 +501,7 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
       return;
     }
     // matches last part of URL, without .git
-    const m = /.*\/([^\/]+?)(?:\.git)?\/?$/.exec(git.clone.remoteUrl);
+    const m = /.*\/([^/]+?)(?:\.git)?\/?$/.exec(git.clone.remoteUrl);
     if (!m) {
       dispatch({ type: Actions.PROGRESS, payload: { done: true, message: 'Error: Invalid URL' } });
       return;
@@ -494,13 +518,13 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
       await fs.mkdirp(cloneTarget);
       if ((await fs.readdir(cloneTarget)).length) {
         // target incl. subfolder is still not empty
-        dispatch({type: Actions.PROGRESS, payload: { done: true, message: 'Error: Directory is not empty' }});
+        dispatch({ type: Actions.PROGRESS, payload: { done: true, message: 'Error: Directory is not empty' } });
         return;
       }
 
-      dispatch({type: Actions.PROGRESS, payload: { message: `Cloning from remote...` }});
+      dispatch({ type: Actions.PROGRESS, payload: { message: `Cloning from remote...` } });
 
-      await withCredentials(dispatch, async credentialsCb => {
+      await withCredentials(dispatch, async (credentialsCb) => {
         await Git.Clone.clone(git.clone.remoteUrl!, cloneTarget, {
           fetchOpts: {
             callbacks: {
@@ -515,7 +539,7 @@ export function cloneAndLoad(): Thunk<Promise<void>> {
       dispatch({ type: Actions.PROGRESS, payload: { done: true } });
       dispatch(changeAndSave('repositoryPath', cloneTarget));
     } catch (e) {
-      dispatch({type: Actions.PROGRESS, payload: { done: true, message: `Error: ${e.message}` }});
+      dispatch({ type: Actions.PROGRESS, payload: { done: true, message: `Error: ${e.message}` } });
     }
   };
 }
@@ -526,11 +550,11 @@ export function closeClonePopup(): Action {
   };
 }
 
-export function requestSignature(): Thunk<Promise<{name: string, email: string, local?: boolean}>> {
+export function requestSignature(): Thunk<Promise<{ name: string; email: string; local?: boolean }>> {
   return async (dispatch, getState) => {
     dispatch({ type: Actions.SIGNATURE_OPEN_POPUP });
 
-    return new Promise<{name: string, email: string, local?: boolean}>((resolve, reject) => {
+    return new Promise<{ name: string; email: string; local?: boolean }>((resolve, reject) => {
       onceAfterAction([Actions.SIGNATURE_CONFIRM, Actions.SIGNATURE_CLOSE_POPUP], () => {
         const { name, email, local } = getState().git.signature;
         if (name && email) {
@@ -575,30 +599,30 @@ afterAction(Repository.Actions.UNLOAD, (dispatch, getState: GetState) => {
 });
 
 type Action =
-  TypedAction<Actions.UPDATE_STATUS, { status: GitStatus, updated: Date }> |
-  TypedAction<Actions.PROGRESS, { message?: string, done?: boolean }> |
-  TypedAction<Actions.HISTORY, GitCommitInfo[]> |
-  OptionalAction<Actions.OPEN_POPUP> |
-  OptionalAction<Actions.MARK_FOR_RESET, string> |
-  OptionalAction<Actions.CLOSE_POPUP> |
-  OptionalAction<Actions.POPUP_SHOW_ALL> |
-  OptionalAction<Actions.CLONE_OPEN_POPUP> |
-  TypedAction<Actions.CLONE_CHANGE_URL, string> |
-  TypedAction<Actions.CLONE_CHANGE_TARGET, string> |
-  OptionalAction<Actions.CLONE_CLOSE_POPUP> |
-  OptionalAction<Actions.SIGNATURE_OPEN_POPUP> |
-  TypedAction<Actions.SIGNATURE_CHANGE, { name: string, email: string, local: boolean }> |
-  OptionalAction<Actions.SIGNATURE_CONFIRM> |
-  OptionalAction<Actions.SIGNATURE_CLOSE_POPUP>;
+  | TypedAction<Actions.UPDATE_STATUS, { status: GitStatus; updated: Date }>
+  | TypedAction<Actions.PROGRESS, { message?: string; done?: boolean }>
+  | TypedAction<Actions.HISTORY, GitCommitInfo[]>
+  | OptionalAction<Actions.OPEN_POPUP>
+  | OptionalAction<Actions.MARK_FOR_RESET, string>
+  | OptionalAction<Actions.CLOSE_POPUP>
+  | OptionalAction<Actions.POPUP_SHOW_ALL>
+  | OptionalAction<Actions.CLONE_OPEN_POPUP>
+  | TypedAction<Actions.CLONE_CHANGE_URL, string>
+  | TypedAction<Actions.CLONE_CHANGE_TARGET, string>
+  | OptionalAction<Actions.CLONE_CLOSE_POPUP>
+  | OptionalAction<Actions.SIGNATURE_OPEN_POPUP>
+  | TypedAction<Actions.SIGNATURE_CHANGE, { name: string; email: string; local: boolean }>
+  | OptionalAction<Actions.SIGNATURE_CONFIRM>
+  | OptionalAction<Actions.SIGNATURE_CLOSE_POPUP>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 
 const INITIAL_STATE: State = {
-  status: {initialized: false},
+  status: { initialized: false },
   lastStatusUpdate: new Date(),
   clone: {},
   signature: {},
-  history: {commits: OrderedMap(), files: Map()}
+  history: { commits: OrderedMap(), files: Map() }
 };
 export default function reducer(state: State = INITIAL_STATE, action: Action): State {
   switch (action.type) {

@@ -1,4 +1,4 @@
-// tslint:disable:max-classes-per-file interface-name
+/* eslint-disable @typescript-eslint/interface-name-prefix */
 
 declare const GIT_VERSION: string;
 declare const GIT_HASH: string;
@@ -11,6 +11,7 @@ declare module 'font-awesome-filetypes' {
 }
 
 declare module 'kdbxweb' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   class Kdbx {
     readonly meta: KdbxMeta;
     static load(dataAsArrayBuffer: ArrayBufferLike, credentials: Credentials): Promise<Kdbx>;
@@ -24,10 +25,10 @@ declare module 'kdbxweb' {
     saveXml(): Promise<string>;
   }
   interface KdbxMeta {
-    readonly recycleBinUuid: KdbxUuid
+    readonly recycleBinUuid: KdbxUuid;
   }
   interface KdbxUuid {
-    equals(other: KdbxUuid | string): boolean
+    equals(other: KdbxUuid | string): boolean;
   }
   const KdbxError: any;
   class Credentials {
@@ -77,6 +78,7 @@ declare module 'kdbxweb' {
     usageCount?: number;
     locationChanged?: Date;
   }
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface KdbxCustomData {}
   interface KdbxEntry {
     uuid: KdbxUuid;
@@ -88,26 +90,29 @@ declare module 'kdbxweb' {
     tags: string[];
     times: KdbxTimes;
     fields: {
-      Title?: string
-      UserName?: string
-      Password?: ProtectedValue
-      URL?: string
-      Notes?: string
-      [key: string]: string | ProtectedValue
+      Title?: string;
+      UserName?: string;
+      Password?: ProtectedValue;
+      URL?: string;
+      Notes?: string;
+      [key: string]: string | ProtectedValue;
     };
     binaries: {
-      [key: string]: ProtectedValue | ArrayBuffer | BinaryReference
+      [key: string]: ProtectedValue | ArrayBuffer | BinaryReference;
     };
     autoType: {
-      enabled: boolean, obfuscation: number, defaultSequence: any, items: any[]
+      enabled: boolean;
+      obfuscation: number;
+      defaultSequence: any;
+      items: any[];
     };
     history: any[];
     parentGroup: KdbxGroup;
     customData: KdbxCustomData;
   }
   interface BinaryReference {
-    readonly key: string
-    readonly value: ArrayBuffer
+    readonly key: string;
+    readonly value: ArrayBuffer;
   }
 }
 
@@ -120,14 +125,14 @@ declare module 'tai-password-strength/lib/password-strength.js' {
   type StrengthCode = 'VERY_WEAK' | 'WEAK' | 'REASONABLE' | 'STRONG' | 'VERY_STRONG';
 
   interface CheckResult {
-    charsetSize: number,
-    commonPassword: boolean,
-    nistEntropyBits: number,
-    passwordLength: number,
-    shannonEntropyBits: number,
-    strengthCode: StrengthCode,
-    trigraphEntropyBits: number,
-    charsets: object
+    charsetSize: number;
+    commonPassword: boolean;
+    nistEntropyBits: number;
+    passwordLength: number;
+    shannonEntropyBits: number;
+    strengthCode: StrengthCode;
+    trigraphEntropyBits: number;
+    charsets: object;
   }
 
   interface PasswordStrength {
@@ -143,16 +148,16 @@ declare module 'tai-password-strength/lib/password-strength.js' {
 
 declare module 'jdenticon' {
   export interface JdenticonConfig {
-    hues?: number[]
+    hues?: number[];
     lightness?: {
       color?: number[];
       grayscale?: number[];
-    }
+    };
     saturation?: {
       color?: number;
       grayscale?: number;
-    }
-    backColor?: string
+    };
+    backColor?: string;
   }
 
   export function drawIcon(ctx: CanvasRenderingContext2D, hash: string, size: number): void;
@@ -189,7 +194,7 @@ declare module 'langmap';
 
 declare module '*.css' {
   interface IClassNames {
-    [className: string]: string
+    [className: string]: string;
   }
   const classNames: IClassNames;
   export = classNames;
@@ -197,7 +202,7 @@ declare module '*.css' {
 
 declare module '*.scss' {
   interface IClassNames {
-    [className: string]: string
+    [className: string]: string;
   }
   const classNames: IClassNames;
   export = classNames;

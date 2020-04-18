@@ -1,13 +1,13 @@
-import * as path from "path";
+import * as path from 'path';
 import FileSystem from './fs/FileSystem';
 import NodeFileSystem from './fs/NodeFileSystem';
 import PlainRepository from './Plain';
 import Node from '../domain/Node';
 import AuthorizationProvider from './AuthorizationProvider';
 import RecursiveAuthProviderWrapper from './RecursiveAuthProviderWrapper';
-import {decipherSync, encipherSync} from '../utils/cryptoStream';
-import {readNodeRecursive} from '../utils/repository';
-import {List} from 'immutable';
+import { decipherSync, encipherSync } from '../utils/cryptoStream';
+import { readNodeRecursive } from '../utils/repository';
+import { List } from 'immutable';
 
 export default class EncryptedRepository extends PlainRepository {
   private readonly recAuthProvider: RecursiveAuthProviderWrapper;
@@ -26,11 +26,9 @@ export default class EncryptedRepository extends PlainRepository {
     }
 
     // only show encrypted files, remove .enc extension
-    const entries = node.entries
-      .filter((fn: string) => fn.endsWith('.enc'))
-      .map((fn: string) => fn.substr(0, fn.length - 4));
+    const entries = node.entries.filter((fn: string) => fn.endsWith('.enc')).map((fn: string) => fn.substr(0, fn.length - 4));
 
-    return new Node({...node, entries, authorizedUsers});
+    return new Node({ ...node, entries, authorizedUsers });
   }
 
   renameNode(nodeId: string, newName: string): Promise<string> {
@@ -140,7 +138,10 @@ export default class EncryptedRepository extends PlainRepository {
 
   private findNodesWithSameKey(nodeId: string) {
     // find all nodes that will be affected by the operation, stopping if child node has overridden auth users
-    return readNodeRecursive(id => this.readNode(id), nodeId,
-      node => node.id === nodeId || !node.authorizedUsers || !node.authorizedUsers.size);
+    return readNodeRecursive(
+      (id) => this.readNode(id),
+      nodeId,
+      (node) => node.id === nodeId || !node.authorizedUsers || !node.authorizedUsers.size
+    );
   }
 }

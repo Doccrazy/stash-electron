@@ -4,11 +4,14 @@ import { close } from '../actions/usersHistory';
 import UsersHistoryPopup from '../components/UsersHistoryPopup';
 import { commitsFor } from '../store/selectors';
 
-export default connect((state: RootState) => {
-  return ({
-    open: state.usersHistory.usersOpen,
-    history: state.usersHistory.usersOpen ? commitsFor(state, '.keys.json').toArray() : []
-  });
-}, (dispatch: Dispatch) => ({
-  onClose: () => dispatch(close())
-}))(UsersHistoryPopup);
+export default connect(
+  (state: RootState) => {
+    return {
+      open: state.usersHistory.usersOpen,
+      history: state.usersHistory.usersOpen ? commitsFor(state, '.keys.json').toArray() : []
+    };
+  },
+  (dispatch: Dispatch) => ({
+    onClose: () => dispatch(close())
+  })
+)(UsersHistoryPopup);

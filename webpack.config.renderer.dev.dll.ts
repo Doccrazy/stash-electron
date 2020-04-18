@@ -2,7 +2,7 @@
  * Builds the DLL for development electron renderer process
  * Not called standalone; instead, this is referenced from AutoDllPlugin
  */
-// tslint:disable-next-line
+// eslint-disable-next-line
 /// <reference path="webpack.config.d.ts" />
 
 import * as webpack from 'webpack';
@@ -25,10 +25,8 @@ const rendererDevDllConfig: webpack.Configuration = {
     ]
   },
   entry: {
-    vendor: (
-      Object
-        .keys(packageJson.dependencies || {})
-        .filter(dependency => dependency !== 'font-awesome' && dependency !== 'react-hot-loader' && !dependency.startsWith('@types/'))
+    vendor: Object.keys(packageJson.dependencies || {}).filter(
+      (dependency) => dependency !== 'font-awesome' && dependency !== 'react-hot-loader' && !dependency.startsWith('@types/')
     )
   },
   resolve: {

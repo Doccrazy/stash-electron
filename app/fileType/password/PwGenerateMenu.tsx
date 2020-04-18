@@ -5,7 +5,11 @@ import '../../components/shared/StrengthMeter.scss';
 
 const LENGTHS = [8, 12, 16, 20, 24];
 const CLASS_NAMES = ['Aa9', '+#_', '" :'];
-const CLASSES = [['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890'], ['!$%&/()+*-_#.,;<>?@[]'], ['"\'\\:=`´^°|~{} ']];
+const CLASSES = [
+  ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '1234567890'],
+  ['!$%&/()+*-_#.,;<>?@[]'],
+  ['"\'\\:=`´^°|~{} ']
+];
 
 function generatePw(len: number, charClassIdx: number) {
   let classSet: string[] = [];
@@ -19,11 +23,11 @@ function generatePw(len: number, charClassIdx: number) {
 }
 
 export interface Props {
-  title: string
-  onGenerate: (pw: string) => void
+  title: string;
+  onGenerate: (pw: string) => void;
 }
 
-export default ({ title, onGenerate }: Props) => (
+const PwGenerateMenu = ({ title, onGenerate }: Props) => (
   <UncontrolledDropdown tag="span">
     <DropdownToggle title={title} tabIndex={-1}>
       <i className="fa fa-cog" />
@@ -33,20 +37,30 @@ export default ({ title, onGenerate }: Props) => (
         <thead>
           <tr>
             <th />
-            {LENGTHS.map(len => (<th key={len} className="text-center">{len}</th>))}
+            {LENGTHS.map((len) => (
+              <th key={len} className="text-center">
+                {len}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {CLASS_NAMES.map((cls, cIdx) => (<tr key={cls}>
-            <th className="text-center">{cls}</th>
-            {LENGTHS.map((len, lIdx) => (<td key={len}>
-              <button type="button" className={`btn btn-sm str-${cIdx}-${lIdx}`} onClick={() => onGenerate(generatePw(len, cIdx))}>
-                <i className="fa fa-cog" />
-              </button>
-            </td>))}
-          </tr>))}
+          {CLASS_NAMES.map((cls, cIdx) => (
+            <tr key={cls}>
+              <th className="text-center">{cls}</th>
+              {LENGTHS.map((len, lIdx) => (
+                <td key={len}>
+                  <button type="button" className={`btn btn-sm str-${cIdx}-${lIdx}`} onClick={() => onGenerate(generatePw(len, cIdx))}>
+                    <i className="fa fa-cog" />
+                  </button>
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </DropdownMenu>
   </UncontrolledDropdown>
 );
+
+export default PwGenerateMenu;

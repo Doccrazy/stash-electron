@@ -1,15 +1,15 @@
 import { List } from 'immutable';
 import naturalCompare from 'natural-compare';
 import { getRepo } from '../actions/repository';
-import {RootState} from '../actions/types';
+import { RootState } from '../actions/types';
 import { GitHistory, OidAndName } from '../actions/types/git';
 import EntryPtr from '../domain/EntryPtr';
 import { GitCommitInfo } from '../utils/git';
-import specialFolders, { SpecialFolderId } from '../utils/specialFolders';
+import specialFolders from '../utils/specialFolders';
 
 export function fileList(state: RootState): EntryPtr[] {
   if (state.currentNode.specialId) {
-    const selector = specialFolders[state.currentNode.specialId as SpecialFolderId].selector;
+    const selector = specialFolders[state.currentNode.specialId].selector;
     return selector(state);
   } else if (state.currentNode.nodeId && state.repository.nodes[state.currentNode.nodeId]) {
     return state.repository.nodes[state.currentNode.nodeId].entries
@@ -32,20 +32,20 @@ export function commitsFor(state: RootState, fileName: string | EntryPtr, filter
   if (fileName instanceof EntryPtr) {
     fileName = getRepo().resolvePath(fileName.nodeId, fileName.entry);
   }
-  return state.git.history.files.get(fileName, List<OidAndName>())
-    .map(oidAndName => state.git.history.commits.get(oidAndName.oid)!)
-    .filter(commit => !filter || filter(commit));
+  return state.git.history.files
+    .get(fileName, List<OidAndName>())
+    .map((oidAndName) => state.git.history.commits.get(oidAndName.oid)!)
+    .filter((commit) => !filter || filter(commit));
 }
 
 // filter excluding commits that changed folder authorization
 export function excludingAuth(commit: GitCommitInfo) {
-  return !!commit.changedFiles && !commit.changedFiles.find(fn => fn.endsWith('/.users.json'));
+  return !!commit.changedFiles && !commit.changedFiles.find((fn) => fn.endsWith('/.users.json'));
 }
 
 export function findHistoricEntry(ptr: EntryPtr, history: GitHistory, commitOid: string) {
   let resolved = getRepo().resolvePath(ptr.nodeId, ptr.entry);
-  const oidAndNameAtCommit = history.files.get(resolved, List<OidAndName>())
-    .find(oidAndName => oidAndName.oid === commitOid);
+  const oidAndNameAtCommit = history.files.get(resolved, List<OidAndName>()).find((oidAndName) => oidAndName.oid === commitOid);
   if (oidAndNameAtCommit) {
     resolved = oidAndNameAtCommit.name;
   }

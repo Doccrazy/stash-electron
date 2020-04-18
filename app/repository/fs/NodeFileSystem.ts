@@ -6,6 +6,7 @@ import FileSystem from './FileSystem';
  * Default filesystem implementation using node functions
  */
 export default class NodeFileSystem implements FileSystem {
+  // eslint-disable-next-line @typescript-eslint/require-await
   async exists(path: string): Promise<boolean> {
     return fs.existsSync(path);
   }

@@ -7,18 +7,20 @@ function mapFiles(files: File[]) {
 }
 
 export interface Props {
-  children: any,
-  connectDropTarget?: ConnectDropTarget,
-  onDrop: (files: string[]) => void,
+  children: any;
+  connectDropTarget?: ConnectDropTarget;
+  onDrop: (files: string[]) => void;
   [propName: string]: any;
 }
 
-export default DropTarget(NativeTypes.FILE, {
-  drop(props: Props, monitor: DropTargetMonitor) {
-    props.onDrop(mapFiles((monitor.getItem() as any).files));
-  }
-}, (connect, monitor) => ({
-  connectDropTarget: connect.dropTarget()
-}))(({ children, onDrop, connectDropTarget, ...props }: Props) => connectDropTarget!(<div {...props}>
-  {children}
-</div>));
+export default DropTarget(
+  NativeTypes.FILE,
+  {
+    drop(props: Props, monitor: DropTargetMonitor) {
+      props.onDrop(mapFiles(monitor.getItem().files));
+    }
+  },
+  (connect, monitor) => ({
+    connectDropTarget: connect.dropTarget()
+  })
+)(({ children, onDrop, connectDropTarget, ...props }: Props) => connectDropTarget!(<div {...props}>{children}</div>));

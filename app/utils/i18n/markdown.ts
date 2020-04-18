@@ -12,10 +12,11 @@ export function createMarkdownFormatter(locale: string, message: string): ReactF
   const proc = processor(locale);
   const tree = proc.runSync(proc.parse(message));
 
-  return context => React.createElement('div', { className: 'markdown-block' }, renderToReact(tree, context));
+  // eslint-disable-next-line react/display-name
+  return (context) => React.createElement('div', { className: 'markdown-block' }, renderToReact(tree, context));
 }
 
-const processors: {[locale: string]: unified.Processor} = {};
+const processors: { [locale: string]: unified.Processor } = {};
 
 function processor(locale: string) {
   let result = processors[locale];
@@ -31,15 +32,19 @@ function createProcessor(locale: string) {
 }
 
 let localCtx: Context | null;
-const renderer = unified().use(remark2react, {
-  toHast: {
-    handlers: createIntlMessageHandler(() => localCtx)
-  },
-  sanitize: false,
-  createElement: (name: any, props: any, children: any) => {
-    return name === REACT_ELEMENT_TYPE ? renderToFragment(props.element.react, { key: props.key }) : React.createElement(name, props, children);
-  }
-}).freeze();
+const renderer = unified()
+  .use(remark2react, {
+    toHast: {
+      handlers: createIntlMessageHandler(() => localCtx)
+    },
+    sanitize: false,
+    createElement: (name: any, props: any, children: any) => {
+      return name === REACT_ELEMENT_TYPE
+        ? renderToFragment(props.element.react, { key: props.key })
+        : React.createElement(name, props, children);
+    }
+  })
+  .freeze();
 
 function renderToReact(tree: Unist.Node, context: Context) {
   localCtx = context;

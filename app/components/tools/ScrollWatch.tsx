@@ -17,7 +17,10 @@ function raf(cb: () => void): () => void {
 /**
  * Progressively adds the given classes to a div element with increasing scrollTop
  */
-export default class ScrollWatch extends React.Component<React.HTMLAttributes<HTMLDivElement> & { step: number, classes: string[] }, { idx: number }> {
+export default class ScrollWatch extends React.Component<
+  React.HTMLAttributes<HTMLDivElement> & { step: number; classes: string[] },
+  { idx: number }
+> {
   state = { idx: 0 };
 
   element: HTMLDivElement | null;
@@ -35,8 +38,10 @@ export default class ScrollWatch extends React.Component<React.HTMLAttributes<HT
 
   render() {
     const { className, children, step, classes, ...childProps } = this.props;
-    return (<div {...childProps} ref={e => this.element = e} className={cx(className, classes[this.state.idx])} onScroll={this.onScroll}>
-      {children}
-    </div>);
+    return (
+      <div {...childProps} ref={(e) => (this.element = e)} className={cx(className, classes[this.state.idx])} onScroll={this.onScroll}>
+        {children}
+      </div>
+    );
   }
 }

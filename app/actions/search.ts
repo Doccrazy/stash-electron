@@ -1,13 +1,13 @@
 import { List } from 'immutable';
 import { debounce } from 'lodash';
 import { getRepo, Actions as RepoActions } from './repository';
-import {deselectSpecial, selectSpecial} from './currentNode';
-import {hierarchy, isAccessible, recursiveChildIds} from '../utils/repository';
+import { deselectSpecial, selectSpecial } from './currentNode';
+import { hierarchy, isAccessible, recursiveChildIds } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import { typeFor } from '../fileType/index';
 import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
-import {SearchOptions, State} from './types/search';
-import {State as RepositoryState} from './types/repository';
+import { SearchOptions, State } from './types/search';
+import { State as RepositoryState } from './types/repository';
 import { afterAction } from '../store/eventMiddleware';
 import { FuzzyStringMatcher, StringMatcher } from '../utils/StringMatcher';
 
@@ -31,8 +31,12 @@ function quickFilter(): Thunk<void> {
       return;
     }
 
-    const results: List<EntryPtr> = filterByName(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/',
-      search.filter, !search.options.limitedScope);
+    const results: List<EntryPtr> = filterByName(
+      repository.nodes,
+      (search.options.limitedScope && currentNode.nodeId) || '/',
+      search.filter,
+      !search.options.limitedScope
+    );
 
     dispatch({
       type: Actions.RESULTS,
@@ -67,11 +71,13 @@ function matches(ptr: EntryPtr, content: any, matcher: StringMatcher) {
   return matcher.matches(t.toDisplayName(ptr.entry)) || t.matches!(content, matcher);
 }
 
-type PtrWithBuffer = { ptr: EntryPtr, buffer: Buffer };
-type PtrWithContent = { ptr: EntryPtr, content: any };
+type PtrWithBuffer = { ptr: EntryPtr; buffer: Buffer };
+type PtrWithContent = { ptr: EntryPtr; content: any };
 
 function readContentBuffer(ptr: EntryPtr): Promise<PtrWithBuffer> {
-  return getRepo().readFile(ptr.nodeId, ptr.entry).then((buffer: Buffer) => ({ ptr, buffer }));
+  return getRepo()
+    .readFile(ptr.nodeId, ptr.entry)
+    .then((buffer: Buffer) => ({ ptr, buffer }));
 }
 
 function allEntriesBelow(nodes: RepositoryState['nodes'], rootNodeId: string, nodeFilter?: (nodeId: string) => boolean): EntryPtr[] {
@@ -80,14 +86,18 @@ function allEntriesBelow(nodes: RepositoryState['nodes'], rootNodeId: string, no
     allChildIds = allChildIds.filter(nodeFilter);
   }
   return allChildIds
-    .map(nodeId => nodes[nodeId].entries.toArray().map(entry => new EntryPtr(nodeId, entry)))
-    .reduce((acc, ptrs) => { acc.push(...ptrs); return acc; }, []);
+    .map((nodeId) => nodes[nodeId].entries.toArray().map((entry) => new EntryPtr(nodeId, entry)))
+    .reduce((acc, ptrs) => {
+      acc.push(...ptrs);
+      return acc;
+    }, []);
 }
 
-async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId: string = '/', filter: string, currentUser?: string) {
+async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId = '/', filter: string, currentUser?: string) {
   console.time('resolve');
-  const allSupportedEntries = allEntriesBelow(nodes, rootNodeId, (nodeId) => isAccessible(nodes, nodeId, currentUser))
-    .filter(ptr => !!typeFor((ptr as EntryPtr).entry).parse);
+  const allSupportedEntries = allEntriesBelow(nodes, rootNodeId, (nodeId) => isAccessible(nodes, nodeId, currentUser)).filter(
+    (ptr) => !!typeFor(ptr.entry).parse
+  );
   console.timeEnd('resolve');
   console.log('# supported items: ', allSupportedEntries.length);
 
@@ -100,14 +110,15 @@ async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId: stri
 
   console.time('filter');
   const matcher = new FuzzyStringMatcher(filter);
-  const results = parsed.filter(({ ptr, content }: PtrWithContent) => matches(ptr, content, matcher))
+  const results = parsed
+    .filter(({ ptr, content }: PtrWithContent) => matches(ptr, content, matcher))
     .map((item: PtrWithContent) => item.ptr);
   console.timeEnd('filter');
 
   return List(results);
 }
 
-function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/', filter: string, matchPath: boolean = false) {
+function filterByName(nodes: RepositoryState['nodes'], rootNodeId = '/', filter: string, matchPath = false) {
   console.time('resolve');
   const allEntries = allEntriesBelow(nodes, rootNodeId);
   console.timeEnd('resolve');
@@ -119,13 +130,20 @@ function filterByName(nodes: RepositoryState['nodes'], rootNodeId: string = '/',
     if (cached) {
       return cached;
     }
-    return hierarchyCache[nodeId] = FuzzyStringMatcher.prepare(`/${hierarchy(nodes, nodeId).slice(1).map(node => node.name).join('/')}/`);
+    return (hierarchyCache[nodeId] = FuzzyStringMatcher.prepare(
+      `/${hierarchy(nodes, nodeId)
+        .slice(1)
+        .map((node) => node.name)
+        .join('/')}/`
+    ));
   }
 
   console.time('filter');
   const matcher = new FuzzyStringMatcher(filter);
-  const results = allEntries.filter((ptr: EntryPtr) => matcher.matches(typeFor(ptr.entry).toDisplayName(ptr.entry))
-    || (matchPath && matcher.matchesPrepared(hierToStr(ptr.nodeId))));
+  const results = allEntries.filter(
+    (ptr: EntryPtr) =>
+      matcher.matches(typeFor(ptr.entry).toDisplayName(ptr.entry)) || (matchPath && matcher.matchesPrepared(hierToStr(ptr.nodeId)))
+  );
   console.timeEnd('filter');
 
   return List(results);
@@ -144,8 +162,12 @@ export function startSearch(): Thunk<Promise<void>> {
       type: Actions.START
     });
 
-    const results: List<EntryPtr> = await filterByContent(repository.nodes, (search.options.limitedScope && currentNode.nodeId) || '/',
-      search.filter, privateKey.username);
+    const results: List<EntryPtr> = await filterByContent(
+      repository.nodes,
+      (search.options.limitedScope && currentNode.nodeId) || '/',
+      search.filter,
+      privateKey.username
+    );
 
     dispatch({
       type: Actions.RESULTS,
@@ -182,7 +204,7 @@ export function showResults(): Thunk<void> {
   };
 }
 
-afterAction(RepoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }: { ptr: EntryPtr, newName: string }) => {
+afterAction(RepoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }: { ptr: EntryPtr; newName: string }) => {
   const { search } = getState();
   const idx = search.results.indexOf(ptr);
   if (idx >= 0) {
@@ -208,7 +230,7 @@ afterAction(RepoActions.DELETE_ENTRY, (dispatch, getState: GetState, { ptr }: { 
   }
 });
 
-afterAction(RepoActions.MOVE_ENTRY, (dispatch, getState: GetState, { ptr, newNodeId }: { ptr: EntryPtr, newNodeId: string }) => {
+afterAction(RepoActions.MOVE_ENTRY, (dispatch, getState: GetState, { ptr, newNodeId }: { ptr: EntryPtr; newNodeId: string }) => {
   const { search } = getState();
   const idx = search.results.indexOf(ptr);
   if (idx >= 0) {
@@ -222,9 +244,9 @@ afterAction(RepoActions.MOVE_ENTRY, (dispatch, getState: GetState, { ptr, newNod
 });
 
 type Action =
-  TypedAction<Actions.CHANGE_FILTER, string>
+  | TypedAction<Actions.CHANGE_FILTER, string>
   | OptionalAction<Actions.START>
-  | TypedAction<Actions.RESULTS, { quick?: boolean, results: List<EntryPtr> }>
+  | TypedAction<Actions.RESULTS, { quick?: boolean; results: List<EntryPtr> }>
   | TypedAction<Actions.SET_OPTIONS, SearchOptions>;
 
 type Thunk<R> = TypedThunk<Action, R>;

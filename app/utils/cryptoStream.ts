@@ -32,16 +32,16 @@ export function decipher(key) {
 }*/
 
 export function encipherSync(key: Buffer, buffer: Buffer): Buffer {
-    const iv = crypto.randomBytes(ALG_IV_BYTES);
-    const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
+  const iv = crypto.randomBytes(ALG_IV_BYTES);
+  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
 
-    const outBuffer = cipher.update(buffer);
-    return Buffer.concat([iv, outBuffer, cipher.final()]);
+  const outBuffer = cipher.update(buffer);
+  return Buffer.concat([iv, outBuffer, cipher.final()]);
 }
 
 export function decipherSync(key: Buffer, buffer: Buffer): Buffer {
-    const ivBuffer = buffer.slice(0, ALG_IV_BYTES);
-    const decipher = crypto.createDecipheriv(ALGORITHM, key, ivBuffer);
-    const outBuffer = decipher.update(buffer.slice(ALG_IV_BYTES));
-    return Buffer.concat([outBuffer, decipher.final()]);
+  const ivBuffer = buffer.slice(0, ALG_IV_BYTES);
+  const decipher = crypto.createDecipheriv(ALGORITHM, key, ivBuffer);
+  const outBuffer = decipher.update(buffer.slice(ALG_IV_BYTES));
+  return Buffer.concat([outBuffer, decipher.final()]);
 }

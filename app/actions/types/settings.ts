@@ -7,37 +7,38 @@ export enum KeyFormat {
 }
 
 export interface StringSettings {
-  repositoryPath?: string,
-  rootFontSize: number,
-  privateKeyFile?: string,
-  inactivityTimeout: number,
-  keyDisplayFormat: KeyFormat,
-  locale: string
+  repositoryPath?: string;
+  rootFontSize: number;
+  privateKeyFile?: string;
+  inactivityTimeout: number;
+  keyDisplayFormat: KeyFormat;
+  locale: string;
 }
 
 export interface BoolSettings {
-  hideInaccessible?: boolean
+  hideInaccessible?: boolean;
 }
 
 export interface RepositoryInfo {
-  path: string
-  name: string
-  id?: string
+  path: string;
+  name: string;
+  id?: string;
 }
 
 export interface PrivateKeyInfo {
-  path: string
-  publicKey: string
+  path: string;
+  publicKey: string;
 }
 
-export type SettingsMap = StringSettings & BoolSettings & {
-  storedLogins: string[],
-  repositories: RepositoryInfo[],
-  privateKeys: PrivateKeyInfo[]
-};
+export type SettingsMap = StringSettings &
+  BoolSettings & {
+    storedLogins: string[];
+    repositories: RepositoryInfo[];
+    privateKeys: PrivateKeyInfo[];
+  };
 
 export interface State {
-  readonly current: SettingsMap,
-  readonly edited: Partial<SettingsMap>,
-  readonly previous: SettingsMap
+  readonly current: SettingsMap;
+  readonly edited: Partial<SettingsMap>;
+  readonly previous: SettingsMap;
 }

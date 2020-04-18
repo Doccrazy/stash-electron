@@ -1,13 +1,13 @@
 import * as fs from 'fs-extra';
 import * as sshpk from 'sshpk';
-import {toastr} from 'react-redux-toastr';
+import { toastr } from 'react-redux-toastr';
 import { clipboard, remote } from 'electron';
-import {GetState, OptionalAction, TypedAction, TypedThunk} from './types/index';
-import {FormState, State} from './types/keys';
-import {afterAction} from '../store/eventMiddleware';
+import { GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
+import { FormState, State } from './types/keys';
+import { afterAction } from '../store/eventMiddleware';
 import * as Repository from './repository';
-import KeyProvider, {findUser} from '../repository/KeyProvider';
-import {parsePublicKey} from '../utils/rsa';
+import KeyProvider, { findUser } from '../repository/KeyProvider';
+import { parsePublicKey } from '../utils/rsa';
 
 export enum Actions {
   LOAD = 'keys/LOAD',
@@ -21,7 +21,9 @@ export enum Actions {
 }
 
 function load(provider: KeyProvider): Action {
-  const keysByUser: State['byUser'] = provider.listUsers().reduce((acc, username) => ({ ...acc, [username]: provider.getKey(username) }), {});
+  const keysByUser: State['byUser'] = provider
+    .listUsers()
+    .reduce((acc, username) => ({ ...acc, [username]: provider.getKey(username) }), {});
   return {
     type: Actions.LOAD,
     payload: keysByUser
@@ -38,10 +40,10 @@ export function save(): Thunk<Promise<void>> {
     const provider = Repository.getKeyProvider();
 
     const usersInRepo = provider.listUsers();
-    usersInRepo.filter(username => !Object.keys(keys.edited).includes(username))
-      .forEach(username => provider.deleteKey(username));
-    Object.keys(keys.edited).filter(username => !provider.listUsers().includes(username))
-      .forEach(username => provider.addKey(username, keys.edited[username]));
+    usersInRepo.filter((username) => !Object.keys(keys.edited).includes(username)).forEach((username) => provider.deleteKey(username));
+    Object.keys(keys.edited)
+      .filter((username) => !provider.listUsers().includes(username))
+      .forEach((username) => provider.addKey(username, keys.edited[username]));
 
     try {
       await provider.save();
@@ -135,9 +137,9 @@ export function change(formState: FormState): Thunk<void> {
         parsePublicKey(formState.publicKey);
       } catch (e) {
         if (e instanceof sshpk.KeyEncryptedError) {
-          dispatch({type: Actions.VALIDATE, payload: {valid: false, message: `Encrypted keys are not supported here.`}});
+          dispatch({ type: Actions.VALIDATE, payload: { valid: false, message: `Encrypted keys are not supported here.` } });
         } else {
-          dispatch({type: Actions.VALIDATE, payload: {valid: false, message: `Invalid key: ${e.message}.`}});
+          dispatch({ type: Actions.VALIDATE, payload: { valid: false, message: `Invalid key: ${e.message}.` } });
         }
         return;
       }
@@ -166,10 +168,12 @@ export function browseLoadKey(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { keys } = getState();
 
-    const files = (await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-      title: 'Select public key',
-      properties: ['openFile']
-    })).filePaths;
+    const files = (
+      await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+        title: 'Select public key',
+        properties: ['openFile']
+      })
+    ).filePaths;
     if (files && files[0]) {
       const publicKey = await fs.readFile(files[0], 'utf8');
       dispatch(change({ ...keys.formState, publicKey }));
@@ -202,13 +206,13 @@ afterAction(Repository.Actions.FINISH_LOAD, (dispatch, getState: GetState) => {
 });
 
 type Action =
-  TypedAction<Actions.LOAD, State['byUser']>
+  | TypedAction<Actions.LOAD, State['byUser']>
   | OptionalAction<Actions.SAVED>
-  | TypedAction<Actions.ADD, { username: string, key: sshpk.Key }>
+  | TypedAction<Actions.ADD, { username: string; key: sshpk.Key }>
   | TypedAction<Actions.DELETE, string>
   | OptionalAction<Actions.OPEN_ADD>
   | OptionalAction<Actions.CLOSE_ADD>
-  | TypedAction<Actions.VALIDATE, { valid: boolean, message?: string }>
+  | TypedAction<Actions.VALIDATE, { valid: boolean; message?: string }>
   | TypedAction<Actions.CHANGE, FormState>;
 
 type Thunk<R> = TypedThunk<Action, R>;
@@ -220,11 +224,11 @@ export default function reducer(state: State = { byUser: {}, edited: {}, formSta
     case Actions.SAVED:
       return { ...state, byUser: { ...state.edited }, modified: false, valid: true };
     case Actions.ADD: {
-      const newKeysByUser = {...state.edited, [action.payload.username]: action.payload.key};
+      const newKeysByUser = { ...state.edited, [action.payload.username]: action.payload.key };
       return { ...state, edited: newKeysByUser, modified: true };
     }
     case Actions.DELETE: {
-      const newKeysByUser = {...state.edited};
+      const newKeysByUser = { ...state.edited };
       delete newKeysByUser[action.payload];
       return { ...state, edited: newKeysByUser, modified: true };
     }

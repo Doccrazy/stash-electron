@@ -7,11 +7,14 @@ import { Dispatch } from '../actions/types';
 import FileDropAcceptor from '../components/FileDropAcceptor';
 
 export interface Props {
-  children: any,
+  children: any;
   [propName: string]: any;
 }
 
 export default connect(null, (dispatch: Dispatch, props: Props) => ({
   onDrop: (files: string[]) => dispatch(addFiles(files)) as any,
-  onContextMenu: (ev: React.MouseEvent) => { ev.preventDefault(); dispatch(nodeContextMenu(undefined, true)); }
+  onContextMenu: (ev: React.MouseEvent) => {
+    ev.preventDefault();
+    dispatch(nodeContextMenu(undefined, true));
+  }
 }))(FileDropAcceptor);

@@ -29,7 +29,7 @@ const rendererProdConfig: webpack.Configuration = {
   },
 
   externals: (context, request, callback) => {
-    if (/\.node$/.test(request)) {
+    if (request.endsWith('.node')) {
       const filename = path.relative(__dirname, path.resolve(context, request)).replace(/\\/g, '/');
       return callback(null, `commonjs ../${filename}`);
     }
@@ -41,10 +41,7 @@ const rendererProdConfig: webpack.Configuration = {
       // Extract all .global.css to style.css as is
       {
         test: /\.global\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader'
-        ]
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
       // Pipe other styles through css modules and append to style.css
       {
@@ -66,11 +63,7 @@ const rendererProdConfig: webpack.Configuration = {
       // Add SASS support  - compile all .global.scss files and pipe it to style.css
       {
         test: /\.global\.scss$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'sass-loader'
-        ]
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
       },
       // Add SASS support  - compile all other .scss files and pipe it to style.css
       {

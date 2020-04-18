@@ -2,11 +2,11 @@
 import * as kdbxweb from 'kdbxweb';
 import * as path from 'path';
 import KeePassImporter from '../import/KeePassImporter';
-import {State, ImportSettings, StatusType} from './types/fileImport';
+import { State, ImportSettings, StatusType } from './types/fileImport';
 import { childNodeByName } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import { createChildNode, writeEntry } from './repository';
-import {OptionalAction, TypedAction, TypedThunk} from './types/index';
+import { OptionalAction, TypedAction, TypedThunk } from './types/index';
 
 export enum Actions {
   OPEN = 'fileImport/OPEN',
@@ -46,7 +46,10 @@ export function performImport(): Thunk<Promise<void>> {
       });
     }
 
-    const { currentNode, fileImport: { settings } } = getState();
+    const {
+      currentNode,
+      fileImport: { settings }
+    } = getState();
     if (!currentNode.nodeId) {
       return;
     }
@@ -90,7 +93,7 @@ export function performImport(): Thunk<Promise<void>> {
           }
           await dispatch(writeEntry(new EntryPtr(parentNode, fileName), content));
         },
-        progress: message => status('progress', message)
+        progress: (message) => status('progress', message)
       });
 
       await importer.performImport(currentNode.nodeId);
@@ -104,10 +107,10 @@ export function performImport(): Thunk<Promise<void>> {
 }
 
 type Action =
-  OptionalAction<Actions.OPEN, EntryPtr>
+  | OptionalAction<Actions.OPEN, EntryPtr>
   | OptionalAction<Actions.CLOSE, EntryPtr>
   | TypedAction<Actions.CHANGE_SETTINGS, ImportSettings>
-  | TypedAction<Actions.STATUS, { type: StatusType, message: string }>;
+  | TypedAction<Actions.STATUS, { type: StatusType; message: string }>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 

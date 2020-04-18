@@ -1,10 +1,10 @@
 import * as React from 'react';
 
 export interface Props<T> {
-  limit?: number
-  items: T[]
-  item: (item: T, idx: number) => React.ReactNode
-  loadMore?: (onLoadMore: (ev?: React.SyntheticEvent) => void, remaining: number) => React.ReactNode
+  limit?: number;
+  items: T[];
+  item: (item: T, idx: number) => React.ReactNode;
+  loadMore?: (onLoadMore: (ev?: React.SyntheticEvent) => void, remaining: number) => React.ReactNode;
 }
 
 /**
@@ -21,7 +21,7 @@ export default class ItemLimiter<T> extends React.Component<Props<T>, { limit: n
       ev.preventDefault();
     }
     this.setState({ limit: this.state.limit + this.props.limit! });
-  }
+  };
 
   render() {
     const remaining = this.props.items.length - this.state.limit;

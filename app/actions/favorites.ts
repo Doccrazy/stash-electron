@@ -21,8 +21,8 @@ export enum Actions {
 export const FILENAME = '.favorites.json';
 
 interface FavoritesFile {
-  favorites?: string[],
-  lastSelection?: string
+  favorites?: string[];
+  lastSelection?: string;
 }
 
 export function add(ptr: EntryPtr): Action {
@@ -67,10 +67,9 @@ export function loadForRepo(): Thunk<Promise<void>> {
     if (fs.existsSync(filename)) {
       const parsed = JSON.parse(await fs.readFile(filename, 'utf8')) as FavoritesFile;
       if (parsed.favorites) {
-        dispatch(set(Set(parsed.favorites.map(href => StashLink.parse(href).toEntryPtr()))));
+        dispatch(set(Set(parsed.favorites.map((href) => StashLink.parse(href).toEntryPtr()))));
       }
-      if (!getState().currentNode.nodeId
-        && (!parsed.lastSelection || !await dispatch(openStashLink(parsed.lastSelection, true)))) {
+      if (!getState().currentNode.nodeId && (!parsed.lastSelection || !(await dispatch(openStashLink(parsed.lastSelection, true))))) {
         await dispatch(CurrentNode.select('/'));
       }
     } else {
@@ -94,10 +93,12 @@ export function saveForRepo(): Thunk<Promise<void>> {
     let parsed;
     try {
       parsed = JSON.parse(await fs.readFile(filename, 'utf8')) as FavoritesFile;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     if (!isEqual(parsed, serialized)) {
       await fs.writeFile(filename, JSON.stringify(serialized, null, '  '));
-      dispatch({type: Actions.SAVED});
+      dispatch({ type: Actions.SAVED });
     }
   };
 }
@@ -113,7 +114,7 @@ afterAction(CurrentNode.Actions.SELECT, (dispatch: Dispatch, getState: GetState)
 });
 
 type Action =
-  TypedAction<Actions.ADD, EntryPtr>
+  | TypedAction<Actions.ADD, EntryPtr>
   | TypedAction<Actions.REMOVE, EntryPtr>
   | TypedAction<Actions.SET, Set<EntryPtr>>
   | OptionalAction<Actions.SAVED>;

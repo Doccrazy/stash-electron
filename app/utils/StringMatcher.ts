@@ -1,12 +1,12 @@
 import { diacriticsMap } from 'diacritics';
 
 const REPLACE_MAP: { [ch: string]: string } = {
-  '_': '-',
+  _: '-',
   '~': '-',
   '=': '-',
   '`': '"',
   '´': '"',
-  '\'': '"',
+  "'": '"',
   ',': '.',
   ';': ':',
   '{': '(',
@@ -18,7 +18,12 @@ const REPLACE_MAP: { [ch: string]: string } = {
   '|': '!',
   '\\': '/'
 };
-const REPLACE_EXP = new RegExp(`[\u007f-\uffff${Object.keys(REPLACE_MAP).join('').replace(/[\[\]|\\]/g, '\\$&')}]`, 'g');
+const REPLACE_EXP = new RegExp(
+  `[\u007f-\uffff${Object.keys(REPLACE_MAP)
+    .join('')
+    .replace(/[[\]|\\]/g, '\\$&')}]`,
+  'g'
+);
 const REPL_DIA_MAP = {
   ...diacriticsMap,
   ...REPLACE_MAP
@@ -33,7 +38,7 @@ function normalize(input: string): string {
 }
 
 export interface StringMatcher {
-  matches(other: string): boolean
+  matches(other: string): boolean;
 }
 
 export class FuzzyStringMatcher implements StringMatcher {

@@ -15,7 +15,7 @@ Module._resolveFilename = function (request, parent, isMain) {
 };
 
 global.window = {
-  addEventListener: function() {}
+  addEventListener: function () {}
 };
 
 global.document = {

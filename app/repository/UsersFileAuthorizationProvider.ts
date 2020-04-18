@@ -9,7 +9,7 @@ import UsersFile from './UsersFile';
 export default class UsersFileAuthorizationProvider implements AuthorizationProvider {
   private readonly repoPath: string;
   private readonly keyProvider: KeyProvider;
-  private usersFileCache: {[nodeId: string]: UsersFile} = {};
+  private usersFileCache: { [nodeId: string]: UsersFile } = {};
 
   private currentUsername?: string | null;
   private currentKey?: SshPK.PrivateKey;
@@ -33,8 +33,8 @@ export default class UsersFileAuthorizationProvider implements AuthorizationProv
       usersFile.bulkAuthorize(users, this.keyProvider);
     } else {
       const currentUsers = usersFile.listUsers();
-      const addedUsers = users.filter(u => currentUsers.indexOf(u) < 0);
-      const deletedUsers = currentUsers.filter(u => users.indexOf(u) < 0);
+      const addedUsers = users.filter((u) => !currentUsers.includes(u));
+      const deletedUsers = currentUsers.filter((u) => !users.includes(u));
 
       for (const deletedUser of deletedUsers) {
         usersFile.unauthorize(deletedUser);

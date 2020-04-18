@@ -24,17 +24,26 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
   const debArtifactName = `${pkgName}_${pkgVersion}-${pkgIteration}_amd64.deb`;
 
   // write version for AUR update script
-  try { fs.mkdirSync('release'); } catch { /* already exists */ }
-  fs.writeFileSync('release/PKGINFO', `PKG_VERSION=${pkgVersion}\nPKG_ITERATION=${pkgIteration}\nPKG_NAME=${pkgName}\nDEB_ARTIFACT_NAME=${debArtifactName}\n`);
+  try {
+    fs.mkdirSync('release');
+  } catch {
+    /* already exists */
+  }
+  fs.writeFileSync(
+    'release/PKGINFO',
+    `PKG_VERSION=${pkgVersion}\nPKG_ITERATION=${pkgIteration}\nPKG_NAME=${pkgName}\nDEB_ARTIFACT_NAME=${debArtifactName}\n`
+  );
 
-  const defaultPublisher: Configuration['publish'] = snapshotNum ? {
-    provider: 'bintray',
-    repo: 'bin',
-    owner: 'doccrazy',
-    package: pkgName
-  } : {
-    provider: 'github'
-  };
+  const defaultPublisher: Configuration['publish'] = snapshotNum
+    ? {
+        provider: 'bintray',
+        repo: 'bin',
+        owner: 'doccrazy',
+        package: pkgName
+      }
+    : {
+        provider: 'github'
+      };
 
   return {
     targets: createTargets([platform], undefined, 'x64'),
@@ -50,27 +59,21 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
         publish: defaultPublisher
       },
       pacman: {
-        fpm: [
-          '--name', pkgName,
-          '--version', pkgVersion,
-          '--iteration', pkgIteration
-        ],
+        fpm: ['--name', pkgName, '--version', pkgVersion, '--iteration', pkgIteration],
         artifactName: pacmanArtifactName
       },
       appImage: {
         publish: defaultPublisher
       },
       deb: {
-        fpm: [
-          '--name', pkgName,
-          '--version', pkgVersion,
-          '--iteration', pkgIteration
-        ],
+        fpm: ['--name', pkgName, '--version', pkgVersion, '--iteration', pkgIteration],
         artifactName: debArtifactName,
-        publish: process.env.DEB_SKIP_PUBLISH ? null : {
-          provider: 'bintray',
-          package: pkgName
-        }
+        publish: process.env.DEB_SKIP_PUBLISH
+          ? null
+          : {
+              provider: 'bintray',
+              package: pkgName
+            }
       }
     }
   };
@@ -79,7 +82,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
 // tags must always begin with 'v' and may contain an optional commit index + build hash
 const DESCRIBE_PATTERN = /v([^-]+)(?:-(\d+)-\w+)?/;
 
-exec('git describe --tags', async (error, stdout, stderr) => {
+exec('git describe --tags', async (error, stdout) => {
   const m = DESCRIBE_PATTERN.exec(stdout);
   if (!m) {
     console.log(`Invalid output '${stdout}' from 'git describe --tags'`);

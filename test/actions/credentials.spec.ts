@@ -23,7 +23,7 @@ describe('actions/credentials', () => {
     const result = await resultPromise;
     await store.dispatch(Credentials.acceptCredentials('context'));
 
-    await new Promise(resolve => onceAfterAction(Credentials.Actions.CLOSE, resolve));
+    await new Promise((resolve) => onceAfterAction(Credentials.Actions.CLOSE, resolve));
 
     expect(result.username).to.eq('foo');
     expect(result.password).to.eq('bar');
@@ -57,7 +57,7 @@ describe('actions/credentials', () => {
     const result = await resultPromise;
     await store.dispatch(Credentials.acceptCredentials('context'));
 
-    await new Promise(resolve => onceAfterAction(Credentials.Actions.CLOSE, resolve));
+    await new Promise((resolve) => onceAfterAction(Credentials.Actions.CLOSE, resolve));
 
     expect(result.username).to.eq('foo');
     expect(result.password).to.eq('correct');
@@ -83,7 +83,7 @@ describe('actions/credentials', () => {
     const result1 = await resultPromise1;
     await store.dispatch(Credentials.acceptCredentials('context1'));
 
-    await new Promise(resolve => onceAfterAction(Credentials.Actions.OPEN, resolve));
+    await new Promise((resolve) => onceAfterAction(Credentials.Actions.OPEN, resolve));
 
     store.dispatch(Credentials.change({ username: 'user2', password: 'pw' }));
     store.dispatch(Credentials.confirm());
@@ -91,7 +91,7 @@ describe('actions/credentials', () => {
     const result2 = await resultPromise2;
     await store.dispatch(Credentials.acceptCredentials('context2'));
 
-    await new Promise(resolve => onceAfterAction(Credentials.Actions.CLOSE, resolve));
+    await new Promise((resolve) => onceAfterAction(Credentials.Actions.CLOSE, resolve));
 
     expect(result1.username).to.eq('foo');
     expect(result1.password).to.eq('bar');
@@ -100,7 +100,7 @@ describe('actions/credentials', () => {
   });
 
   it('should immediately return a saved password', async () => {
-    await withStubbed('keytar', async keytar => {
+    await withStubbed('keytar', async (keytar) => {
       keytar.getPassword.withArgs(sinon.match.any, 'context').returns('{"username": "foo", "password": "bar"}');
 
       store.dispatch(Settings.changeAndSave('storedLogins', ['context']));
@@ -112,7 +112,7 @@ describe('actions/credentials', () => {
   });
 
   it('should handle 2 concurrent requests with 1 stored password', async () => {
-    await withStubbed('keytar', async keytar => {
+    await withStubbed('keytar', async (keytar) => {
       keytar.getPassword.withArgs(sinon.match.any, 'context2').returns('{"username": "u2", "password": "p2"}');
 
       store.dispatch(Settings.changeAndSave('storedLogins', ['context2']));
@@ -122,7 +122,7 @@ describe('actions/credentials', () => {
       const result2 = await store.dispatch(Credentials.requestCredentials('context2', 'Title', 'Text'));
       await store.dispatch(Credentials.acceptCredentials('context2'));
 
-      await new Promise(resolve => setTimeout(resolve));
+      await new Promise((resolve) => setTimeout(resolve));
 
       expect(store.getState().credentials.open).to.be.true;
 
@@ -132,7 +132,7 @@ describe('actions/credentials', () => {
       const result1 = await resultPromise1;
       await store.dispatch(Credentials.acceptCredentials('context1'));
 
-      await new Promise(resolve => onceAfterAction(Credentials.Actions.CLOSE, resolve));
+      await new Promise((resolve) => onceAfterAction(Credentials.Actions.CLOSE, resolve));
 
       expect(result1.username).to.eq('foo');
       expect(result1.password).to.eq('bar');
@@ -142,7 +142,7 @@ describe('actions/credentials', () => {
   });
 
   it('should delete and update a saved password', async () => {
-    await withStubbed('keytar', async keytar => {
+    await withStubbed('keytar', async (keytar) => {
       keytar.getPassword.withArgs(sinon.match.any, 'context').returns('{"username": "foo", "password": "bar"}');
 
       store.dispatch(Settings.changeAndSave('storedLogins', ['context']));
@@ -164,7 +164,7 @@ describe('actions/credentials', () => {
       const newResult = await resultPromise;
       await store.dispatch(Credentials.acceptCredentials('context'));
 
-      await new Promise(resolve => onceAfterAction(Credentials.Actions.CLOSE, resolve));
+      await new Promise((resolve) => onceAfterAction(Credentials.Actions.CLOSE, resolve));
 
       expect(newResult.username).to.eq('foo');
       expect(newResult.password).to.eq('newpw');
@@ -173,5 +173,4 @@ describe('actions/credentials', () => {
       expect(keytar.setPassword.calledWith(sinon.match.any, 'context', '{"username":"foo","password":"newpw"}')).to.be.true;
     });
   });
-
 });

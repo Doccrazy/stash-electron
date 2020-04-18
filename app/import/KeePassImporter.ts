@@ -5,22 +5,21 @@ import PasswordType from '../fileType/password';
 import { cleanFileName } from '../utils/repository';
 
 export interface Callbacks<T> {
-  createNode(parent: T, name: string): Promise<T>
-  createEntry(parent: T, fileName: string, content: Buffer): Promise<void>
-  progress(message: string): void
+  createNode(parent: T, name: string): Promise<T>;
+  createEntry(parent: T, fileName: string, content: Buffer): Promise<void>;
+  progress(message: string): void;
 }
 
 export interface Credentials {
-  masterKey?: string
-  keyFile?: string
+  masterKey?: string;
+  keyFile?: string;
 }
 
 export default class KeePassImporter<T> {
   groupCount = 0;
   entryCount = 0;
 
-  constructor(private databasePath: string, private credentials: Credentials, private callbacks: Callbacks<T>) {
-  }
+  constructor(private databasePath: string, private credentials: Credentials, private callbacks: Callbacks<T>) {}
 
   async performImport(targetNode: T) {
     this.groupCount = 0;
@@ -29,8 +28,10 @@ export default class KeePassImporter<T> {
     const dataBuffer = await fs.readFile(this.databasePath);
     const keyFileBuffer = this.credentials.keyFile ? await fs.readFile(this.credentials.keyFile) : null;
 
-    const credentials = new kdbxweb.Credentials(this.credentials.masterKey ? kdbxweb.ProtectedValue.fromString(this.credentials.masterKey) : null,
-      keyFileBuffer ? keyFileBuffer.buffer : null);
+    const credentials = new kdbxweb.Credentials(
+      this.credentials.masterKey ? kdbxweb.ProtectedValue.fromString(this.credentials.masterKey) : null,
+      keyFileBuffer ? keyFileBuffer.buffer : null
+    );
     const kdbx = await kdbxweb.Kdbx.load(dataBuffer.buffer, credentials);
 
     return this.importGroup(kdbx, kdbx.getDefaultGroup(), targetNode);
@@ -88,7 +89,11 @@ export default class KeePassImporter<T> {
           data = binary.value;
         }
 
-        await this.callbacks.createEntry(targetNode, safeName === safeBinaryName ? safeName : `${safeName} - ${safeBinaryName}`, Buffer.from(data));
+        await this.callbacks.createEntry(
+          targetNode,
+          safeName === safeBinaryName ? safeName : `${safeName} - ${safeBinaryName}`,
+          Buffer.from(data)
+        );
       }
     }
   }

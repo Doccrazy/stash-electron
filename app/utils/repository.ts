@@ -31,7 +31,7 @@ export function isValidFileName(fn?: string): fn is string {
   return !!fn && !/[/\\:*?"<>|]/.test(fn);
 }
 
-export function cleanFileName(fn: string, replacement: string = '') {
+export function cleanFileName(fn: string, replacement = '') {
   return fn ? fn.replace(/[/\\:*?"<>|]/g, replacement) : fn;
 }
 
@@ -41,7 +41,7 @@ export function hasChildOrEntry(allNodes: { [nodeId: string]: Node }, node: Node
 
 export function childNodeByName(allNodes: { [nodeId: string]: Node }, nodeOrId: Node | string, childName: string) {
   const n = typeof nodeOrId === 'string' ? allNodes[nodeOrId] : nodeOrId;
-  return n.childIds.find((child: string) => allNodes[child] && (allNodes[child].name.toLowerCase() === childName.toLowerCase()));
+  return n.childIds.find((child: string) => allNodes[child] && allNodes[child].name.toLowerCase() === childName.toLowerCase());
 }
 
 export function isParentOrSelf(nodes: { [id: string]: Node }, parentId: string, childId: string) {
@@ -52,7 +52,11 @@ export function isParentOrSelf(nodes: { [id: string]: Node }, parentId: string, 
   return child.id === parentId;
 }
 
-export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<Node>, nodeId: string, filter?: (node: Node) => boolean): Promise<List<Node>> {
+export async function readNodeRecursive(
+  nodeReader: (nodeId: string) => Promise<Node>,
+  nodeId: string,
+  filter?: (node: Node) => boolean
+): Promise<List<Node>> {
   console.time('readNodeRecursive');
   // (process as any).noAsar = true;
 
@@ -60,7 +64,7 @@ export async function readNodeRecursive(nodeReader: (nodeId: string) => Promise<
   let readQueue = [nodeId];
 
   while (readQueue.length) {
-    let readNodes = await Promise.all(readQueue.map(n => nodeReader(n)));
+    let readNodes = await Promise.all(readQueue.map((n) => nodeReader(n)));
     if (filter) {
       readNodes = readNodes.filter(filter);
     }
@@ -98,14 +102,14 @@ export function isFullyAccessible(nodes: { [id: string]: Node }, nodeId: string,
   if (!isAccessible(nodes, nodeId, username)) {
     return false;
   }
-  return !recursiveChildIds(nodes, nodeId).find(childId => nodes[childId] && !isAuth(nodes[childId], username));
+  return !recursiveChildIds(nodes, nodeId).find((childId) => nodes[childId] && !isAuth(nodes[childId], username));
 }
 
 export function isAnyAccessible(nodes: { [id: string]: Node }, nodeId: string, username?: string) {
   if (isAccessible(nodes, nodeId, username)) {
     return true;
   }
-  return !!recursiveChildIds(nodes, nodeId).find(childId => nodes[childId] && isDirectAuth(nodes[childId], username));
+  return !!recursiveChildIds(nodes, nodeId).find((childId) => nodes[childId] && isDirectAuth(nodes[childId], username));
 }
 
 function isAuth(node: Node, username?: string) {

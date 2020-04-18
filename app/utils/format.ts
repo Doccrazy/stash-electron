@@ -1,10 +1,14 @@
-import {Set, Collection, OrderedSet} from 'immutable';
+import { Set, Collection, OrderedSet } from 'immutable';
 import { getLocale, t } from './i18n/redux';
 
 /**
  * displays at most 5 items from a user list (including the ellipsis); e.g. a,b,c,d - a,b,c,d,e - a,b,c,d and 2 more
  */
-export function formatUserList(titleKey: string, users: Collection.Set<string> |  Collection.Indexed<string> | string[], currentUser?: string) {
+export function formatUserList(
+  titleKey: string,
+  users: Collection.Set<string> | Collection.Indexed<string> | string[],
+  currentUser?: string
+) {
   const names = [];
   let users2 = Set(users).sort() as OrderedSet<string>;
   if (currentUser && users2.includes(currentUser)) {
@@ -17,7 +21,7 @@ export function formatUserList(titleKey: string, users: Collection.Set<string> |
   }
   let result = t(titleKey) + names.join(', ');
   if (users2.size) {
-    result += ` ${t('common.andMore', {count: users2.size})}`;
+    result += ` ${t('common.andMore', { count: users2.size })}`;
   }
   return result;
 }

@@ -1,24 +1,24 @@
 import { EventEmitter } from 'events';
-import {AnyAction, Dispatch, MiddlewareAPI} from 'redux';
+import { AnyAction, Dispatch, MiddlewareAPI } from 'redux';
 
-const storeEvents = new class extends EventEmitter {
-  onceAny(events: string[],  listener: (...args: any[]) => void): this {
-    const cb = () => {
-      events.forEach(ev => {
+const storeEvents = new (class extends EventEmitter {
+  onceAny(events: string[], listener: (...args: any[]) => void): this {
+    const cb = (...args: any[]) => {
+      events.forEach((ev) => {
         this.removeListener(ev, cb);
       });
 
-      listener.apply(this, arguments);
+      listener.apply(this, args);
     };
 
-    events.forEach(ev => {
+    events.forEach((ev) => {
       this.on(ev, cb);
     });
     return this;
   }
-}();
+})();
 
-export default <S> ({ dispatch, getState }: MiddlewareAPI<Dispatch, S>) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
+export default <S>({ dispatch, getState }: MiddlewareAPI<Dispatch, S>) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
   const preActionState = getState();
 
   const result = next(action);
@@ -34,7 +34,7 @@ export type ActionListener<S> = (dispatch: Dispatch<AnyAction>, getState: () => 
 
 export function afterAction<S>(actionType: string | string[], listener: ActionListener<S>) {
   if (Array.isArray(actionType)) {
-    actionType.forEach(type => storeEvents.on(type, listener));
+    actionType.forEach((type) => storeEvents.on(type, listener));
   } else {
     storeEvents.on(actionType, listener);
   }

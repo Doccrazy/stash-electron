@@ -1,7 +1,7 @@
 /**
  * Base webpack config used across other specific configs
  */
-// tslint:disable-next-line
+// eslint-disable-next-line
 /// <reference path="webpack.config.d.ts" />
 
 import * as path from 'path';
@@ -105,10 +105,7 @@ const baseConfig: webpack.Configuration = {
    */
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
-    modules: [
-      path.join(__dirname, 'app'),
-      'node_modules'
-    ],
+    modules: [path.join(__dirname, 'app'), 'node_modules'],
     aliasFields: [],
     alias: {
       'react-dom': '@hot-loader/react-dom'
@@ -130,14 +127,16 @@ const baseConfig: webpack.Configuration = {
 
   optimization: {
     namedModules: true,
-    minimizer: [new TerserPlugin({
-      sourceMap: true,
-      terserOptions: {
-        mangle: {
-          reserved: ['Key', 'PrivateKey']
+    minimizer: [
+      new TerserPlugin({
+        sourceMap: true,
+        terserOptions: {
+          mangle: {
+            reserved: ['Key', 'PrivateKey']
+          }
         }
-      }
-    })]
+      })
+    ]
   }
 };
 

@@ -30,13 +30,14 @@ function maybeExpand(dispatch: Dispatch<Action>, getState: GetState, nodeId: str
     } else {
       dispatch({
         type: Actions.SET_EXPAND,
-        payload: hierarchy(repository.nodes, node.id).map(n => n.id)
+        payload: hierarchy(repository.nodes, node.id).map((n) => n.id)
       });
     }
   }
 }
 
 export function expand(nodeId: string): Thunk<Promise<void>> {
+  // eslint-disable-next-line @typescript-eslint/require-await
   return async (dispatch, getState) => {
     const { repository } = getState();
     if (!repository.nodes[nodeId]) {
@@ -81,10 +82,7 @@ afterAction(Repository.Actions.MOVE_NODE, (dispatch, getState: GetState, { node,
   dispatch(close(node.id));
 });
 
-type Action =
-  TypedAction<Actions.EXPAND, string>
-  | TypedAction<Actions.SET_EXPAND, string[]>
-  | TypedAction<Actions.CLOSE, string>;
+type Action = TypedAction<Actions.EXPAND, string> | TypedAction<Actions.SET_EXPAND, string[]> | TypedAction<Actions.CLOSE, string>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 

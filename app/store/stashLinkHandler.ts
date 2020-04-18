@@ -3,13 +3,13 @@ import EntryPtr from '../domain/EntryPtr';
 import { select as selectNode } from '../actions/currentNode';
 import { select as selectEntry } from '../actions/currentEntry';
 import { expand } from '../actions/treeState';
-import {Dispatch, Thunk} from '../actions/types/index';
-import {toastr} from 'react-redux-toastr';
+import { Dispatch, Thunk } from '../actions/types/index';
+import { toastr } from 'react-redux-toastr';
 import StashLink from '../domain/StashLink';
 import { t } from '../utils/i18n/redux';
-import {onceAfterAction} from './eventMiddleware';
+import { onceAfterAction } from './eventMiddleware';
 import * as Repository from '../actions/repository';
-import {hierarchy} from '../utils/repository';
+import { hierarchy } from '../utils/repository';
 
 export function openStashLink(link: string, silent?: boolean): Thunk<Promise<boolean>> {
   return async (dispatch, getState) => {
@@ -37,8 +37,8 @@ export function openStashLink(link: string, silent?: boolean): Thunk<Promise<boo
       await dispatch(selectNode(stashLink.nodeId));
       if (stashLink.isEntry()) {
         // TODO the delay is required because selectNode asynchronously clears the selection, and should of course be refactored ;)
-        await new Promise(resolve => setTimeout(resolve, 250));
-        if (!await dispatch(selectEntry(stashLink.toEntryPtr()))) {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+        if (!(await dispatch(selectEntry(stashLink.toEntryPtr())))) {
           if (!silent) {
             toastr.error(t('utils.stashLink.error.title'), t('utils.stashLink.error.notFound'));
           }
@@ -58,10 +58,10 @@ export function openStashLink(link: string, silent?: boolean): Thunk<Promise<boo
 
 export function copyStashLink(ptrOrNodeId: EntryPtr | string) {
   clipboard.writeText(new StashLink(ptrOrNodeId).toUri());
-  toastr.success('', t('utils.stashLink.copied', {type: typeof ptrOrNodeId === 'string' ? 'folder' : 'entry'}), {timeOut: 2000});
+  toastr.success('', t('utils.stashLink.copied', { type: typeof ptrOrNodeId === 'string' ? 'folder' : 'entry' }), { timeOut: 2000 });
 }
 
-export default function(dispatch: Dispatch) {
+export default function (dispatch: Dispatch) {
   ipcRenderer.on('stashLink', (event, message: string) => {
     dispatch(openStashLink(message));
   });

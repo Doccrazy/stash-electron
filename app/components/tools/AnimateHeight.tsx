@@ -45,11 +45,11 @@ export default class AnimateHeight extends React.Component<{ className?: string 
   }
 
   render() {
-    return (<div ref={outer => this.outer = outer} style={{ height: 0, overflowY: 'hidden' }} className={this.props.className}>
-      <div ref={inner => this.inner = inner}>
-        {this.props.children}
+    return (
+      <div ref={(outer) => (this.outer = outer)} style={{ height: 0, overflowY: 'hidden' }} className={this.props.className}>
+        <div ref={(inner) => (this.inner = inner)}>{this.props.children}</div>
+        <div ref={(placeholder) => (this.placeholder = placeholder)} />
       </div>
-      <div ref={placeholder => this.placeholder = placeholder} />
-    </div>);
+    );
   }
 }

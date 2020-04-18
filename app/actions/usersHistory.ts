@@ -54,13 +54,12 @@ export function openAuth(nodeId?: string): Thunk<Promise<void>> {
     const history: AuthHistory[] = [];
 
     // if not explicitly selected, process all nodes that have auth info
-    const nodes = Object.values(getState().repository.nodes)
-      .filter(node => node.id === nodeId || (!nodeId && !!node.authorizedUsers));
+    const nodes = Object.values(getState().repository.nodes).filter((node) => node.id === nodeId || (!nodeId && !!node.authorizedUsers));
 
     // get List<GitCommitInfo> of relevant commits for each node's users file
-    const commits = nodes.map(node => commitsFor(getState(), usersFn(node.id)));
+    const commits = nodes.map((node) => commitsFor(getState(), usersFn(node.id)));
 
-    await accessingRepository(repoPath, async gitRepo => {
+    await accessingRepository(repoPath, async (gitRepo) => {
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
         const fileCommits = commits[i].reverse().toArray();
@@ -89,7 +88,7 @@ export function openAuth(nodeId?: string): Thunk<Promise<void>> {
 }
 
 function makeHistoryEntry(commit: GitCommitInfo, node: Node, lastUsersFile: UsersFile | undefined, usersFile: UsersFile) {
-  const historyEntry: AuthHistory = {...commit, nodeId: node.id, added: [], removed: []};
+  const historyEntry: AuthHistory = { ...commit, nodeId: node.id, added: [], removed: [] };
   if (lastUsersFile) {
     historyEntry.added = Set(usersFile.listUsers()).subtract(Set(lastUsersFile.listUsers())).sort().toArray();
     historyEntry.removed = Set(lastUsersFile.listUsers()).subtract(Set(usersFile.listUsers())).sort().toArray();
@@ -101,7 +100,7 @@ function makeHistoryEntry(commit: GitCommitInfo, node: Node, lastUsersFile: User
 }
 
 function usersFn(nodeId: string) {
-  return  path.posix.join(nodeId, FILENAME).substr(1);
+  return path.posix.join(nodeId, FILENAME).substr(1);
 }
 
 export function setFilter(nodeId?: string): Action {
@@ -118,7 +117,7 @@ export function close(): Action {
 }
 
 type Action =
-  OptionalAction<Actions.OPEN_USERS>
+  | OptionalAction<Actions.OPEN_USERS>
   | OptionalAction<Actions.OPEN_AUTH, string>
   | TypedAction<Actions.AUTH_HISTORY, AuthHistory[]>
   | OptionalAction<Actions.CLOSE>

@@ -3,13 +3,13 @@ import { formatPath } from '../utils/format';
 import withTrans from '../utils/i18n/withTrans';
 import * as styles from './UserKeyTable.css';
 
-export interface PermissionMap  {
-  [username: string]: string[][]
+export interface PermissionMap {
+  [username: string]: string[][];
 }
 
 export interface Props {
-  permissionsByUser: PermissionMap,
-  currentUser?: string | null
+  permissionsByUser: PermissionMap;
+  currentUser?: string | null;
 }
 
 export default withTrans<Props>('component.userPermissionTable')(({ t, permissionsByUser, currentUser }) => (
@@ -21,10 +21,14 @@ export default withTrans<Props>('component.userPermissionTable')(({ t, permissio
       </tr>
     </thead>
     <tbody>
-      {Object.keys(permissionsByUser).sort().map(username => (<tr key={username} className={username === currentUser ? 'table-success' : ''}>
-        <td>{username}</td>
-        <td className="selectable">{permissionsByUser[username].map(formatPath).join(', ')}</td>
-      </tr>))}
+      {Object.keys(permissionsByUser)
+        .sort()
+        .map((username) => (
+          <tr key={username} className={username === currentUser ? 'table-success' : ''}>
+            <td>{username}</td>
+            <td className="selectable">{permissionsByUser[username].map(formatPath).join(', ')}</td>
+          </tr>
+        ))}
     </tbody>
   </table>
 ));

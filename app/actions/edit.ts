@@ -5,8 +5,8 @@ import EntryPtr from '../domain/EntryPtr';
 import { rendererById, Type, typeById, typeFor } from '../fileType';
 import * as Repository from './repository';
 import { afterAction } from '../store/eventMiddleware';
-import {State} from './types/edit';
-import {GetState, OptionalAction, TypedAction, TypedThunk} from './types/index';
+import { State } from './types/edit';
+import { GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 
 export enum Actions {
   OPEN = 'edit/OPEN',
@@ -208,19 +208,22 @@ afterAction(Repository.Actions.RENAME_ENTRY, (dispatch, getState: GetState, { pt
   }
 });
 
-afterAction([Repository.Actions.DELETE_ENTRY, Repository.Actions.MOVE_ENTRY], (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
-  const { edit } = getState();
-  if (edit.ptr && edit.ptr.equals(ptr)) {
-    dispatch(close());
+afterAction(
+  [Repository.Actions.DELETE_ENTRY, Repository.Actions.MOVE_ENTRY],
+  (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
+    const { edit } = getState();
+    if (edit.ptr && edit.ptr.equals(ptr)) {
+      dispatch(close());
+    }
   }
-});
+);
 
 type Action =
-  TypedAction<Actions.OPEN, { ptr: EntryPtr, typeId?: string, parsedContent?: any, formState?: any }>
+  | TypedAction<Actions.OPEN, { ptr: EntryPtr; typeId?: string; parsedContent?: any; formState?: any }>
   | TypedAction<Actions.REPOINT_OPEN, EntryPtr>
   | OptionalAction<Actions.CLOSE>
   | TypedAction<Actions.VALIDATE, string | boolean>
-  | TypedAction<Actions.SAVED, { ptr: EntryPtr, isNew: boolean }>
+  | TypedAction<Actions.SAVED, { ptr: EntryPtr; isNew: boolean }>
   | TypedAction<Actions.CHANGE, any>
   | TypedAction<Actions.CHANGE_STATE, any>
   | TypedAction<Actions.CHANGE_NAME, string>;
@@ -258,9 +261,10 @@ export default function reducer(state: State = {}, action: Action): State {
       return state;
     case Actions.CHANGE_NAME:
       return { ...state, name: action.payload };
-    case Actions.VALIDATE:
+    case Actions.VALIDATE: {
       const msg = typeof action.payload === 'boolean' ? (action.payload ? 'Validation failed.' : undefined) : action.payload;
       return { ...state, validationError: msg };
+    }
     case Actions.CLOSE:
       return {};
     default:

@@ -1,13 +1,13 @@
 import { toastr } from 'react-redux-toastr';
-import {List} from 'immutable';
+import { List } from 'immutable';
 import * as Repository from './repository';
 import { expand } from './treeState';
 import { afterAction } from '../store/eventMiddleware';
 import { cleanFileName, hasChildOrEntry, RESERVED_FILENAMES } from '../utils/repository';
-import {State} from './types/currentNode';
+import { State } from './types/currentNode';
 import { GetState, TypedAction, TypedThunk, OptionalAction, Dispatch } from './types/index';
-import Node, {ROOT_ID} from '../domain/Node';
-import {SpecialFolderId} from '../utils/specialFolders';
+import Node, { ROOT_ID } from '../domain/Node';
+import { SpecialFolderId } from '../utils/specialFolders';
 
 export enum Actions {
   SELECT = 'currentNode/SELECT',
@@ -137,8 +137,10 @@ export function saveNode(): Thunk<Promise<void>> {
 
       const node = repository.nodes[currentNode.nodeId];
       const parentNode = repository.nodes[node.parentId as string];
-      if ((!currentNode.renaming || newName.toLowerCase() !== (currentNode.initialName || '').toLowerCase())
-        && hasChildOrEntry(repository.nodes, currentNode.renaming ? parentNode : node, newName)) {
+      if (
+        (!currentNode.renaming || newName.toLowerCase() !== (currentNode.initialName || '').toLowerCase()) &&
+        hasChildOrEntry(repository.nodes, currentNode.renaming ? parentNode : node, newName)
+      ) {
         toastr.error('', `An entry named '${newName}' already exists.`);
         return;
       }
@@ -180,7 +182,7 @@ export function closeMove(): Action {
   return { type: Actions.CLOSE_MOVE };
 }
 
-afterAction(Repository.Actions.UNLOAD, dispatch => {
+afterAction(Repository.Actions.UNLOAD, (dispatch) => {
   dispatch(deselect());
 });
 
@@ -218,7 +220,7 @@ afterAction(Repository.Actions.READ_NODE_LIST, (dispatch: Dispatch, getState: Ge
 });
 
 type Action =
-  OptionalAction<Actions.SELECT, string>
+  | OptionalAction<Actions.SELECT, string>
   | OptionalAction<Actions.SELECT_SPECIAL, SpecialFolderId>
   | OptionalAction<Actions.PREPARE_DELETE, string>
   | OptionalAction<Actions.CANCEL_DELETE>
@@ -226,7 +228,7 @@ type Action =
   | OptionalAction<Actions.START_CREATE>
   | TypedAction<Actions.CHANGE_NAME, string>
   | OptionalAction<Actions.CLOSE_EDIT>
-  | TypedAction<Actions.PREPARE_MOVE, { nodeId: string, targetNodeId: string }>
+  | TypedAction<Actions.PREPARE_MOVE, { nodeId: string; targetNodeId: string }>
   | OptionalAction<Actions.CLOSE_MOVE>;
 
 type Thunk<R> = TypedThunk<Action, R>;

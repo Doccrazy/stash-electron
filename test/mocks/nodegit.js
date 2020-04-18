@@ -1,5 +1,3 @@
-const { stub } = require('sinon');
+// const { stub } = require('sinon');
 
-module.exports = {
-
-};
+module.exports = {};

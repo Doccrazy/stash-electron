@@ -3,11 +3,11 @@ import * as os from 'os';
 import * as path from 'path';
 import { remote, shell } from 'electron';
 import { toastr } from 'react-redux-toastr';
-import {childNodeByName, isAccessible} from '../utils/repository';
+import { childNodeByName, isAccessible } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
 import * as repoActions from './repository';
 import { typeFor } from '../fileType/index';
-import {State} from './types/external';
+import { State } from './types/external';
 import { RootState, TypedAction, TypedThunk } from './types/index';
 
 export enum Actions {
@@ -16,10 +16,12 @@ export enum Actions {
 
 export function browseForAdd(): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const files = (await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-      title: 'Select file(s) to encrypt into Stash',
-      properties: ['openFile', 'multiSelections']
-    })).filePaths;
+    const files = (
+      await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
+        title: 'Select file(s) to encrypt into Stash',
+        properties: ['openFile', 'multiSelections']
+      })
+    ).filePaths;
     if (files && files.length) {
       await dispatch(addFiles(files));
     }
@@ -69,6 +71,14 @@ export function addFiles(files: string[]): Thunk<Promise<void>> {
   };
 }
 
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'stash-'));
+window.addEventListener('beforeunload', () => {
+  if (tempDir && fs.existsSync(tempDir)) {
+    // TODO secure overwrite
+    fs.removeSync(tempDir);
+  }
+});
+
 export function open(ptr?: EntryPtr): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     if (!ptr) {
@@ -102,10 +112,12 @@ export function browseForSaveAs(ptr?: EntryPtr): Thunk<Promise<void>> {
       return;
     }
 
-    const targetPath = (await remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
-      title: 'Save as *UNENCRYPTED*',
-      defaultPath: ptr.entry
-    })).filePath;
+    const targetPath = (
+      await remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
+        title: 'Save as *UNENCRYPTED*',
+        defaultPath: ptr.entry
+      })
+    ).filePath;
     if (targetPath) {
       dispatch(saveAs(ptr, targetPath));
     }
@@ -129,14 +141,6 @@ function saveAs(ptr: EntryPtr, targetPath: string): Thunk<Promise<void>> {
 async function read(state: RootState, ptr: EntryPtr) {
   return repoActions.getRepo().readFile(ptr.nodeId, ptr.entry);
 }
-
-const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'stash-'));
-window.addEventListener('beforeunload', () => {
-  if (tempDir && fs.existsSync(tempDir)) {
-    // TODO secure overwrite
-    fs.removeSync(tempDir);
-  }
-});
 
 type Action = TypedAction<Actions.FILES_WRITTEN, EntryPtr[]>;
 

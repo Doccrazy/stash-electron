@@ -27,7 +27,7 @@ export function parseKey(key: string | Buffer, passphrase?: string) {
     return parsePrivateKey(key, passphrase);
   } catch (e) {
     if (e instanceof sshpk.KeyParseError && (e as any).innerErr && (e as any).innerErr.message === 'key is not a private key') {
-      return sshpk.parseKey(key, 'auto', {passphrase});
+      return sshpk.parseKey(key, 'auto', { passphrase });
     }
     throw e;
   }
@@ -48,12 +48,16 @@ export function parsePublicKey(key: string | Buffer, passphrase?: string): sshpk
 export async function generateRSAKeyPKCS8(modulusLength: number) {
   console.time('generateRSAKeyPKCS8');
 
-  const key = await window.crypto.subtle.generateKey({
-    name: 'RSASSA-PKCS1-v1_5',
-    modulusLength,
-    publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-    hash: {name: 'SHA-256'}
-  }, true, ['sign', 'verify']);
+  const key = await window.crypto.subtle.generateKey(
+    {
+      name: 'RSASSA-PKCS1-v1_5',
+      modulusLength,
+      publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+      hash: { name: 'SHA-256' }
+    },
+    true,
+    ['sign', 'verify']
+  );
 
   const keyData = Buffer.from(await window.crypto.subtle.exportKey('pkcs8', key.privateKey));
 
@@ -94,16 +98,20 @@ DEK-Info: AES-128-CBC,${aesEncryptionIV.toString('hex').toUpperCase()}
 `;
   }
   return `-----BEGIN RSA PRIVATE KEY-----${header}
-${keyData.toString('base64').match(/.{1,64}/g)!.join('\n')}
+${keyData
+  .toString('base64')
+  .match(/.{1,64}/g)!
+  .join('\n')}
 -----END RSA PRIVATE KEY-----
 `;
 }
 
 // single-iteration OpenSSL key derivation with 16 bytes output boils down to a simple MD5 hash
 function deriveKey(password: string, iv: Buffer) {
-  return crypto.createHash('md5')
+  return crypto
+    .createHash('md5')
     .update(Buffer.from(password, 'utf8'))
-    .update(iv.slice(0, 8))  // PKCS5 salt length
+    .update(iv.slice(0, 8)) // PKCS5 salt length
     .digest();
 }
 

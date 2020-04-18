@@ -13,12 +13,11 @@ function addOrUpdate(privateKey: SshPK.PrivateKey, path: string): TypedThunk<any
     const publicKeyParts = privateKey.toPublic().toString('ssh').split(' ');
     const publicKey = `${publicKeyParts[0]} ${publicKeyParts[1]}`;
 
-    const clone = privateKeys.map(key => ({ ...key }))
-      .filter(key => fs.existsSync(key.path));
-    const current = clone.find(key => key.publicKey === publicKey);
+    const clone = privateKeys.map((key) => ({ ...key })).filter((key) => fs.existsSync(key.path));
+    const current = clone.find((key) => key.publicKey === publicKey);
     let updated;
     if (!current) {
-      clone.push({path, publicKey});
+      clone.push({ path, publicKey });
       updated = true;
     } else if (current.path !== path || current.publicKey !== publicKey) {
       current.path = path;

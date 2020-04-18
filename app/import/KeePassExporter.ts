@@ -16,12 +16,12 @@ export default class KeePassExporter {
 
   createNode(parent: ExportNodeId | null, name: string): ExportNodeId {
     this.groupCount++;
-    return this.kdbx.createGroup(parent as kdbxweb.KdbxGroup || this.kdbx.getDefaultGroup(), name);
+    return this.kdbx.createGroup((parent as kdbxweb.KdbxGroup) || this.kdbx.getDefaultGroup(), name);
   }
 
   async createEntry(parent: ExportNodeId | null, fileName: string, content: Buffer): Promise<void> {
     this.entryCount++;
-    const entry = this.kdbx.createEntry(parent as kdbxweb.KdbxGroup || this.kdbx.getDefaultGroup());
+    const entry = this.kdbx.createEntry((parent as kdbxweb.KdbxGroup) || this.kdbx.getDefaultGroup());
 
     const type = typeFor(fileName);
     entry.fields.Title = type.toDisplayName(fileName);

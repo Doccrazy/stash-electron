@@ -10,7 +10,9 @@ it('parses links correctly', () => {
   expect(StashLink.parse('stash://node/test.enc')).to.deep.eq(new StashLink('/node/', 'test.enc'));
   expect(StashLink.parse('stash://node1/node2/test.enc')).to.deep.eq(new StashLink('/node1/node2/', 'test.enc'));
   expect(StashLink.parse('stash://node1/node2/')).to.deep.eq(new StashLink('/node1/node2/'));
-  expect(StashLink.parse('stash://Test/Some%25%20Cr@zy%20N&me!.pass.json')).to.deep.eq(new StashLink('/Test/', 'Some% Cr@zy N&me!.pass.json'));
+  expect(StashLink.parse('stash://Test/Some%25%20Cr@zy%20N&me!.pass.json')).to.deep.eq(
+    new StashLink('/Test/', 'Some% Cr@zy N&me!.pass.json')
+  );
 });
 
 it('parses legacy links', () => {

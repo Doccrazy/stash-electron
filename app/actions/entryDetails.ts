@@ -1,9 +1,9 @@
 import * as fs from 'fs';
-import {Map} from 'immutable';
-import {mapValues} from 'lodash';
+import { Map } from 'immutable';
+import { mapValues } from 'lodash';
 import * as path from 'path';
 import EntryPtr from '../domain/EntryPtr';
-import {afterAction} from '../store/eventMiddleware';
+import { afterAction } from '../store/eventMiddleware';
 import { commitsFor, excludingAuth, fileList } from '../store/selectors';
 import * as CurrentNode from './currentNode';
 import * as Git from './git';
@@ -11,7 +11,7 @@ import * as Repository from './repository';
 import * as PrivateKey from './privateKey';
 import * as Search from './search';
 import { Dispatch, GetState, OptionalAction, RootState, TypedAction, TypedThunk } from './types';
-import {DetailMap, Details, Providers, State} from './types/entryDetails';
+import { DetailMap, Details, Providers, State } from './types/entryDetails';
 
 export enum Actions {
   UPDATE = 'entryDetails/UPDATE',
@@ -33,14 +33,15 @@ function modifiedFromFs(repoPath: string, ptr: EntryPtr) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await
 async function modified(state: RootState, entries: EntryPtr[]) {
   const repoPath = state.repository.path!;
 
   if (!state.git.status.initialized) {
-    return entries.map(ptr => modifiedFromFs(repoPath, ptr));
+    return entries.map((ptr) => modifiedFromFs(repoPath, ptr));
   }
 
-  return entries.map(ptr => {
+  return entries.map((ptr) => {
     const commits = commitsFor(state, ptr, excludingAuth);
     if (commits.size) {
       const c = commits.get(0)!;
@@ -66,20 +67,20 @@ async function provideDetails(state: RootState, entries: EntryPtr[]): Promise<De
 
   let entryDetails: DetailMap = Map();
   for (let i = 0; i < entries.length; i++) {
-    const details: Details = mapValues(detailMap, d => d[i]) as any;
+    const details: Details = mapValues(detailMap, (d) => d[i]) as any;
     entryDetails = entryDetails.set(entries[i], details);
   }
 
   return entryDetails;
 }
 
-function fetchDetails(entries: EntryPtr[], force: boolean = false): Thunk<Promise<void>> {
+function fetchDetails(entries: EntryPtr[], force = false): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     if (!getState().repository.path) {
       return;
     }
     if (!force) {
-      entries = entries.filter(ptr => !getState().entryDetails.has(ptr));
+      entries = entries.filter((ptr) => !getState().entryDetails.has(ptr));
     }
     if (!entries.length) {
       return;
@@ -90,7 +91,7 @@ function fetchDetails(entries: EntryPtr[], force: boolean = false): Thunk<Promis
   };
 }
 
-function fetchForVisibleEntries(force: boolean = false): Thunk<Promise<void>> {
+function fetchForVisibleEntries(force = false): Thunk<Promise<void>> {
   return (dispatch, getState) => {
     const visibleEntries = fileList(getState());
 
@@ -116,20 +117,35 @@ function clearFor(entries: EntryPtr[]): Action {
   };
 }
 
-afterAction([Repository.Actions.LOAD, Repository.Actions.UNLOAD, Repository.Actions.DELETE_NODE, Repository.Actions.MOVE_NODE, PrivateKey.Actions.LOGIN],
+afterAction(
+  [
+    Repository.Actions.LOAD,
+    Repository.Actions.UNLOAD,
+    Repository.Actions.DELETE_NODE,
+    Repository.Actions.MOVE_NODE,
+    PrivateKey.Actions.LOGIN
+  ],
   (dispatch, getState: GetState) => {
     dispatch(clearAll());
   }
 );
 
-afterAction([Repository.Actions.RENAME_ENTRY, Repository.Actions.DELETE_ENTRY, Repository.Actions.MOVE_ENTRY, Repository.Actions.UPDATE_ENTRY],
+afterAction(
+  [Repository.Actions.RENAME_ENTRY, Repository.Actions.DELETE_ENTRY, Repository.Actions.MOVE_ENTRY, Repository.Actions.UPDATE_ENTRY],
   (dispatch, getState: GetState, { ptr }) => {
     dispatch(clearFor([ptr]));
   }
 );
 
-afterAction([CurrentNode.Actions.SELECT, CurrentNode.Actions.SELECT_SPECIAL, Search.Actions.RESULTS,
-    Repository.Actions.RENAME_ENTRY, Repository.Actions.MOVE_ENTRY, Repository.Actions.UPDATE_ENTRY],
+afterAction(
+  [
+    CurrentNode.Actions.SELECT,
+    CurrentNode.Actions.SELECT_SPECIAL,
+    Search.Actions.RESULTS,
+    Repository.Actions.RENAME_ENTRY,
+    Repository.Actions.MOVE_ENTRY,
+    Repository.Actions.UPDATE_ENTRY
+  ],
   (dispatch: Dispatch, getState: GetState) => {
     dispatch(fetchForVisibleEntries());
   }
@@ -149,10 +165,7 @@ afterAction(Git.Actions.HISTORY, (dispatch: Dispatch, getState: GetState, payloa
   dispatch(fetchForVisibleEntries(true));
 });
 
-type Action =
-  TypedAction<Actions.UPDATE, DetailMap> |
-  TypedAction<Actions.CLEAR, EntryPtr[]> |
-  OptionalAction<Actions.CLEAR_ALL>;
+type Action = TypedAction<Actions.UPDATE, DetailMap> | TypedAction<Actions.CLEAR, EntryPtr[]> | OptionalAction<Actions.CLEAR_ALL>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 

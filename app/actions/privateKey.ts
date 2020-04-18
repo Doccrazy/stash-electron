@@ -2,17 +2,17 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as sshpk from 'sshpk';
 import * as os from 'os';
-import {toastr} from 'react-redux-toastr';
+import { toastr } from 'react-redux-toastr';
 import { remote } from 'electron';
 import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
-import {KeyError, State} from './types/privateKey';
-import {afterAction} from '../store/eventMiddleware';
+import { KeyError, State } from './types/privateKey';
+import { afterAction } from '../store/eventMiddleware';
 import * as Settings from './settings';
 import { requestCredentials, acceptCredentials, rejectCredentials, clearStoredLogin } from './credentials';
-import {generateRSAKeyPKCS8, parsePrivateKey, testPrivateKey, toPEM} from '../utils/rsa';
+import { generateRSAKeyPKCS8, parsePrivateKey, testPrivateKey, toPEM } from '../utils/rsa';
 import * as Keys from './keys';
 import * as Repository from './repository';
-import {findUser} from '../repository/KeyProvider';
+import { findUser } from '../repository/KeyProvider';
 
 export enum Actions {
   LOAD = 'privateKey/LOAD',
@@ -38,11 +38,16 @@ export function loadAndUnlockInteractive(presetPassphrase?: string): Thunk<Promi
     while (getState().privateKey.error === KeyError.ENCRYPTED || getState().privateKey.error === KeyError.PASSPHRASE) {
       let passphrase;
       try {
-        const credentials = await dispatch(requestCredentials(path.resolve(filename), 'Private key passphrase required',
-          `Please enter the passphrase for private key file ${filename} below.`));
+        const credentials = await dispatch(
+          requestCredentials(
+            path.resolve(filename),
+            'Private key passphrase required',
+            `Please enter the passphrase for private key file ${filename} below.`
+          )
+        );
         passphrase = credentials.password;
       } catch {
-        dispatch({type: Actions.ERROR, payload: KeyError.CANCELLED});
+        dispatch({ type: Actions.ERROR, payload: KeyError.CANCELLED });
         break;
       }
 
@@ -83,14 +88,18 @@ export function load(filename: string, passphrase?: string): Thunk<Promise<void>
       });
     } catch (e) {
       if (e instanceof sshpk.KeyEncryptedError) {
-        dispatch({type: Actions.ERROR, payload: KeyError.ENCRYPTED});
-      } else if (e instanceof sshpk.KeyParseError && (e as any).innerErr && (e as any).innerErr.message.startsWith('Incorrect passphrase')) {
+        dispatch({ type: Actions.ERROR, payload: KeyError.ENCRYPTED });
+      } else if (
+        e instanceof sshpk.KeyParseError &&
+        (e as any).innerErr &&
+        (e as any).innerErr.message.startsWith('Incorrect passphrase')
+      ) {
         toastr.error('Decryption failed', 'Invalid passphrase');
-        dispatch({type: Actions.ERROR, payload: KeyError.PASSPHRASE});
+        dispatch({ type: Actions.ERROR, payload: KeyError.PASSPHRASE });
       } else {
         console.error(e);
         toastr.error('Private key unreadable', e.message);
-        dispatch({type: Actions.ERROR, payload: KeyError.FILE});
+        dispatch({ type: Actions.ERROR, payload: KeyError.FILE });
       }
     }
   };
@@ -154,11 +163,13 @@ export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
       const passphrase = getState().privateKey.generate.passphrase;
       const finalKey = toPEM(pkcs8Key, passphrase);
 
-      const file = (await remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
-        title: 'Save private key',
-        filters: [{name: 'PEM-encoded private key', extensions: ['pem']}],
-        defaultPath: os.homedir()
-      })).filePath;
+      const file = (
+        await remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
+          title: 'Save private key',
+          filters: [{ name: 'PEM-encoded private key', extensions: ['pem'] }],
+          defaultPath: os.homedir()
+        })
+      ).filePath;
       if (file) {
         await fs.writeFile(file, finalKey);
         dispatch(closeGenerate());
@@ -179,8 +190,10 @@ export function generateKeyAndPromptSave(): Thunk<Promise<void>> {
 // when the private key setting changes, reload the private key
 afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch: Dispatch, getState: GetState) => {
   const { settings, privateKey } = getState();
-  if (settings.current.privateKeyFile &&
-    (settings.current.privateKeyFile !== settings.previous.privateKeyFile || (!privateKey.key && !privateKey.error))) {
+  if (
+    settings.current.privateKeyFile &&
+    (settings.current.privateKeyFile !== settings.previous.privateKeyFile || (!privateKey.key && !privateKey.error))
+  ) {
     dispatch(loadAndUnlockInteractive(privateKey.generate.passphrase));
   }
 });
@@ -207,19 +220,19 @@ afterAction([Repository.Actions.FINISH_LOAD, Actions.LOGIN], (dispatch, getState
 });
 
 type Action =
-  TypedAction<Actions.LOAD, { key: sshpk.PrivateKey, encrypted: boolean }>
+  | TypedAction<Actions.LOAD, { key: sshpk.PrivateKey; encrypted: boolean }>
   | TypedAction<Actions.ERROR, KeyError>
   | OptionalAction<Actions.LOCK>
   | OptionalAction<Actions.LOGIN, string>
   | OptionalAction<Actions.OPEN_GENERATE>
   | OptionalAction<Actions.CLOSE_GENERATE>
-  | TypedAction<Actions.CHANGE_GEN_PASS, { passphrase: string, repeat?: boolean }>
+  | TypedAction<Actions.CHANGE_GEN_PASS, { passphrase: string; repeat?: boolean }>
   | TypedAction<Actions.CHANGE_GEN_STRENGTH, { strength: number }>
   | OptionalAction<Actions.GENERATE_WORKING, boolean>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 
-export default function reducer(state: State = { generate: {}}, action: Action): State {
+export default function reducer(state: State = { generate: {} }, action: Action): State {
   switch (action.type) {
     case Actions.LOAD:
       return { ...action.payload, generate: {} };
@@ -233,7 +246,7 @@ export default function reducer(state: State = { generate: {}}, action: Action):
       return { ...state, generate: { open: true } };
     case Actions.CLOSE_GENERATE:
       return { ...state, generate: { open: false } };
-    case Actions.CHANGE_GEN_PASS:
+    case Actions.CHANGE_GEN_PASS: {
       const generate = { ...state.generate };
       if (action.payload.repeat) {
         generate.repeatPassphrase = action.payload.passphrase;
@@ -241,6 +254,7 @@ export default function reducer(state: State = { generate: {}}, action: Action):
         generate.passphrase = action.payload.passphrase;
       }
       return { ...state, generate };
+    }
     case Actions.CHANGE_GEN_STRENGTH:
       return { ...state, generate: { ...state.generate, strength: action.payload.strength } };
     case Actions.GENERATE_WORKING:

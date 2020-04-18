@@ -1,10 +1,10 @@
 import * as path from 'path';
-import {ROOT_ID} from '../domain/Node';
+import { ROOT_ID } from '../domain/Node';
 import AuthorizationProvider from './AuthorizationProvider';
 
 export interface AuthInfo {
-  users: string[],
-  authNodeId?: string
+  users: string[];
+  authNodeId?: string;
 }
 
 export default class RecursiveAuthProviderWrapper {
@@ -22,7 +22,7 @@ export default class RecursiveAuthProviderWrapper {
       users = await this.authProvider.getAuthorizedUsers(nodeId);
       authNodeId = nodeId;
     }
-    return {users, authNodeId};
+    return { users, authNodeId };
   }
 
   async getMasterKey(nodeId: string): Promise<Buffer> {

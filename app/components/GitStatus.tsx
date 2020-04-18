@@ -20,25 +20,39 @@ function color(status: GitStatus) {
 }
 
 export interface Props {
-  status: GitStatus,
-  working?: boolean,
-  onClick: () => void
+  status: GitStatus;
+  working?: boolean;
+  onClick: () => void;
 }
 
-export default withTrans<Props>()(({ t, status, working, onClick }) => (<span>
-  <a href="" id="gitStatusLink" onClick={onClick} className={cx(color(status), styles.container)}>
-    <i className={cx('fa fa-git-square', styles.git, working && styles.working, status.commitsAheadOrigin && styles.attention)} />
-    {status.conflict && <span className="text-danger">!</span>}
-    {!!status.incomingCommits && <span><i className="fa fa-long-arrow-down" />{status.incomingCommits}</span>}
-    {!!status.commitsAheadOrigin && <span><i className="fa fa-long-arrow-up" />{status.commitsAheadOrigin}</span>}
-  </a>
-  <UncontrolledTooltip placement={'bottom-end' as any} target="gitStatusLink">
-    {!status.conflict && !status.error && status.upstreamName &&
-      <div>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName, true)}</div>
-    }
-    {status.incomingCommits && <div className="text-success">{t('common.git.newCommits', {incomingCommits: status.incomingCommits})}</div>}
-    {!status.initialized && <div>{t('common.git.noRepository')}</div>}
-    {status.error && <div className="text-danger">{t('common.git.error', {error: status.error})}</div>}
-    {status.conflict && <div className="text-danger">{t('common.git.conflict')}</div>}
+export default withTrans<Props>()(({ t, status, working, onClick }) => (
+  <span>
+    <a href="" id="gitStatusLink" onClick={onClick} className={cx(color(status), styles.container)}>
+      <i className={cx('fa fa-git-square', styles.git, working && styles.working, status.commitsAheadOrigin && styles.attention)} />
+      {status.conflict && <span className="text-danger">!</span>}
+      {!!status.incomingCommits && (
+        <span>
+          <i className="fa fa-long-arrow-down" />
+          {status.incomingCommits}
+        </span>
+      )}
+      {!!status.commitsAheadOrigin && (
+        <span>
+          <i className="fa fa-long-arrow-up" />
+          {status.commitsAheadOrigin}
+        </span>
+      )}
+    </a>
+    <UncontrolledTooltip placement={'bottom-end' as any} target="gitStatusLink">
+      {!status.conflict && !status.error && status.upstreamName && (
+        <div>{formatStatusLine(status.commitsAheadOrigin, status.upstreamName, true)}</div>
+      )}
+      {status.incomingCommits && (
+        <div className="text-success">{t('common.git.newCommits', { incomingCommits: status.incomingCommits })}</div>
+      )}
+      {!status.initialized && <div>{t('common.git.noRepository')}</div>}
+      {status.error && <div className="text-danger">{t('common.git.error', { error: status.error })}</div>}
+      {status.conflict && <div className="text-danger">{t('common.git.conflict')}</div>}
     </UncontrolledTooltip>
-</span>));
+  </span>
+));

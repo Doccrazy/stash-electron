@@ -1,5 +1,3 @@
-/* eslint global-require: 0, import/no-dynamic-require: 0 */
-
 /**
  * Build config for development electron renderer process that uses
  * Hot-Module-Replacement
@@ -29,11 +27,7 @@ const rendererDevConfig: webpack.Configuration = {
 
   target: 'electron-renderer',
 
-  entry: [
-    `webpack-dev-server/client?http://localhost:${port}/`,
-    'webpack/hot/only-dev-server',
-    path.join(__dirname, 'app/index.tsx')
-  ],
+  entry: [`webpack-dev-server/client?http://localhost:${port}/`, 'webpack/hot/only-dev-server', path.join(__dirname, 'app/index.tsx')],
 
   output: {
     path: path.join(__dirname, 'build', 'dist'),
@@ -189,13 +183,13 @@ const rendererDevConfig: webpack.Configuration = {
     before() {
       if (process.env.START_HOT) {
         console.log('Staring Main Process...');
-        spawn(
-          'npm',
-          ['run', 'start-main-dev', '--', process.env.MAIN_ARGS || ''],
-          { shell: true, env: { ...process.env, DEV_SERVER_ROOT: 'http://localhost:1212/' }, stdio: 'inherit' }
-        )
-        .on('close', code => process.exit(code))
-        .on('error', spawnError => console.error(spawnError));
+        spawn('npm', ['run', 'start-main-dev', '--', process.env.MAIN_ARGS || ''], {
+          shell: true,
+          env: { ...process.env, DEV_SERVER_ROOT: 'http://localhost:1212/' },
+          stdio: 'inherit'
+        })
+          .on('close', (code) => process.exit(code))
+          .on('error', (spawnError) => console.error(spawnError));
       }
     }
   }

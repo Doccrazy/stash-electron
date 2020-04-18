@@ -1,4 +1,4 @@
-import {Details} from '../actions/types/entryDetails';
+import { Details } from '../actions/types/entryDetails';
 import EntryPtr from './EntryPtr';
 import Node from './Node';
 

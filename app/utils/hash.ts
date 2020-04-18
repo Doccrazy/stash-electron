@@ -3,7 +3,7 @@
 // This function drops the highest order bit in a signed number, maintaining
 // the sign bit.
 function smi(i32: number) {
-  return ((i32 >>> 1) & 0x40000000) | (i32 & 0xBFFFFFFF);
+  return ((i32 >>> 1) & 0x40000000) | (i32 & 0xbfffffff);
 }
 
 // http://jsperf.com/hashing-strings
@@ -16,7 +16,7 @@ export function hashString(str: string) {
   // (exclusive) by dropping high bits.
   let hash = 0;
   for (let ii = 0; ii < str.length; ii++) {
-    hash = 31 * hash + str.charCodeAt(ii) | 0;
+    hash = (31 * hash + str.charCodeAt(ii)) | 0;
   }
   return smi(hash);
 }

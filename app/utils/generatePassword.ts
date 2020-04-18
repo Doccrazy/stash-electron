@@ -1,7 +1,7 @@
 function contains(str: string, set: string, n: number) {
   let c = 0;
-  str.split('').forEach(ch => {
-    if (set.indexOf(ch) >= 0) {
+  str.split('').forEach((ch) => {
+    if (set.includes(ch)) {
       c += 1;
     }
   });
@@ -9,7 +9,7 @@ function contains(str: string, set: string, n: number) {
 }
 
 function containsAll(str: string, classSet: string[], n: number) {
-  return classSet.map(cls => contains(str, cls, n)).reduce((acc, v) => acc && v, true);
+  return classSet.map((cls) => contains(str, cls, n)).reduce((acc, v) => acc && v, true);
 }
 
 export default function generatePassword(length: number, classSet: string[] = ['1234567890']) {

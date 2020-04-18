@@ -23,7 +23,7 @@ import AuthorizedUsersPopup from '../containers/AuthorizedUsersPopup';
 import RefreshLink from '../containers/RefreshLink';
 import SettingsToggleLink from '../containers/SettingsToggleLink';
 
-export default class Home extends React.Component<{}, {}> {
+export default class HomePage extends React.Component<{}, {}> {
   render() {
     return (
       <div className={styles.home}>
@@ -39,8 +39,15 @@ export default class Home extends React.Component<{}, {}> {
           <div className={styles.sideToolbar}>
             <span className="pull-right">
               <Trans>
-                {t => <SettingsToggleLink field="hideInaccessible" iconOn="eye-slash" titleOn={t('page.home.hideInaccessible.on')}
-                                    iconOff="eye" titleOff={t('page.home.hideInaccessible.off')}/>}
+                {(t) => (
+                  <SettingsToggleLink
+                    field="hideInaccessible"
+                    iconOn="eye-slash"
+                    titleOn={t('page.home.hideInaccessible.on')}
+                    iconOff="eye"
+                    titleOff={t('page.home.hideInaccessible.off')}
+                  />
+                )}
               </Trans>
               &nbsp;&nbsp;
               <RefreshLink />

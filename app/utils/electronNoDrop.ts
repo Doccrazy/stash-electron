@@ -10,4 +10,4 @@ function preventDrop(event: DragEvent) {
 
 document.addEventListener('dragenter', preventDrop);
 document.addEventListener('dragover', preventDrop);
-document.addEventListener('drop', event => event.preventDefault());
+document.addEventListener('drop', (event) => event.preventDefault());

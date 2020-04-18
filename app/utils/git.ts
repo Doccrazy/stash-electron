@@ -11,26 +11,26 @@ import UsersFileAuthorizationProvider from '../repository/UsersFileAuthorization
 import AwaitLock from './AwaitLock';
 
 export interface AheadBehindResult {
-  ahead: number,
-  behind: number
+  ahead: number;
+  behind: number;
 }
 
 export interface GitCredentials {
-  username?: string,
-  password: string
+  username?: string;
+  password: string;
 }
 
 export interface GitCommitInfo {
-  hash: string,
-  message: string,
-  authorName: string,
-  authorEmail: string,
-  date: Date,
-  pushed?: boolean,
-  remoteRef?: string,
-  changedFiles?: string[],
-  renamedFiles?: { [newFn: string]: string },
-  deletedFiles?: string[]
+  hash: string;
+  message: string;
+  authorName: string;
+  authorEmail: string;
+  date: Date;
+  pushed?: boolean;
+  remoteRef?: string;
+  changedFiles?: string[];
+  renamedFiles?: { [newFn: string]: string };
+  deletedFiles?: string[];
 }
 
 export function isRepository(repoPath: string) {
@@ -38,6 +38,7 @@ export function isRepository(repoPath: string) {
 }
 
 export async function isSignatureConfigured(repo: Git.Repository) {
+  // eslint-disable-next-line @typescript-eslint/await-thenable
   const defaultSignature = await Git.Signature.default(repo);
   return !!defaultSignature && !!defaultSignature.name() && !!defaultSignature.email();
 }
@@ -73,7 +74,7 @@ export async function compareRefs(local: Git.Reference, origin?: Git.Reference):
   if (localCommit.id() === originCommit.id()) {
     return { ahead: 0, behind: 0 };
   }
-  return (await Git.Graph.aheadBehind(repo, localCommit.id(), originCommit.id())) as any as AheadBehindResult;  // yet another nodegit foo
+  return ((await Git.Graph.aheadBehind(repo, localCommit.id(), originCommit.id())) as any) as AheadBehindResult; // yet another nodegit foo
 }
 
 async function totalCommitCount(commit: Git.Commit) {
@@ -86,9 +87,9 @@ async function totalCommitCount(commit: Git.Commit) {
 }
 
 interface ConflictEntry {
-  ancestor_out: Git.IndexEntry,
-  our_out: Git.IndexEntry,
-  their_out: Git.IndexEntry
+  ancestor_out: Git.IndexEntry;
+  our_out: Git.IndexEntry;
+  their_out: Git.IndexEntry;
 }
 
 /**
@@ -101,9 +102,9 @@ export async function resolveAll(index: Git.Index, resolver: typeof usingOurs): 
   }
   const repo = index.owner();
   let changed = false;
-  for (const entry of index.entries().filter(e => Git.Index.entryStage(e) === 1 && Git.Index.entryIsConflict(e))) {
+  for (const entry of index.entries().filter((e) => Git.Index.entryStage(e) === 1 && Git.Index.entryIsConflict(e))) {
     console.log(`resolving ${entry.path}`);
-    const conflict = (await index.conflictGet(entry.path)) as any as ConflictEntry;  // error in nodegit docs/typings
+    const conflict = ((await index.conflictGet(entry.path)) as any) as ConflictEntry; // error in nodegit docs/typings
 
     const ourBlob = await repo.getBlob(conflict.our_out.id);
     const theirBlob = await repo.getBlob(conflict.their_out.id);
@@ -115,7 +116,7 @@ export async function resolveAll(index: Git.Index, resolver: typeof usingOurs): 
       await fs.writeFile(path.join(repo.workdir(), entry.path), resolved);
 
       // mark file as resolved
-      await index.addByPath(entry.path);  // another doc/typings error: method actually returns a promise
+      await index.addByPath(entry.path); // another doc/typings error: method actually returns a promise
       changed = true;
     } else {
       // resolver failed, write "theirs" (probably the local changes) to eliminate conflict markers,
@@ -124,6 +125,7 @@ export async function resolveAll(index: Git.Index, resolver: typeof usingOurs): 
     }
   }
   if (changed) {
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     await index.write();
     await index.writeTree();
   }
@@ -163,7 +165,11 @@ export async function finishRebaseResolving(gitRepo: Git.Repository, resolver: t
 /**
  * retries a git fetch up to 10 times iff the dreaded 'SSL error: unknown error' error occurs, reusing credentials where applicable
  */
-export async function fetchWithRetry(repo: Git.Repository, remote: string, credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) {
+export async function fetchWithRetry(
+  repo: Git.Repository,
+  remote: string,
+  credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>
+) {
   let lastCred: GitCredentials | null = null;
   let errorCred: GitCredentials | null = null;
   for (let i = 0; i < 10; i++) {
@@ -189,7 +195,11 @@ export async function fetchWithRetry(repo: Git.Repository, remote: string, crede
   throw new Error('SSL error: unknown error');
 }
 
-export async function pushWithRetry(repo: Git.Repository, remote: string, credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) {
+export async function pushWithRetry(
+  repo: Git.Repository,
+  remote: string,
+  credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>
+) {
   const gitRemote = await repo.getRemote(remote);
   let errorMessage;
   await gitRemote.push([(await repo.head()).name()], {
@@ -214,7 +224,8 @@ export async function pushWithRetry(repo: Git.Repository, remote: string, creden
 export function defaultCredCb(credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) {
   let sshAgentAttempted = false;
   return async (url: string, usernameFromUrl: string, allowedTypes: number) => {
-    if (allowedTypes & Git.Cred.TYPE.SSH_KEY) {  // tslint:disable-line
+    if (allowedTypes & Git.Cred.TYPE.SSH_KEY) {
+      // tslint:disable-line
       if (sshAgentAttempted) {
         // ssh agent did not provide valid credentials
         throw new Error();
@@ -228,12 +239,12 @@ export function defaultCredCb(credentialsCb: (url: string, usernameFromUrl: stri
 }
 
 export async function hasUncommittedChanges(repo: Git.Repository) {
-  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS });  // tslint:disable-line
+  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS }); // tslint:disable-line
   return statusList.length > 0;
 }
 
 export async function commitAllChanges(repo: Git.Repository, message: string): Promise<Git.Oid | null> {
-  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS });  // tslint:disable-line
+  const statusList = await repo.getStatus({ flags: Git.Status.OPT.INCLUDE_UNTRACKED | Git.Status.OPT.RECURSE_UNTRACKED_DIRS }); // tslint:disable-line
   const index = await repo.refreshIndex();
   let uncommittedChanges;
   for (const file of statusList) {
@@ -248,6 +259,7 @@ export async function commitAllChanges(repo: Git.Repository, message: string): P
     }
   }
   if (uncommittedChanges) {
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     await index.write();
     const oid = await index.writeTree();
 
@@ -255,6 +267,7 @@ export async function commitAllChanges(repo: Git.Repository, message: string): P
     if (!repo.headUnborn()) {
       parents.push(await repo.getHeadCommit());
     }
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     return repo.createCommit('HEAD', await repo.defaultSignature(), await repo.defaultSignature(), message, oid, parents);
   }
   return null;
@@ -284,11 +297,11 @@ export function formatStatusLine(ahead: number | undefined, upstreamName: string
 }
 
 export function remoteNameFromRef(ref: Git.Reference) {
-  return (/^refs\/remotes\/([^\/]+)\//.exec(ref.name()) || [])[1];
+  return (/^refs\/remotes\/([^/]+)\//.exec(ref.name()) || [])[1];
 }
 
 function remoteNameFromRefShortName(ref: string) {
-  return (/^([^\/]+)\//.exec(ref) || [])[1];
+  return (/^([^/]+)\//.exec(ref) || [])[1];
 }
 
 export function commitInfo(commit: Git.Commit): GitCommitInfo {
@@ -314,7 +327,7 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
 
   const walker = gitRepo.createRevWalk();
   walker.pushHead();
-  walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME);  // tslint:disable-line
+  walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME); // tslint:disable-line
 
   // performance can be optimized quite a bit by batching the commits and diffs fetched from libgit
   const BATCH_SIZE = 100;
@@ -327,11 +340,11 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
   pathspec.push(...excludePatterns);
   opts.pathspec.copy(pathspec);
 
-  const excludeMatchers = excludePatterns.map(pat => new Minimatch(pat));
+  const excludeMatchers = excludePatterns.map((pat) => new Minimatch(pat));
   let allCommits: Git.Commit[];
   do {
     allCommits = await walker.getCommits(BATCH_SIZE);
-    const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts)));
+    const commitDiffs = await Promise.all(allCommits.map((c) => c.getDiffWithOptions(opts)));
     outer: for (let i = 0; i < commitDiffs.length; i++) {
       const commit = allCommits[i];
       const changedFiles: string[] = [];
@@ -346,7 +359,7 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
           }
         }
         // if commit has any of the excluded files, skip it
-        if (excludeMatchers.find(m => !!changedFiles.find(fn => m.match(fn)))) {
+        if (excludeMatchers.find((m) => !!changedFiles.find((fn) => m.match(fn)))) {
           continue outer;
         }
         for (const entry of changedFiles) {
@@ -381,7 +394,7 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
 
   const walker = gitRepo.createRevWalk();
   walker.pushHead();
-  walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME);  // tslint:disable-line
+  walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME); // tslint:disable-line
 
   // performance can be optimized quite a bit by batching the commits and diffs fetched from libgit
   const BATCH_SIZE = 100;
@@ -390,15 +403,22 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
 
   const opts = new (Git as any).DiffOptions();
   opts.flags = Git.Diff.OPTION.FORCE_BINARY;
-  const simOpts: Git.DiffFindOptions = { flags: Git.Diff.FIND.RENAMES | Git.Diff.FIND.EXACT_MATCH_ONLY };  // tslint:disable-line
+  const simOpts: Git.DiffFindOptions = { flags: Git.Diff.FIND.RENAMES | Git.Diff.FIND.EXACT_MATCH_ONLY }; // tslint:disable-line
 
   const result: GitCommitInfo[] = [];
   let allCommits: Git.Commit[];
   let ahead = true;
   do {
     allCommits = await walker.getCommits(BATCH_SIZE);
-    const commitDiffs = await Promise.all(allCommits.map(c => c.getDiffWithOptions(opts)));
-    await Promise.all(commitDiffs.reduce((acc, diffs) => { acc.push(...diffs); return acc; }, []).map(d => d.findSimilar(simOpts)));
+    const commitDiffs = await Promise.all(allCommits.map((c) => c.getDiffWithOptions(opts)));
+    await Promise.all(
+      commitDiffs
+        .reduce((acc, diffs) => {
+          acc.push(...diffs);
+          return acc;
+        }, [])
+        .map((d) => d.findSimilar(simOpts))
+    );
     for (let i = 0; i < commitDiffs.length; i++) {
       const info = commitInfo(allCommits[i]);
       if (upstream && allCommits[i].id().equal(upstream.target())) {
@@ -434,10 +454,10 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
 }
 
 export async function loadBlobs(gitRepo: Git.Repository, commits: GitCommitInfo[], filename: string) {
-  const gitCommits = await Promise.all(commits.map(c => c.hash).map(oid => gitRepo.getCommit(oid)));
-  const entries = await Promise.all(gitCommits.map(c => c.getEntry(filename)));
-  const blobs = await Promise.all(entries.map(e => e.getBlob()));
-  return blobs.map(blob => blob.content());
+  const gitCommits = await Promise.all(commits.map((c) => c.hash).map((oid) => gitRepo.getCommit(oid)));
+  const entries = await Promise.all(gitCommits.map((c) => c.getEntry(filename)));
+  const blobs = await Promise.all(entries.map((e) => e.getBlob()));
+  return blobs.map((blob) => blob.content());
 }
 
 export async function createGitRepository(gitRepo: Git.Repository, commitOid: string, privateKey: SshPK.PrivateKey | undefined) {
@@ -453,7 +473,7 @@ export async function createGitRepository(gitRepo: Git.Repository, commitOid: st
 export async function getRootCommit(gitRepo: Git.Repository): Promise<GitCommitInfo | undefined> {
   const walker = gitRepo.createRevWalk();
   walker.pushHead();
-  walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME | Git.Revwalk.SORT.REVERSE);  // tslint:disable-line
+  walker.sorting(Git.Revwalk.SORT.TOPOLOGICAL | Git.Revwalk.SORT.TIME | Git.Revwalk.SORT.REVERSE); // tslint:disable-line
 
   const commits = await walker.getCommits(1);
   return commits.length > 0 ? commitInfo(commits[0]) : undefined;

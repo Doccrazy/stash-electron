@@ -5,22 +5,28 @@ import GitCommitsTable from './GitCommitsTable';
 import Trans from '../utils/i18n/Trans';
 
 export interface Props {
-  open?: boolean
-  title: string
-  commits: GitCommitInfo[]
-  onClose: () => void
+  open?: boolean;
+  title: string;
+  commits: GitCommitInfo[];
+  onClose: () => void;
 }
 
-export default ({ open, title, commits, onClose }: Props) => {
-  return (<Modal size="lg" isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
-    <ModalHeader toggle={onClose}>{title}</ModalHeader>
-    <ModalBody>
-      <div style={{maxHeight: '60vh', overflowY: 'auto'}}>
-        <GitCommitsTable commits={commits}/>
-      </div>
-    </ModalBody>
-    <ModalFooter>
-      <Button autoFocus color="secondary" onClick={onClose}><Trans id="action.common.close"/></Button>
-    </ModalFooter>
-  </Modal>);
+const GitCommitsPopup = ({ open, title, commits, onClose }: Props) => {
+  return (
+    <Modal size="lg" isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
+      <ModalHeader toggle={onClose}>{title}</ModalHeader>
+      <ModalBody>
+        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+          <GitCommitsTable commits={commits} />
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button autoFocus color="secondary" onClick={onClose}>
+          <Trans id="action.common.close" />
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
 };
+
+export default GitCommitsPopup;

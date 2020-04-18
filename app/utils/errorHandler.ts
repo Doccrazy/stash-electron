@@ -26,7 +26,7 @@ if (process.env.NODE_ENV === 'production') {
           try {
             const sourceMapData = fs.readFileSync(resolved, 'utf8');
             return {
-              url: '',  // do not pass url to keep stack filenames relative
+              url: '', // do not pass url to keep stack filenames relative
               map: sourceMapData
             };
           } catch (er) {

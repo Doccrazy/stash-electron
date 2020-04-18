@@ -1,8 +1,8 @@
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import {Action as ReduxAction} from 'redux';
+import { Action as ReduxAction } from 'redux';
 
-import {RouterState} from 'connected-react-router';
-import {ToastrState} from 'react-redux-toastr';
+import { RouterState } from 'connected-react-router';
+import { ToastrState } from 'react-redux-toastr';
 
 import { State as AuthorizedUsersState } from './authorizedUsers';
 import { State as CredentialsState } from './credentials';
@@ -25,35 +25,35 @@ import { State as TreeStateState } from './treeState';
 import { State as UsersHistoryState } from './usersHistory';
 
 export interface RootState {
-  authorizedUsers: AuthorizedUsersState,
-  credentials: CredentialsState,
-  currentEntry: CurrentEntryState,
-  currentNode: CurrentNodeState,
-  edit: EditState,
-  entryDetails: EntryDetailsState,
-  external: ExternalState,
-  favorites: FavoritesState,
-  fileExport: FileExportState,
-  fileImport: FileImportState,
-  git: GitState,
-  keys: KeysState,
-  nodeHistory: NodeHistoryState,
-  privateKey: PrivateKeyState,
-  repository: RepositoryState,
-  search: SearchState,
-  settings: SettingsState,
-  treeState: TreeStateState,
-  usersHistory: UsersHistoryState,
+  authorizedUsers: AuthorizedUsersState;
+  credentials: CredentialsState;
+  currentEntry: CurrentEntryState;
+  currentNode: CurrentNodeState;
+  edit: EditState;
+  entryDetails: EntryDetailsState;
+  external: ExternalState;
+  favorites: FavoritesState;
+  fileExport: FileExportState;
+  fileImport: FileImportState;
+  git: GitState;
+  keys: KeysState;
+  nodeHistory: NodeHistoryState;
+  privateKey: PrivateKeyState;
+  repository: RepositoryState;
+  search: SearchState;
+  settings: SettingsState;
+  treeState: TreeStateState;
+  usersHistory: UsersHistoryState;
 
-  router: RouterState,
-  toastr: ToastrState
+  router: RouterState;
+  toastr: ToastrState;
 }
 
 export type Thunk<R> = TypedThunk<Action<any>, R>;
 
 export interface Action<P> extends ReduxAction {
-  type: string,
-  payload?: P
+  type: string;
+  payload?: P;
 }
 
 export type Dispatch<A extends Action<any> = Action<any>> = ThunkDispatch<RootState, void, A>;
@@ -62,7 +62,7 @@ export type GetState = () => RootState;
 
 interface GenericAction<T extends string, P> extends Action<P> {
   // add a type that is never used, to enforce a 'default' case
-  type: T | '__unfug__'
+  type: T | '__unfug__';
 }
 export interface TypedAction<T extends string, P> extends GenericAction<T, P> {
   payload: P;

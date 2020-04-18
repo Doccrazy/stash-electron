@@ -3,7 +3,7 @@ import { Context, createPlainFormatter, Plain, ReactFormatter } from './format';
 import { createMarkdownFormatter } from './markdown';
 import { getMessage } from './message';
 
-let formatterCache: {[key: string]: ReactFormatter} = {};
+let formatterCache: { [key: string]: ReactFormatter } = {};
 
 function resolve(locale: string, messageId: string, markdown?: boolean): ReactFormatter {
   const cacheKey = `${locale}##${messageId}`;
@@ -23,8 +23,12 @@ function createFormatter(locale: string, messageId: string, markdown?: boolean):
   return createPlainFormatter(locale, message);
 }
 
-export function translate<CT = Plain, M extends boolean = false>(locale: string, messageId: string, context?: Context<CT>, markdown?: M)
-  : CT extends Plain ? (M extends false ? string: React.ReactNode): React.ReactNode {
+export function translate<CT = Plain, M extends boolean = false>(
+  locale: string,
+  messageId: string,
+  context?: Context<CT>,
+  markdown?: M
+): CT extends Plain ? (M extends false ? string : React.ReactNode) : React.ReactNode {
   const format = resolve(locale, messageId, markdown);
   return format(context || {}) as any;
 }

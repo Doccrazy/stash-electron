@@ -1,12 +1,12 @@
 import { Set, Collection } from 'immutable';
 
 export interface NodeLike {
-  id: string,
-  name: string,
-  parentId?: string,
-  childIds?: Collection.Set<string> | Collection.Indexed<string> | string[],
-  entries?: Collection.Set<string> | Collection.Indexed<string> | string[],
-  authorizedUsers?: Collection.Set<string> | Collection.Indexed<string> | string[]
+  id: string;
+  name: string;
+  parentId?: string;
+  childIds?: Collection.Set<string> | Collection.Indexed<string> | string[];
+  entries?: Collection.Set<string> | Collection.Indexed<string> | string[];
+  authorizedUsers?: Collection.Set<string> | Collection.Indexed<string> | string[];
 }
 
 export const ROOT_ID = '/';
@@ -19,7 +19,7 @@ export default class Node implements NodeLike {
   readonly entries: Set<string> = Set();
   readonly authorizedUsers?: Set<string>;
 
-  constructor({ id, name, parentId, childIds, entries, authorizedUsers}: NodeLike) {
+  constructor({ id, name, parentId, childIds, entries, authorizedUsers }: NodeLike) {
     this.id = id;
     this.name = name;
     this.parentId = parentId;

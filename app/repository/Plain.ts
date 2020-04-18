@@ -39,7 +39,7 @@ export default class PlainRepository implements Repository {
     }
 
     const files = await this.fs.readdir(dirPath);
-    const fileStats = await Promise.all(files.map(fn => this.fs.stat(path.join(dirPath, fn))));
+    const fileStats = await Promise.all(files.map((fn) => this.fs.stat(path.join(dirPath, fn))));
 
     const entries: string[] = [];
     const children: string[] = [];
@@ -125,15 +125,21 @@ export default class PlainRepository implements Repository {
     await Promise.all(node.entries.map((entry: string) => this.moveFile(nodeId, entry, targetNodeId)).toArray());
 
     // move or merge folders to target
-    await Promise.all(node.childIds.map((childId: string): Promise<any> => {
-      const name = path.posix.parse(childId).base;
-      const existingId = targetNode.childIds.find(cid => path.posix.parse(cid!).base.toLowerCase() === name.toLowerCase());
-      if (existingId) {
-        return this.mergeNode(childId, existingId);
-      } else {
-        return this.moveNode(childId, targetNodeId);
-      }
-    }).toArray());
+    await Promise.all(
+      node.childIds
+        .map(
+          (childId: string): Promise<any> => {
+            const name = path.posix.parse(childId).base;
+            const existingId = targetNode.childIds.find((cid) => path.posix.parse(cid).base.toLowerCase() === name.toLowerCase());
+            if (existingId) {
+              return this.mergeNode(childId, existingId);
+            } else {
+              return this.moveNode(childId, targetNodeId);
+            }
+          }
+        )
+        .toArray()
+    );
 
     await this.deleteNode(nodeId);
   }

@@ -67,17 +67,22 @@ export function selectHistory(oid?: string): Thunk<Promise<void>> {
 export function read(contentBuffer?: Buffer): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { currentEntry, repository, privateKey } = getState();
-    if (!currentEntry.ptr || (!currentEntry.historyCommit && !isAccessible(repository.nodes, currentEntry.ptr.nodeId, privateKey.username))) {
+    if (
+      !currentEntry.ptr ||
+      (!currentEntry.historyCommit && !isAccessible(repository.nodes, currentEntry.ptr.nodeId, privateKey.username))
+    ) {
       return;
     }
 
     const type = typeFor(currentEntry.ptr.entry);
     if (type.parse) {
       try {
-        const content = contentBuffer || (currentEntry.historyCommit
-          ? await readFromGit(getState(), currentEntry.ptr, currentEntry.historyCommit)
-          : await Repository.getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry));
-        const parsedContent = type.parse(content as Buffer);
+        const content =
+          contentBuffer ||
+          (currentEntry.historyCommit
+            ? await readFromGit(getState(), currentEntry.ptr, currentEntry.historyCommit)
+            : await Repository.getRepo().readFile(currentEntry.ptr.nodeId, currentEntry.ptr.entry));
+        const parsedContent = type.parse(content);
         dispatch({
           type: Actions.READ,
           payload: parsedContent
@@ -93,7 +98,7 @@ export function read(contentBuffer?: Buffer): Thunk<Promise<void>> {
 // TODO this does not belong here
 function readFromGit(state: RootState, ptr: EntryPtr, commitOid: string): Promise<Buffer> {
   const ptrAtCommit = findHistoricEntry(ptr, state.git.history, commitOid);
-  return accessingRepository(state.repository.path!, async gitRepo => {
+  return accessingRepository(state.repository.path!, async (gitRepo) => {
     const repo = await createGitRepository(gitRepo, commitOid, state.privateKey.key);
 
     return repo.readFile(ptrAtCommit.nodeId, ptrAtCommit.entry);
@@ -140,7 +145,7 @@ export function copyToClipboard(field: WellKnownField, ptr?: EntryPtr): Thunk<Pr
     if (!type.readField) {
       return;
     }
-    const value = type.readField!(content, field);
+    const value = type.readField(content, field);
     if (value) {
       copyToClip(t(`common.WellKnownField.${WellKnownField[field]}`), value);
     }
@@ -167,7 +172,7 @@ export function openUrl(ptr?: EntryPtr): Thunk<Promise<void>> {
     if (!type.readField) {
       return;
     }
-    const url = type.readField!(content, WellKnownField.URL);
+    const url = type.readField(content, WellKnownField.URL);
     if (url) {
       shell.openExternal(sanitizeUrl(url));
     }
@@ -184,9 +189,9 @@ function withEntryOrCurrent(ptr: EntryPtr | undefined, cb: (type: Type<any>, con
       if (!type.parse) {
         return;
       }
-      parsedContent = type.parse(content as Buffer);
+      parsedContent = type.parse(content);
     } else {
-      const {currentEntry} = getState();
+      const { currentEntry } = getState();
       if (!currentEntry.ptr) {
         return;
       }
@@ -227,12 +232,15 @@ afterAction(Repository.Actions.RENAME_ENTRY, (dispatch, getState: GetState, { pt
 });
 
 // when a selected entry is deleted, clear selection
-afterAction([Repository.Actions.DELETE_ENTRY, Repository.Actions.MOVE_ENTRY], (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
-  const { currentEntry } = getState();
-  if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
-    dispatch(clear());
+afterAction(
+  [Repository.Actions.DELETE_ENTRY, Repository.Actions.MOVE_ENTRY],
+  (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
+    const { currentEntry } = getState();
+    if (currentEntry.ptr && currentEntry.ptr.equals(ptr)) {
+      dispatch(clear());
+    }
   }
-});
+);
 
 // when an entry is created within the current folder, select it
 afterAction(Repository.Actions.CREATE_ENTRY, (dispatch: Dispatch, getState: GetState, ptr) => {
@@ -259,13 +267,13 @@ afterAction(PrivateKey.Actions.LOGIN, (dispatch: Dispatch, getState: GetState) =
 });
 
 type Action =
-  TypedAction<Actions.SELECT, EntryPtr>
-    | TypedAction<Actions.RESELECT, EntryPtr>
-    | OptionalAction<Actions.SELECT_HISTORY, string>
-    | TypedAction<Actions.READ, any>
-    | OptionalAction<Actions.CLEAR>
-    | OptionalAction<Actions.PREPARE_DELETE, EntryPtr>
-    | OptionalAction<Actions.CANCEL_DELETE>;
+  | TypedAction<Actions.SELECT, EntryPtr>
+  | TypedAction<Actions.RESELECT, EntryPtr>
+  | OptionalAction<Actions.SELECT_HISTORY, string>
+  | TypedAction<Actions.READ, any>
+  | OptionalAction<Actions.CLEAR>
+  | OptionalAction<Actions.PREPARE_DELETE, EntryPtr>
+  | OptionalAction<Actions.CANCEL_DELETE>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 

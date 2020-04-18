@@ -4,7 +4,7 @@ import { RootState } from '../actions/types';
 import eventMiddleware from './eventMiddleware';
 import createRootReducer from '../actions/index';
 
-const logger: Middleware = ({dispatch, getState}) => (next) => (action: any) => {
+const logger: Middleware = ({ dispatch, getState }) => (next) => (action: any) => {
   console.info(action.type);
   return next(action);
 };

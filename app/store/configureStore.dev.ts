@@ -38,22 +38,23 @@ const configureStore = (initialState?: any) => {
   /* eslint-disable no-underscore-dangle */
   const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     ? (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-      // Options: http://zalmoxisus.github.io/redux-devtools-extension/API/Arguments.html
-      actionCreators
-    })
+        // Options: http://zalmoxisus.github.io/redux-devtools-extension/API/Arguments.html
+        actionCreators
+      })
     : compose;
   /* eslint-enable no-underscore-dangle */
 
   // Apply Middleware & Compose Enhancers
   enhancers.push(applyMiddleware(...middleware));
-  const enhancer = composeEnhancers(...enhancers) as StoreEnhancer<{dispatch: ThunkDispatch<RootState, void, AnyAction>}>;
+  const enhancer = composeEnhancers(...enhancers) as StoreEnhancer<{ dispatch: ThunkDispatch<RootState, void, AnyAction> }>;
 
   // Create Store
   const store = createStore(createRootReducer(history), initialState, enhancer);
 
   if ((module as any).hot) {
-    (module as any).hot.accept('../actions', () =>
-      store.replaceReducer(require('../actions/index')) // eslint-disable-line global-require
+    (module as any).hot.accept(
+      '../actions',
+      () => store.replaceReducer(require('../actions/index')) // eslint-disable-line @typescript-eslint/no-var-requires
     );
   }
 

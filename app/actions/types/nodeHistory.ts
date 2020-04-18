@@ -1,4 +1,4 @@
 export interface State {
-  readonly open: boolean
-  readonly nodeId?: string
+  readonly open: boolean;
+  readonly nodeId?: string;
 }

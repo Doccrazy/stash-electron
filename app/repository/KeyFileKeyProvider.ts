@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as sshpk from 'sshpk';
 import FileSystem from './fs/FileSystem';
 import NodeFileSystem from './fs/NodeFileSystem';
-import KeyProvider, {findUser} from './KeyProvider';
+import KeyProvider, { findUser } from './KeyProvider';
 
 export const FILENAME = '.keys.json';
 

@@ -7,19 +7,22 @@ import { StringSettings } from '../actions/types/settings';
 import FileInput, { FileInputProps } from '../components/tools/FileInput';
 
 export interface Props extends FileInputProps {
-  field: keyof StringSettings,
-  instantSave?: boolean
+  field: keyof StringSettings;
+  instantSave?: boolean;
 }
 
-export default connect((state: RootState, props: Props) => ({
-  value: defaultTo(state.settings.edited[props.field], '') as string | number | string[] | undefined
-}), (dispatch: Dispatch, props: Props) => ({
-  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const value: string | number | undefined = ev.target.value;
-    if (props.instantSave) {
-      dispatch(changeAndSave(props.field, value));
-    } else {
-      dispatch(changeSetting(props.field, value));
+export default connect(
+  (state: RootState, props: Props) => ({
+    value: defaultTo(state.settings.edited[props.field], '') as string | number | string[] | undefined
+  }),
+  (dispatch: Dispatch, props: Props) => ({
+    onChange: (ev: React.ChangeEvent<HTMLInputElement>) => {
+      const value: string | number | undefined = ev.target.value;
+      if (props.instantSave) {
+        dispatch(changeAndSave(props.field, value));
+      } else {
+        dispatch(changeSetting(props.field, value));
+      }
     }
-  }
-}))(FileInput);
+  })
+)(FileInput);

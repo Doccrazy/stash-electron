@@ -2,29 +2,29 @@ import * as React from 'react';
 import { StringMatcher } from '../utils/StringMatcher';
 
 export interface KeePassFields {
-  Title?: string
-  UserName?: string
-  Password?: string
-  URL?: string
-  Notes?: string
-  [key: string]: string | undefined
+  Title?: string;
+  UserName?: string;
+  Password?: string;
+  URL?: string;
+  Notes?: string;
+  [key: string]: string | undefined;
 }
 
 export interface NameProps {
-  fileName: string
+  fileName: string;
 }
 
 export interface PanelProps<C> {
-  parsedContent: C
+  parsedContent: C;
 }
 
 export interface FormProps<C, S> {
-  name: string,
-  onChangeName: (newName: string) => void,
-  value: C,
-  onChange: (newContent: C) => void,
-  formState: S,
-  onChangeState: (newState: S) => void
+  name: string;
+  onChangeName: (newName: string) => void;
+  value: C;
+  onChange: (newContent: C) => void;
+  formState: S;
+  onChangeState: (newState: S) => void;
 }
 
 export interface StaticFormMethods<C, S> {
@@ -33,25 +33,25 @@ export interface StaticFormMethods<C, S> {
 }
 
 export interface TypeRenderer<C, S> {
-  NameLabel: React.ComponentType<NameProps>
-  Panel: React.ComponentType<PanelProps<C>>
-  Form: React.ComponentType<FormProps<C, S>> & StaticFormMethods<C, S>
+  NameLabel: React.ComponentType<NameProps>;
+  Panel: React.ComponentType<PanelProps<C>>;
+  Form: React.ComponentType<FormProps<C, S>> & StaticFormMethods<C, S>;
 }
 
 export interface Type<C> {
-  id: string,
+  id: string;
   // returns the quality of the match (higher is better, default/fallback is 0)
-  test: (name: string) => number | null,
-  toDisplayName: (name: string) => string,
-  toFileName: (displayName: string) => string,
-  initialize?: () => C,
-  matches?: (content: C, matcher: StringMatcher) => boolean,
-  isValidKdbxEntry?: (fields: KeePassFields) => boolean,
-  fromKdbxEntry?: (fields: KeePassFields) => C,
-  toKdbxEntry?: (content: C) => KeePassFields,
-  parse?: (buf: Buffer) => C,
-  write?: (content: C) => Buffer,
-  readField?: (content: C, field: WellKnownField) => string | null | undefined
+  test: (name: string) => number | null;
+  toDisplayName: (name: string) => string;
+  toFileName: (displayName: string) => string;
+  initialize?: () => C;
+  matches?: (content: C, matcher: StringMatcher) => boolean;
+  isValidKdbxEntry?: (fields: KeePassFields) => boolean;
+  fromKdbxEntry?: (fields: KeePassFields) => C;
+  toKdbxEntry?: (content: C) => KeePassFields;
+  parse?: (buf: Buffer) => C;
+  write?: (content: C) => Buffer;
+  readField?: (content: C, field: WellKnownField) => string | null | undefined;
 }
 
 const TYPES: { [id: string]: Type<any> } = {};
@@ -59,8 +59,8 @@ const RENDERERS: { [id: string]: TypeRenderer<any, any> } = {};
 
 export function typeFor(entry: string) {
   const matches = Object.values(TYPES)
-    .map(type => ({ type, match: type.test(entry) }))
-    .filter(m => m.match !== null);
+    .map((type) => ({ type, match: type.test(entry) }))
+    .filter((m) => m.match !== null);
   // best matches first
   matches.sort((a, b) => b.match! - a.match!);
   return matches[0].type;

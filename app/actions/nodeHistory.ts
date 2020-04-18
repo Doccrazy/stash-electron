@@ -19,9 +19,7 @@ export function close(): Action {
   };
 }
 
-type Action =
-  TypedAction<Actions.OPEN, string>
-  | OptionalAction<Actions.CLOSE>;
+type Action = TypedAction<Actions.OPEN, string> | OptionalAction<Actions.CLOSE>;
 
 export default function reducer(state: State = { open: false }, action: Action): State {
   switch (action.type) {

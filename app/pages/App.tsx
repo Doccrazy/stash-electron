@@ -16,14 +16,19 @@ import Trans from '../utils/i18n/Trans';
 import * as styles from './App.scss';
 
 export interface Props {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-function animatedMount(C: React.ComponentType<any>): React.ComponentType<RouteComponentProps<any>> {
-  return ({ match }) => <Fade in={!!match} timeout={{ enter: 0, exit: 150 }} mountOnEnter unmountOnExit>
-    <C />
-  </Fade>;
+function animatedMount(C: React.ComponentType<any>) {
+  const AnimatedMount: React.ComponentType<RouteComponentProps<any>> = ({ match }) => (
+    <Fade in={!!match} timeout={{ enter: 0, exit: 150 }} mountOnEnter unmountOnExit>
+      <C />
+    </Fade>
+  );
+  return AnimatedMount;
 }
+
+const AnimatedSearchField = animatedMount(SearchField);
 
 export default class App extends React.Component<Props, {}> {
   render() {
@@ -37,20 +42,29 @@ export default class App extends React.Component<Props, {}> {
         <GitSignaturePopup />
         <AuthHistoryPopup />
         <Navbar color="dark" className={`navbar-dark navbar-expand-md ${styles.nav}`}>
-          <NavLink to="/" className="navbar-brand"><span className={styles.logo} /> Stash</NavLink>
+          <NavLink to="/" className="navbar-brand">
+            <span className={styles.logo} /> Stash
+          </NavLink>
           <Nav className="mr-auto" navbar>
             <NavItem>
-              <NavLink to="/" exact className="nav-link"><Trans id="nav.home"/></NavLink>
+              <NavLink to="/" exact className="nav-link">
+                <Trans id="nav.home" />
+              </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink to="/users" className="nav-link"><Trans id="nav.users"/></NavLink>
+              <NavLink to="/users" className="nav-link">
+                <Trans id="nav.users" />
+              </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink to="/settings" className="nav-link"><Trans id="nav.settings"/></NavLink>
+              <NavLink to="/settings" className="nav-link">
+                <Trans id="nav.settings" />
+              </NavLink>
             </NavItem>
           </Nav>
           <div className={`mr-3 ${styles.form}`}>
-            <Route path="/" exact children={animatedMount(SearchField)} />
+            {/* eslint-disable-next-line react/no-children-prop */}
+            <Route path="/" exact children={AnimatedSearchField} />
           </div>
           <span className="navbar-text">
             <GitStatus />

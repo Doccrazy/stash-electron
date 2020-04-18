@@ -5,31 +5,32 @@ import { Dispatch, RootState } from '../actions/types/index';
 import { changeSignature, confirmSignature } from '../actions/git';
 import GitSignatureForm from '../components/GitSignatureForm';
 
-const EMAIL_PATTERN = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const EMAIL_PATTERN = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
 
-export default connect((state: RootState) => ({
-  open: state.git.signature.open,
-  name: state.git.signature.name,
-  email: state.git.signature.email,
-  local: state.git.signature.local,
-  valid: !!state.git.signature.name && EMAIL_PATTERN.test(state.git.signature.email || '')
-}), (dispatch: Dispatch) => ({
-  onChange: (name: string, email: string, local: boolean) => dispatch(changeSignature(name, email, local)),
-  onConfirm: () => dispatch(confirmSignature())
-}))(
-  ({ open, name, email, local, valid, onChange, onConfirm }: Props) => (
-    <ConfirmPopup open={open} valid={valid} title="Configure your git signature" onConfirm={onConfirm}>
-      <GitSignatureForm name={name} email={email} local={local} onChange={onChange} />
-    </ConfirmPopup>
-  )
-);
+export default connect(
+  (state: RootState) => ({
+    open: state.git.signature.open,
+    name: state.git.signature.name,
+    email: state.git.signature.email,
+    local: state.git.signature.local,
+    valid: !!state.git.signature.name && EMAIL_PATTERN.test(state.git.signature.email || '')
+  }),
+  (dispatch: Dispatch) => ({
+    onChange: (name: string, email: string, local: boolean) => dispatch(changeSignature(name, email, local)),
+    onConfirm: () => dispatch(confirmSignature())
+  })
+)(({ open, name, email, local, valid, onChange, onConfirm }: Props) => (
+  <ConfirmPopup open={open} valid={valid} title="Configure your git signature" onConfirm={onConfirm}>
+    <GitSignatureForm name={name} email={email} local={local} onChange={onChange} />
+  </ConfirmPopup>
+));
 
 interface Props {
-  open: boolean
-  name: string
-  email: string
-  local: boolean
-  valid: boolean
-  onChange: (name: string, email: string, local: boolean) => void
-  onConfirm: () => void
+  open: boolean;
+  name: string;
+  email: string;
+  local: boolean;
+  valid: boolean;
+  onChange: (name: string, email: string, local: boolean) => void;
+  onConfirm: () => void;
 }

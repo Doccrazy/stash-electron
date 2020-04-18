@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as crypto from 'crypto';
 import * as sshpk from 'sshpk';
-import {ALG_KEY_BYTES} from '../utils/cryptoStream';
+import { ALG_KEY_BYTES } from '../utils/cryptoStream';
 import FileSystem from './fs/FileSystem';
 import NodeFileSystem from './fs/NodeFileSystem';
 import KeyProvider from './KeyProvider';
@@ -39,17 +39,21 @@ function decryptMasterKey(hashedMasterKey: Buffer, encMasterKey: Buffer, private
 }
 
 interface FileFormat {
-  hashedMasterKey: string,
-  encryptedKeys: {[username: string]: string}
+  hashedMasterKey: string;
+  encryptedKeys: { [username: string]: string };
 }
 
 export default class UsersFile {
   private readonly usersFile: string;
-  private encryptedKeys: {[username: string]: Buffer} = {};
+  private encryptedKeys: { [username: string]: Buffer } = {};
   private hashedMasterKey: Buffer;
   private masterKey: Buffer | null;
 
-  private constructor(buf: Buffer | null | undefined, filename: string | null | undefined, private readonly fs: FileSystem = new NodeFileSystem()) {
+  private constructor(
+    buf: Buffer | null | undefined,
+    filename: string | null | undefined,
+    private readonly fs: FileSystem = new NodeFileSystem()
+  ) {
     if (filename) {
       this.usersFile = filename;
     }

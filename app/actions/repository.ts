@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import { toastr } from 'react-redux-toastr';
-import {List} from 'immutable';
+import { List } from 'immutable';
 import * as Settings from './settings';
 import EncryptedRepository from '../repository/Encrypted';
 import EntryPtr from '../domain/EntryPtr';
-import Node, {ROOT_ID} from '../domain/Node';
+import Node, { ROOT_ID } from '../domain/Node';
 import { afterAction } from '../store/eventMiddleware';
-import {State} from './types/repository';
+import { State } from './types/repository';
 import { GetState, TypedAction, TypedThunk, OptionalAction, Dispatch } from './types/index';
 import Repository from '../repository/Repository';
 import { hasChildOrEntry, readNodeRecursive, recursiveChildIds } from '../utils/repository';
@@ -113,7 +113,7 @@ export function readNode(nodeId: string): Thunk<Promise<void>> {
 
 export function readRecursive(nodeId: string): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
-    const nodeList = await readNodeRecursive(id => repo.readNode(id), nodeId);
+    const nodeList = await readNodeRecursive((id) => repo.readNode(id), nodeId);
 
     dispatch({
       type: Actions.READ_NODE_LIST,
@@ -373,27 +373,27 @@ afterAction([Settings.Actions.LOAD, Settings.Actions.SAVE], (dispatch: Dispatch,
 });
 
 type Action =
-  TypedAction<Actions.LOAD, { name: string, path: string }>
+  | TypedAction<Actions.LOAD, { name: string; path: string }>
   | TypedAction<Actions.FINISH_LOAD, boolean>
   | OptionalAction<Actions.UNLOAD>
   | TypedAction<Actions.READ_NODE_LIST, List<Node>>
-  | TypedAction<Actions.RENAME_ENTRY, { ptr: EntryPtr, newName: string }>
+  | TypedAction<Actions.RENAME_ENTRY, { ptr: EntryPtr; newName: string }>
   | TypedAction<Actions.DELETE_ENTRY, { ptr: EntryPtr }>
-  | TypedAction<Actions.MOVE_ENTRY, { ptr: EntryPtr, newNodeId: string }>
+  | TypedAction<Actions.MOVE_ENTRY, { ptr: EntryPtr; newNodeId: string }>
   | TypedAction<Actions.CREATE_ENTRY, EntryPtr>
-  | TypedAction<Actions.UPDATE_ENTRY, { ptr: EntryPtr, buffer: Buffer }>
+  | TypedAction<Actions.UPDATE_ENTRY, { ptr: EntryPtr; buffer: Buffer }>
   | TypedAction<Actions.DELETE_NODE, Node>
-  | TypedAction<Actions.MOVE_NODE, { node: Node, newNode: Node }>
+  | TypedAction<Actions.MOVE_NODE, { node: Node; newNode: Node }>
   | TypedAction<Actions.CREATE_NODE, Node>;
 
 type Thunk<R> = TypedThunk<Action, R>;
 
-export default function reducer(state: State = { nodes: { } }, action: Action): State {
+export default function reducer(state: State = { nodes: {} }, action: Action): State {
   switch (action.type) {
     case Actions.LOAD:
       return {
         ...state,
-        nodes: {[ROOT_ID]: new Node({id: ROOT_ID, name: action.payload.name})},
+        nodes: { [ROOT_ID]: new Node({ id: ROOT_ID, name: action.payload.name }) },
         name: action.payload.name,
         path: action.payload.path,
         loading: true
@@ -401,7 +401,7 @@ export default function reducer(state: State = { nodes: { } }, action: Action): 
     case Actions.FINISH_LOAD:
       return { ...state, loading: false };
     case Actions.UNLOAD:
-      return { ...state, nodes: { }, name: undefined, path: undefined, loading: false };
+      return { ...state, nodes: {}, name: undefined, path: undefined, loading: false };
     case Actions.READ_NODE_LIST: {
       const nodeList = action.payload;
 
@@ -414,20 +414,17 @@ export default function reducer(state: State = { nodes: { } }, action: Action): 
     }
 
     case Actions.RENAME_ENTRY:
-      return updatingNode(state, action.payload.ptr.nodeId, node =>
-        node.withEntryRenamed(action.payload.ptr.entry, action.payload.newName));
+      return updatingNode(state, action.payload.ptr.nodeId, (node) =>
+        node.withEntryRenamed(action.payload.ptr.entry, action.payload.newName)
+      );
     case Actions.DELETE_ENTRY:
-      return updatingNode(state, action.payload.ptr.nodeId, node =>
-        node.withEntryDeleted(action.payload.ptr.entry));
+      return updatingNode(state, action.payload.ptr.nodeId, (node) => node.withEntryDeleted(action.payload.ptr.entry));
     case Actions.MOVE_ENTRY: {
-      const intermediate = updatingNode(state, action.payload.ptr.nodeId, node =>
-        node.withEntryDeleted(action.payload.ptr.entry));
-      return updatingNode(intermediate, action.payload.newNodeId, node =>
-        node.withNewEntry(action.payload.ptr.entry));
+      const intermediate = updatingNode(state, action.payload.ptr.nodeId, (node) => node.withEntryDeleted(action.payload.ptr.entry));
+      return updatingNode(intermediate, action.payload.newNodeId, (node) => node.withNewEntry(action.payload.ptr.entry));
     }
     case Actions.CREATE_ENTRY:
-      return updatingNode(state, action.payload.nodeId, node =>
-        node.withNewEntry(action.payload.entry));
+      return updatingNode(state, action.payload.nodeId, (node) => node.withNewEntry(action.payload.entry));
 
     case Actions.DELETE_NODE: {
       const node = state.nodes[action.payload.id];
@@ -438,7 +435,9 @@ export default function reducer(state: State = { nodes: { } }, action: Action): 
         // remove all children of old node
         const allChildIds = recursiveChildIds(state.nodes, node.id);
         const newNodes = { ...state.nodes, [newParentNode.id]: newParentNode };
-        allChildIds.forEach(childId => { delete newNodes[childId]; });
+        allChildIds.forEach((childId) => {
+          delete newNodes[childId];
+        });
         return { ...state, nodes: newNodes };
       }
       return state;

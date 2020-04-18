@@ -18,12 +18,25 @@ export default class FocusingInput extends React.Component<Props, {}> {
 
   tryFocus() {
     if (this.inputRef && this.props.focused) {
-      setTimeout(() => { this.inputRef.focus(); this.inputRef.select(); });
+      setTimeout(() => {
+        this.inputRef.focus();
+        this.inputRef.select();
+      });
     }
   }
 
   render() {
     const { focused, innerRef, ...innerProps } = this.props;
-    return <Input innerRef={ref => { this.inputRef = ref!; if (typeof innerRef === 'function') { innerRef(ref); } }} {...innerProps} />;
+    return (
+      <Input
+        innerRef={(ref) => {
+          this.inputRef = ref!;
+          if (typeof innerRef === 'function') {
+            innerRef(ref);
+          }
+        }}
+        {...innerProps}
+      />
+    );
   }
 }

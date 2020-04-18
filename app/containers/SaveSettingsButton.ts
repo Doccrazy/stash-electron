@@ -5,8 +5,11 @@ import { is, fromJS } from 'immutable';
 import { save as saveSettings } from '../actions/settings';
 import { Dispatch, RootState } from '../actions/types/index';
 
-export default connect((state: RootState): { disabled?: boolean } => ({
-  disabled: is(fromJS(state.settings.current), fromJS(state.settings.edited))
-}), (dispatch: Dispatch): { onClick?: React.MouseEventHandler<any> } => ({
-  onClick: () => dispatch(saveSettings())
-}))(Button);
+export default connect(
+  (state: RootState): { disabled?: boolean } => ({
+    disabled: is(fromJS(state.settings.current), fromJS(state.settings.edited))
+  }),
+  (dispatch: Dispatch): { onClick?: React.MouseEventHandler<any> } => ({
+    onClick: () => dispatch(saveSettings())
+  })
+)(Button);

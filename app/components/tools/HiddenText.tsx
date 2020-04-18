@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 export interface Props {
-  children: any,
-  replacement: any
+  children: any;
+  replacement: any;
 }
 
 export default class HiddenText extends React.Component<Props, { visible: boolean }> {
@@ -41,8 +41,10 @@ export default class HiddenText extends React.Component<Props, { visible: boolea
   }
 
   render() {
-    return (<span onMouseEnter={this.show} onMouseLeave={this.hide}>
-      {this.state.visible ? this.props.children : this.props.replacement}
-    </span>);
+    return (
+      <span onMouseEnter={this.show} onMouseLeave={this.hide}>
+        {this.state.visible ? this.props.children : this.props.replacement}
+      </span>
+    );
   }
 }

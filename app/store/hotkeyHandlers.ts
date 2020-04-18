@@ -10,19 +10,23 @@ import PasswordType from '../fileType/password';
 import { openStashLink } from './stashLinkHandler';
 
 export default function registerHotkeys(dispatch: Dispatch, getState: GetState) {
-  document.documentElement!.addEventListener('paste', ev => {
-    if (ev.clipboardData && ev.clipboardData.types.includes('text/plain')) {
-      const str = ev.clipboardData.getData('text/plain');
-      try {
-        StashLink.parse(str);
-        // valid link pasted
-        ev.preventDefault();
-        dispatch(openStashLink(str));
-      } catch {
-        // no stash link
+  document.documentElement.addEventListener(
+    'paste',
+    (ev) => {
+      if (ev.clipboardData && ev.clipboardData.types.includes('text/plain')) {
+        const str = ev.clipboardData.getData('text/plain');
+        try {
+          StashLink.parse(str);
+          // valid link pasted
+          ev.preventDefault();
+          dispatch(openStashLink(str));
+        } catch {
+          // no stash link
+        }
       }
-    }
-  }, true);
+    },
+    true
+  );
 
   Mousetrap.bind('f2', () => {
     const { currentNode, currentEntry, edit } = getState();
