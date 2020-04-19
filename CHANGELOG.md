@@ -7,7 +7,7 @@
 
 #### Changes
 
-- Electron has been upgraded to v7.1.5
+- Electron has been upgraded to v8.0.3
 - Ubuntu 18.04 is now the minimum required version
 - The folder context menu is now also shown in the free space of the file list
 
