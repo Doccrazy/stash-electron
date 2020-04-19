@@ -9017,10 +9017,10 @@ react-popper@^1.3.3, react-popper@^1.3.6:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-redux-toastr@^7.6.1:
-  version "7.6.2"
-  resolved "https://registry.yarnpkg.com/react-redux-toastr/-/react-redux-toastr-7.6.2.tgz#d57c4492536f0019fb192813275a33ddb597476a"
-  integrity sha512-AiK2eof0S0frmvB8tOTyzq+Rj4huypPGMv4pJTSTuv2GZ2jPJOuGQwb/hz+LaxLt7B+96e5jV/hKa8U7fGD05Q==
+react-redux-toastr@^7.6.4:
+  version "7.6.4"
+  resolved "https://registry.yarnpkg.com/react-redux-toastr/-/react-redux-toastr-7.6.4.tgz#a34e1c99c8b515ec21dfb4292fe687eec66b5603"
+  integrity sha512-BxDX4awy1Oc52p+xTrib23bzGhBp4wxoKnKeQilKY6aXAEnJU4YFUXK/Ag3hdimmn38j46PLvKiYWETFer9BbA==
   dependencies:
     classnames "^2.2.3"
     eventemitter3 "^3.1.0"

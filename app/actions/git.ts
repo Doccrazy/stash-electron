@@ -69,7 +69,9 @@ export function updateStatus(doFetch: boolean, updateHistory = true): Thunk<Prom
       dispatch(refreshHistory());
     }
     if (status.incomingCommits) {
-      toastr.info('', `${status.incomingCommits} commit(s) received from '${status.upstreamName}'.`);
+      toastr.info('', `${status.incomingCommits} commit(s) received from '${status.upstreamName}'.`, {
+        disableCloseButtonFocus: true
+      } as any);
 
       await dispatch(Repository.reload());
     }

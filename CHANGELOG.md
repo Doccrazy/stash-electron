@@ -1,28 +1,33 @@
 ## upcoming release (no planned release date)
 
 #### New features
+
 - Stash is now fully translatable, with a German translation available initially  
   Pull requests welcome!
 
 #### Changes
+
 - Electron has been upgraded to v7.1.5
 - Ubuntu 18.04 is now the minimum required version
 - The folder context menu is now also shown in the free space of the file list
 
 #### Bugs fixed
-- *Show more* link in authorization history window now actually works
+
+- _Show more_ link in authorization history window now actually works
 - Navigating to the clicked Stash link on application start has been fixed
 - On multi-monitor setups, the window should no longer open on a disconnected screen
 - Errors on push due to failed remote hooks are no longer ignored
 - Invalid URLs in entries are now silently ignored
 - Authorization changes in the 'Folder access' view are now correctly saved
 - Display of long description values has been improved
+- The passphrase input will no longer lose focus when new commits are received
 
 ## v1.2.0 (2018-12-14)
 
 #### New features
+
 - **Git history support**
-  - The *Modified* column is now based on git history instead of local file date
+  - The _Modified_ column is now based on git history instead of local file date
   - A history popup has been added for user keys, folders and folder permissions
   - The history of entries can now be accessed by a dropdown in the lower panel
   - The full git commit log is now viewable in the status popup
@@ -38,36 +43,41 @@
 - Fields can now be copied to clipboard using hotkeys known from KeePass (Ctrl+B, Ctrl+C, Ctrl+Shift+U)
 
 #### Changes
-- The *My Favorites* link and the tool icons now remain visible when scrolling
-- The search scope is now highlighted when set to *current folder*
+
+- The _My Favorites_ link and the tool icons now remain visible when scrolling
+- The search scope is now highlighted when set to _current folder_
 - UI scale now defaults to 15 for new installations
 
 #### Bugs fixed
+
 - Number settings fields no longer accept garbage input (and show a nice spinner as a bonus)
 - The current selection is now remembered on reload / git update
-- Git clone from SSH (using agent) no longer fails with *unsupported credentials type* error
-- Fixed *create item* button being enabled before permissions have been initially set up (with warning message)
+- Git clone from SSH (using agent) no longer fails with _unsupported credentials type_ error
+- Fixed _create item_ button being enabled before permissions have been initially set up (with warning message)
 - Pushing the initial commit to an empty repository should now work
-- The *uncommitted changes* warning on quit should now work reliably
+- The _uncommitted changes_ warning on quit should now work reliably
 
 ## v1.1.0 (2017-12-18)
 
 This release adds some of the most requested features in v1.0.0 and fixes some bugs.
 
 #### New features
+
 - Folders can now be moved and merged by dragging the label onto another folder
 - Added an edit icon in the breadcrumb bar for quick folder renaming
 - A new 👁 icon in the folder tree allows you to hide inaccessible items (files and folders; off by default)
 - When copying password data, the clipboard is now cleared after 30s
-- New views on the *Users* page allow a quick breakdown of user rights:
-  - *Permissions* lists all granted permissions for each user
-  - *Access* provides an editable map of access rights per folder
-- The changelog is now included on the *Settings* page
+- New views on the _Users_ page allow a quick breakdown of user rights:
+  - _Permissions_ lists all granted permissions for each user
+  - _Access_ provides an editable map of access rights per folder
+- The changelog is now included on the _Settings_ page
 
 #### Changes
+
 - The password generator dropdown now uses the same colors as the strength meter
 
 #### Bugs fixed
+
 - Closing the permissions popup with the ESC key should now work
 - The non-functional "delete" context menu entry on the repository root has been removed
 - The git login window should no longer pop up every minute when applying saved credentials fails or is cancelled
