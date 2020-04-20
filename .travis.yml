@@ -71,6 +71,7 @@ script:
 after_success:
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ] && [ -n "$DEPLOY_RELEASE" ] && [ -z "$DEB_SKIP_PUBLISH" ]; then
+      sudo apt-get update
       sudo apt-get -y install zstd
       bash dist/arch/update-aur.sh
       bash dist/bintray-cleanup.sh
