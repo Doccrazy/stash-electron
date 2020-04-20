@@ -5,8 +5,8 @@ cd "$TRAVIS_BUILD_DIR/dist/arch"
 source "$TRAVIS_BUILD_DIR/release/PKGINFO"
 
 # Set up to run makepkg
-wget https://www.archlinux.org/packages/core/x86_64/pacman/download/ -O pacman.pkg.tar.xz
-tar -Jxf pacman.pkg.tar.xz
+wget https://www.archlinux.org/packages/core/x86_64/pacman/download/ -O pacman.pkg.tar.zst
+tar -I zstd -xf pacman.pkg.tar.zst
 bindir="$(pwd)/usr/bin"
 export PATH="$bindir:$PATH"
 export LIBRARY="$(pwd)/usr/share/makepkg"
