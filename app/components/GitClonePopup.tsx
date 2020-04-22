@@ -64,7 +64,7 @@ export default withTrans<Props>('component.gitClonePopup')(
                 value={target || ''}
                 onChange={(ev) => onChangeTarget(ev.target.value)}
               />
-              <small className="form-text text-muted">{t('field.targetFolder.info')}</small>
+              <small className="form-text text-muted">{t('.field.targetFolder.info')}</small>
             </FormGroup>
           </Form>
         </ModalBody>
