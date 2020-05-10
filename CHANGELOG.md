@@ -1,4 +1,4 @@
-## upcoming release (no planned release date)
+## v1.2.1 (2020-05-10)
 
 #### New features
 
