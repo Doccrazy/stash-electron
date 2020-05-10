@@ -3,7 +3,7 @@ matrix:
     - os: osx
       osx_image: xcode10.2
       language: node_js
-      node_js: '12'
+      node_js: "12"
       env:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
@@ -25,7 +25,7 @@ env:
   global:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - secure: eVVluxkZaqvpciWWIOUCjqeQGrm5EVFxhnjDpXCcbzisQH2o65ZP2ccHtUeX4guC2IyUB6HZKTSCiJPk4vvIFGbSL72+fu+USlDRlqpB351e7CM/qsN/ODERQQ317f/GHACiSaBzn6jBzmRMYMAoQXSxE06BCvTCOFVuPcQQG++epsr4yf0q67ox/dBmIiWnT8xZDWMMawjZf583rZfGTseqgZjz+9a/74hvhqElbK0gn4hQ7PL5sftSBVRiKdwC0ygkPfg2Mfe++XQ4h+mE8UO/3xdp1UPR1ziUhpLQ1fr+tPLl7VkcPDi5LdUS2rANsKvprLtKAaOslv7pntPAy04LVRARfCruwzWHlWlkH6SPdvgI0rbduPQ1Q4nTyTp3Mwwxxt1aZjbCQw5/uZcdhRXx/UpfMCfZW9J3VkM9EXs8HUY6gQCRWkO8U+uI+VMUScEtxq2DVe1vih2YjppmuPKspkqQ1ZFnPyLerFc/sAEnNgokzZE3FCEtNdGFxB9mCSa4otyJxCpHRQ/G2cl5wrpqt5WYFKMJi9Qyj7XSe95qdcpVi7U3392w+NobSJppJJDldj6juGVtJnc38+Mb59nPb141TYUxcaQKGy6DB+qS+HszrtDyVuGzgm0YsY82V5SRwht/6SZTOUzkubrJTyvd0c2d3NFMdZg4OW2Gaxg=
+    - secure: Li9Cdqy5wz/lws1eiTFusPNRdFJbGXsVDq4kFCyJSepeRV2TfpOSiwOlbjvHwrZvWcM4OFZ+HJDxlS8Sph6ZkJ/K1VZgCaqUbRFegh0LsByHO7VC6UiWYtRmzq+iQytc0ykLRMUneqId/Ll/BTMY4YWGYnjUBkuogzVLduJZCG5603mMh7/6cd6Fxjjdd/bUSEYFphLw2nnFLF0vZQ6+M43k6M2AAB2Arx5e1CWWcUPvfVUIGTyA2f8R0ZltwsD4K0+gPhqP/nmbCKo2gbqEsp3O7GEBAOz7/D/3D6o/tcBvcEFZ0xB2Yk65l15paK2EIZ+V2aY3eYdApbZ5PQkNKNT5PhsoBtvH1XNZIPq1qvtiNhlY5LY+du7n6u496KYaAaSNnEd2gjQjjTYg4ggYKvNc9T81e+Q8LSXXNR2P3SrC7Rp9LsGW+daO+m+atAYzhb+odcq4EsLcCgGeHOwPNjojJqw3rP9HzsHPDXuq61CFbZGcJgeeCsV+ZqjA1JVvMB0/rUJpGv/iRd7FBgkotVJLU+nnZ75ZV3qxBe83KvT0ERmdRpwQmBca8s4An6qJFN6vUN1vmcMLosR6NIniiDDr0s0D+hmTl4ww1eN4vPLcjrNRDcgZHUip1b/CkgW2PG1x9mB6yb9pYVsEgXzzzqRJ0mLuvNsYkaniAkzEPiQ=
 
 before_install:
   - |
