@@ -1,5 +1,3 @@
-test:
-  key: "**Test message** with *Markdown {date,date,short} support* + {date,time,short} for {user}"
 common:
   column:
     action: Action
@@ -128,7 +126,7 @@ component:
     title: Generate private key
     info: |
       This form allows you to generate a new RSA key for use within Stash.
-      
+
       While optional, it is **highly recommended** to protect your key with a **passphrase**.  
       This passphrase will prevent unauthorized access to your secrets, and will be required every time you open Stash.
     strength: Strength
@@ -203,7 +201,7 @@ component:
       generateKey: Generate new keypair
   importPopup:
     title: Import KeePass database
-    info: All items will be imported into the current folder. Existing items will be overwritten.
+    info: All items will be imported recursively into the current folder. Existing items with the same name will be overwritten.
     field:
       file: File
       masterKey: Master key (if required)
@@ -253,7 +251,8 @@ component:
       full: everywhere
       limited: within folder
   noKeyAlert:
-    keyLoaded: You do not currently have access to the selected repository. You may either add yourself to the list of
+    keyLoaded:
+      You do not currently have access to the selected repository. You may either add yourself to the list of
       known users and ask someone else to authorize you, or load a different key.
     keyEncrypted: "!fa(lock) Your encrypted private key is locked. {link}."
     unlockLink: Click here or press Ctrl+L to unlock with your passphrase

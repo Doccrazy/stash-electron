@@ -1,9 +1,7 @@
-test:
-  key2: Auf Deutsch!
 common:
   column:
     action: Aktion
-    author: Author
+    author: Autor
     date: Datum
     folder: Ordner
     username: Benutzer
@@ -71,7 +69,7 @@ page:
       off: Nicht verfügbare Dateien/Ordner werden angezeigt; klicken zum Umschalten
   noRepository:
     loading: Repository wird geladen...
-    notLoaded: Kein Repository geladen, bitte Einstellunge überprüfen.
+    notLoaded: Kein Repository geladen, bitte Einstellungen überprüfen.
   settings:
     title: Anwendungseinstellungen
     repositories: Letzte Repositories
@@ -89,6 +87,34 @@ page:
       Zusätzlich müssen Benutzer in der Verzeichnisstruktur separat berechtigt werden, damit sie in der
       Lage sind, Inhalte zu entschlüsseln.
 component:
+  shared:
+    strengthMeter:
+      strength: "{length} Zeichen / {entropy} Bit"
+  authHistoryPopup:
+    title: Berechtigungsänderungen {nodePath, select, _NONE {} other { für {nodePath} }}
+    column:
+      users: Benutzer {added}/{removed}
+      users.added: hinzugefügt
+      users.removed: entfernt
+  authorizedUsersPopup:
+    title: Berechtigungen für {nodeName}
+    status: "Berechtigte Benutzer{inheritedFrom, select, _NONE {} other {\xa0(vererbt von {inheritedFrom})}}: {users}"
+    generalWarning: Bei Entzug einer Berechtigung empfiehlt es sich, alle entspr. Kennwörter zu ändern. Überlegen Sie deshalb genau, wem Sie Zugriff erteilen.
+    resetWarning: "Zurücksetzen nicht möglich: nicht berechtigt."
+    button:
+      override: Überschreiben
+      resetToParent: Zurücksetzen
+  currentFolder:
+    namePlaceholder: Ordnernamen eingeben
+  editPopup:
+    create: Neuen Eintrag anlegen
+    edit: Eintrag bearbeiten
+  exportPopup:
+    title: In KeePass-Datenbank exportieren
+    info: Alle einsehbaren Einträge im aktuellen Ordner werden in eine neue KeePass-Datenbank exportiert.
+    backupWarning: Benutzer und Berechtigungen werden nicht exportiert. Der Export ersetzt kein Repository-Backup.
+    masterKey: Master-Key der Datenbank
+    repeatMasterKey: Master-Key wiederholen
   fileList:
     column:
       favorite: Fav
@@ -96,6 +122,92 @@ component:
       path: Pfad
       modified: Geändert
     modifiedTitle: "{date, date, shortTime} {user, select, _NONE {} other {von {user}}}"
+  generateKeyPopup:
+    title: Privaten Schlüssel erzeugen
+    info: |
+      Mit diesem Formular können Sie einen neuen privaten RSA-Schlüssel zur Verwendung in Stash erzeugen.
+
+      Es ist **dringend empfohlen**, Ihren neuen Schlüssel mit einer **Passphrase** zu schützen.
+      Die Passphrase verhindert unauthorisierten Zugriff auf Ihre geheimen Daten, und muss bei jedem Start von Stash eingegeben werden.
+    strength: Stärke
+    strengthBits: "{bits} Bit"
+    passphrase: Passphrase
+    repeatPassphrase: Passphrase wiederholen
+    error:
+      emptyPassphrase: Passphrase ist leer
+    action:
+      generate: Generieren & Export
+  gitActionsPopup:
+    title: Status des Git-Repositories
+    conflict:
+      title: Ihr Repository befindet sich in einem Konfliktzustand, möglicherweise weil eingehende Änderungen nicht automatisch zusammengeführt werden konnten.
+      text: |
+        Bevor Sie mit dem Repository weiterarbeiten können, muss der Konfikt aufgelöst werden. Bitte wählen Sie entweder **Eingehende Änderung übernehmen**
+        um Ihre eigenen Änderungen für alle Einträge im Konfliktzustand zu verwerfen (nicht betroffene Einträge bleiben erhalten), oder
+        **Pull & aktualisieren**, falls Sie den Konflikt manuell gelöst haben.
+    action:
+      selectRevert: Zum Zurückrollen auswählen
+      showAll: Alle Commits anzeigen
+      push: "{toPush} Commit(s) pushen"
+      pushRevert: "{toPush} Commit(s) pushen, {toReset} zurückrollen"
+      revert: "{toReset} Commit(s) zurückrollen"
+  gitClonePopup:
+    title: Entferntes Git-Repository klonen
+    field:
+      remoteUrl: URL des entfernten Repositories
+      remoteUrl.placeholder: z.B. https://git.mycompany.com/passwords.git
+      targetFolder: Zielordner
+      targetFolder.dialogTitle: Zielordner auswählen
+      targetFolder.placeholder: "z.B. {example}"
+      targetFolder.info: Falls der Zielordner nicht leer ist, wird ein neuer Unterordner angelegt
+  gitCommitsTable:
+    col:
+      hash: Hash
+      message: Nachricht
+      author: Autor
+      date: Datum
+    new: neu
+  gitSignatureForm:
+    info: |
+      Um Ihre Änderungen zu committen, muss eine gültige Git-Signatur konfiguriert werden.
+
+      Ihre "Signatur" identifiziert Ihre Commits gegenüber Anderen.
+      Die Daten, die Sie hier eingeben, werden als Autor Ihrer Commits erscheinen.
+    field:
+      name: Benutzername oder voller Name
+      email: E-Mail-Adresse
+      local: Nur für aktuelles Repository speichern
+  historyMenu:
+    title: Verlauf
+    titleWithCommit: Zeige Commit {hash} von {author}
+  identityStatus:
+    keyInfo:
+      bits: "{bits} Bit"
+      from: von
+      noKey: kein Schlüssel geladen
+      locked: gesperrt
+    unauthorized: nicht berechtigt
+    warning:
+      notEncrypted: Nicht verschlüsselt; Arbeitsbereich-Sperre nicht verfügbar
+    error:
+      FILE: Datei nicht gefunden oder nicht zugreifbar.
+      ENCRYPTED: Für die Entschlüsselung wird ein Passphrase benötigt.
+      PASSPHRASE: Passphrase ungültig.
+      CANCELLED: Abgebrochen.
+    action:
+      lock: Arbeitsbereich sperren [Strg+L]
+      unlock: Mit Passphrase entsperren [Strg+L]
+      loadKey: Schlüssel laden (SSH/PEM/PPK)
+      generateKey: Neuen Schlüssel erzeugen
+  importPopup:
+    title: KeePass-Datenbank importieren
+    info: Alle Einträge werden rekursiv in den aktuellen Ordner importiert. Existierende Einträge mit gleichem Namen werden überschrieben.
+    field:
+      file: Datei
+      masterKey: Master-Key (falls benötigt)
+      keyFile: Schlüsseldatei (falls benötigt)
+    action:
+      import: Importieren
   loginPopup:
     title: Zugangsdaten eingeben
     info: Bitte geben Sie Ihre Zugangsdaten ein.
@@ -107,11 +219,64 @@ component:
       storeCredentials:
         title: Fehler beim Speichern der Zugangsdaten
         message: Zugriff auf den System-Keystore fehlgeschlagen
+  moveFolderPopup:
+    title:
+      move: Verschieben bestätigen
+      merge: Zusammenführen bestätigen
+    info:
+      merge: |
+        Beim *Zusammenführen* werden die Einträge in {source} rekursiv in den Zielordner {target} integriert.
+        Mögliche Duplikate werden überschrieben.
+      mergePermissions: Zusammenführen erfordert vollen Zugriff auf beide Verzeichnisbäume.
+    confirm:
+      move: |
+        Ordner {source} nach {target} verschieben?
+        Dadurch können sich die Zugriffsrechte verändern. Überschriebene Berechtigungen in Unterordnern werden jedoch nicht angepasst.
+      merge: Ordner {source} in {target} integrieren?
+    warning:
+      cannotMove: "Verschieben nicht möglich: Ordner oder Eintrag existiert bereits. Evtl. können Sie den Ordner mit dem Unterordner zusammenführen."
+      cannotMerge: "Zusammenführen nicht möglich: Voller Zugriff auf beide Verzeichnisbäume ist erforderlich."
+    action:
+      move: Verschieben
+      merge: Zusammenführen
+  recentRepositories:
+    path: "Pfad: {repositoryPath}"
+    action:
+      browse: Lokales Repository öffnen
+      clone: Entferntes Repository klonen
+      remove: Aus Liste entfernen
   searchField:
     placeholder: Suchbegriff eingeben (Enter für Volltextsuche)
     scope:
       full: gesamt
       limited: aktueller Ordner
+  noKeyAlert:
+    keyLoaded:
+      Sie haben aktuell keinen Zugriff auf das gewählte Repository. Sie können entweder sich selbst zur Liste der
+      bekannten Benutzer hinzufügen und von jemand anders berechtigt werden, oder einen anderen Schlüssel laden.
+    keyEncrypted: "!fa(lock) Ihr privater Schlüssel ist gesperrt. {link}."
+    unlockLink: Zum Entsperren mit Passphrase klicken oder Strg+L drücken
+    noKey: Kein privater Schlüssel geladen oder Zugriffsfehler. Bitte !fa(user-circle) Benutzermenü überprüfen.
+  userKeyAddPopup:
+    title: Neuen Benutzer hinzufügen
+    label:
+      username: Benutzername
+      publicKey: Öffentlicher Schlüssel (SSH / PEM / PPK)
+      keyName: Bezeichnung (optional; zur späteren Identifikation des Schlüssels)
+    action:
+      usePrivateKey: Meinen Schlüssel verwenden
+      loadKey: Datei laden
+  userKeyTable:
+    column:
+      publicKey: Öffentlicher Schlüssel (SSH)
+      keyName: Bezeichnung
+    action:
+      copyPublicKey: Öffentlichen Schlüssel kopieren
+  userPermissionTable:
+    column:
+      folders: Berechtigte Ordner
+  usersHistoryPopup:
+    title: Änderungen an Benutzern
 fileType:
   default:
     field:
