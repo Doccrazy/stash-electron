@@ -2,7 +2,8 @@
 @import "~bootstrap/scss/variables";
 
 .home {
-  height: 100%;
+  flex-grow: 1;
+  min-height: 0;
   display: flex;
 }
 
