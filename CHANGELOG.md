@@ -2,7 +2,8 @@
 
 #### Bugs fixed
 
-- Configuring the git signature on initial setup has been fixed
+- Configuring the git signature on initial setup has been fixed (#2)
+- Main navbar should no longer scroll out of view (#3)
 
 ## v1.2.1 (2020-05-10)
 
