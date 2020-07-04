@@ -39,9 +39,9 @@ export function isRepository(repoPath: string) {
 
 export async function isSignatureConfigured(repo: Git.Repository) {
   try {
-  // eslint-disable-next-line @typescript-eslint/await-thenable
-  const defaultSignature = await Git.Signature.default(repo);
-  return !!defaultSignature && !!defaultSignature.name() && !!defaultSignature.email();
+    // eslint-disable-next-line @typescript-eslint/await-thenable
+    const defaultSignature = await Git.Signature.default(repo);
+    return !!defaultSignature && !!defaultSignature.name() && !!defaultSignature.email();
   } catch (err) {
     if (err.errno === Git.Error.CODE.ENOTFOUND) {
       return false;
