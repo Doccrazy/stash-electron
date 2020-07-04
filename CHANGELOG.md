@@ -1,3 +1,9 @@
+## v1.2.2 (no planned release date)
+
+#### Bugs fixed
+
+- Configuring the git signature on initial setup has been fixed
+
 ## v1.2.1 (2020-05-10)
 
 #### New features

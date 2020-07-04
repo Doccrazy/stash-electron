@@ -11,11 +11,11 @@ export interface Props {
   onChange: (name: string, email: string, local: boolean) => void;
 }
 
-export default withTrans<Props>('.component.gitSignatureForm')(({ t, name = '', email = '', local = false, onChange }) => (
+export default withTrans<Props>('component.gitSignatureForm')(({ t, name = '', email = '', local = false, onChange }) => (
   <div>
-    <p>
+    <div className="mb-3">
       <Trans id=".info" markdown />
-    </p>
+    </div>
     <FormGroup>
       <Label>{t('.field.name')}</Label>
       <FocusingInput focused value={name} onChange={(ev) => onChange(ev.target.value, email, local)} maxLength={100} />
