@@ -27,6 +27,8 @@ function processCommandLine(argv: string[]) {
 }
 
 app.setAppUserModelId('de.doccrazy.Stash');
+// required for NodeGit, see https://github.com/electron/electron/issues/18397
+app.allowRendererProcessReuse = false;
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 if (process.env.NODE_ENV === 'production') {
@@ -109,7 +111,8 @@ app.on('ready', async () => {
     icon: process.platform === 'linux' ? appIcon : undefined,
     autoHideMenuBar: true,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      enableRemoteModule: true
     }
   };
   const config: Splashscreen.Config = {
