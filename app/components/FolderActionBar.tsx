@@ -41,44 +41,44 @@ export default withTrans<Props>('action.folder')(
         <BarsMenu>
           {
             <DropdownItem onClick={onCopyLink}>
-              <i className="fa fa-share" /> {t('action.common.shareLink')}
+              <i className="fa fa-fw fa-share" /> {t('action.common.shareLink')}
             </DropdownItem>
           }
           {
             <DropdownItem onClick={onEditPermissions}>
-              <i className="fa fa-users" /> {t('.permissions')}
+              <i className="fa fa-fw fa-users" /> {t('.permissions')}
             </DropdownItem>
           }
           {
             <DropdownItem onClick={onShowHistory}>
-              <i className="fa fa-history" /> {t('action.common.history')}
+              <i className="fa fa-fw fa-history" /> {t('action.common.history')}
             </DropdownItem>
           }
           {accessible && (
             <DropdownItem onClick={onAddExternal}>
-              <i className="fa fa-file-o" /> {t('.addExternal')}
+              <i className="fa fa-fw fa-file-o" /> {t('.addExternal')}
             </DropdownItem>
           )}
           {accessible && <DropdownItem divider />}
           {accessible && (
             <DropdownItem onClick={onImport}>
-              <i className="fa fa-download" /> {t('.import')}
+              <i className="fa fa-fw fa-download" /> {t('.import')}
             </DropdownItem>
           )}
           {
             <DropdownItem onClick={onExport}>
-              <i className="fa fa-upload" /> {t('.export')}
+              <i className="fa fa-fw fa-upload" /> {t('.export')}
             </DropdownItem>
           }
           {nodeEditable && <DropdownItem divider />}
           {nodeEditable && (
             <DropdownItem onClick={onRename}>
-              <i className="fa fa-pencil" /> {t('.rename')}
+              <i className="fa fa-fw fa-pencil" /> {t('.rename')}
             </DropdownItem>
           )}
           {nodeEditable && (
             <DropdownItem onClick={onDelete}>
-              <i className="fa fa-trash-o" /> {t('.delete')}
+              <i className="fa fa-fw fa-trash-o" /> {t('.delete')}
             </DropdownItem>
           )}
         </BarsMenu>

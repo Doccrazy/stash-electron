@@ -48,31 +48,31 @@ export default withTrans<Props>('component.identityStatus')(({ t, ...props }) =>
         </DropdownItem>
         {props.privateKeyBits && !props.lockAvailable && (
           <DropdownItem disabled>
-            <i className="fa fa-warning text-warning" /> {t('.warning.notEncrypted')}
+            <i className="fa fa-fw fa-warning text-warning" /> {t('.warning.notEncrypted')}
           </DropdownItem>
         )}
         {props.lockAvailable && !props.locked && (
           <DropdownItem onClick={props.onLock}>
-            <i className="fa fa-lock" /> {t('.action.lock')}
+            <i className="fa fa-fw fa-lock" /> {t('.action.lock')}
           </DropdownItem>
         )}
         {props.locked && (
           <DropdownItem onClick={props.onUnlock}>
-            <i className="fa fa-lock" /> {t('.action.unlock')}
+            <i className="fa fa-fw fa-lock" /> {t('.action.unlock')}
           </DropdownItem>
         )}
         <DropdownItem divider />
         {props.recentPrivateKeys.map((keyInfo) => (
           <DropdownItem key={keyInfo.publicKey} onClick={() => props.onLoad(keyInfo.path)}>
-            <i className="fa fa-sign-in" /> {abbreviate(keyInfo.path)}
+            <i className="fa fa-fw fa-sign-in" /> {abbreviate(keyInfo.path)}
           </DropdownItem>
         ))}
         {props.recentPrivateKeys.length ? <DropdownItem divider /> : null}
         <DropdownItem onClick={props.onBrowse}>
-          <i className="fa fa-folder-open" /> {t('.action.loadKey')}&hellip;
+          <i className="fa fa-fw fa-folder-open" /> {t('.action.loadKey')}&hellip;
         </DropdownItem>
         <DropdownItem onClick={props.onGenerate}>
-          <i className="fa fa-cog" /> {t('.action.generateKey')}&hellip;
+          <i className="fa fa-fw fa-cog" /> {t('.action.generateKey')}&hellip;
         </DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>

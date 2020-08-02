@@ -68,10 +68,10 @@ export default withTrans<Props>('component.recentRepositories')(
         </DropdownToggle>
         <DropdownMenu>
           <DropdownItem onClick={onBrowseLocal}>
-            <i className="fa fa-folder-open" /> {t('.action.browse')}
+            <i className="fa fa-fw fa-folder-open" /> {t('.action.browse')}
           </DropdownItem>
           <DropdownItem onClick={onCloneRemote}>
-            <i className="fa fa-git-square" /> {t('.action.clone')}
+            <i className="fa fa-fw fa-git-square" /> {t('.action.clone')}
           </DropdownItem>
         </DropdownMenu>
       </UncontrolledDropdown>
