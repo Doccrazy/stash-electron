@@ -10,7 +10,7 @@ function fallbacks(locale: string) {
 export function getMessage(locale: string, messageId: string) {
   return (
     fallbacks(locale)
-      .map((loc) => (messages[loc] || {})[messageId])
+      .map((loc) => (messages[loc] || {})[`${messageId}_${process.platform}`] || (messages[loc] || {})[messageId])
       .filter((m) => !!m)[0] || messageId
   );
 }

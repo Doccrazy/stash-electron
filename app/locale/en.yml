@@ -196,7 +196,9 @@ component:
       CANCELLED: Cancelled by user.
     action:
       lock: Lock workspace [Ctrl+L]
+      lock_darwin: Lock workspace [⌘ + L]
       unlock: Unlock with your passphrase [Ctrl+L]
+      unlock_darwin: Unlock with your passphrase [⌘ + L]
       loadKey: Load key from file (SSH/PEM/PPK)
       generateKey: Generate new keypair
   importPopup:
@@ -256,6 +258,7 @@ component:
       known users and ask someone else to authorize you, or load a different key.
     keyEncrypted: "!fa(lock) Your encrypted private key is locked. {link}."
     unlockLink: Click here or press Ctrl+L to unlock with your passphrase
+    unlockLink_darwin: Click here or press ⌘ + L to unlock with your passphrase
     noKey: No private key has been loaded or loading of the private key failed. Check !fa(user-circle) account menu.
   userKeyAddPopup:
     title: Add user key

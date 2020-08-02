@@ -38,7 +38,7 @@ action:
     saveChanges: Speichern
     revertChanges: Änderungen verwerfen
   folder:
-    permissions: Berechtigugen
+    permissions: Berechtigungen
     addExternal: Dateien hinzufügen
     import: KeePass-Import
     export: KeePass-Export
@@ -196,7 +196,9 @@ component:
       CANCELLED: Abgebrochen.
     action:
       lock: Arbeitsbereich sperren [Strg+L]
+      lock_darwin: Arbeitsbereich sperren [⌘ + L]
       unlock: Mit Passphrase entsperren [Strg+L]
+      unlock_darwin: Mit Passphrase entsperren [⌘ + L]
       loadKey: Schlüssel laden (SSH/PEM/PPK)
       generateKey: Neuen Schlüssel erzeugen
   importPopup:
@@ -256,6 +258,7 @@ component:
       bekannten Benutzer hinzufügen und von jemand anders berechtigt werden, oder einen anderen Schlüssel laden.
     keyEncrypted: "!fa(lock) Ihr privater Schlüssel ist gesperrt. {link}."
     unlockLink: Zum Entsperren mit Passphrase klicken oder Strg+L drücken
+    unlockLink_darwin: Zum Entsperren mit Passphrase klicken oder ⌘ + L drücken
     noKey: Kein privater Schlüssel geladen oder Zugriffsfehler. Bitte !fa(user-circle) Benutzermenü überprüfen.
   userKeyAddPopup:
     title: Neuen Benutzer hinzufügen

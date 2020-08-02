@@ -60,10 +60,10 @@ export default function registerHotkeys(dispatch: Dispatch, getState: GetState) 
     dispatch(op());
   }
 
-  Mousetrap.bind(['ctrl+n', 'meta+n'], () => editOp(() => Edit.createInCurrent(PasswordType.id)));
-  Mousetrap.bind(['ctrl+shift+n', 'meta+shift+n'], () => editOp(CurrentNode.startCreate));
+  Mousetrap.bind('mod+n', () => editOp(() => Edit.createInCurrent(PasswordType.id)));
+  Mousetrap.bind('mod+shift+n', () => editOp(CurrentNode.startCreate));
 
-  Mousetrap.bind('ctrl+l', () => {
+  Mousetrap.bind('mod+l', () => {
     if (getState().privateKey.encrypted) {
       if (getState().privateKey.key) {
         dispatch(PrivateKey.lock());
@@ -73,8 +73,8 @@ export default function registerHotkeys(dispatch: Dispatch, getState: GetState) 
     }
   });
 
-  Mousetrap.bind('ctrl+b', () => dispatch(CurrentEntry.copyToClipboard(WellKnownField.USERNAME)));
-  Mousetrap.bind('ctrl+c', () => dispatch(CurrentEntry.copyToClipboard(WellKnownField.PASSWORD)));
-  Mousetrap.bind('ctrl+u', () => dispatch(CurrentEntry.openUrl()));
-  Mousetrap.bind('ctrl+shift+u', () => dispatch(CurrentEntry.copyToClipboard(WellKnownField.URL)));
+  Mousetrap.bind('mod+b', () => dispatch(CurrentEntry.copyToClipboard(WellKnownField.USERNAME)));
+  Mousetrap.bind('mod+c', () => dispatch(CurrentEntry.copyToClipboard(WellKnownField.PASSWORD)));
+  Mousetrap.bind('mod+u', () => dispatch(CurrentEntry.openUrl()));
+  Mousetrap.bind('mod+shift+u', () => dispatch(CurrentEntry.copyToClipboard(WellKnownField.URL)));
 }

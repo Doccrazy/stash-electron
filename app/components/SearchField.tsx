@@ -33,7 +33,7 @@ export default class SearchField extends React.Component<Props, {}> {
   }
 
   componentDidMount() {
-    Mousetrap.bind(['ctrl+f', 'meta+f'], (ev) => {
+    Mousetrap.bind('mod+f', (ev) => {
       if (this.input.current && !shouldIgnore(ev)) {
         this.input.current.focus();
         if (this.props.limitedScope) {
@@ -46,7 +46,7 @@ export default class SearchField extends React.Component<Props, {}> {
   }
 
   componentWillUnmount() {
-    Mousetrap.unbind(['ctrl+f', 'meta+f']);
+    Mousetrap.unbind('mod+f');
     document.documentElement.removeEventListener('keypress', this.globalKeyPress);
   }
 
@@ -75,8 +75,8 @@ export default class SearchField extends React.Component<Props, {}> {
       // clear on esc
       ev.preventDefault();
       this.props.onChange('');
-    } else if (ev.key === 'f' && ev.ctrlKey && this.props.limitedScope) {
-      // set global scope on ctrl+f
+    } else if (ev.key === 'f' && (ev.ctrlKey || ev.metaKey) && this.props.limitedScope) {
+      // set global scope on ctrl+f/command+f
       ev.preventDefault();
       this.props.onToggleScope();
     }

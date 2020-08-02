@@ -37,7 +37,7 @@ export function entryContextMenu(ptr: EntryPtr): Thunk<void> {
         menu.append(
           new MenuItem({
             label: t('fileType.password.contextMenu.copyUsername'),
-            accelerator: 'Ctrl+B',
+            accelerator: 'CommandOrControl+B',
             icon: remote.nativeImage.createFromDataURL(require('../icon-user.png')),
             click() {
               dispatch(copyToClipboard(WellKnownField.USERNAME, ptr));
@@ -47,7 +47,7 @@ export function entryContextMenu(ptr: EntryPtr): Thunk<void> {
         menu.append(
           new MenuItem({
             label: t('fileType.password.contextMenu.copyPassword'),
-            accelerator: 'Ctrl+C',
+            accelerator: 'CommandOrControl+C',
             icon: remote.nativeImage.createFromDataURL(require('../icon-key.png')),
             click() {
               dispatch(copyToClipboard(WellKnownField.PASSWORD, ptr));
@@ -97,6 +97,7 @@ export function nodeContextMenu(currentNodeId?: string, fromFileList?: boolean):
       menu.append(
         new MenuItem({
           label: t('action.folder.create'),
+          accelerator: 'CommandOrControl+Shift+N',
           icon: remote.nativeImage.createFromDataURL(require('../icon-folder.png')),
           click() {
             dispatch(startCreate());
@@ -106,6 +107,7 @@ export function nodeContextMenu(currentNodeId?: string, fromFileList?: boolean):
       menu.append(
         new MenuItem({
           label: t('action.folder.createItem'),
+          accelerator: 'CommandOrControl+N',
           icon: remote.nativeImage.createFromDataURL(require('../icon-plus-circle.png')),
           click() {
             dispatch(createInCurrent(PasswordType.id));
