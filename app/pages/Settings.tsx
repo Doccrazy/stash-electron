@@ -7,9 +7,10 @@ import SettingField from '../containers/SettingField';
 import SaveSettingsButton from '../containers/SaveSettingsButton';
 import SettingLocaleChooser from '../containers/SettingLocaleChooser';
 import Trans from '../utils/i18n/Trans';
+import * as styles from './Settings.scss';
 
 const SettingsPage = () => (
-  <div className="container">
+  <div className={`container ${styles.settings}`}>
     <h1 className="my-4">
       <Trans id="page.settings.title" />
     </h1>
