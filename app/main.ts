@@ -79,20 +79,8 @@ function cleanUrl(url: string) {
 logger.transports.file.level = 'info';
 autoUpdater.logger = logger;
 
-/**
- * Add event listeners...
- */
-
-app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('ready', async () => {
-  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+async function createMainWindow(reopen?: boolean) {
+  if (!reopen && (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true')) {
     await installExtensions();
   }
 
@@ -147,7 +135,9 @@ app.on('ready', async () => {
     mainWindow.show();
     mainWindow.focus();
 
-    processCommandLine(process.argv);
+    if (!reopen) {
+      processCommandLine(process.argv);
+    }
   });
 
   // prevent internal navigation, open external links in default browser
@@ -178,5 +168,26 @@ app.on('ready', async () => {
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
-  autoUpdater.checkForUpdatesAndNotify();
+  if (!reopen) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+}
+
+app.whenReady().then(() => createMainWindow());
+
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app.on('activate', () => {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createMainWindow(true);
+  }
 });
