@@ -155,6 +155,11 @@ export function change(formState: FormState): Thunk<void> {
       return;
     }
 
+    if (!/^[\p{Letter}\w.@-](?: ?[\p{Letter}\w.@-])+$/u.test(formState.username) || formState.username.length > 50) {
+      dispatch({ type: Actions.VALIDATE, payload: { valid: false, message: 'Invalid username.' } });
+      return;
+    }
+
     dispatch({
       type: Actions.VALIDATE,
       payload: {

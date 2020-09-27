@@ -3,12 +3,14 @@
 #### Changes
 
 - Electron has been upgraded to v9.1.2
+- The maximum length and allowed characters of new usernames are now limited (#6)
 
 #### Bugs fixed
 
 - Configuring the git signature on initial setup has been fixed (#2)
 - Main navbar should no longer scroll out of view (#3)
-- On MacOS, all hotkeys now use the ⌘ key instead of Ctrl (#5)
+- On macOS, all hotkeys now use the ⌘ key instead of Ctrl (#5)
+- On macOS, the main window is now properly restored from Dock (#7)
 
 ## v1.2.1 (2020-05-10)
 

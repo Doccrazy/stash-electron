@@ -36,6 +36,7 @@ export default withTrans<Props>('component.userKeyAddPopup')(
             <Input
               innerRef={value.username ? undefined : focusOnRender}
               value={value.username || ''}
+              maxLength={50}
               onChange={(ev) => onChange({ ...value, username: ev.target.value })}
             />
           </FormGroup>
