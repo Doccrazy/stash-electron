@@ -1,4 +1,4 @@
-## v1.2.2 (no planned release date)
+## v1.2.2 (2020-11-28)
 
 #### Changes
 
