@@ -2466,18 +2466,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["app-builder-lib", [
-        ["npm:22.9.1", {
-          "packageLocation": "./.yarn/unplugged/app-builder-lib-npm-22.9.1-06ae239d21/node_modules/app-builder-lib/",
+        ["virtual:72783a92f0e63de6a717591fa7dad5f1a40f3a28ecae55e506ea6b9f7dfce7fb075585afaf5d01d8ebd155d2e18ef9eaef0a2d29eabe5b2a3ff9ebbae376dfa2#npm:22.9.1", {
+          "packageLocation": "./.yarn/unplugged/app-builder-lib-virtual-ca17d7c6ad/node_modules/app-builder-lib/",
           "packageDependencies": [
-            ["app-builder-lib", "npm:22.9.1"],
+            ["app-builder-lib", "virtual:72783a92f0e63de6a717591fa7dad5f1a40f3a28ecae55e506ea6b9f7dfce7fb075585afaf5d01d8ebd155d2e18ef9eaef0a2d29eabe5b2a3ff9ebbae376dfa2#npm:22.9.1"],
             ["7zip-bin", "npm:5.0.3"],
             ["@develar/schema-utils", "npm:2.6.5"],
+            ["@types/dmg-builder", null],
             ["async-exit-hook", "npm:2.0.1"],
             ["bluebird-lst", "npm:1.0.9"],
             ["builder-util", "npm:22.9.1"],
             ["builder-util-runtime", "npm:8.7.2"],
             ["chromium-pickle-js", "npm:0.2.0"],
             ["debug", "virtual:2eb67583a9b3f2cc91b648ac5cac0a1c3aaacb7b17b8d5c772ae7dcb393b5fe37b8b54bb54cb4bb44044aec14d898cec87b05d451d11aa2c15bd1d5d6f9264a4#npm:4.3.1"],
+            ["dmg-builder", "npm:22.9.1"],
             ["ejs", "npm:3.1.5"],
             ["electron-publish", "npm:22.9.1"],
             ["fs-extra", "npm:9.0.1"],
@@ -2492,6 +2494,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["sanitize-filename", "npm:1.6.3"],
             ["semver", "npm:7.3.2"],
             ["temp-file", "npm:3.3.7"]
+          ],
+          "packagePeers": [
+            "@types/dmg-builder",
+            "dmg-builder"
           ],
           "linkType": "HARD",
         }]
@@ -4759,7 +4765,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/dmg-builder-npm-22.9.1-72783a92f0-b78218e8fe.zip/node_modules/dmg-builder/",
           "packageDependencies": [
             ["dmg-builder", "npm:22.9.1"],
-            ["app-builder-lib", "npm:22.9.1"],
+            ["app-builder-lib", "virtual:72783a92f0e63de6a717591fa7dad5f1a40f3a28ecae55e506ea6b9f7dfce7fb075585afaf5d01d8ebd155d2e18ef9eaef0a2d29eabe5b2a3ff9ebbae376dfa2#npm:22.9.1"],
             ["builder-util", "npm:22.9.1"],
             ["fs-extra", "npm:9.0.1"],
             ["iconv-lite", "npm:0.6.2"],
@@ -5075,7 +5081,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["electron-builder", "npm:22.9.1"],
             ["@types/yargs", "npm:15.0.5"],
-            ["app-builder-lib", "npm:22.9.1"],
+            ["app-builder-lib", "virtual:72783a92f0e63de6a717591fa7dad5f1a40f3a28ecae55e506ea6b9f7dfce7fb075585afaf5d01d8ebd155d2e18ef9eaef0a2d29eabe5b2a3ff9ebbae376dfa2#npm:22.9.1"],
             ["bluebird-lst", "npm:1.0.9"],
             ["builder-util", "npm:22.9.1"],
             ["builder-util-runtime", "npm:8.7.2"],
