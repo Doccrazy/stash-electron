@@ -3,18 +3,18 @@
  */
 
 import * as path from 'path';
-import * as webpack from 'webpack';
+import { Configuration } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import * as merge from 'webpack-merge';
+import merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
 
 CheckNodeEnv('production');
 
-const rendererProdConfig: webpack.Configuration = {
+const rendererProdConfig: Configuration = {
   mode: 'production',
   devtool: 'nosources-source-map',
 
@@ -28,55 +28,28 @@ const rendererProdConfig: webpack.Configuration = {
     filename: 'renderer.prod.js'
   },
 
-  externals: (context, request, callback) => {
+  externals: ({ request }, callback) => {
     if (request.endsWith('.node')) {
-      const filename = path.relative(__dirname, path.resolve(context, request)).replace(/\\/g, '/');
-      return callback(null, `commonjs ../${filename}`);
+      const filename = path.basename(request);
+      return callback(undefined, `commonjs ../../${filename}`);
     }
-    (callback as any)();
+    callback();
   },
 
   module: {
     rules: [
-      // Extract all .global.css to style.css as is
+      // Extract all .global.css to style.css as is, pipe other styles through css modules and append to style.css
       {
-        test: /\.global\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
-      },
-      // Pipe other styles through css modules and append to style.css
-      {
-        test: /^((?!\.global).)*\.css$/,
+        test: /\.s?css$/,
         use: [
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
-              localsConvention: 'camelCase',
-              importLoaders: 1,
               modules: {
-                localIdentName: '[name]__[local]__[hash:base64:5]'
-              }
-            }
-          }
-        ]
-      },
-      // Add SASS support  - compile all .global.scss files and pipe it to style.css
-      {
-        test: /\.global\.scss$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
-      },
-      // Add SASS support  - compile all other .scss files and pipe it to style.css
-      {
-        test: /^((?!\.global).)*\.scss$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              localsConvention: 'camelCase',
-              importLoaders: 1,
-              modules: {
-                localIdentName: '[name]__[local]__[hash:base64:5]'
+                auto: /^((?!\.global).)*\.s?css$/,
+                localIdentName: '[name]__[local]__[hash:base64:5]',
+                exportLocalsConvention: 'camelCase'
               }
             }
           },
@@ -114,4 +87,4 @@ const rendererProdConfig: webpack.Configuration = {
   }
 };
 
-export default merge.smart(baseConfig, rendererProdConfig);
+export default merge(baseConfig, rendererProdConfig);

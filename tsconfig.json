@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-//    "checkJs": true,
-
+    //    "checkJs": true,
     "sourceMap": true,
     "module": "CommonJS",
     "moduleResolution": "node",
@@ -11,11 +10,7 @@
     "jsx": "react",
     "declaration": false,
     "skipLibCheck": true,
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
     "outDir": "./build/app",
-
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,

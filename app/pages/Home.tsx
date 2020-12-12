@@ -17,7 +17,7 @@ import MoveFolderPopup from '../containers/MoveFolderPopup';
 import NoPermissionsAlert from '../containers/NoPermissionsAlert';
 import SpecialFolderLink from '../containers/SpecialFolderLink';
 import Trans from '../utils/i18n/Trans';
-import * as styles from './Home.scss';
+import styles from './Home.scss';
 import NoKeyAlert from '../containers/NoKeyAlert';
 import AuthorizedUsersPopup from '../containers/AuthorizedUsersPopup';
 import RefreshLink from '../containers/RefreshLink';

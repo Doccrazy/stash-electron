@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/interface-name-prefix */
-
 declare const GIT_VERSION: string;
 declare const GIT_HASH: string;
 declare const GIT_BRANCH: string;

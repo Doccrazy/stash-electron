@@ -3,7 +3,7 @@ import { copyToClip } from '../../actions/currentEntry';
 import HiddenText from '../../components/tools/HiddenText';
 import { sanitizeUrl } from '../../utils/format';
 import Trans from '../../utils/i18n/Trans';
-import * as styles from './Panel.scss';
+import styles from './Panel.scss';
 
 interface FieldProps {
   content: any;

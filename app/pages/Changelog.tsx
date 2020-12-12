@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import Trans from '../utils/i18n/Trans';
-import * as styles from './Changelog.scss';
+import styles from './Changelog.scss';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const changelogHtml = require('../../CHANGELOG.md');

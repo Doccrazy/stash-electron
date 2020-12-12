@@ -11,7 +11,7 @@ import UserPermissionTable from '../containers/UserPermissionTable';
 import UsersHistoryButton from '../containers/UsersHistoryButton';
 import UsersHistoryPopup from '../containers/UsersHistoryPopup';
 import Trans from '../utils/i18n/Trans';
-import * as styles from './Users.scss';
+import styles from './Users.scss';
 
 const UsersPage = () => (
   <div className={`container ${styles.users}`}>

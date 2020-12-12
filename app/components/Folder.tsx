@@ -5,7 +5,7 @@ import { NodeDragSource, NodeDropTarget } from './tools/NodeDrag';
 import TreeNode from './TreeNode';
 import ConnectedFolder from '../containers/Folder';
 import EntryPtr from '../domain/EntryPtr';
-import * as styles from './Folder.scss';
+import styles from './Folder.scss';
 
 export interface Props {
   nodeId: string;

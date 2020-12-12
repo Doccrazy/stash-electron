@@ -7,7 +7,7 @@ import SettingField from '../containers/SettingField';
 import SaveSettingsButton from '../containers/SaveSettingsButton';
 import SettingLocaleChooser from '../containers/SettingLocaleChooser';
 import Trans from '../utils/i18n/Trans';
-import * as styles from './Settings.scss';
+import styles from './Settings.scss';
 
 const SettingsPage = () => (
   <div className={`container ${styles.settings}`}>

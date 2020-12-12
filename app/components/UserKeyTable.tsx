@@ -2,7 +2,7 @@ import * as React from 'react';
 import { State } from '../actions/types/keys';
 import { KeyFormat } from '../actions/types/settings';
 import withTrans from '../utils/i18n/withTrans';
-import * as styles from './UserKeyTable.css';
+import styles from './UserKeyTable.css';
 
 export interface Props {
   keysByUser: State['byUser'];

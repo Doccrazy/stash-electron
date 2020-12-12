@@ -3,7 +3,7 @@ import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown, Uncon
 import cx from 'classnames';
 import { KeyError } from '../actions/types/privateKey';
 import { PrivateKeyInfo } from '../actions/types/settings';
-import * as styles from './IdentityStatus.scss';
+import styles from './IdentityStatus.scss';
 import withTrans from '../utils/i18n/withTrans';
 import { BoundTranslate } from '../utils/i18n/Trans';
 

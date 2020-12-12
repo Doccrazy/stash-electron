@@ -3,15 +3,15 @@
  */
 
 import * as path from 'path';
-import * as webpack from 'webpack';
-import * as merge from 'webpack-merge';
+import { Configuration, DefinePlugin } from 'webpack';
+import merge from 'webpack-merge';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
 
 CheckNodeEnv('production');
 
-const mainProdConfig: webpack.Configuration = {
+const mainProdConfig: Configuration = {
   mode: 'production',
   devtool: 'nosources-source-map',
 
@@ -40,7 +40,7 @@ const mainProdConfig: webpack.Configuration = {
      * NODE_ENV should be production so that modules do not perform certain
      * development checks
      */
-    new webpack.DefinePlugin({
+    new DefinePlugin({
       'process.env.DEBUG_PROD': JSON.stringify(process.env.DEBUG_PROD || 'false')
     })
   ],
@@ -56,4 +56,4 @@ const mainProdConfig: webpack.Configuration = {
   }
 };
 
-export default merge.smart(baseConfig, mainProdConfig);
+export default merge(baseConfig, mainProdConfig);

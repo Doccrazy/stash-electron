@@ -3,7 +3,7 @@ import cx from 'classnames';
 import withTrans from '../utils/i18n/withTrans';
 import Breadcrumb from './Breadcrumb';
 import { hierarchy } from '../utils/repository';
-import * as styles from './CurrentFolder.scss';
+import styles from './CurrentFolder.scss';
 import TextEditBox from './TextEditBox';
 import Node from '../domain/Node';
 

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import { formatDate, formatDateTime } from '../utils/format';
 import { GitCommitInfo } from '../utils/git';
-import * as styles from './HistoryMenu.scss';
+import styles from './HistoryMenu.scss';
 import withTrans from '../utils/i18n/withTrans';
 
 export interface Props {

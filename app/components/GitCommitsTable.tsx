@@ -2,7 +2,7 @@ import cx from 'classnames';
 import * as React from 'react';
 import { formatDateTime } from '../utils/format';
 import { GitCommitInfo } from '../utils/git';
-import * as styles from './GitActionsPopup.scss';
+import styles from './GitActionsPopup.scss';
 import ItemLimiter from './tools/ItemLimiter';
 import withTrans from '../utils/i18n/withTrans';
 

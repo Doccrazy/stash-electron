@@ -5,7 +5,7 @@ import { AccessToggle } from '../actions/types/authorizedUsers';
 import Node from '../domain/Node';
 import Trans from '../utils/i18n/Trans';
 import withTrans from '../utils/i18n/withTrans';
-import * as styles from './UserAccessTable.scss';
+import styles from './UserAccessTable.scss';
 
 export interface Props {
   users: string[];

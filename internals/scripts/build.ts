@@ -1,5 +1,5 @@
 import { build, CliOptions, createTargets, Platform, Configuration } from 'electron-builder';
-import { exec } from 'child_process';
+import { exec, spawnSync } from 'child_process';
 import * as semver from 'semver';
 import * as fs from 'fs';
 
@@ -15,6 +15,12 @@ if (process.argv[2] === 'all' || process.argv.slice(2).includes('mac') || (!proc
 }
 
 function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: number): CliOptions {
+  spawnSync(process.env.npm_execpath || 'yarn', ['rebuild'], {
+    env: { ...process.env, npm_config_platform: platform.nodeName, npm_config_target_platform: platform.nodeName },
+    shell: true,
+    stdio: 'inherit'
+  });
+
   // pacman versions may not contain dashes, so replace '-snapshot' by 'pre'
   // also remove snapshot number and put it into iteration counter
   const pkgVersion = version.format().replace(/-snapshot\.\d+$/, 'pre');

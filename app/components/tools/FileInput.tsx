@@ -1,7 +1,6 @@
-import { remote } from 'electron';
+import { remote, OpenDialogOptions } from 'electron';
 import * as React from 'react';
 import { Button, Input, InputGroup, InputGroupAddon, InputProps } from 'reactstrap';
-import OpenDialogOptions = Electron.OpenDialogOptions;
 
 function browse(
   title: string,

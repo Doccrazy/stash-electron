@@ -4,7 +4,7 @@ import { Set } from 'immutable';
 import cx from 'classnames';
 import Node from '../domain/Node';
 import withTrans from '../utils/i18n/withTrans';
-import * as styles from './AuthorizedUsersPopup.scss';
+import styles from './AuthorizedUsersPopup.scss';
 
 export interface Props {
   open?: boolean;

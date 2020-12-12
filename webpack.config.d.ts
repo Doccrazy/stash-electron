@@ -3,10 +3,4 @@ declare module '*.json' {
   export = value;
 }
 
-declare module 'fork-ts-checker-webpack-plugin';
-
-declare module 'terser-webpack-plugin';
-
-declare module 'git-revision-webpack-plugin';
-
 declare module 'autodll-webpack-plugin';

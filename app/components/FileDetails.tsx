@@ -3,7 +3,7 @@ import { EntryNameLabel, EntryPanel } from '../fileType/Components';
 import FileActionBar, { Props as ActionBarProps } from './FileActionBar';
 import { typeFor } from '../fileType';
 import AnimateHeight from './tools/AnimateHeight';
-import * as styles from './FileDetails.css';
+import styles from './FileDetails.css';
 
 export interface Props extends ActionBarProps {
   entry?: string;

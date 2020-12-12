@@ -13,7 +13,7 @@ import GenerateKeyPopup from '../containers/GenerateKeyPopup';
 import GitClonePopup from '../containers/GitClonePopup';
 import GitSignaturePopup from '../containers/GitSignaturePopup';
 import Trans from '../utils/i18n/Trans';
-import * as styles from './App.scss';
+import styles from './App.scss';
 
 export interface Props {
   children: React.ReactNode;

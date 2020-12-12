@@ -14,7 +14,7 @@ import { AuthHistory } from '../actions/types/usersHistory';
 import { formatDateTime, formatPathSpaced } from '../utils/format';
 import Trans from '../utils/i18n/Trans';
 import withTrans from '../utils/i18n/withTrans';
-import * as styles from './AuthHistoryPopup.scss';
+import styles from './AuthHistoryPopup.scss';
 import ItemLimiter from './tools/ItemLimiter';
 
 export interface Props {

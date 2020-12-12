@@ -99,7 +99,7 @@ export function open(ptr?: EntryPtr): Thunk<Promise<void>> {
 
     await fs.writeFile(absPath, buffer);
     // TODO mark file for erase, wait for app to close, then a) check for changes, prompt to update b) rm after little delay
-    shell.openItem(absPath);
+    shell.openPath(absPath);
   };
 }
 

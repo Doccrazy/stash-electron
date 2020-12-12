@@ -1,6 +1,6 @@
 import * as React from 'react';
 import cx from 'classnames';
-import * as styles from './TreeNode.scss';
+import styles from './TreeNode.scss';
 
 export interface Props {
   label: React.ReactNode;

@@ -43,3 +43,11 @@ app/**/*.scss.d.ts
 
 .idea
 npm-debug.log.*
+
+# Yarn
+.yarn/*
+!.yarn/cache
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions

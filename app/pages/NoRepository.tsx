@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Trans from '../utils/i18n/Trans';
-import * as styles from './NoRepository.css';
+import styles from './NoRepository.css';
 
 export interface Props {
   loading: boolean;

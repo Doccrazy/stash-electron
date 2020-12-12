@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import { hot } from 'react-hot-loader';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Store } from 'redux';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
@@ -25,4 +24,4 @@ const Root = ({ store, history }: Props) => (
   </Provider>
 );
 
-export default hot(module)(Root);
+export default Root;

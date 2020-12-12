@@ -3,7 +3,7 @@ import { Button, Form, FormGroup, Label, Input, InputGroup } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import SettingFileField from '../containers/SettingFileField';
 import SettingField from '../containers/SettingField';
-import * as styles from './Welcome.scss';
+import styles from './Welcome.scss';
 import GitInitializer from '../containers/welcome/GitInitializer';
 import ActionButton from '../containers/ActionButton';
 import { openGenerate } from '../actions/privateKey';

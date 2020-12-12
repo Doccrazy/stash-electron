@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { formatPath } from '../utils/format';
 import withTrans from '../utils/i18n/withTrans';
-import * as styles from './UserKeyTable.css';
+import styles from './UserKeyTable.css';
 
 export interface PermissionMap {
   [username: string]: string[][];

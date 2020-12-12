@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import cx from 'classnames';
 import { GitStatus } from '../actions/types/git';
-import * as styles from './GitActionsPopup.scss';
+import styles from './GitActionsPopup.scss';
 import { formatStatusLine } from '../utils/git';
 import GitCommitsTable from './GitCommitsTable';
 import withTrans from '../utils/i18n/withTrans';

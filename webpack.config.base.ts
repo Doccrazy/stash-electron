@@ -5,14 +5,14 @@
 /// <reference path="webpack.config.d.ts" />
 
 import * as path from 'path';
-import * as webpack from 'webpack';
+import { Configuration, DefinePlugin, NormalModuleReplacementPlugin } from 'webpack';
 import GitRevisionPlugin from 'git-revision-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 // import { dependencies as externals } from './app/package.json';
 
 const gitRevisionPlugin = new GitRevisionPlugin();
 
-const baseConfig: webpack.Configuration = {
+const baseConfig: Configuration = {
   // externals: Object.keys(externals || {}),
 
   module: {
@@ -73,14 +73,18 @@ const baseConfig: webpack.Configuration = {
           loader: 'url-loader',
           options: {
             limit: 10000,
-            mimetype: 'image/svg+xml'
+            mimetype: 'image/svg+xml',
+            esModule: false
           }
         }
       },
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
-        use: 'url-loader'
+        use: {
+          loader: 'url-loader',
+          options: { esModule: false }
+        }
       },
       // Markdown
       {
@@ -113,23 +117,22 @@ const baseConfig: webpack.Configuration = {
   },
 
   plugins: [
-    new webpack.DefinePlugin({
+    new DefinePlugin({
       GIT_VERSION: JSON.stringify(gitRevisionPlugin.version()),
       GIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
       GIT_BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
       BUILD_DATE: JSON.stringify(new Date())
     }),
-    new webpack.NormalModuleReplacementPlugin(
+    new NormalModuleReplacementPlugin(
       /[/\\]promisify-node[/\\]utils[/\\]args\.js$/,
       path.join(__dirname, 'app/utils/promisify-node-args-patch.js')
     )
   ],
 
   optimization: {
-    namedModules: true,
+    moduleIds: 'named',
     minimizer: [
       new TerserPlugin({
-        sourceMap: true,
         terserOptions: {
           mangle: {
             reserved: ['Key', 'PrivateKey']

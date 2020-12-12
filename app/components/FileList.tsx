@@ -9,7 +9,7 @@ import FileListEntry from '../domain/FileListEntry';
 import { EntryNameLabel } from '../fileType/Components';
 import withTrans from '../utils/i18n/withTrans';
 import { EntryDragSource } from './tools/EntryPtrDrag';
-import * as styles from './FileList.scss';
+import styles from './FileList.scss';
 
 export interface Props {
   files: FileListEntry[];

@@ -3,7 +3,7 @@ import cx from 'classnames';
 import * as jdenticon from 'jdenticon';
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import { SettingsMap } from '../actions/types/settings';
-import * as styles from './RecentRepositories.scss';
+import styles from './RecentRepositories.scss';
 import withTrans from '../utils/i18n/withTrans';
 
 export interface Props {
@@ -17,7 +17,7 @@ export interface Props {
 }
 
 const JDentIcon = ({ hash, className }: { hash: string; className?: string }) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   jdenticon.config = {};
   jdenticon.config.lightness = {
