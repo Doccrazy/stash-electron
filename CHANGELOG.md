@@ -1,3 +1,9 @@
+## v1.2.3 (no planned release date)
+
+#### Bugs fixed
+
+- Regression on "Open in default application" has been fixed (#8)
+
 ## v1.2.2 (2020-11-28)
 
 #### Changes

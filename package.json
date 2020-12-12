@@ -5,7 +5,7 @@
   "description": "Cryptographically secure team password manager built on open technologies and standardized encryption algorithms.",
   "main": "./main.js",
   "scripts": {
-    "clean": "rimraf build/*",
+    "clean": "rimraf build",
     "build": "concurrently \"yarn run build-main\" \"yarn run build-renderer\"",
     "build-main": "cross-env NODE_ENV=production webpack --config ./webpack.config.main.prod.ts --color",
     "build-renderer": "cross-env NODE_ENV=production webpack --config ./webpack.config.renderer.prod.ts --color",
