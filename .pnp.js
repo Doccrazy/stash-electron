@@ -4762,7 +4762,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],
       ["dmg-builder", [
         ["npm:22.9.1", {
-          "packageLocation": "./.yarn/cache/dmg-builder-npm-22.9.1-72783a92f0-b78218e8fe.zip/node_modules/dmg-builder/",
+          "packageLocation": "./.yarn/unplugged/dmg-builder-npm-22.9.1-72783a92f0/node_modules/dmg-builder/",
           "packageDependencies": [
             ["dmg-builder", "npm:22.9.1"],
             ["app-builder-lib", "virtual:72783a92f0e63de6a717591fa7dad5f1a40f3a28ecae55e506ea6b9f7dfce7fb075585afaf5d01d8ebd155d2e18ef9eaef0a2d29eabe5b2a3ff9ebbae376dfa2#npm:22.9.1"],

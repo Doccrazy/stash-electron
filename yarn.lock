@@ -12112,6 +12112,8 @@ fsevents@~2.1.2:
       unplugged: true
     core-js:
       built: false
+    dmg-builder:
+      unplugged: true
   languageName: unknown
   linkType: soft
 
