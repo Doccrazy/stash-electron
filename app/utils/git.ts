@@ -103,11 +103,10 @@ interface ConflictEntry {
  * Try to resolve all conflicts in current index using passed resolver
  * @returns {Promise<boolean>} true if all conflicts have been resolved, false if conflicts remain
  */
-export async function resolveAll(index: Git.Index, resolver: typeof usingOurs): Promise<boolean> {
+export async function resolveAll(repo: Git.Repository, index: Git.Index, resolver: typeof usingOurs): Promise<boolean> {
   if (!index.hasConflicts()) {
     return true;
   }
-  const repo = index.owner();
   let changed = false;
   for (const entry of index.entries().filter((e) => Git.Index.entryStage(e) === 1 && Git.Index.entryIsConflict(e))) {
     console.log(`resolving ${entry.path}`);
@@ -152,7 +151,7 @@ export async function finishRebaseResolving(gitRepo: Git.Repository, resolver: t
 
   let index = await gitRepo.refreshIndex();
   while (index.hasConflicts()) {
-    if (!(await resolveAll(index, resolver))) {
+    if (!(await resolveAll(gitRepo, index, resolver))) {
       return false;
     }
     try {

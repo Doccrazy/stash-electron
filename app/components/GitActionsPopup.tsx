@@ -84,9 +84,9 @@ export default withTrans<Props>('component.gitActionsPopup')(
           {status.conflict && (
             <div>
               <p className="text-danger">{t('.conflict.title')}</p>
-              <p>
-                <Trans id="'.conflict.text'" markdown />
-              </p>
+              <div className="mb-3">
+                <Trans id=".conflict.text" markdown />
+              </div>
             </div>
           )}
           <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
