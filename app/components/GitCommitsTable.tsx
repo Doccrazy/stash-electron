@@ -32,7 +32,13 @@ export default withTrans<Props>('component.gitCommitsTable')(({ t, commits, rowC
               <td className="selectable">{commit.hash.substr(0, 7)}</td>
               <td className="selectable">
                 {commit.remoteRef && <i className="fa fa-tag" title={commit.remoteRef} />}{' '}
-                {!commit.pushed && <span className="badge badge-danger">{t('.new')}</span>} {commit.message}
+                {!commit.pushed && <span className="badge badge-danger">{t('.new')}</span>}{' '}
+                {commit.conflict && (
+                  <span className="badge badge-danger" title={t('.conflict')}>
+                    !
+                  </span>
+                )}{' '}
+                {commit.message}
               </td>
               <td className="selectable" title={`${commit.authorName} <${commit.authorEmail}>`}>
                 {commit.authorName}

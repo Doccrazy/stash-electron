@@ -27,6 +27,7 @@ export interface GitCommitInfo {
   authorEmail: string;
   date: Date;
   pushed?: boolean;
+  conflict?: boolean;
   remoteRef?: string;
   changedFiles?: string[];
   renamedFiles?: { [newFn: string]: string };
@@ -392,8 +393,20 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
  */
 export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInfo[]> {
   let upstream: Git.Reference | undefined;
+  let rebaseBase: Git.Oid | undefined;
   try {
-    upstream = await Git.Branch.upstream(await gitRepo.head());
+    let branch = await gitRepo.head();
+    if (gitRepo.isRebasing()) {
+      const rebase = await Git.Rebase.open(gitRepo);
+      const branchName = (rebase as any).origHeadName();
+      if (branchName) {
+        branch = await gitRepo.getReference(branchName);
+      }
+    }
+    upstream = await Git.Branch.upstream(branch);
+    if (gitRepo.isRebasing()) {
+      rebaseBase = await Git.Merge.base(gitRepo, branch.target(), upstream.target());
+    }
   } catch (e) {
     // no tracked remote
   }
@@ -414,6 +427,7 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
   const result: GitCommitInfo[] = [];
   let allCommits: Git.Commit[];
   let ahead = true;
+  let conflict = !!rebaseBase;
   do {
     allCommits = await walker.getCommits(BATCH_SIZE);
     const commitDiffs = await Promise.all(allCommits.map((c) => c.getDiffWithOptions(opts)));
@@ -431,7 +445,11 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
         ahead = false;
         info.remoteRef = upstream.shorthand();
       }
+      if (conflict && rebaseBase && allCommits[i].id().equal(rebaseBase)) {
+        conflict = false;
+      }
       info.pushed = !ahead;
+      info.conflict = conflict;
       info.changedFiles = [];
       info.renamedFiles = {};
       info.deletedFiles = [];
@@ -512,4 +530,16 @@ export async function getUpstreamStatus(ref: Git.Reference) {
   }
 
   return { ref: upstreamRef, shortName: upstreamName, remoteName };
+}
+
+export async function determineConflictingFiles(repo: Git.Repository) {
+  const index = await repo.index();
+  return [
+    ...new Set(
+      index
+        .entries()
+        .filter(Git.Index.entryIsConflict)
+        .map((entry) => entry.path)
+    )
+  ].sort();
 }

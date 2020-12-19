@@ -1,11 +1,11 @@
 import * as assert from 'assert';
 import * as fs from 'fs-extra';
 import { List, Map, OrderedMap, Set } from 'immutable';
-import * as path from 'path';
 import Git from 'nodegit';
+import * as path from 'path';
 import { toastr } from 'react-redux-toastr';
 import { FILENAME as KEYS_FILE } from '../repository/KeyFileKeyProvider';
-import { FILENAME as USERS_FILE, default as UsersFile } from '../repository/UsersFile';
+import { default as UsersFile, FILENAME as USERS_FILE } from '../repository/UsersFile';
 import { afterAction, onceAfterAction } from '../store/eventMiddleware';
 import {
   accessingRepository,
@@ -14,6 +14,7 @@ import {
   commitInfo,
   compareRefs,
   defaultCredCb,
+  determineConflictingFiles,
   fetchWithRetry,
   finishRebaseResolving,
   getRootCommit,
@@ -29,9 +30,9 @@ import {
 import { RES_LOCAL_FILENAMES } from '../utils/repository';
 import * as Credentials from './credentials';
 import * as Repository from './repository';
+import { changeAndSave } from './settings';
 import { FetchResult, GitStatus, OidAndName, State } from './types/git';
 import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
-import { changeAndSave } from './settings';
 
 export enum Actions {
   PROGRESS = 'git/PROGRESS',
@@ -101,6 +102,7 @@ function determineGitStatus(repoPath: string, doFetch: boolean): Thunk<Promise<G
 
         if (gitRepo.isRebasing() || gitRepo.isMerging()) {
           status.conflict = true;
+          status.filesInConflict = await determineConflictingFiles(gitRepo);
           return;
         }
 

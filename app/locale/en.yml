@@ -145,6 +145,7 @@ component:
         Before working with the repository, the conflict has to be resolved. Please choose either **Resolve using 'theirs'** to
         accept the incoming change for all conflicting files (non-conflicting changes will be preserved), or **Pull & refresh** if
         you resolved the conflict manually.
+      fileList: Files in conflicting state
     action:
       selectRevert: Select for revert
       showAll: Show all commits
@@ -167,6 +168,7 @@ component:
       author: Author
       date: Date
     new: new
+    conflict: Conflict
   gitSignatureForm:
     info: |
       To commit your changes, a valid git signature must be configured.

@@ -1,8 +1,14 @@
 ## v1.2.3 (no planned release date)
 
+#### Changes
+
+- The git conflict view now gives detailed information on which commit caused the conflict,
+  and which files are affected
+
 #### Bugs fixed
 
 - Regression on "Open in default application" has been fixed (#8)
+- Errors when encoutering git merge conflicts have been fixed (#9)
 
 ## v1.2.2 (2020-11-28)
 

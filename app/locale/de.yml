@@ -145,6 +145,7 @@ component:
         Bevor Sie mit dem Repository weiterarbeiten können, muss der Konfikt aufgelöst werden. Bitte wählen Sie entweder **Eingehende Änderung übernehmen**
         um Ihre eigenen Änderungen für alle Einträge im Konfliktzustand zu verwerfen (nicht betroffene Einträge bleiben erhalten), oder
         **Pull & aktualisieren**, falls Sie den Konflikt manuell gelöst haben.
+      fileList: Dateien im Konfliktzustand
     action:
       selectRevert: Zum Zurückrollen auswählen
       showAll: Alle Commits anzeigen
@@ -167,6 +168,7 @@ component:
       author: Autor
       date: Datum
     new: neu
+    conflict: Konflikt
   gitSignatureForm:
     info: |
       Um Ihre Änderungen zu committen, muss eine gültige Git-Signatur konfiguriert werden.

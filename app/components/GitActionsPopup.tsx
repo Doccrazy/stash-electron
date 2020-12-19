@@ -87,6 +87,16 @@ export default withTrans<Props>('component.gitActionsPopup')(
               <div className="mb-3">
                 <Trans id=".conflict.text" markdown />
               </div>
+              {status.filesInConflict?.length ? (
+                <div className="mb-3">
+                  {t('.conflict.fileList')}
+                  <ul>
+                    {status.filesInConflict?.map((path) => (
+                      <li key={path}>{path}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
           )}
           <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
