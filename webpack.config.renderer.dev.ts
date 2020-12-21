@@ -7,7 +7,7 @@
 
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as path from 'path';
-import { Configuration, DefinePlugin, LoaderOptionsPlugin, HotModuleReplacementPlugin } from 'webpack';
+import { Configuration, DefinePlugin, HotModuleReplacementPlugin } from 'webpack';
 import { mergeWithRules, CustomizeRule } from 'webpack-merge';
 import { spawn } from 'child_process';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
@@ -21,15 +21,15 @@ const port = Number.parseInt(process.env.PORT || '1212', 10);
 
 const rendererDevConfig: Configuration = {
   mode: 'development',
-  devtool: 'inline-source-map',
+  devtool: 'eval-cheap-module-source-map',
 
   target: 'electron-renderer',
 
-  entry: path.join(__dirname, 'app/index.tsx'),
+  entry: { renderer: path.join(__dirname, 'app/index.tsx') },
 
   output: {
     path: path.join(__dirname, 'build', 'dist'),
-    filename: 'renderer.dev.js'
+    filename: '[name].dev.js'
   },
 
   externals: ['fsevents', 'crypto-browserify', '../build/Debug/nodegit.node'],
@@ -42,7 +42,9 @@ const rendererDevConfig: Configuration = {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/react', '@babel/typescript'],
-            plugins: ['@babel/proposal-class-properties', 'react-refresh/babel']
+            plugins: ['@babel/proposal-class-properties', 'react-refresh/babel'],
+            cacheDirectory: path.join(__dirname, '.yarn/.cache/babel-loader'),
+            cacheCompression: false
           }
         }
       },
@@ -80,10 +82,6 @@ const rendererDevConfig: Configuration = {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
     }),
 
-    new LoaderOptionsPlugin({
-      debug: true
-    }),
-
     new HotModuleReplacementPlugin(),
     new ReactRefreshPlugin() as any,
     new ForkTsCheckerWebpackPlugin(),
@@ -94,7 +92,25 @@ const rendererDevConfig: Configuration = {
   ],
 
   optimization: {
-    emitOnErrors: false
+    emitOnErrors: false,
+    runtimeChunk: true,
+    removeAvailableModules: false,
+    removeEmptyChunks: false,
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/].yarn[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
+      }
+    }
   },
 
   node: {

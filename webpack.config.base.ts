@@ -110,10 +110,7 @@ const baseConfig: Configuration = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     modules: [path.join(__dirname, 'app'), 'node_modules'],
-    aliasFields: [],
-    alias: {
-      'react-dom': '@hot-loader/react-dom'
-    }
+    aliasFields: []
   },
 
   plugins: [

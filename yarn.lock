@@ -493,20 +493,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hot-loader/react-dom@npm:^16.11.0":
-  version: 16.11.0
-  resolution: "@hot-loader/react-dom@npm:16.11.0"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    prop-types: ^15.6.2
-    scheduler: ^0.17.0
-  peerDependencies:
-    react: ^16.0.0
-  checksum: d4945f063706679a7e90caa84c088e72701b5fdaecc5ea08e0022068592f095fe0a7c8966703faa236d6d39426e75d1fbbb37d112edc0666fa8af788bb40e11f
-  languageName: node
-  linkType: hard
-
 "@mapbox/hast-util-table-cell-style@npm:^0.1.3":
   version: 0.1.3
   resolution: "@mapbox/hast-util-table-cell-style@npm:0.1.3"
@@ -11330,16 +11316,6 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.17.0":
-  version: 0.17.0
-  resolution: "scheduler@npm:0.17.0"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-  checksum: 0cf6b850ade7983d85cfaed20ef57e0bdc2d2a9e40841a9b7f20963cd84c518c71c7804c62eeb8ba0883e74d7956fef80078ee189ca8f40b7ae5aac73348c863
-  languageName: node
-  linkType: hard
-
 "scheduler@npm:^0.19.1":
   version: 0.19.1
   resolution: "scheduler@npm:0.19.1"
@@ -11953,7 +11929,6 @@ fsevents@~2.1.2:
     "@babel/plugin-proposal-class-properties": ^7.12.1
     "@babel/preset-react": ^7.12.7
     "@babel/preset-typescript": ^7.12.7
-    "@hot-loader/react-dom": ^16.11.0
     "@pmmmwh/react-refresh-webpack-plugin": ^0.4.3
     "@trodi/electron-splashscreen": ^0.3.4
     "@types/chai": ^4.2.4

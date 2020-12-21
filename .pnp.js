@@ -41,7 +41,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/plugin-proposal-class-properties", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:7.12.1"],
             ["@babel/preset-react", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:7.12.7"],
             ["@babel/preset-typescript", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:7.12.7"],
-            ["@hot-loader/react-dom", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:16.11.0"],
             ["@pmmmwh/react-refresh-webpack-plugin", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:0.4.3"],
             ["@trodi/electron-splashscreen", "npm:0.3.4"],
             ["@types/chai", "npm:4.2.5"],
@@ -776,25 +775,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash", "npm:4.17.20"],
             ["minimatch", "npm:3.0.4"],
             ["strip-json-comments", "npm:3.1.1"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["@hot-loader/react-dom", [
-        ["virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:16.11.0", {
-          "packageLocation": "./.yarn/$$virtual/@hot-loader-react-dom-virtual-de313cce08/0/cache/@hot-loader-react-dom-npm-16.11.0-f44315b2b3-d4945f0637.zip/node_modules/@hot-loader/react-dom/",
-          "packageDependencies": [
-            ["@hot-loader/react-dom", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:16.11.0"],
-            ["@types/react", "npm:16.14.2"],
-            ["loose-envify", "npm:1.4.0"],
-            ["object-assign", "npm:4.1.1"],
-            ["prop-types", "npm:15.7.2"],
-            ["react", "npm:16.14.0"],
-            ["scheduler", "npm:0.17.0"]
-          ],
-          "packagePeers": [
-            "@types/react",
-            "react"
           ],
           "linkType": "HARD",
         }]
@@ -13066,15 +13046,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["scheduler", [
-        ["npm:0.17.0", {
-          "packageLocation": "./.yarn/cache/scheduler-npm-0.17.0-5c42088cec-0cf6b850ad.zip/node_modules/scheduler/",
-          "packageDependencies": [
-            ["scheduler", "npm:0.17.0"],
-            ["loose-envify", "npm:1.4.0"],
-            ["object-assign", "npm:4.1.1"]
-          ],
-          "linkType": "HARD",
-        }],
         ["npm:0.19.1", {
           "packageLocation": "./.yarn/cache/scheduler-npm-0.19.1-a4dd0ffd3a-804f990b9f.zip/node_modules/scheduler/",
           "packageDependencies": [
@@ -13743,7 +13714,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/plugin-proposal-class-properties", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:7.12.1"],
             ["@babel/preset-react", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:7.12.7"],
             ["@babel/preset-typescript", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:7.12.7"],
-            ["@hot-loader/react-dom", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:16.11.0"],
             ["@pmmmwh/react-refresh-webpack-plugin", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:0.4.3"],
             ["@trodi/electron-splashscreen", "npm:0.3.4"],
             ["@types/chai", "npm:4.2.5"],
