@@ -5,7 +5,7 @@
 /// <reference path="webpack.config.d.ts" />
 
 import * as path from 'path';
-import { Configuration, DefinePlugin, NormalModuleReplacementPlugin } from 'webpack';
+import { Configuration, DefinePlugin } from 'webpack';
 import GitRevisionPlugin from 'git-revision-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 // import { dependencies as externals } from './app/package.json';
@@ -119,11 +119,7 @@ const baseConfig: Configuration = {
       GIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
       GIT_BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
       BUILD_DATE: JSON.stringify(new Date())
-    }),
-    new NormalModuleReplacementPlugin(
-      /[/\\]promisify-node[/\\]utils[/\\]args\.js$/,
-      path.join(__dirname, 'app/utils/promisify-node-args-patch.js')
-    )
+    })
   ],
 
   optimization: {
