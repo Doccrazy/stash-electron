@@ -12,7 +12,7 @@ export const REACT_ELEMENT_TYPE = 'reactElement';
 /**
  * Map all 'text' elements in the markdown to IntlMessageFormat to enable formatting / context values
  */
-export const intlMessage = (options: Options) => (tree: Unist.Parent) =>
+export const intlMessage = (options: Options) => (tree: Unist.Node) =>
   map(tree, (node) => (node.type === 'text' ? processText(options.locale, node as Unist.Literal) : node));
 
 interface IntlNode extends Unist.Node {

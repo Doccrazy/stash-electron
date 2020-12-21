@@ -26,11 +26,11 @@ export default connect(
 ));
 
 interface Props {
-  open: boolean;
-  name: string;
-  email: string;
-  local: boolean;
-  valid: boolean;
+  open?: boolean;
+  name?: string;
+  email?: string;
+  local?: boolean;
+  valid?: boolean;
   onChange: (name: string, email: string, local: boolean) => void;
   onConfirm: () => void;
 }

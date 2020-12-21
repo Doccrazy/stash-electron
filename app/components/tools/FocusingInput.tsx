@@ -4,7 +4,7 @@ import { Input, InputProps } from 'reactstrap';
 type Props = InputProps & { focused?: boolean };
 
 export default class FocusingInput extends React.Component<Props, {}> {
-  private inputRef: HTMLInputElement;
+  private inputRef?: HTMLInputElement;
 
   componentDidMount() {
     this.tryFocus();
@@ -19,8 +19,8 @@ export default class FocusingInput extends React.Component<Props, {}> {
   tryFocus() {
     if (this.inputRef && this.props.focused) {
       setTimeout(() => {
-        this.inputRef.focus();
-        this.inputRef.select();
+        this.inputRef!.focus();
+        this.inputRef!.select();
       });
     }
   }

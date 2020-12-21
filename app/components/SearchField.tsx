@@ -5,7 +5,7 @@ import Trans from '../utils/i18n/Trans';
 
 export interface Props {
   className?: string;
-  limitedScope: boolean;
+  limitedScope?: boolean;
   value: string;
   onChange: (value: string) => void;
   onSearch: () => void;

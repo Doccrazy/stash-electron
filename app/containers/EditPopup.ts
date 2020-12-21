@@ -17,9 +17,9 @@ export default connect(
       formState: state.edit.formState || {},
       validationError: state.edit.validationError,
       authInfo:
-        authParent &&
-        authParent.authorizedUsers &&
-        formatUserList('common.accessibleTo', authParent.authorizedUsers, state.privateKey.username)
+        authParent && authParent.authorizedUsers
+          ? formatUserList('common.accessibleTo', authParent.authorizedUsers, state.privateKey.username)
+          : undefined
     };
   },
   (dispatch: Dispatch) => ({

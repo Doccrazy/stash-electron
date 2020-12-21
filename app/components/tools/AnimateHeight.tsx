@@ -6,10 +6,10 @@ import * as React from 'react';
  * Make sure you configure a height animation via className!
  */
 export default class AnimateHeight extends React.Component<{ className?: string }, {}> {
-  private inner: HTMLDivElement | null;
-  private outer: HTMLDivElement | null;
-  private placeholder: HTMLDivElement | null;
-  private lastHtml: string | null;
+  private inner?: HTMLDivElement | null;
+  private outer?: HTMLDivElement | null;
+  private placeholder?: HTMLDivElement | null;
+  private lastHtml?: string | null;
   private timer: NodeJS.Timer | undefined;
 
   componentDidUpdate() {

@@ -84,7 +84,7 @@ export function findAuthParent(nodes: { [id: string]: Node }, nodeId: string) {
   while (!result.authorizedUsers && result.parentId) {
     result = nodes[result.parentId];
   }
-  return result.authorizedUsers ? result : null;
+  return result.authorizedUsers ? result : undefined;
 }
 
 export function isAccessible(nodes: { [id: string]: Node }, nodeId: string, username?: string) {

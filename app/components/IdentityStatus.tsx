@@ -13,7 +13,7 @@ export interface Props {
   privateKeyBits?: number;
   error?: KeyError;
   lockAvailable?: boolean;
-  locked: boolean;
+  locked?: boolean;
   recentPrivateKeys: PrivateKeyInfo[];
   onLock: () => void;
   onUnlock: () => void;

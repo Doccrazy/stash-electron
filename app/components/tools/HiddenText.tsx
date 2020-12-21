@@ -6,7 +6,7 @@ export interface Props {
 }
 
 export default class HiddenText extends React.Component<Props, { visible: boolean }> {
-  timeout: number | null;
+  timeout?: number | null;
 
   state = {
     visible: false

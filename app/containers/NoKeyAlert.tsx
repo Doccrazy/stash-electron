@@ -47,8 +47,8 @@ export default connect(
 });
 
 interface Props {
-  keyLoaded: boolean;
-  keyEncrypted: boolean;
-  loggedIn: boolean;
+  keyLoaded?: boolean;
+  keyEncrypted?: boolean;
+  loggedIn?: boolean;
   onUnlock: () => void;
 }

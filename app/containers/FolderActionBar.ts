@@ -15,10 +15,10 @@ import { isAccessible } from '../utils/repository';
 
 export default connect(
   (state: RootState) => ({
-    nodeEditable: state.currentNode.nodeId && state.currentNode.nodeId !== ROOT_ID && !state.currentNode.specialId,
-    contentsEditable: state.currentNode.nodeId && !state.currentNode.specialId,
+    nodeEditable: !!state.currentNode.nodeId && state.currentNode.nodeId !== ROOT_ID && !state.currentNode.specialId,
+    contentsEditable: !!state.currentNode.nodeId && !state.currentNode.specialId,
     accessible:
-      state.currentNode.nodeId &&
+      !!state.currentNode.nodeId &&
       !state.currentNode.specialId &&
       isAccessible(state.repository.nodes, state.currentNode.nodeId, state.privateKey.username)
   }),

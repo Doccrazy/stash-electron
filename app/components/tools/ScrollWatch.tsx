@@ -23,7 +23,7 @@ export default class ScrollWatch extends React.Component<
 > {
   state = { idx: 0 };
 
-  element: HTMLDivElement | null;
+  element?: HTMLDivElement | null;
 
   constructor(props: ScrollWatch['props']) {
     super(props);

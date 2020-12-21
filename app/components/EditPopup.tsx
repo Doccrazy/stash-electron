@@ -6,7 +6,7 @@ import withTrans from '../utils/i18n/withTrans';
 export interface Props {
   open?: boolean;
   isNew?: boolean;
-  typeId: string;
+  typeId?: string;
   name?: string;
   parsedContent: any;
   formState: any;

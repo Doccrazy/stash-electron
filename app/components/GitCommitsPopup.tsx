@@ -6,7 +6,7 @@ import Trans from '../utils/i18n/Trans';
 
 export interface Props {
   open?: boolean;
-  title: string;
+  title?: string;
   commits: GitCommitInfo[];
   onClose: () => void;
 }

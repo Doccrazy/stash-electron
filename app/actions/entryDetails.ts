@@ -59,7 +59,9 @@ const PROVIDERS: Providers = {
 };
 
 async function provideDetails(state: RootState, entries: EntryPtr[]): Promise<DetailMap> {
-  const detailList = await Promise.all(Object.keys(PROVIDERS).map((prov: keyof typeof PROVIDERS) => PROVIDERS[prov](state, entries)));
+  const detailList = await Promise.all(
+    (Object.keys(PROVIDERS) as (keyof typeof PROVIDERS)[]).map((prov) => PROVIDERS[prov](state, entries))
+  );
   const detailMap: { [D in keyof Details]: Details[D][] } = {} as any;
   for (let i = 0; i < detailList.length; i++) {
     detailMap[Object.keys(PROVIDERS)[i] as keyof typeof PROVIDERS] = detailList[i];

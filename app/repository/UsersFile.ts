@@ -44,10 +44,10 @@ interface FileFormat {
 }
 
 export default class UsersFile {
-  private readonly usersFile: string;
+  private readonly usersFile?: string;
   private encryptedKeys: { [username: string]: Buffer } = {};
-  private hashedMasterKey: Buffer;
-  private masterKey: Buffer | null;
+  private hashedMasterKey?: Buffer;
+  private masterKey?: Buffer | null;
 
   private constructor(
     buf: Buffer | null | undefined,
@@ -102,7 +102,7 @@ export default class UsersFile {
       throw new Error(`user ${username} not authorized`);
     }
 
-    this.masterKey = decryptMasterKey(this.hashedMasterKey, this.encryptedKeys[username], privateKey);
+    this.masterKey = decryptMasterKey(this.hashedMasterKey!, this.encryptedKeys[username], privateKey);
     if (!this.masterKey) {
       throw new Error('unlock failed, invalid key?');
     }
@@ -163,9 +163,9 @@ export default class UsersFile {
   async save(): Promise<void> {
     const buffer = this.writeBuffer();
     if (buffer) {
-      await this.fs.writeFile(this.usersFile, buffer);
-    } else if (await this.fs.exists(this.usersFile)) {
-      await this.fs.unlink(this.usersFile);
+      await this.fs.writeFile(this.usersFile!, buffer);
+    } else if (await this.fs.exists(this.usersFile!)) {
+      await this.fs.unlink(this.usersFile!);
     }
   }
 
@@ -175,7 +175,7 @@ export default class UsersFile {
     }
 
     const serUsersfile: FileFormat = {
-      hashedMasterKey: this.hashedMasterKey.toString('base64'),
+      hashedMasterKey: this.hashedMasterKey!.toString('base64'),
       encryptedKeys: {}
     };
     for (const username of Object.keys(this.encryptedKeys)) {
@@ -185,11 +185,11 @@ export default class UsersFile {
   }
 
   getMasterKey(): Buffer | null {
-    return this.masterKey;
+    return this.masterKey!;
   }
 
   getHashedMasterKey(): Buffer | null {
-    return this.hashedMasterKey;
+    return this.hashedMasterKey!;
   }
 
   reset(): void {
