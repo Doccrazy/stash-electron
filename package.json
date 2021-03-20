@@ -105,14 +105,7 @@
         "libsecret-1-0"
       ],
       "packageCategory": "utils",
-      "priority": "optional",
-      "publish": {
-        "provider": "bintray",
-        "repo": "deb",
-        "owner": "doccrazy",
-        "publishAutoUpdate": false,
-        "component": "main"
-      }
+      "priority": "optional"
     },
     "directories": {
       "buildResources": "resources",

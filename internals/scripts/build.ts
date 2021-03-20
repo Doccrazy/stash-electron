@@ -42,10 +42,11 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
 
   const defaultPublisher: Configuration['publish'] = snapshotNum
     ? {
-        provider: 'bintray',
-        repo: 'bin',
-        owner: 'doccrazy',
-        package: pkgName
+        provider: 'github',
+        repo: 'stash-electron-snapshots',
+        owner: 'Doccrazy',
+        package: pkgName,
+        releaseType: 'prerelease'
       }
     : {
         provider: 'github'
@@ -74,12 +75,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
       deb: {
         fpm: ['--name', pkgName, '--version', pkgVersion, '--iteration', pkgIteration],
         artifactName: debArtifactName,
-        publish: process.env.DEB_SKIP_PUBLISH
-          ? null
-          : {
-              provider: 'bintray',
-              package: pkgName
-            }
+        publish: process.env.DEB_SKIP_PUBLISH ? null : defaultPublisher
       }
     }
   };
