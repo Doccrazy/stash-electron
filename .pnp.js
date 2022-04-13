@@ -99,6 +99,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["electron-debug", "npm:3.1.0"],
             ["electron-devtools-installer", "npm:3.1.1"],
             ["electron-log", "npm:3.0.9"],
+            ["electron-notarize", "npm:1.2.1"],
             ["electron-settings", "npm:3.2.0"],
             ["electron-unhandled", "npm:3.0.1"],
             ["electron-updater", "npm:4.3.5"],
@@ -5155,6 +5156,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/electron-log-npm-3.0.9-db19df4e99-84a169ebe4.zip/node_modules/electron-log/",
           "packageDependencies": [
             ["electron-log", "npm:3.0.9"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["electron-notarize", [
+        ["npm:1.2.1", {
+          "packageLocation": "./.yarn/cache/electron-notarize-npm-1.2.1-157293ed7c-9cfede188b.zip/node_modules/electron-notarize/",
+          "packageDependencies": [
+            ["electron-notarize", "npm:1.2.1"],
+            ["debug", "virtual:2eb67583a9b3f2cc91b648ac5cac0a1c3aaacb7b17b8d5c772ae7dcb393b5fe37b8b54bb54cb4bb44044aec14d898cec87b05d451d11aa2c15bd1d5d6f9264a4#npm:4.3.1"],
+            ["fs-extra", "npm:9.0.1"]
           ],
           "linkType": "HARD",
         }]
@@ -13823,6 +13835,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["electron-debug", "npm:3.1.0"],
             ["electron-devtools-installer", "npm:3.1.1"],
             ["electron-log", "npm:3.0.9"],
+            ["electron-notarize", "npm:1.2.1"],
             ["electron-settings", "npm:3.2.0"],
             ["electron-unhandled", "npm:3.0.1"],
             ["electron-updater", "npm:4.3.5"],

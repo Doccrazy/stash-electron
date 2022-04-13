@@ -45,6 +45,9 @@ jobs:
           GH_TOKEN: ${{ github.ref == 'refs/heads/master' && secrets.RELEASE_REPO_TOKEN || secrets.github_token }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          NOTARIZE_APPLE_ID: ${{ secrets.NOTARIZE_APPLE_ID }}
+          NOTARIZE_APPLE_ID_PASS: ${{ secrets.NOTARIZE_APPLE_ID_PASS }}
+          NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
         
       - name: Update AUR package
         run: bash dist/arch/update-aur.sh
