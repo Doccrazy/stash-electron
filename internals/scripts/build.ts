@@ -54,7 +54,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
 
   return {
     targets: createTargets([platform], undefined, 'x64'),
-    publish: process.env.DEPLOY_RELEASE ? 'always' : 'never',
+    publish: process.env.DEPLOY_RELEASE === 'true' ? 'always' : 'never',
     config: {
       extraMetadata: {
         version: version.format()
