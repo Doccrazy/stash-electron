@@ -29,6 +29,7 @@
     "npmRebuild": false,
     "productName": "Stash",
     "appId": "de.doccrazy.Stash",
+    "afterSign": "internals/scripts/notarize.js",
     "files": [
       "package.json",
       {
@@ -72,6 +73,11 @@
       "target": [
         "nsis"
       ]
+    },
+    "mac": {
+      "hardenedRuntime": true,
+      "entitlements": "dist/entitlements.mac.plist",
+      "entitlementsInherit": "dist/entitlements.mac.plist"
     },
     "linux": {
       "target": [
@@ -177,6 +183,7 @@
     "electron": "9.1.2",
     "electron-builder": "^22.9.1",
     "electron-devtools-installer": "^3.1.1",
+    "electron-notarize": "^1.2.1",
     "enzyme": "^3.10.0",
     "enzyme-to-json": "^3.4.3",
     "eslint": "^7.14.0",
