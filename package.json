@@ -20,8 +20,8 @@
     "start": "cross-env NODE_ENV=production electron ./app/",
     "start-main-dev": "cross-env HOT=1 NODE_ENV=development electron ./app/main.js",
     "start-renderer-dev": "cross-env NODE_ENV=development webpack serve --config ./webpack.config.renderer.dev.ts",
-    "test": "cross-env NODE_ENV=test TS_NODE_FILES=true mocha --trace-warnings -r ts-node/register -r test/register \"test/**/*.ts\"",
-    "test-e2e": "cross-env NODE_ENV=test TS_NODE_FILES=true mocha --trace-warnings -r ts-node/register -r test/register \"test/e2e/**/*.ts\"",
+    "test": "cross-env NODE_ENV=test TS_NODE_FILES=true mocha --trace-warnings --exit -r ts-node/register -r test/register \"test/**/*.ts\"",
+    "test-e2e": "cross-env NODE_ENV=test TS_NODE_FILES=true mocha --trace-warnings --exit -r ts-node/register -r test/register \"test/e2e/**/*.ts\"",
     "test-watch": "yarn test -- --watch"
   },
   "browserslist": "electron 1.7",
