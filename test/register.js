@@ -8,14 +8,15 @@ chai.use(chaiAsPromised);
 
 const oldResolveFilename = Module._resolveFilename;
 Module._resolveFilename = function (request, parent, isMain) {
-  if (!request.startsWith('.') && fs.existsSync(path.join(__dirname, 'mocks', `${request}.js`))) {
-    request = path.join(__dirname, 'mocks', request);
+  if (!request.startsWith('.') && fs.existsSync(path.join(__dirname, 'mocks', `${request.replace('/', '-')}.js`))) {
+    request = path.join(__dirname, 'mocks', request.replace('/', '-'));
   }
   return oldResolveFilename.call(this, request, parent, isMain);
 };
 
 global.window = {
-  addEventListener: function () {}
+  addEventListener: function () {},
+  Date: Date
 };
 
 global.document = {
