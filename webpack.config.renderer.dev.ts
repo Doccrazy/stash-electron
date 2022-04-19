@@ -137,7 +137,7 @@ const rendererDevConfig: Configuration = {
           env: { ...process.env, DEV_SERVER_ROOT: 'http://localhost:1212/' },
           stdio: 'inherit'
         })
-          .on('close', (code) => process.exit(code))
+          .on('close', (code) => process.exit(code || undefined))
           .on('error', (spawnError) => console.error(spawnError));
       }
     }

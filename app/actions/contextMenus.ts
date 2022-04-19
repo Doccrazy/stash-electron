@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { remote } from 'electron';
+import * as remote from '@electron/remote';
 import EntryPtr from '../domain/EntryPtr';
 import { ROOT_ID } from '../domain/Node';
 import { typeFor, WellKnownField } from '../fileType';

@@ -1,4 +1,4 @@
-import { remote } from 'electron';
+import * as remote from '@electron/remote';
 import { Dispatch, GetState } from '../actions/types/index';
 import { openPopup } from '../actions/git';
 import { t } from '../utils/i18n/redux';

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as sshpk from 'sshpk';
 import * as os from 'os';
 import { toastr } from 'react-redux-toastr';
-import { remote } from 'electron';
+import * as remote from '@electron/remote';
 import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 import { KeyError, State } from './types/privateKey';
 import { afterAction } from '../store/eventMiddleware';

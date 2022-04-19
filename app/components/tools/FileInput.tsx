@@ -1,4 +1,5 @@
-import { remote, OpenDialogOptions } from 'electron';
+import { OpenDialogOptions } from 'electron';
+import * as remote from '@electron/remote';
 import * as React from 'react';
 import { Button, Input, InputGroup, InputGroupAddon, InputProps } from 'reactstrap';
 

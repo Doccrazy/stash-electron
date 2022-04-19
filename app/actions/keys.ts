@@ -1,7 +1,8 @@
 import * as fs from 'fs-extra';
 import * as sshpk from 'sshpk';
 import { toastr } from 'react-redux-toastr';
-import { clipboard, remote } from 'electron';
+import { clipboard } from 'electron';
+import * as remote from '@electron/remote';
 import { GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
 import { FormState, State } from './types/keys';
 import { afterAction } from '../store/eventMiddleware';

@@ -40,7 +40,6 @@ export function isRepository(repoPath: string) {
 
 export async function isSignatureConfigured(repo: Git.Repository) {
   try {
-    // eslint-disable-next-line @typescript-eslint/await-thenable
     const defaultSignature = await Git.Signature.default(repo);
     return !!defaultSignature && !!defaultSignature.name() && !!defaultSignature.email();
   } catch (err) {
@@ -357,7 +356,7 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
       const changedFiles: string[] = [];
       for (const diff of commitDiffs[i]) {
         for (let deltaIdx = 0; deltaIdx < diff.numDeltas(); deltaIdx++) {
-          const entry = (diff.getDelta(deltaIdx).newFile as any)().path();
+          const entry = diff.getDelta(deltaIdx).newFile().path();
           changedFiles.push(entry);
         }
         for (const entry of changedFiles) {
@@ -456,9 +455,9 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
       for (const diff of commitDiffs[i]) {
         for (let deltaIdx = 0; deltaIdx < diff.numDeltas(); deltaIdx++) {
           const diffDelta = diff.getDelta(deltaIdx);
-          const entry: string = (diffDelta.newFile as any)().path();
-          const oldEntry: string = (diffDelta.oldFile as any)().path();
-          const status: Git.Diff.DELTA = (diffDelta.status as any)();
+          const entry: string = diffDelta.newFile().path();
+          const oldEntry: string = diffDelta.oldFile().path();
+          const status: Git.Diff.DELTA = diffDelta.status();
           if (status === Git.Diff.DELTA.DELETED) {
             info.deletedFiles.push(entry);
           } else {

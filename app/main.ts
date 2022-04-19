@@ -13,9 +13,12 @@ import { app, BrowserWindow, shell, Event, nativeImage } from 'electron';
 import logger from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import windowStateKeeper from 'electron-window-state';
+import * as remote from '@electron/remote/main';
 import * as Splashscreen from '@trodi/electron-splashscreen';
 import { URL } from 'url';
 import MenuBuilder from './menu';
+
+remote.initialize();
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -28,7 +31,7 @@ function processCommandLine(argv: string[]) {
 
 app.setAppUserModelId('de.doccrazy.Stash');
 // required for NodeGit, see https://github.com/electron/electron/issues/18397
-app.allowRendererProcessReuse = false;
+//app.allowRendererProcessReuse = false;
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 if (process.env.NODE_ENV === 'production') {
@@ -100,7 +103,7 @@ async function createMainWindow(reopen?: boolean) {
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true
+      contextIsolation: false
     }
   };
   const config: Splashscreen.Config = {
@@ -117,6 +120,7 @@ async function createMainWindow(reopen?: boolean) {
   (splash.splashScreen as any).buildDate = typeof BUILD_DATE === 'undefined' ? new Date() : new Date(BUILD_DATE);
   mainWindow = splash.main;
 
+  remote.enable(mainWindow.webContents);
   mainWindowState.manage(mainWindow);
 
   if (process.env.DEV_SERVER_ROOT) {

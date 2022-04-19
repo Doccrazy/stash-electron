@@ -1,11 +1,13 @@
 import * as os from 'os';
-import { remote } from 'electron';
+import * as remote from '@electron/remote';
 import electronSettings from 'electron-settings';
 import { KeyFormat, SettingsKeys, SettingsMap, State } from './types/settings';
 import { TypedAction, GetState, TypedThunk, OptionalAction } from './types/index';
 import { afterAction } from '../store/eventMiddleware';
 import * as path from 'path';
 import { bestSupportedLocale } from '../utils/i18n/message';
+
+electronSettings.configure({ fileName: 'Settings', electron: { remote } as any });
 
 export enum Actions {
   LOAD = 'settings/LOAD',
@@ -17,7 +19,7 @@ export function load(): Thunk<void> {
   return (dispatch, getState) => {
     dispatch({
       type: Actions.LOAD,
-      payload: (electronSettings.getAll() as unknown) as SettingsMap
+      payload: (electronSettings.getSync() as unknown) as SettingsMap
     });
   };
 }
@@ -40,7 +42,7 @@ export function changeAndSave<K extends SettingsKeys>(key: K, value: SettingsMap
       type: Actions.SAVE
     });
 
-    electronSettings.set(key, getState().settings.current[key] as any);
+    electronSettings.setSync(key, getState().settings.current[key] as any);
   };
 }
 
@@ -50,7 +52,7 @@ export function save(): Thunk<void> {
       type: Actions.SAVE
     });
 
-    electronSettings.setAll(getState().settings.current as any);
+    electronSettings.setSync(getState().settings.current as any);
   };
 }
 
