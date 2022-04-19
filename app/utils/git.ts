@@ -340,17 +340,13 @@ export async function getLatestCommitsFor(gitRepo: Git.Repository, entries: stri
 
   console.time('walk');
 
-  const opts = new (Git as any).DiffOptions();
-  opts.flags = Git.Diff.OPTION.FORCE_BINARY;
-  const pathspec = entries.slice();
-  pathspec.push(...excludePatterns);
-  opts.pathspec.copy(pathspec);
+  const opts: Git.DiffOptions = { flags: Git.Diff.OPTION.FORCE_BINARY, pathspec: [...entries, ...excludePatterns] };
 
   const excludeMatchers = excludePatterns.map((pat) => new Minimatch(pat));
   let allCommits: Git.Commit[];
   do {
     allCommits = await walker.getCommits(BATCH_SIZE);
-    const commitDiffs = await Promise.all(allCommits.map((c) => c.getDiffWithOptions(opts)));
+    const commitDiffs = await Promise.all(allCommits.map((c) => c.getDiffWithOptions(opts as any)));
     outer: for (let i = 0; i < commitDiffs.length; i++) {
       const commit = allCommits[i];
       const changedFiles: string[] = [];
@@ -419,8 +415,7 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
 
   console.time('walk');
 
-  const opts = new (Git as any).DiffOptions();
-  opts.flags = Git.Diff.OPTION.FORCE_BINARY;
+  const opts: Git.DiffOptions = { flags: Git.Diff.OPTION.FORCE_BINARY };
   const simOpts: Git.DiffFindOptions = { flags: Git.Diff.FIND.RENAMES | Git.Diff.FIND.EXACT_MATCH_ONLY }; // tslint:disable-line
 
   const result: GitCommitInfo[] = [];
@@ -429,7 +424,7 @@ export async function loadHistory(gitRepo: Git.Repository): Promise<GitCommitInf
   let conflict = !!rebaseBase;
   do {
     allCommits = await walker.getCommits(BATCH_SIZE);
-    const commitDiffs = await Promise.all(allCommits.map((c) => c.getDiffWithOptions(opts)));
+    const commitDiffs = await Promise.all(allCommits.map((c) => c.getDiffWithOptions(opts as any)));
     await Promise.all(
       commitDiffs
         .reduce((acc, diffs) => {
