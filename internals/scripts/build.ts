@@ -45,7 +45,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
         provider: 'github',
         repo: 'stash-electron-snapshots',
         owner: 'Doccrazy',
-        package: pkgName,
+        //package: pkgName,
         releaseType: 'prerelease'
       }
     : {

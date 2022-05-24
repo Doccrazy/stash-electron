@@ -29,7 +29,7 @@ const rendererProdConfig: Configuration = {
   },
 
   externals: ({ request }, callback) => {
-    if (request.endsWith('.node')) {
+    if (request?.endsWith('.node')) {
       const filename = path.basename(request);
       return callback(undefined, `commonjs ../../${filename}`);
     }

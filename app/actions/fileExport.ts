@@ -1,4 +1,4 @@
-import { remote } from 'electron';
+import * as remote from '@electron/remote';
 import Node from '../domain/Node';
 import KeePassExporter, { ExportNodeId } from '../import/KeePassExporter';
 import { isAccessible, isAnyAccessible } from '../utils/repository';

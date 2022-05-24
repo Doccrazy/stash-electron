@@ -110,7 +110,18 @@ const baseConfig: Configuration = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     modules: [path.join(__dirname, 'app'), 'node_modules'],
-    aliasFields: []
+    aliasFields: [],
+    alias: {
+      // stop webpack from complaining about these missing nodegit modules, as they are intentionally left out
+      './deprecated/structs/DiffPatchidOptions': false,
+      './deprecated/structs/Filter': false,
+      './deprecated/structs/IndexEntry': false,
+      './deprecated/structs/IndexTime': false,
+      './deprecated/structs/RemoteCallbacks': false,
+      './deprecated/structs/TreeUpdate': false,
+      './deprecated/structs/WorktreeAddOptions': false,
+      './deprecated/structs/WorktreePruneOptions': false
+    }
   },
 
   plugins: [

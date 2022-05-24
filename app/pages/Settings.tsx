@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Form, FormGroup, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { remote } from 'electron';
+import * as remote from '@electron/remote';
 import RecentRepositories from '../containers/RecentRepositories';
 import SettingField from '../containers/SettingField';
 import SaveSettingsButton from '../containers/SaveSettingsButton';

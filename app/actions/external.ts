@@ -1,7 +1,8 @@
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import { remote, shell } from 'electron';
+import { shell } from 'electron';
+import * as remote from '@electron/remote';
 import { toastr } from 'react-redux-toastr';
 import { childNodeByName, isAccessible } from '../utils/repository';
 import EntryPtr from '../domain/EntryPtr';
