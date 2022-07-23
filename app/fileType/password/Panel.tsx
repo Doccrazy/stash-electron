@@ -47,7 +47,7 @@ const PreRenderer = ({ value }: RendererProps) => <span className={styles.pre}>{
 
 const URLRenderer = ({ value }: RendererProps) => (
   <div className={styles.ellipsis}>
-    <a href={sanitizeUrl(value)} title={sanitizeUrl(value)}>
+    <a href={sanitizeUrl(value)} title={sanitizeUrl(value)} target="_blank" rel="noreferrer">
       {value}
     </a>
   </div>

@@ -133,7 +133,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["keytar", "npm:7.9.0"],
             ["langmap", "npm:0.0.16"],
             ["lodash", "npm:4.17.20"],
-            ["markdown-loader", "npm:6.0.0"],
+            ["markdown-loader", "npm:7.0.0"],
             ["mini-css-extract-plugin", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:1.3.3"],
             ["minimatch", "npm:3.0.4"],
             ["minimist", "npm:1.2.5"],
@@ -10461,12 +10461,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["markdown-loader", [
-        ["npm:6.0.0", {
-          "packageLocation": "./.yarn/cache/markdown-loader-npm-6.0.0-ce15cd2cc7-274db805c5.zip/node_modules/markdown-loader/",
+        ["npm:7.0.0", {
+          "packageLocation": "./.yarn/cache/markdown-loader-npm-7.0.0-0972c80829-d2da4879f2.zip/node_modules/markdown-loader/",
           "packageDependencies": [
-            ["markdown-loader", "npm:6.0.0"],
+            ["markdown-loader", "npm:7.0.0"],
             ["loader-utils", "npm:1.4.0"],
-            ["marked", "npm:0.7.0"]
+            ["marked", "npm:4.0.18"]
           ],
           "linkType": "HARD",
         }]
@@ -10481,10 +10481,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["marked", [
-        ["npm:0.7.0", {
-          "packageLocation": "./.yarn/cache/marked-npm-0.7.0-8eca4b976f-9132605ed9.zip/node_modules/marked/",
+        ["npm:4.0.18", {
+          "packageLocation": "./.yarn/cache/marked-npm-4.0.18-3f495ac058-a13e886d50.zip/node_modules/marked/",
           "packageDependencies": [
-            ["marked", "npm:0.7.0"]
+            ["marked", "npm:4.0.18"]
           ],
           "linkType": "HARD",
         }]
@@ -15161,7 +15161,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["keytar", "npm:7.9.0"],
             ["langmap", "npm:0.0.16"],
             ["lodash", "npm:4.17.20"],
-            ["markdown-loader", "npm:6.0.0"],
+            ["markdown-loader", "npm:7.0.0"],
             ["mini-css-extract-plugin", "virtual:ff3fbd5ab8c25255ae86b15f54fbdb6b3d2e063000e3d1207ba84800e688ac10be9482616948de82f30bd33fa0723f7304214ab03b103fc3dc4cdd14461bceda#npm:1.3.3"],
             ["minimatch", "npm:3.0.4"],
             ["minimist", "npm:1.2.5"],

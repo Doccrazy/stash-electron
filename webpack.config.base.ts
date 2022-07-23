@@ -89,7 +89,23 @@ const baseConfig: Configuration = {
       // Markdown
       {
         test: /\.md$/,
-        use: ['html-loader', 'markdown-loader']
+        use: [
+          'html-loader',
+          {
+            loader: 'markdown-loader',
+            options: {
+              extensions: {
+                renderers: {
+                  link({ href, title, text }: { href: string; title: string; text: string }) {
+                    // add target="_blank" to links
+                    // TODO escaping
+                    return `<a href="${href}" title="${title || ''}" target="_blank" rel="noreferrer">${text}</a>`;
+                  }
+                }
+              }
+            }
+          }
+        ]
       },
       // YAML
       {
