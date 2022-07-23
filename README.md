@@ -24,9 +24,9 @@ Download the latest release from the releases page: [ ![GitHub release](https://
 
 Due to the shutdown of Bintray, the Debian repository is no longer available. For Debian/Ubuntu, please download and install the .deb file directly or use the AppImage package.
 
-Official Arch Linux packages are available in AUR named `stash-electron` and `stash-electron-git`.
+As of 05/2021, AUR packages for Arch Linux are no longer available. Please use the AppImage download instead, which also supports automatic updates.
 
-Development snapshots are available for all platforms by installing the `stash-electron-git` package or downloading from the snapshots repository: [ ![GitHub release](https://img.shields.io/github/v/release/Doccrazy/stash-electron-snapshots?include_prereleases) ](https://github.com/Doccrazy/stash-electron-snapshots/releases)
+Development snapshots are available for all platforms from the snapshots repository: [ ![GitHub release](https://img.shields.io/github/v/release/Doccrazy/stash-electron-snapshots?include_prereleases) ](https://github.com/Doccrazy/stash-electron-snapshots/releases)
 
 ## Getting started
 

@@ -1,0 +1,15 @@
+{
+  "name": "generateIcons",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "generate": "node index.js ../../app/logo3.svg"
+  },
+  "dependencies": {
+    "fs-extra": "^9.1.0",
+    "icon-gen": "^2.1.0",
+    "svg2png": "^4.1.1"
+  }
+}

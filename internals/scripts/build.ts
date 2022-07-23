@@ -1,7 +1,6 @@
 import { build, CliOptions, createTargets, Platform, Configuration } from 'electron-builder';
 import { exec, spawnSync } from 'child_process';
 import * as semver from 'semver';
-import * as fs from 'fs';
 
 let buildWin: boolean, buildLinux: boolean, buildMac: boolean;
 if (process.argv[2] === 'all' || process.argv.slice(2).includes('win') || (!process.argv[2] && process.platform === 'win32')) {
@@ -26,19 +25,7 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
   const pkgVersion = version.format().replace(/-snapshot\.\d+$/, 'pre');
   const pkgIteration = `${snapshotNum || 1}`;
   const pkgName = snapshotNum ? 'stash-electron-git' : 'stash-electron';
-  const pacmanArtifactName = `${pkgName}-${pkgVersion}-${pkgIteration}.pkg.tar.xz`;
   const debArtifactName = `${pkgName}_${pkgVersion}-${pkgIteration}_amd64.deb`;
-
-  // write version for AUR update script
-  try {
-    fs.mkdirSync('release');
-  } catch {
-    /* already exists */
-  }
-  fs.writeFileSync(
-    'release/PKGINFO',
-    `PKG_VERSION=${pkgVersion}\nPKG_ITERATION=${pkgIteration}\nPKG_NAME=${pkgName}\nDEB_ARTIFACT_NAME=${debArtifactName}\n`
-  );
 
   const defaultPublisher: Configuration['publish'] = snapshotNum
     ? {
@@ -64,10 +51,6 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
       },
       mac: {
         publish: defaultPublisher
-      },
-      pacman: {
-        fpm: ['--name', pkgName, '--version', pkgVersion, '--iteration', pkgIteration],
-        artifactName: pacmanArtifactName
       },
       appImage: {
         publish: defaultPublisher

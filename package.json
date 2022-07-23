@@ -90,15 +90,6 @@
         "MimeType": "x-scheme-handler/stash;"
       }
     },
-    "pacman": {
-      "depends": [
-        "gtk3",
-        "libcurl-gnutls",
-        "libsecret",
-        "libxss",
-        "nss"
-      ]
-    },
     "deb": {
       "depends": [
         "gconf2",

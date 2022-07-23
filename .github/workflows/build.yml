@@ -48,12 +48,6 @@ jobs:
           NOTARIZE_APPLE_ID: ${{ secrets.NOTARIZE_APPLE_ID }}
           NOTARIZE_APPLE_ID_PASS: ${{ secrets.NOTARIZE_APPLE_ID_PASS }}
           NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
-        
-      - name: Update AUR package
-        run: bash dist/arch/update-aur.sh
-        if: ${{ env.DEPLOY_RELEASE == 'true' && runner.os == 'Linux' }}
-        env:
-          SSHPASS: ${{ secrets.DEPLOY_KEY_PASSPHRASE }}
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
