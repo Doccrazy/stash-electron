@@ -43,8 +43,8 @@ jobs:
         run: yarn package
         env:
           GH_TOKEN: ${{ github.ref == 'refs/heads/master' && secrets.RELEASE_REPO_TOKEN || secrets.github_token }}
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          CSC_LINK: ${{ runner.os == 'macOS' && secrets.CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ runner.os == 'macOS' && secrets.CSC_KEY_PASSWORD || '' }}
           NOTARIZE_APPLE_ID: ${{ secrets.NOTARIZE_APPLE_ID }}
           NOTARIZE_APPLE_ID_PASS: ${{ secrets.NOTARIZE_APPLE_ID_PASS }}
           NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
@@ -64,6 +64,6 @@ jobs:
         with:
           repo: Doccrazy/stash-electron-snapshots
           keep_latest: 10
-          delete_tags: true  
+          delete_tags: true
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_REPO_TOKEN }}
