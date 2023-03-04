@@ -134,6 +134,7 @@ const baseConfig: Configuration = {
       './deprecated/structs/IndexEntry': false,
       './deprecated/structs/IndexTime': false,
       './deprecated/structs/RemoteCallbacks': false,
+      './deprecated/structs/StashSaveOptions': false,
       './deprecated/structs/TreeUpdate': false,
       './deprecated/structs/WorktreeAddOptions': false,
       './deprecated/structs/WorktreePruneOptions': false
