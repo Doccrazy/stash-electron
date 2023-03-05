@@ -250,7 +250,7 @@ component:
       clone: Entferntes Repository klonen
       remove: Aus Liste entfernen
   searchField:
-    placeholder: Suchbegriff eingeben (Enter für Volltextsuche)
+    placeholder: Suchbegriff eingeben
     scope:
       full: gesamt
       limited: aktueller Ordner

@@ -6,10 +6,10 @@ import { hierarchy, isAccessible, recursiveChildIds } from '../utils/repository'
 import EntryPtr from '../domain/EntryPtr';
 import { typeFor } from '../fileType/index';
 import { Dispatch, GetState, OptionalAction, TypedAction, TypedThunk } from './types/index';
-import { SearchOptions, State } from './types/search';
+import { SearchOptions, SearchResult, State } from './types/search';
 import { State as RepositoryState } from './types/repository';
 import { afterAction } from '../store/eventMiddleware';
-import { FuzzyStringMatcher, StringMatcher } from '../utils/StringMatcher';
+import { FuzzyStringMatcher } from '../utils/StringMatcher';
 
 export enum Actions {
   CHANGE_FILTER = 'search/CHANGE_FILTER',
@@ -20,9 +20,9 @@ export enum Actions {
 
 // TODO refactor 'as any' dispatches
 
-function quickFilter(): Thunk<void> {
-  return (dispatch, getState) => {
-    const { repository, search, currentNode } = getState();
+function quickFilter(): Thunk<Promise<void>> {
+  return async (dispatch, getState) => {
+    const { repository, search, currentNode, privateKey } = getState();
 
     if (!search.filter || search.filter.length < 2) {
       if (currentNode.specialId === 'searchResults') {
@@ -31,32 +31,60 @@ function quickFilter(): Thunk<void> {
       return;
     }
 
-    const results: List<EntryPtr> = filterByName(
-      repository.nodes,
-      (search.options.limitedScope && currentNode.nodeId) || '/',
-      search.filter,
-      !search.options.limitedScope
-    );
+    // search by name/path
+    const nameResults: List<SearchResult> = filterByName(repository.nodes, '/', search.filter, true, currentNode.nodeId);
+
+    // merge new results by name with previous content results to prevent result "flashing"
+    let nameWithLastResults = nameResults;
+    const lastContentResults = search.results.filter((res) => res.match === 'CONTENT');
+    lastContentResults.forEach((res) => {
+      if (!nameWithLastResults.some((v) => v.ptr.equals(res.ptr))) {
+        nameWithLastResults = nameWithLastResults.push(res);
+      }
+    });
 
     dispatch({
       type: Actions.RESULTS,
       payload: {
         quick: true,
-        results
+        results: nameWithLastResults.sort((a, b) => a.score - b.score)
       }
     });
+
     if (currentNode.specialId !== 'searchResults') {
       dispatch(selectSpecial('searchResults') as any);
     }
+
+    // search by content (slow, asynchronous)
+    const contentResults: List<SearchResult> = await filterByContent(
+      repository.nodes,
+      '/',
+      search.filter,
+      privateKey.username,
+      currentNode.nodeId
+    );
+    // merge results and order by score
+    let allResults = nameResults;
+    contentResults.forEach((res) => {
+      if (!allResults.some((v) => v.ptr.equals(res.ptr))) {
+        allResults = allResults.push(res);
+      }
+    });
+    dispatch({
+      type: Actions.RESULTS,
+      payload: {
+        results: allResults.sort((a, b) => a.score - b.score)
+      }
+    });
   };
 }
 
 const quickFilterDelayed = debounce((dispatch: Dispatch) => {
   dispatch(quickFilter());
-}, 0);
+}, 150);
 
 export function changeFilter(filter: string): Thunk<void> {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch({
       type: Actions.CHANGE_FILTER,
       payload: filter
@@ -64,11 +92,6 @@ export function changeFilter(filter: string): Thunk<void> {
 
     quickFilterDelayed(dispatch);
   };
-}
-
-function matches(ptr: EntryPtr, content: any, matcher: StringMatcher) {
-  const t = typeFor(ptr.entry);
-  return matcher.matches(t.toDisplayName(ptr.entry)) || t.matches!(content, matcher);
 }
 
 type PtrWithBuffer = { ptr: EntryPtr; buffer: Buffer };
@@ -93,7 +116,13 @@ function allEntriesBelow(nodes: RepositoryState['nodes'], rootNodeId: string, no
     }, []);
 }
 
-async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId = '/', filter: string, currentUser?: string) {
+async function filterByContent(
+  nodes: RepositoryState['nodes'],
+  rootNodeId = '/',
+  filter: string,
+  currentUser?: string,
+  currentNodeId?: string
+): Promise<List<SearchResult>> {
   console.time('resolve');
   const allSupportedEntries = allEntriesBelow(nodes, rootNodeId, (nodeId) => isAccessible(nodes, nodeId, currentUser)).filter(
     (ptr) => !!typeFor(ptr.entry).parse
@@ -111,14 +140,25 @@ async function filterByContent(nodes: RepositoryState['nodes'], rootNodeId = '/'
   console.time('filter');
   const matcher = new FuzzyStringMatcher(filter);
   const results = parsed
-    .filter(({ ptr, content }: PtrWithContent) => matches(ptr, content, matcher))
-    .map((item: PtrWithContent) => item.ptr);
+    .map<SearchResult | undefined>(({ ptr, content }: PtrWithContent) => {
+      if (typeFor(ptr.entry).matches!(content, matcher)) {
+        return { ptr, match: 'CONTENT', score: 1 + (ptr.nodeId === currentNodeId ? 0.5 : 0) };
+      }
+      return undefined;
+    })
+    .filter((v): v is SearchResult => !!v);
   console.timeEnd('filter');
 
   return List(results);
 }
 
-function filterByName(nodes: RepositoryState['nodes'], rootNodeId = '/', filter: string, matchPath = false) {
+function filterByName(
+  nodes: RepositoryState['nodes'],
+  rootNodeId = '/',
+  filter: string,
+  matchPath = false,
+  currentNodeId?: string
+): List<SearchResult> {
   console.time('resolve');
   const allEntries = allEntriesBelow(nodes, rootNodeId);
   console.timeEnd('resolve');
@@ -140,60 +180,19 @@ function filterByName(nodes: RepositoryState['nodes'], rootNodeId = '/', filter:
 
   console.time('filter');
   const matcher = new FuzzyStringMatcher(filter);
-  const results = allEntries.filter(
-    (ptr: EntryPtr) =>
-      matcher.matches(typeFor(ptr.entry).toDisplayName(ptr.entry)) || (matchPath && matcher.matchesPrepared(hierToStr(ptr.nodeId)))
-  );
+  const results = allEntries
+    .map<SearchResult | undefined>((ptr: EntryPtr) => {
+      if (matcher.matches(typeFor(ptr.entry).toDisplayName(ptr.entry))) {
+        return { ptr, match: 'NAME', score: 3 + (ptr.nodeId === currentNodeId ? 0.5 : 0) };
+      } else if (matchPath && matcher.matchesPrepared(hierToStr(ptr.nodeId))) {
+        return { ptr, match: 'PATH', score: 2 };
+      }
+      return undefined;
+    })
+    .filter((v): v is SearchResult => !!v);
   console.timeEnd('filter');
 
   return List(results);
-}
-
-export function startSearch(): Thunk<Promise<void>> {
-  return async (dispatch, getState) => {
-    const { repository, search, currentNode, privateKey } = getState();
-
-    if (!search.filter || search.filter.length < 2) {
-      return;
-    }
-
-    quickFilterDelayed.cancel();
-    dispatch({
-      type: Actions.START
-    });
-
-    const results: List<EntryPtr> = await filterByContent(
-      repository.nodes,
-      (search.options.limitedScope && currentNode.nodeId) || '/',
-      search.filter,
-      privateKey.username
-    );
-
-    dispatch({
-      type: Actions.RESULTS,
-      payload: {
-        results
-      }
-    });
-    dispatch(selectSpecial('searchResults') as any);
-  };
-}
-
-export function toggleScope(): Thunk<void> {
-  return (dispatch, getState) => {
-    const { search, currentNode } = getState();
-
-    dispatch({
-      type: Actions.SET_OPTIONS,
-      payload: {
-        limitedScope: !getState().search.options.limitedScope
-      }
-    });
-
-    if (currentNode.specialId === 'searchResults') {
-      dispatch(search.quick ? quickFilter() : startSearch());
-    }
-  };
 }
 
 export function showResults(): Thunk<void> {
@@ -206,12 +205,12 @@ export function showResults(): Thunk<void> {
 
 afterAction(RepoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newName }: { ptr: EntryPtr; newName: string }) => {
   const { search } = getState();
-  const idx = search.results.indexOf(ptr);
+  const idx = search.results.findIndex((res) => res.ptr.equals(ptr));
   if (idx >= 0) {
     dispatch({
       type: Actions.RESULTS,
       payload: {
-        results: search.results.set(idx, new EntryPtr(ptr.nodeId, newName))
+        results: search.results.set(idx, { ...search.results.get(idx)!, ptr: new EntryPtr(ptr.nodeId, newName) })
       }
     });
   }
@@ -219,7 +218,7 @@ afterAction(RepoActions.RENAME_ENTRY, (dispatch, getState: GetState, { ptr, newN
 
 afterAction(RepoActions.DELETE_ENTRY, (dispatch, getState: GetState, { ptr }: { ptr: EntryPtr }) => {
   const { search } = getState();
-  const idx = search.results.indexOf(ptr);
+  const idx = search.results.findIndex((res) => res.ptr.equals(ptr));
   if (idx >= 0) {
     dispatch({
       type: Actions.RESULTS,
@@ -232,12 +231,12 @@ afterAction(RepoActions.DELETE_ENTRY, (dispatch, getState: GetState, { ptr }: { 
 
 afterAction(RepoActions.MOVE_ENTRY, (dispatch, getState: GetState, { ptr, newNodeId }: { ptr: EntryPtr; newNodeId: string }) => {
   const { search } = getState();
-  const idx = search.results.indexOf(ptr);
+  const idx = search.results.findIndex((res) => res.ptr.equals(ptr));
   if (idx >= 0) {
     dispatch({
       type: Actions.RESULTS,
       payload: {
-        results: search.results.set(idx, new EntryPtr(newNodeId, ptr.entry))
+        results: search.results.set(idx, { ...search.results.get(idx)!, ptr: new EntryPtr(newNodeId, ptr.entry) })
       }
     });
   }
@@ -246,7 +245,7 @@ afterAction(RepoActions.MOVE_ENTRY, (dispatch, getState: GetState, { ptr, newNod
 type Action =
   | TypedAction<Actions.CHANGE_FILTER, string>
   | OptionalAction<Actions.START>
-  | TypedAction<Actions.RESULTS, { quick?: boolean; results: List<EntryPtr> }>
+  | TypedAction<Actions.RESULTS, { quick?: boolean; results: List<SearchResult> }>
   | TypedAction<Actions.SET_OPTIONS, SearchOptions>;
 
 type Thunk<R> = TypedThunk<Action, R>;

@@ -250,7 +250,7 @@ component:
       clone: Clone remote repository
       remove: Remove from list
   searchField:
-    placeholder: Type to search, enter for fulltext
+    placeholder: Type to search
     scope:
       full: everywhere
       limited: within folder

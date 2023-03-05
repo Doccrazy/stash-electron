@@ -2,10 +2,12 @@
 
 #### Changes
 
-- Electron has been upgraded to v17.4.0
+- Electron has been upgraded to v21.4.0
 - macOS packages are now code-signed (thanks to [Tiffinger & Thiel GmbH](https://www.tiffinger-thiel.de)!)
 - The git conflict view now gives detailed information on which commit caused the conflict,
   and which files are affected
+- Search now behaves more like a fulltext search engine, scoring results by quality instead of filtering.
+  This replaces the "find in folder" and "fulltext search" options.
 
 #### Bugs fixed
 

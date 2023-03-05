@@ -20,7 +20,11 @@ const SPECIAL_FOLDERS: { [id in SpecialFolderId]: SpecialFolder } = {
     title: (state: RootState) =>
       t('common.specialFolder.searchResults', { size: state.search.results.size > 100 ? '100+' : state.search.results.size }),
     icon: 'search',
-    selector: (state: RootState) => state.search.results.toArray().slice(0, 100)
+    selector: (state: RootState) =>
+      state.search.results
+        .map((res) => res.ptr)
+        .toArray()
+        .slice(0, 100)
   }
 };
 

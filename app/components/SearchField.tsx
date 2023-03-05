@@ -1,15 +1,12 @@
 import * as React from 'react';
-import { Button, Form, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Form, Input, InputGroup } from 'reactstrap';
 import * as Mousetrap from 'mousetrap';
 import Trans from '../utils/i18n/Trans';
 
 export interface Props {
   className?: string;
-  limitedScope?: boolean;
   value: string;
   onChange: (value: string) => void;
-  onSearch: () => void;
-  onToggleScope: () => void;
   onShowResults: () => void;
 }
 
@@ -36,9 +33,6 @@ export default class SearchField extends React.Component<Props, {}> {
     Mousetrap.bind('mod+f', (ev) => {
       if (this.input.current && !shouldIgnore(ev)) {
         this.input.current.focus();
-        if (this.props.limitedScope) {
-          this.props.onToggleScope();
-        }
       }
     });
 
@@ -56,34 +50,19 @@ export default class SearchField extends React.Component<Props, {}> {
       if (this.input.current) {
         this.input.current.focus();
       }
-      if (!this.props.limitedScope) {
-        this.props.onToggleScope();
-      }
     }
   }
 
   keyDown(ev: React.KeyboardEvent<HTMLInputElement>) {
-    if (ev.keyCode === 13) {
-      // search on enter
-      ev.preventDefault();
-      this.props.onSearch();
-    } else if (ev.keyCode === 9) {
-      // toggle scope on tab
-      ev.preventDefault();
-      this.props.onToggleScope();
-    } else if (ev.keyCode === 27) {
+    if (ev.keyCode === 27) {
       // clear on esc
       ev.preventDefault();
       this.props.onChange('');
-    } else if (ev.key === 'f' && (ev.ctrlKey || ev.metaKey) && this.props.limitedScope) {
-      // set global scope on ctrl+f/command+f
-      ev.preventDefault();
-      this.props.onToggleScope();
     }
   }
 
   render() {
-    const { className, limitedScope, value, onChange, onToggleScope, onShowResults } = this.props;
+    const { className, value, onChange, onShowResults } = this.props;
     return (
       <Form inline className={className}>
         <InputGroup className="w-100">
@@ -106,17 +85,6 @@ export default class SearchField extends React.Component<Props, {}> {
               />
             )}
           </Trans>
-          <InputGroupAddon addonType="append">
-            <Button
-              innerRef={this.button}
-              color={
-                limitedScope && [this.input.current, this.button.current].includes(document.activeElement as any) ? 'info' : 'secondary'
-              }
-              onClick={onToggleScope}
-            >
-              <Trans id={`component.searchField.scope.${limitedScope ? 'limited' : 'full'}`} />
-            </Button>
-          </InputGroupAddon>
         </InputGroup>
       </Form>
     );
