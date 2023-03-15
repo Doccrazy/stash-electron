@@ -1,4 +1,5 @@
 import * as Mousetrap from 'mousetrap';
+import 'mousetrap/plugins/global-bind/mousetrap-global-bind';
 import * as CurrentEntry from '../actions/currentEntry';
 import * as CurrentNode from '../actions/currentNode';
 import * as Edit from '../actions/edit';
@@ -63,7 +64,7 @@ export default function registerHotkeys(dispatch: Dispatch, getState: GetState) 
   Mousetrap.bind('mod+n', () => editOp(() => Edit.createInCurrent(PasswordType.id)));
   Mousetrap.bind('mod+shift+n', () => editOp(CurrentNode.startCreate));
 
-  Mousetrap.bind('mod+l', () => {
+  Mousetrap.bindGlobal('mod+l', () => {
     if (getState().privateKey.encrypted) {
       if (getState().privateKey.key) {
         dispatch(PrivateKey.lock());

@@ -13,6 +13,7 @@
 
 - Regression on "Open in default application" has been fixed (#8)
 - Errors when encoutering git merge conflicts have been fixed (#9)
+- Ctrl+L shortcut now works when the search field is focused
 
 ## v1.2.2 (2020-11-28)
 
