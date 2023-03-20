@@ -230,17 +230,17 @@ export async function pushWithRetry(
 export function defaultCredCb(credentialsCb: (url: string, usernameFromUrl: string) => Promise<GitCredentials>) {
   let sshAgentAttempted = false;
   return async (url: string, usernameFromUrl: string, allowedTypes: number) => {
-    if (allowedTypes & Git.Cred.TYPE.SSH_KEY) {
+    if (allowedTypes & Git.Credential.TYPE.SSH_KEY) {
       // tslint:disable-line
       if (sshAgentAttempted) {
         // ssh agent did not provide valid credentials
         throw new Error();
       }
       sshAgentAttempted = true;
-      return Git.Cred.sshKeyFromAgent(usernameFromUrl);
+      return Git.Credential.sshKeyFromAgent(usernameFromUrl);
     }
     const cred = await credentialsCb(url, usernameFromUrl);
-    return Git.Cred.userpassPlaintextNew(cred.username || usernameFromUrl, cred.password);
+    return Git.Credential.userpassPlaintextNew(cred.username || usernameFromUrl, cred.password);
   };
 }
 
