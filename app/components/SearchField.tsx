@@ -70,6 +70,7 @@ export default class SearchField extends React.Component<Props, {}> {
             {(t) => (
               <Input
                 innerRef={this.input}
+                className="mousetrap"
                 placeholder={t('component.searchField.placeholder')}
                 value={value}
                 onChange={(ev) => onChange(ev.target.value)}
