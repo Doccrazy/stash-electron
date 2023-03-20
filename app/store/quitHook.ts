@@ -20,6 +20,10 @@ export default function installQuitHook(dispatch: Dispatch, getState: GetState) 
     },
     { capture: true }
   );
+  // disable default form submit
+  window.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+  });
   window.addEventListener('beforeunload', (evt) => {
     if (closeWindow) {
       return;
