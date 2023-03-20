@@ -11,12 +11,17 @@
 /// <reference path="types.d.ts" />
 import { app, BrowserWindow, shell, Event, nativeImage } from 'electron';
 import logger from 'electron-log';
+import unhandled from 'electron-unhandled';
 import { autoUpdater } from 'electron-updater';
 import windowStateKeeper from 'electron-window-state';
 import * as remote from '@electron/remote/main';
 import * as Splashscreen from '@trodi/electron-splashscreen';
 import { URL } from 'url';
 import MenuBuilder from './menu';
+
+if (process.env.NODE_ENV === 'production') {
+  unhandled();
+}
 
 remote.initialize();
 
