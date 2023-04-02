@@ -57,8 +57,16 @@ jobs:
           NOTARIZE_APPLE_ID_PASS: ${{ secrets.NOTARIZE_APPLE_ID_PASS }}
           NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
 
-      - name: Build/release Electron app
-        if: runner.os != 'macOS'
+      - name: Build/release Electron Linux app
+        if: runner.os == 'Linux'
+        run: yarn package
+        env:
+          GH_TOKEN: ${{ github.ref == 'refs/heads/master' && secrets.RELEASE_REPO_TOKEN || secrets.github_token }}
+          BUILD_ONLY: "1"
+          NODEGIT_OPENSSL_STATIC_LINK: "1"
+
+      - name: Build/release Electron Windows app
+        if: runner.os == 'Windows'
         run: yarn package
         env:
           GH_TOKEN: ${{ github.ref == 'refs/heads/master' && secrets.RELEASE_REPO_TOKEN || secrets.github_token }}
