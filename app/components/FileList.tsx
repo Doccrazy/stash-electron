@@ -60,71 +60,78 @@ export default withTrans<Props>('component.fileList')(
           </tr>
         </thead>
         <tbody>
-          {files.map((file) => {
+          {files.map((file, fileIndex) => {
             return (
-              <tr
-                key={file.ptr.toString()}
-                className={cx('clickable', file.ptr.equals(selectedEntry) && 'table-active', !file.accessible && styles.inaccessible)}
-                onClick={(ev: ChromeMouseEvent) => {
-                  if (ev.detail === 1) {
-                    onSelect(file.ptr);
-                  }
-                }}
-                onMouseDown={(ev: ChromeMouseEvent) => {
-                  if (ev.detail > 1) {
+              <>
+                {fileIndex > 0 && (file.groupIndex || 0) !== (files[fileIndex - 1].groupIndex || 0) ? (
+                  <tr className={styles.groupSeparator}>
+                    <td colSpan={showPath ? 4 : 3}>&nbsp;</td>
+                  </tr>
+                ) : null}
+                <tr
+                  key={file.ptr.toString()}
+                  className={cx('clickable', file.ptr.equals(selectedEntry) && 'table-active', !file.accessible && styles.inaccessible)}
+                  onClick={(ev: ChromeMouseEvent) => {
+                    if (ev.detail === 1) {
+                      onSelect(file.ptr);
+                    }
+                  }}
+                  onMouseDown={(ev: ChromeMouseEvent) => {
+                    if (ev.detail > 1) {
+                      ev.preventDefault();
+                    }
+                  }}
+                  onDoubleClick={() => onEdit(file.ptr)}
+                  onContextMenu={(ev) => {
                     ev.preventDefault();
-                  }
-                }}
-                onDoubleClick={() => onEdit(file.ptr)}
-                onContextMenu={(ev) => {
-                  ev.preventDefault();
-                  ev.stopPropagation();
-                  onContextMenu(file.ptr);
-                }}
-                onKeyDown={(ev) => console.log(ev)}
-              >
-                <td>
-                  <i
-                    className={cx('fa', favorites.has(file.ptr) ? 'fa-star' : 'fa-star-o')}
-                    onClick={(ev) => {
-                      onToggleFavorite(file.ptr);
-                      ev.stopPropagation();
-                    }}
-                  />
-                </td>
-                <td>
-                  <EntryDragSource item={file.ptr} dragAllowed={file.accessible}>
-                    <EntryNameLabel fileName={file.ptr.entry} />
-                  </EntryDragSource>
-                </td>
-                {showPath && (
-                  <td
-                    title={file.nodes
-                      .slice(1)
-                      .map((node) => node.name)
-                      .join(' / ')}
-                    className={file.nodes.length > 3 ? styles.pathEllipsis : undefined}
-                  >
-                    {file.nodes
-                      .slice(1)
-                      .slice(-2)
-                      .map((node, idx) => (
-                        <span key={idx} className={styles.pathSeg}>
-                          <a
-                            href=""
-                            onClick={(ev) => {
-                              onSelectNode(node.id);
-                              ev.stopPropagation();
-                            }}
-                          >
-                            {node.name}
-                          </a>
-                        </span>
-                      ))}
+                    ev.stopPropagation();
+                    onContextMenu(file.ptr);
+                  }}
+                  onKeyDown={(ev) => console.log(ev)}
+                >
+                  <td>
+                    <i
+                      className={cx('fa', favorites.has(file.ptr) ? 'fa-star' : 'fa-star-o')}
+                      onClick={(ev) => {
+                        onToggleFavorite(file.ptr);
+                        ev.stopPropagation();
+                      }}
+                    />
                   </td>
-                )}
-                <ModifiedColumn details={file.details} />
-              </tr>
+                  <td className={styles.nameHighlight}>
+                    <EntryDragSource item={file.ptr} dragAllowed={file.accessible}>
+                      <EntryNameLabel fileName={file.ptr.entry} highlightHtml={file.highlightHtml} />
+                    </EntryDragSource>
+                  </td>
+                  {showPath && (
+                    <td
+                      title={file.path
+                        .slice(1)
+                        .map((node) => node.name)
+                        .join(' / ')}
+                      className={file.path.length > 3 ? styles.pathEllipsis : undefined}
+                    >
+                      {file.path
+                        .slice(1)
+                        .slice(-2)
+                        .map((node, idx) => (
+                          <span key={idx} className={styles.pathSeg}>
+                            <a
+                              href=""
+                              onClick={(ev) => {
+                                onSelectNode(node.id);
+                                ev.stopPropagation();
+                              }}
+                            >
+                              {node.name}
+                            </a>
+                          </span>
+                        ))}
+                    </td>
+                  )}
+                  <ModifiedColumn details={file.details} />
+                </tr>
+              </>
             );
           })}
         </tbody>

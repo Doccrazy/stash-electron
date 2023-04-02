@@ -13,3 +13,16 @@
   font-style: italic;
   color: theme-color('secondary');
 }
+
+.nameHighlight em {
+  font-style: normal;
+  font-weight: bold;
+}
+
+.groupSeparator {
+  background-color: unset !important;
+  & > td {
+    border-top: none !important;
+    padding: 0.1rem !important;
+  }
+}

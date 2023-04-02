@@ -12,6 +12,7 @@ export interface KeePassFields {
 
 export interface NameProps {
   fileName: string;
+  highlightHtml?: string;
 }
 
 export interface PanelProps<C> {

@@ -1,4 +1,3 @@
-import { Set } from 'immutable';
 import { connect } from 'react-redux';
 import { entryContextMenu } from '../actions/contextMenus';
 import { prepareDelete, select } from '../actions/currentEntry';
@@ -8,27 +7,11 @@ import { toggleAndSave as toggleFavorite } from '../actions/favorites';
 import { Dispatch, RootState } from '../actions/types/index';
 import FileList from '../components/FileList';
 import EntryPtr from '../domain/EntryPtr';
-import FileListEntry from '../domain/FileListEntry';
-import { sortedFileList } from '../store/selectors';
-import { hierarchy, isAccessible } from '../utils/repository';
-
-function createFileList(state: RootState): FileListEntry[] {
-  const fileList = sortedFileList(state);
-
-  const accessibleByNode: { [nodeId: string]: boolean } = Set(fileList.map((ptr) => ptr.nodeId)).reduce(
-    (acc, id: string) => ({ ...acc, [id]: isAccessible(state.repository.nodes, id, state.privateKey.username) }),
-    {}
-  );
-  const fileListEntries = fileList.map(
-    (ptr) =>
-      new FileListEntry(ptr, hierarchy(state.repository.nodes, ptr.nodeId), state.entryDetails.get(ptr), accessibleByNode[ptr.nodeId])
-  );
-  return state.settings.current.hideInaccessible ? fileListEntries.filter((e) => e.accessible) : fileListEntries;
-}
+import { sortedFileListWithDetails } from '../store/selectors';
 
 export default connect(
   (state: RootState) => ({
-    files: createFileList(state),
+    files: sortedFileListWithDetails(state),
     selectedEntry: state.currentEntry.ptr,
     favorites: state.favorites,
     showPath: !!state.currentNode.specialId

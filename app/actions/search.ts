@@ -47,7 +47,7 @@ function quickFilter(): Thunk<Promise<void>> {
       type: Actions.RESULTS,
       payload: {
         quick: true,
-        results: nameWithLastResults.sort((a, b) => a.score - b.score)
+        results: nameWithLastResults
       }
     });
 
@@ -73,7 +73,7 @@ function quickFilter(): Thunk<Promise<void>> {
     dispatch({
       type: Actions.RESULTS,
       payload: {
-        results: allResults.sort((a, b) => a.score - b.score)
+        results: allResults
       }
     });
   };
@@ -142,7 +142,7 @@ async function filterByContent(
   const results = parsed
     .map<SearchResult | undefined>(({ ptr, content }: PtrWithContent) => {
       if (typeFor(ptr.entry).matches!(content, matcher)) {
-        return { ptr, match: 'CONTENT', score: 1 + (ptr.nodeId === currentNodeId ? 0.5 : 0) };
+        return { ptr, match: 'CONTENT', currentNode: ptr.nodeId === currentNodeId };
       }
       return undefined;
     })
@@ -182,10 +182,11 @@ function filterByName(
   const matcher = new FuzzyStringMatcher(filter);
   const results = allEntries
     .map<SearchResult | undefined>((ptr: EntryPtr) => {
-      if (matcher.matches(typeFor(ptr.entry).toDisplayName(ptr.entry))) {
-        return { ptr, match: 'NAME', score: 3 + (ptr.nodeId === currentNodeId ? 0.5 : 0) };
+      const nameMatch = matcher.matchAndHighlight(typeFor(ptr.entry).toDisplayName(ptr.entry));
+      if (nameMatch.matches) {
+        return { ptr, match: 'NAME', currentNode: ptr.nodeId === currentNodeId, highlightHtml: nameMatch.highlight };
       } else if (matchPath && matcher.matchesPrepared(hierToStr(ptr.nodeId))) {
-        return { ptr, match: 'PATH', score: 2 };
+        return { ptr, match: 'PATH' };
       }
       return undefined;
     })

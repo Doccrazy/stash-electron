@@ -1,13 +1,11 @@
 import getClassNameForExtension from 'font-awesome-filetypes';
 import * as React from 'react';
+import { NameProps } from '..';
 
-export interface Props {
-  fileName: string;
-}
-
-const DefaultNameLabel = ({ fileName }: Props) => (
+const DefaultNameLabel = ({ fileName, highlightHtml }: NameProps) => (
   <span>
-    <i className={`fa ${getClassNameForExtension(fileName.split('.').pop() || '')}`} /> {fileName}
+    <i className={`fa ${getClassNameForExtension(fileName.split('.').pop() || '')}`} />{' '}
+    {highlightHtml ? <span dangerouslySetInnerHTML={{ __html: highlightHtml }} /> : fileName}
   </span>
 );
 

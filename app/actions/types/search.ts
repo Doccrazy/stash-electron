@@ -6,8 +6,9 @@ export interface SearchOptions {}
 
 export interface SearchResult {
   ptr: EntryPtr;
-  score: number;
+  highlightHtml?: string;
   match: 'NAME' | 'PATH' | 'CONTENT';
+  currentNode?: boolean;
   highlightName?: string;
 }
 

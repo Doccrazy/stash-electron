@@ -1,4 +1,10 @@
-## v1.2.3 (no planned release date)
+## v1.3.0 (no planned release date)
+
+#### New features
+
+- Quick search, "find in folder" and fulltext search options have been merged into a single search.  
+  Results in the current folder are shown first, separated from the other results.
+- Matches are now highlighted in search results
 
 #### Changes
 
@@ -7,8 +13,6 @@
 - On Linux, Wayland display mode will be used automatically, matching the current XDG session
 - The git conflict view now gives detailed information on which commit caused the conflict,
   and which files are affected
-- Search now behaves more like a fulltext search engine, scoring results by quality instead of filtering.
-  This replaces the "find in folder" and "fulltext search" options.
 
 #### Bugs fixed
 

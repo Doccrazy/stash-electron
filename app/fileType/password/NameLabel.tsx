@@ -1,13 +1,11 @@
 import * as React from 'react';
+import { NameProps } from '..';
 import PasswordType from './index';
 
-export interface Props {
-  fileName: string;
-}
-
-const PasswordNameLabel = ({ fileName }: Props) => (
+const PasswordNameLabel = ({ fileName, highlightHtml }: NameProps) => (
   <span>
-    <i className="fa fa-key" /> {PasswordType.toDisplayName(fileName)}
+    <i className="fa fa-key" />{' '}
+    {highlightHtml ? <span dangerouslySetInnerHTML={{ __html: highlightHtml }} /> : PasswordType.toDisplayName(fileName)}
   </span>
 );
 
