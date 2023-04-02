@@ -88,7 +88,11 @@
       "desktop": {
         "StartupWMClass": "Stash",
         "MimeType": "x-scheme-handler/stash;"
-      }
+      },
+      "executableArgs": [
+        "--ozone-platform-hint=auto",
+        "--enable-features=WaylandWindowDecorations"
+      ]
     },
     "deb": {
       "depends": [
