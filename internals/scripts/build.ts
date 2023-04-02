@@ -14,8 +14,12 @@ if (process.argv[2] === 'all' || process.argv.slice(2).includes('mac') || (!proc
 }
 
 function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: number): CliOptions {
+  let platformArgs = {};
+  if (platform === Platform.LINUX) {
+    platformArgs = { BUILD_ONLY: '1', NODEGIT_OPENSSL_STATIC_LINK: '1' };
+  }
   spawnSync(process.env.npm_execpath || 'yarn', ['rebuild'], {
-    env: { ...process.env, npm_config_platform: platform.nodeName, npm_config_target_platform: platform.nodeName },
+    env: { ...process.env, npm_config_platform: platform.nodeName, npm_config_target_platform: platform.nodeName, ...platformArgs },
     shell: true,
     stdio: 'inherit'
   });
