@@ -46,6 +46,13 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Cache Nodegit build
+        if: runner.os == 'Linux'
+        uses: actions/cache@v3
+        with:
+          path: .yarn/unplugged/nodegit-*
+          key: ${{ runner.os }}-${{ hashFiles('.yarn/unplugged/nodegit-*/node_modules/nodegit/package.json') }}
+
       - name: Build/sign/release Electron macOS app
         if: runner.os == 'macOS'
         run: yarn package
