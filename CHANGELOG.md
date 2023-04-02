@@ -4,6 +4,7 @@
 
 - Electron has been upgraded to v21.4.0
 - macOS packages are now code-signed (thanks to [Tiffinger & Thiel GmbH](https://www.tiffinger-thiel.de)!)
+- On Linux, Wayland display mode will be used automatically, matching the current XDG session
 - The git conflict view now gives detailed information on which commit caused the conflict,
   and which files are affected
 - Search now behaves more like a fulltext search engine, scoring results by quality instead of filtering.
@@ -14,6 +15,7 @@
 - Regression on "Open in default application" has been fixed (#8)
 - Errors when encoutering git merge conflicts have been fixed (#9)
 - Ctrl+L shortcut now works when the search field is focused
+- OpenSSL is now statically linked on Linux (#15)
 
 ## v1.2.2 (2020-11-28)
 
