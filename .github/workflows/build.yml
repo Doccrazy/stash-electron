@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -29,12 +29,12 @@ jobs:
           version: 1.0
 
       - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 16
 
       - name: Cache Electron-Builder
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ${{ github.workspace }}/.cache/electron
@@ -64,7 +64,7 @@ jobs:
           GH_TOKEN: ${{ github.ref == 'refs/heads/master' && secrets.RELEASE_REPO_TOKEN || secrets.github_token }}
 
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ runner.os }} Release Build
           path: |
