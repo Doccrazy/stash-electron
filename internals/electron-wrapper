@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export TMPDIR="$XDG_RUNTIME_DIR/app/$FLATPAK_ID"
+
+zypak-wrapper "stash-electron" --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations "$@"

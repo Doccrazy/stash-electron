@@ -112,7 +112,8 @@
     "flatpak": {
       "license": "LICENSE",
       "runtimeVersion": "22.08",
-      "baseVersion": "22.08"
+      "baseVersion": "22.08",
+      "files": [["internals/electron-wrapper", "/bin/electron-wrapper"]]
     },
     "directories": {
       "buildResources": "resources",

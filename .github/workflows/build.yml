@@ -32,7 +32,7 @@ jobs:
         if: runner.os == 'Linux'
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/.local/share/flatpak
+          path: ~/.local/share/flatpak
           key: ${{ runner.os }}-flatpak-${{ hashFiles('package.json') }}
 
       - name: Add Flatpak repo
