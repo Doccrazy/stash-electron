@@ -54,7 +54,13 @@ function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: nu
       mac: {
         publish: defaultPublisher
       },
+      linux: {
+        publish: defaultPublisher
+      },
       appImage: {
+        publish: defaultPublisher
+      },
+      flatpak: {
         publish: defaultPublisher
       },
       deb: {
