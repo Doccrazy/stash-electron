@@ -113,7 +113,42 @@
       "license": "LICENSE",
       "runtimeVersion": "22.08",
       "baseVersion": "22.08",
-      "files": [["internals/electron-wrapper", "/bin/electron-wrapper"]]
+      "files": [["internals/electron-wrapper", "/bin/electron-wrapper"]],
+      "modules": [{
+        "name": "libsecret",
+        "buildsystem": "meson",
+        "config-opts": [
+          "-Dmanpage=false",
+          "-Dvapi=false",
+          "-Dgtk_doc=false",
+          "-Dintrospection=false"
+        ],
+        "cleanup": [
+          "/bin",
+          "/include",
+          "/lib/pkgconfig",
+          "/share/man"
+        ],
+        "sources": [
+          {
+            "type": "archive",
+            "url": "https://download.gnome.org/sources/libsecret/0.20/libsecret-0.20.5.tar.xz",
+            "sha256": "3fb3ce340fcd7db54d87c893e69bfc2b1f6e4d4b279065ffe66dac9f0fd12b4d"
+          }
+        ]
+      }],
+      "finishArgs": [
+        "--socket=wayland",
+        "--socket=x11",
+        "--share=ipc",
+        "--device=dri",
+        "--socket=pulseaudio",
+        "--socket=ssh-auth",
+        "--filesystem=home",
+        "--share=network",
+        "--talk-name=org.freedesktop.secrets",
+        "--talk-name=org.freedesktop.Notifications"
+      ]
     },
     "directories": {
       "buildResources": "resources",
