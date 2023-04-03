@@ -14,11 +14,13 @@ if (process.argv[2] === 'all' || process.argv.slice(2).includes('mac') || (!proc
 }
 
 function makeConfig(platform: Platform, version: semver.SemVer, snapshotNum?: number): CliOptions {
-  spawnSync(process.env.npm_execpath || 'yarn', ['rebuild'], {
-    env: { ...process.env, npm_config_platform: platform.nodeName, npm_config_target_platform: platform.nodeName },
-    shell: true,
-    stdio: 'inherit'
-  });
+  if (process.env.BUILD_SKIP_REBUILD !== '1') {
+    spawnSync(process.env.npm_execpath || 'yarn', ['rebuild'], {
+      env: { ...process.env, npm_config_platform: platform.nodeName, npm_config_target_platform: platform.nodeName },
+      shell: true,
+      stdio: 'inherit'
+    });
+  }
 
   // pacman versions may not contain dashes, so replace '-snapshot' by 'pre'
   // also remove snapshot number and put it into iteration counter
