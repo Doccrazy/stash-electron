@@ -82,6 +82,7 @@
     "linux": {
       "target": [
         "AppImage",
+        "flatpak",
         "deb"
       ],
       "category": "Utility",
@@ -107,6 +108,11 @@
       ],
       "packageCategory": "utils",
       "priority": "optional"
+    },
+    "flatpak": {
+      "license": "LICENSE",
+      "runtimeVersion": "22.08",
+      "baseVersion": "22.08"
     },
     "directories": {
       "buildResources": "resources",

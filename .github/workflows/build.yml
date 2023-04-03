@@ -25,7 +25,7 @@ jobs:
         uses: awalsh128/cache-apt-pkgs-action@latest
         if: runner.os == 'Linux'
         with:
-          packages: libssl-dev libkrb5-dev
+          packages: libssl-dev libkrb5-dev flatpak-builder
           version: 1.0
 
       - name: Install Node.js, NPM and Yarn
