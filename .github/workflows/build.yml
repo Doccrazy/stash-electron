@@ -28,6 +28,17 @@ jobs:
           packages: libssl-dev libkrb5-dev flatpak-builder
           version: 1.0
 
+      - name: Cache Flatpak
+        if: runner.os == 'Linux'
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.local/share/flatpak
+          key: ${{ runner.os }}-flatpak-${{ hashFiles('package.json') }}
+
+      - name: Add Flatpak repo
+        if: runner.os == 'Linux'
+        run: flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v3
         with:
@@ -69,8 +80,9 @@ jobs:
         run: yarn package
         env:
           GH_TOKEN: ${{ github.ref == 'refs/heads/master' && secrets.RELEASE_REPO_TOKEN || secrets.github_token }}
-          BUILD_ONLY: "1"
-          NODEGIT_OPENSSL_STATIC_LINK: "1"
+          BUILD_ONLY: '1'
+          NODEGIT_OPENSSL_STATIC_LINK: '1'
+          DEBUG: '@malept/flatpak-bundler'
 
       - name: Build/release Electron Windows app
         if: runner.os == 'Windows'
