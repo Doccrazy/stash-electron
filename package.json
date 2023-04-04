@@ -118,7 +118,7 @@
       "useWaylandFlags": true,
       "finishArgs": [
         "--socket=wayland",
-        "--socket=x11",
+        "--socket=fallback-x11",
         "--share=ipc",
         "--device=dri",
         "--socket=pulseaudio",

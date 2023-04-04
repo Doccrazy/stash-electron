@@ -1,4 +1,4 @@
-## v1.3.0 (no planned release date)
+## v1.3.0 (2023-04-04)
 
 #### New features
 
@@ -11,6 +11,7 @@
 - Electron has been upgraded to v21.4.0
 - macOS packages are now code-signed (thanks to [Tiffinger & Thiel GmbH](https://www.tiffinger-thiel.de)!)
 - On Linux, Wayland display mode will be used automatically, matching the current XDG session
+- A Flatpak package is now available
 - The git conflict view now gives detailed information on which commit caused the conflict,
   and which files are affected
 
