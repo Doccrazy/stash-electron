@@ -22,9 +22,9 @@ Stash will always be **fully open-source** without any subscriptions, "premium" 
 
 Download the latest release from the releases page: [ ![GitHub release](https://img.shields.io/github/v/release/Doccrazy/stash-electron) ](https://github.com/Doccrazy/stash-electron/releases).
 
-Due to the shutdown of Bintray, the Debian repository is no longer available. For Debian/Ubuntu, please download and install the .deb file directly or use the AppImage package.
+Due to the shutdown of Bintray, the Debian repository is no longer available. For Debian/Ubuntu, please download and install the .deb file directly or use the AppImage or Flatpak package.
 
-As of 05/2021, AUR packages for Arch Linux are no longer available. Please use the AppImage download instead, which also supports automatic updates.
+As of 05/2021, AUR packages for Arch Linux are no longer available. Please use the AppImage or Flatpak download instead, which also supports automatic updates.
 
 Development snapshots are available for all platforms from the snapshots repository: [ ![GitHub release](https://img.shields.io/github/v/release/Doccrazy/stash-electron-snapshots?include_prereleases) ](https://github.com/Doccrazy/stash-electron-snapshots/releases)
 

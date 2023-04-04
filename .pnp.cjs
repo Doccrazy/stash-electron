@@ -2939,17 +2939,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["app-builder-lib", [
-        ["npm:23.6.0", {
-          "packageLocation": "./.yarn/unplugged/app-builder-lib-virtual-feb668573f/node_modules/app-builder-lib/",
+        ["patch:app-builder-lib@npm%3A23.6.0#.yarn/patches/app-builder-lib-npm-23.6.0-cb887be781::version=23.6.0&hash=fcd9c8&locator=stash-electron%40workspace%3A.", {
+          "packageLocation": "./.yarn/unplugged/app-builder-lib-virtual-ddb6c81bcc/node_modules/app-builder-lib/",
           "packageDependencies": [
-            ["app-builder-lib", "npm:23.6.0"]
+            ["app-builder-lib", "patch:app-builder-lib@npm%3A23.6.0#.yarn/patches/app-builder-lib-npm-23.6.0-cb887be781::version=23.6.0&hash=fcd9c8&locator=stash-electron%40workspace%3A."]
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:d0da405dda59e4520e6abc46171a6441dc2a26ae2ec888355152425cf47fe7822312822748af79ba37cb216ace649dc54e76b5b0e35bc56c9516ff56a3aa95a1#npm:23.6.0", {
-          "packageLocation": "./.yarn/unplugged/app-builder-lib-virtual-feb668573f/node_modules/app-builder-lib/",
+        ["virtual:d0da405dda59e4520e6abc46171a6441dc2a26ae2ec888355152425cf47fe7822312822748af79ba37cb216ace649dc54e76b5b0e35bc56c9516ff56a3aa95a1#patch:app-builder-lib@npm%3A23.6.0#.yarn/patches/app-builder-lib-npm-23.6.0-cb887be781::version=23.6.0&hash=fcd9c8&locator=stash-electron%40workspace%3A.", {
+          "packageLocation": "./.yarn/unplugged/app-builder-lib-virtual-ddb6c81bcc/node_modules/app-builder-lib/",
           "packageDependencies": [
-            ["app-builder-lib", "virtual:d0da405dda59e4520e6abc46171a6441dc2a26ae2ec888355152425cf47fe7822312822748af79ba37cb216ace649dc54e76b5b0e35bc56c9516ff56a3aa95a1#npm:23.6.0"],
+            ["app-builder-lib", "virtual:d0da405dda59e4520e6abc46171a6441dc2a26ae2ec888355152425cf47fe7822312822748af79ba37cb216ace649dc54e76b5b0e35bc56c9516ff56a3aa95a1#patch:app-builder-lib@npm%3A23.6.0#.yarn/patches/app-builder-lib-npm-23.6.0-cb887be781::version=23.6.0&hash=fcd9c8&locator=stash-electron%40workspace%3A."],
             ["7zip-bin", "npm:5.1.1"],
             ["@develar/schema-utils", "npm:2.6.5"],
             ["@electron/universal", "npm:1.2.1"],
@@ -5391,7 +5391,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/unplugged/dmg-builder-npm-23.6.0-d0da405dda/node_modules/dmg-builder/",
           "packageDependencies": [
             ["dmg-builder", "npm:23.6.0"],
-            ["app-builder-lib", "virtual:d0da405dda59e4520e6abc46171a6441dc2a26ae2ec888355152425cf47fe7822312822748af79ba37cb216ace649dc54e76b5b0e35bc56c9516ff56a3aa95a1#npm:23.6.0"],
+            ["app-builder-lib", "virtual:d0da405dda59e4520e6abc46171a6441dc2a26ae2ec888355152425cf47fe7822312822748af79ba37cb216ace649dc54e76b5b0e35bc56c9516ff56a3aa95a1#patch:app-builder-lib@npm%3A23.6.0#.yarn/patches/app-builder-lib-npm-23.6.0-cb887be781::version=23.6.0&hash=fcd9c8&locator=stash-electron%40workspace%3A."],
             ["builder-util", "npm:23.6.0"],
             ["builder-util-runtime", "npm:9.1.1"],
             ["dmg-license", "npm:1.0.11"],
@@ -5706,7 +5706,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["electron-builder", "npm:23.6.0"],
             ["@types/yargs", "npm:17.0.10"],
-            ["app-builder-lib", "virtual:d0da405dda59e4520e6abc46171a6441dc2a26ae2ec888355152425cf47fe7822312822748af79ba37cb216ace649dc54e76b5b0e35bc56c9516ff56a3aa95a1#npm:23.6.0"],
+            ["app-builder-lib", "virtual:d0da405dda59e4520e6abc46171a6441dc2a26ae2ec888355152425cf47fe7822312822748af79ba37cb216ace649dc54e76b5b0e35bc56c9516ff56a3aa95a1#patch:app-builder-lib@npm%3A23.6.0#.yarn/patches/app-builder-lib-npm-23.6.0-cb887be781::version=23.6.0&hash=fcd9c8&locator=stash-electron%40workspace%3A."],
             ["builder-util", "npm:23.6.0"],
             ["builder-util-runtime", "npm:9.1.1"],
             ["chalk", "npm:4.1.2"],

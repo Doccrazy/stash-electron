@@ -2198,6 +2198,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"app-builder-lib@patch:app-builder-lib@npm:23.6.0#.yarn/patches/app-builder-lib-npm-23.6.0-cb887be781::locator=stash-electron%40workspace%3A.":
+  version: 23.6.0
+  resolution: "app-builder-lib@patch:app-builder-lib@npm%3A23.6.0#.yarn/patches/app-builder-lib-npm-23.6.0-cb887be781::version=23.6.0&hash=fcd9c8&locator=stash-electron%40workspace%3A."
+  dependencies:
+    7zip-bin: ~5.1.1
+    "@develar/schema-utils": ~2.6.5
+    "@electron/universal": 1.2.1
+    "@malept/flatpak-bundler": ^0.4.0
+    async-exit-hook: ^2.0.1
+    bluebird-lst: ^1.0.9
+    builder-util: 23.6.0
+    builder-util-runtime: 9.1.1
+    chromium-pickle-js: ^0.2.0
+    debug: ^4.3.4
+    ejs: ^3.1.7
+    electron-osx-sign: ^0.6.0
+    electron-publish: 23.6.0
+    form-data: ^4.0.0
+    fs-extra: ^10.1.0
+    hosted-git-info: ^4.1.0
+    is-ci: ^3.0.0
+    isbinaryfile: ^4.0.10
+    js-yaml: ^4.1.0
+    lazy-val: ^1.0.5
+    minimatch: ^3.1.2
+    read-config-file: 6.2.0
+    sanitize-filename: ^1.6.3
+    semver: ^7.3.7
+    tar: ^6.1.11
+    temp-file: ^3.4.0
+  checksum: d4c9e6699f3db374ba64730fe8c73aaa5b0804510f1a52c2e076b50224021aeafad6edb3d621431c1a6cc447a018dcd2ffc037bec8615137a04626a86b216123
+  languageName: node
+  linkType: hard
+
 "aproba@npm:^1.0.3":
   version: 1.2.0
   resolution: "aproba@npm:1.2.0"

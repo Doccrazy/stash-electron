@@ -1,0 +1,13 @@
+diff --git a/out/targets/FlatpakTarget.js b/out/targets/FlatpakTarget.js
+index f05dd733e9b5d8edfb0b9c851515dfcfc30c29ec..bab1dfd0cf305ce5059e7b44cc2a37a3f54440aa 100644
+--- a/out/targets/FlatpakTarget.js
++++ b/out/targets/FlatpakTarget.js
+@@ -135,7 +135,7 @@ function getElectronWrapperScript(executableName, useWaylandFlags) {
+ export TMPDIR="$XDG_RUNTIME_DIR/app/$FLATPAK_ID"
+ 
+ if [ "\${XDG_SESSION_TYPE}" == "wayland" ]; then
+-    zypak-wrapper "${executableName}" --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"
++    zypak-wrapper "${executableName}" --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations "$@"
+ else
+     zypak-wrapper "${executableName}" "$@"
+ fi
