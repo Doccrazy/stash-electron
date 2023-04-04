@@ -52,8 +52,8 @@
       <div id="version">Version 1.2.3</div>
     </div>
     <script>
-      const version = require('electron').remote.app.getVersion();
-      const buildDate = require('electron').remote.getCurrentWindow().buildDate.toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const version = new URLSearchParams(location.search).get('appVersion');
+      const buildDate = new Date(new URLSearchParams(location.search).get('buildDate')).toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' });
       document.getElementById('version').innerText = 'v' + version + ' built ' + buildDate;
     </script>
   </body>

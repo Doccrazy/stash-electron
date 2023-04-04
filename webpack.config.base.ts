@@ -10,7 +10,7 @@ import GitRevisionPlugin from 'git-revision-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 // import { dependencies as externals } from './app/package.json';
 
-const gitRevisionPlugin = new GitRevisionPlugin();
+const gitRevisionPlugin = new GitRevisionPlugin({ lightweightTags: true });
 
 const baseConfig: Configuration = {
   // externals: Object.keys(externals || {}),

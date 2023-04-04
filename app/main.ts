@@ -113,7 +113,10 @@ async function createMainWindow(reopen?: boolean) {
   };
   const config: Splashscreen.Config = {
     windowOpts: mainOpts,
-    templateUrl: `${__dirname}/splash-screen.html`,
+    templateUrl: `${__dirname}/splash-screen.html?appVersion=${app.getVersion()}&buildDate=${(typeof BUILD_DATE === 'undefined'
+      ? new Date()
+      : new Date(BUILD_DATE)
+    ).toISOString()}`,
     delay: 250,
     splashScreenOpts: {
       width: 575,
@@ -122,7 +125,6 @@ async function createMainWindow(reopen?: boolean) {
     }
   };
   const splash = Splashscreen.initDynamicSplashScreen(config);
-  (splash.splashScreen as any).buildDate = typeof BUILD_DATE === 'undefined' ? new Date() : new Date(BUILD_DATE);
   mainWindow = splash.main;
 
   remote.enable(mainWindow.webContents);
