@@ -1,3 +1,9 @@
+## v1.4.0 (no planned release date)
+
+#### Changes
+
+- Electron has been upgraded to v27.1.3
+
 ## v1.3.0 (2023-04-04)
 
 #### New features
