@@ -31,60 +31,32 @@ const baseConfig: Configuration = {
       // WOFF Font
       {
         test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/font-woff'
-          }
-        }
+        type: 'asset/resource'
       },
       // WOFF2 Font
       {
         test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/font-woff'
-          }
-        }
+        type: 'asset/resource'
       },
       // TTF Font
       {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/octet-stream'
-          }
-        }
+        type: 'asset/resource'
       },
       // EOT Font
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        use: 'file-loader'
+        type: 'asset/resource'
       },
       // SVG Font
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'image/svg+xml',
-            esModule: false
-          }
-        }
+        type: 'asset/resource'
       },
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
-        use: {
-          loader: 'url-loader',
-          options: { esModule: false }
-        }
+        type: 'asset/resource'
       },
       // Markdown
       {
