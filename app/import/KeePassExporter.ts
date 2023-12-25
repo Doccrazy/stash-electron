@@ -14,11 +14,13 @@ export default class KeePassExporter {
     this.kdbx = kdbxweb.Kdbx.create(kdbxCred, name);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   createNode(parent: ExportNodeId | null, name: string): ExportNodeId {
     this.groupCount++;
     return this.kdbx.createGroup((parent as kdbxweb.KdbxGroup) || this.kdbx.getDefaultGroup(), name);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   async createEntry(parent: ExportNodeId | null, fileName: string, content: Buffer): Promise<void> {
     this.entryCount++;
     const entry = this.kdbx.createEntry((parent as kdbxweb.KdbxGroup) || this.kdbx.getDefaultGroup());
