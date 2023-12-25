@@ -31,32 +31,32 @@ const baseConfig: Configuration = {
       // WOFF Font
       {
         test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-        type: 'asset/resource'
+        type: 'asset'
       },
       // WOFF2 Font
       {
         test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-        type: 'asset/resource'
+        type: 'asset'
       },
       // TTF Font
       {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-        type: 'asset/resource'
+        type: 'asset'
       },
       // EOT Font
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        type: 'asset/resource'
+        type: 'asset'
       },
       // SVG Font
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-        type: 'asset/resource'
+        type: 'asset'
       },
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
-        type: 'asset/resource'
+        type: 'asset'
       },
       // Markdown
       {
