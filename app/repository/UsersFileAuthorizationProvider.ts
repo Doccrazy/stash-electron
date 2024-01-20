@@ -14,7 +14,11 @@ export default class UsersFileAuthorizationProvider implements AuthorizationProv
   private currentUsername?: string | null;
   private currentKey?: SshPK.PrivateKey;
 
-  constructor(repoPath: string, keyProvider: KeyProvider, private readonly fs: FileSystem = new NodeFileSystem()) {
+  constructor(
+    repoPath: string,
+    keyProvider: KeyProvider,
+    private readonly fs: FileSystem = new NodeFileSystem()
+  ) {
     this.repoPath = repoPath;
     this.keyProvider = keyProvider;
   }

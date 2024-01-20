@@ -66,7 +66,10 @@ class GitStat implements Stats {
  * Filesystem implementation backed by a specific commit tree in a git repository
  */
 export default class GitFileSystem implements FileSystem {
-  constructor(private readonly repoPath: string, private readonly gitCommit: Git.Commit) {}
+  constructor(
+    private readonly repoPath: string,
+    private readonly gitCommit: Git.Commit
+  ) {}
 
   static async create(gitRepo: Git.Repository, commitOid: string): Promise<GitFileSystem> {
     return new GitFileSystem(gitRepo.workdir(), await gitRepo.getCommit(commitOid));

@@ -15,6 +15,7 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
+    "useUnknownInCatchVariables": false,
     "strict": true
   },
   "include": [

@@ -22,7 +22,10 @@ export default class PlainRepository implements Repository {
   readonly rootPath: string;
   readonly name: string;
 
-  constructor(rootPath: string, private readonly fs: FileSystem = new NodeFileSystem()) {
+  constructor(
+    rootPath: string,
+    private readonly fs: FileSystem = new NodeFileSystem()
+  ) {
     this.rootPath = path.normalize(rootPath);
     this.name = path.parse(this.rootPath).name;
   }
@@ -127,17 +130,15 @@ export default class PlainRepository implements Repository {
     // move or merge folders to target
     await Promise.all(
       node.childIds
-        .map(
-          (childId: string): Promise<any> => {
-            const name = path.posix.parse(childId).base;
-            const existingId = targetNode.childIds.find((cid) => path.posix.parse(cid).base.toLowerCase() === name.toLowerCase());
-            if (existingId) {
-              return this.mergeNode(childId, existingId);
-            } else {
-              return this.moveNode(childId, targetNodeId);
-            }
+        .map((childId: string): Promise<any> => {
+          const name = path.posix.parse(childId).base;
+          const existingId = targetNode.childIds.find((cid) => path.posix.parse(cid).base.toLowerCase() === name.toLowerCase());
+          if (existingId) {
+            return this.mergeNode(childId, existingId);
+          } else {
+            return this.moveNode(childId, targetNodeId);
           }
-        )
+        })
         .toArray()
     );
 

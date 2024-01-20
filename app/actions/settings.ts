@@ -19,7 +19,7 @@ export function load(): Thunk<void> {
   return (dispatch, getState) => {
     dispatch({
       type: Actions.LOAD,
-      payload: (electronSettings.getSync() as unknown) as SettingsMap
+      payload: electronSettings.getSync() as unknown as SettingsMap
     });
   };
 }

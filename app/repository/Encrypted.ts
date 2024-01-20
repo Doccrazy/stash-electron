@@ -12,7 +12,11 @@ import { List } from 'immutable';
 export default class EncryptedRepository extends PlainRepository {
   private readonly recAuthProvider: RecursiveAuthProviderWrapper;
 
-  constructor(rootPath: string, private readonly authProvider: AuthorizationProvider, fs: FileSystem = new NodeFileSystem()) {
+  constructor(
+    rootPath: string,
+    private readonly authProvider: AuthorizationProvider,
+    fs: FileSystem = new NodeFileSystem()
+  ) {
     super(rootPath, fs);
     this.recAuthProvider = new RecursiveAuthProviderWrapper(authProvider);
   }

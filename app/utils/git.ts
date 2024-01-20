@@ -81,7 +81,7 @@ export async function compareRefs(local: Git.Reference, origin?: Git.Reference):
   if (localCommit.id() === originCommit.id()) {
     return { ahead: 0, behind: 0 };
   }
-  return ((await Git.Graph.aheadBehind(repo, localCommit.id(), originCommit.id())) as any) as AheadBehindResult; // yet another nodegit foo
+  return (await Git.Graph.aheadBehind(repo, localCommit.id(), originCommit.id())) as any as AheadBehindResult; // yet another nodegit foo
 }
 
 async function totalCommitCount(commit: Git.Commit) {
@@ -110,7 +110,7 @@ export async function resolveAll(repo: Git.Repository, index: Git.Index, resolve
   let changed = false;
   for (const entry of index.entries().filter((e) => Git.Index.entryStage(e) === 1 && Git.Index.entryIsConflict(e))) {
     console.log(`resolving ${entry.path}`);
-    const conflict = ((await index.conflictGet(entry.path)) as any) as ConflictEntry; // error in nodegit docs/typings
+    const conflict = (await index.conflictGet(entry.path)) as any as ConflictEntry; // error in nodegit docs/typings
 
     const ourBlob = await repo.getBlob(conflict.our_out.id);
     const theirBlob = await repo.getBlob(conflict.their_out.id);

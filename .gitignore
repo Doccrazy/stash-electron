@@ -45,10 +45,10 @@ app/**/*.scss.d.ts
 npm-debug.log.*
 
 # Yarn
+.pnp.*
 .yarn/*
-!.yarn/cache
-!.yarn/releases
+!.yarn/patches
 !.yarn/plugins
+!.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-!.yarn/patches

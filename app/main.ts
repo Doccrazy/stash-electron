@@ -9,7 +9,7 @@
  */
 // eslint-disable-next-line
 /// <reference path="types.d.ts" />
-import { app, BrowserWindow, shell, Event, nativeImage } from 'electron';
+import { app, BrowserWindow, shell, nativeImage } from 'electron';
 import logger from 'electron-log';
 import unhandled from 'electron-unhandled';
 import { autoUpdater } from 'electron-updater';
@@ -152,8 +152,7 @@ async function createMainWindow(reopen?: boolean) {
   });
 
   // prevent internal navigation, open external links in default browser
-  function handleNavigate(e: Event, url: string) {
-    e.preventDefault();
+  function handleNavigate(url: string) {
     const currentCleanedUrl = cleanUrl(mainWindow!.webContents.getURL());
     try {
       const newCleanedUrl = cleanUrl(url);
@@ -169,8 +168,14 @@ async function createMainWindow(reopen?: boolean) {
       console.error(err);
     }
   }
-  mainWindow.webContents.on('will-navigate', handleNavigate);
-  mainWindow.webContents.on('new-window', handleNavigate);
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    event.preventDefault();
+    handleNavigate(url);
+  });
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    handleNavigate(details.url);
+    return { action: 'deny' };
+  });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
