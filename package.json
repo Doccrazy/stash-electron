@@ -116,6 +116,12 @@
       "runtimeVersion": "44",
       "baseVersion": "22.08",
       "useWaylandFlags": true,
+      "files": [
+        [
+          "./resources/flatpak",
+          "/share"
+        ]
+      ],
       "finishArgs": [
         "--socket=wayland",
         "--socket=fallback-x11",
