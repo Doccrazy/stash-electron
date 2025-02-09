@@ -18,17 +18,19 @@ const storeEvents = new (class extends EventEmitter {
   }
 })();
 
-export default <S>({ dispatch, getState }: MiddlewareAPI<Dispatch, S>) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
-  const preActionState = getState();
+export default <S>({ dispatch, getState }: MiddlewareAPI<Dispatch, S>) =>
+  (next: Dispatch<AnyAction>) =>
+  (action: AnyAction) => {
+    const preActionState = getState();
 
-  const result = next(action);
+    const result = next(action);
 
-  setTimeout(() => {
-    storeEvents.emit(action.type, dispatch, getState, action.payload, preActionState);
-  });
+    setTimeout(() => {
+      storeEvents.emit(action.type, dispatch, getState, action.payload, preActionState);
+    });
 
-  return result;
-};
+    return result;
+  };
 
 export type ActionListener<S> = (dispatch: Dispatch<AnyAction>, getState: () => S, payload: any, preActionState: S) => void;
 

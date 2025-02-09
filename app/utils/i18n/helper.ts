@@ -11,7 +11,7 @@ export function withContext<T>(element: React.ReactElement<any>, context: React.
   return React.createElement(context.Provider, { value }, element);
 }
 
-export function contextualize<P, T>(
+export function contextualize<P extends {}, T>(
   component: React.ComponentType<P>,
   context: React.Context<T>,
   condition: (props: P) => boolean,

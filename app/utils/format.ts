@@ -26,8 +26,8 @@ export function formatUserList(
   return result;
 }
 
-const DATE_FORMAT = { year: 'numeric', month: '2-digit', day: '2-digit' };
-const DATE_TIME_FORMAT = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: 'numeric' };
+const DATE_FORMAT = { year: 'numeric', month: '2-digit', day: '2-digit' } as const;
+const DATE_TIME_FORMAT = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: 'numeric' } as const;
 
 export function formatDate(date?: Date) {
   return date ? date.toLocaleString(getLocale(), DATE_FORMAT) : '';

@@ -11,6 +11,8 @@ const TS_RULES = {
   '@typescript-eslint/no-unsafe-call': 'off',
   '@typescript-eslint/no-unsafe-assignment': 'off',
   '@typescript-eslint/no-unsafe-return': 'off',
+  '@typescript-eslint/no-unsafe-argument': 'off',
+  '@typescript-eslint/no-unused-vars': 'off',
   '@typescript-eslint/no-floating-promises': 'off',
   '@typescript-eslint/no-misused-promises': [
     'error',
@@ -43,8 +45,6 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
-        'prettier/@typescript-eslint',
-        'prettier/react',
         'plugin:prettier/recommended'
       ],
       plugins: ['react-hooks'],
@@ -59,7 +59,8 @@ module.exports = {
         'react/no-unescaped-entities': 'off',
         'react/self-closing-comp': 'warn',
         'react-hooks/rules-of-hooks': 'error',
-        'react-hooks/exhaustive-deps': 'warn'
+        'react-hooks/exhaustive-deps': 'warn',
+        'react/display-name': 'off'
       },
       settings: {
         react: {
@@ -74,7 +75,6 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
-        'prettier/@typescript-eslint',
         'plugin:prettier/recommended'
       ],
       parserOptions: {

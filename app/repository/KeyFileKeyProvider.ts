@@ -10,7 +10,11 @@ export default class KeyFileKeyProvider implements KeyProvider {
   private keyfile: string;
   private keys: { [username: string]: sshpk.Key };
 
-  private constructor(keyfile: string, keys: KeyFileKeyProvider['keys'], private readonly fs: FileSystem = new NodeFileSystem()) {
+  private constructor(
+    keyfile: string,
+    keys: KeyFileKeyProvider['keys'],
+    private readonly fs: FileSystem = new NodeFileSystem()
+  ) {
     this.keyfile = keyfile;
     this.keys = keys;
   }

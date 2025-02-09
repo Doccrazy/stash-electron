@@ -10,9 +10,9 @@ export type PlainContext = Context<Plain>;
 
 export type ReactFormatter = (context: Context<Extended>) => React.ReactNode;
 
-const DATE_FORMAT = { year: 'numeric', month: '2-digit', day: '2-digit' };
-const TIME_FORMAT = { hour: '2-digit', minute: 'numeric' };
-const TIME_FORMAT_MEDIUM = { ...TIME_FORMAT, second: 'numeric' };
+const DATE_FORMAT = { year: 'numeric', month: '2-digit', day: '2-digit' } as const;
+const TIME_FORMAT = { hour: '2-digit', minute: 'numeric' } as const;
+const TIME_FORMAT_MEDIUM = { ...TIME_FORMAT, second: 'numeric' } as const;
 
 const customFormats = {
   date: {

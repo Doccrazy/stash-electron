@@ -19,7 +19,11 @@ export default class KeePassImporter<T> {
   groupCount = 0;
   entryCount = 0;
 
-  constructor(private databasePath: string, private credentials: Credentials, private callbacks: Callbacks<T>) {}
+  constructor(
+    private databasePath: string,
+    private credentials: Credentials,
+    private callbacks: Callbacks<T>
+  ) {}
 
   async performImport(targetNode: T) {
     this.groupCount = 0;
