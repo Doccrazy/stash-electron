@@ -1,3 +1,4 @@
+import { sanitizeUrl } from '../../utils/format';
 import { Type, WellKnownField } from '../index';
 import * as jsonParser from '../parser/json';
 
@@ -40,6 +41,23 @@ const PasswordType: Required<Type<PasswordContent>> = {
       case WellKnownField.URL:
         return content.url;
     }
+  },
+  toPlainText: (name, content) => {
+    let text = `${name}\n\n`;
+    if (content.username) {
+      text += `Username: ${content.username}\n`;
+    }
+    if (content.password) {
+      text += `Password: ${content.password}\n`;
+    }
+    if (content.url) {
+      text += `URL: ${sanitizeUrl(content.url)}\n`;
+    }
+    if (content.description) {
+      text += `\n${content.description}\n`;
+    }
+
+    return text;
   },
   ...jsonParser
 };

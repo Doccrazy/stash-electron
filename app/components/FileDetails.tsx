@@ -21,6 +21,7 @@ const FileDetails = ({
   onEdit,
   onDelete,
   onCopyLink,
+  onSharePrivateBin,
   onSelectHistory
 }: Props) => {
   return (
@@ -41,6 +42,7 @@ const FileDetails = ({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onCopyLink={onCopyLink}
+                onSharePrivateBin={onSharePrivateBin}
                 onSelectHistory={onSelectHistory}
               />
             </div>

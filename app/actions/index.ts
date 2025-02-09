@@ -24,6 +24,7 @@ import './recentRepositories';
 import repository from './repository';
 import search from './search';
 import settings from './settings';
+import share from './share';
 import treeState from './treeState';
 import usersHistory from './usersHistory';
 
@@ -46,6 +47,7 @@ export default (history?: History) =>
     repository,
     search,
     settings,
+    share,
     treeState,
     usersHistory,
 

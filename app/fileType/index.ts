@@ -53,6 +53,7 @@ export interface Type<C> {
   parse?: (buf: Buffer) => C;
   write?: (content: C) => Buffer;
   readField?: (content: C, field: WellKnownField) => string | null | undefined;
+  toPlainText?: (name: string, content: C) => string;
 }
 
 const TYPES: { [id: string]: Type<any> } = {};

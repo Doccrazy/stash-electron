@@ -6,6 +6,7 @@ import { Dispatch, RootState } from '../actions/types';
 import { commitsFor, excludingAuth, findHistoricEntry } from '../store/selectors';
 import { copyStashLink } from '../store/stashLinkHandler';
 import { isAccessible } from '../utils/repository';
+import { prepareShare } from '../actions/share';
 
 export default connect(
   (state: RootState) => ({
@@ -23,6 +24,7 @@ export default connect(
     onEdit: () => dispatch(openCurrent()),
     onDelete: () => dispatch(prepareDelete()),
     onCopyLink: () => dispatch((_, getState) => copyStashLink(getState().currentEntry.ptr!)),
+    onSharePrivateBin: () => dispatch(prepareShare()),
     onSelectHistory: (oid?: string) => dispatch(selectHistory(oid))
   })
 )(FileDetails);

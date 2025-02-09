@@ -34,9 +34,11 @@ action:
     export: Export
     history: Show history
     save: Save
-    shareLink: Share link
+    shareLink: Copy Stash link
+    sharePrivateBin: Share on PrivateBin
     saveChanges: Save changes
     revertChanges: Revert changes
+    confirm: Confirm
   folder:
     permissions: Permissions
     addExternal: Add external files
@@ -76,6 +78,7 @@ page:
     language: UI Language
     autoLock: Inactivity lock (minutes)
     scale: UI scale / root font size (px)
+    privateBinSite: URL of the PrivateBin installation used for sharing credentials
     changelog.title: Show changelog
     appVersion: "{name} {version} ({gitVersion} built {buildDate, date, shortTimeMedium}, running on Electron {electronVersion})"
     help:
@@ -282,6 +285,31 @@ component:
       folders: Authorized folders
   usersHistoryPopup:
     title: Known users history
+  sharePrivateBinPopup:
+    title: Share entry on PrivateBin
+    info: |
+      By sharing {entry} on PrivateBin site {siteLink}, the entry data is securely encrypted on your machine using AES-256
+      before upload. Only owners of the generated link will be able to decrypt the data locally on their machine.
+      No unencrypted data is ever transmitted to the PrivateBin site.
+    field:
+      expire: Expiration
+      burnAfterReading: Burn after reading
+    expire:
+      5min: 5 minutes
+      10min: 10 minutes
+      1hour: 1 hour
+      1day: 1 day
+      1week: 1 week
+      1month: 1 month
+      1year: 1 year
+      never: never
+  shareSuccessPopup:
+    title: Entry shared
+    info: |
+      The entry {entry} has been successfully shared on PrivateBin. The link has been copied to your clipboard.
+      The link is only accessible for the selected duration, and may be deleted after first access.
+    action:
+      copy: Copy link
 fileType:
   default:
     field:

@@ -120,7 +120,8 @@ function applyDefaults(settings: Partial<SettingsMap>): SettingsMap {
     locale: settings.locale || bestSupportedLocale(remote.app.getLocale()),
     storedLogins: settings.storedLogins || [],
     repositories: settings.repositories || [],
-    privateKeys: settings.privateKeys || []
+    privateKeys: settings.privateKeys || [],
+    privateBinSite: settings.privateBinSite || 'https://privatebin.net/'
   };
 }
 

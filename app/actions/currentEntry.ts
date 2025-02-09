@@ -179,11 +179,16 @@ export function openUrl(ptr?: EntryPtr): Thunk<Promise<void>> {
   });
 }
 
-function withEntryOrCurrent(ptr: EntryPtr | undefined, cb: (type: Type<any>, content: any) => void | Promise<void>): Thunk<Promise<void>> {
+export function withEntryOrCurrent(
+  ptr: EntryPtr | undefined,
+  cb: (type: Type<any>, content: any, ptr: EntryPtr, dispatch: Dispatch, getState: () => RootState) => void | Promise<void>
+): Thunk<Promise<void>> {
   return async (dispatch, getState) => {
     let parsedContent: any;
     let type: Type<any>;
+    let entryPtr: EntryPtr;
     if (ptr) {
+      entryPtr = ptr;
       const content = await Repository.getRepo().readFile(ptr.nodeId, ptr.entry);
       type = typeFor(ptr.entry);
       if (!type.parse) {
@@ -195,6 +200,7 @@ function withEntryOrCurrent(ptr: EntryPtr | undefined, cb: (type: Type<any>, con
       if (!currentEntry.ptr) {
         return;
       }
+      entryPtr = currentEntry.ptr;
       if (!currentEntry.parsedContent) {
         await dispatch(read());
       }
@@ -205,7 +211,7 @@ function withEntryOrCurrent(ptr: EntryPtr | undefined, cb: (type: Type<any>, con
       type = typeFor(currentEntry.ptr.entry);
     }
 
-    await cb(type, parsedContent);
+    await cb(type, parsedContent, entryPtr, dispatch, getState);
   };
 }
 
