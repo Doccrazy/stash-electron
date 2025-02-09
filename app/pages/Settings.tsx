@@ -43,6 +43,12 @@ const SettingsPage = () => (
         </Label>
         <SettingField field="rootFontSize" type="number" min={10} max={20} />
       </FormGroup>
+      <FormGroup>
+        <Label>
+          <Trans id="page.settings.privateBinSite" />
+        </Label>
+        <SettingField field="privateBinSite" type="url" />
+      </FormGroup>
       <FormGroup className="text-right">
         <SaveSettingsButton color="success">
           <Trans id="action.common.save" />

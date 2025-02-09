@@ -22,6 +22,7 @@ import { State as RepositoryState } from './repository';
 import { State as SearchState } from './search';
 import { State as SettingsState } from './settings';
 import { State as TreeStateState } from './treeState';
+import { State as ShareState } from './share';
 import { State as UsersHistoryState } from './usersHistory';
 
 export interface RootState {
@@ -42,6 +43,7 @@ export interface RootState {
   repository: RepositoryState;
   search: SearchState;
   settings: SettingsState;
+  share: ShareState;
   treeState: TreeStateState;
   usersHistory: UsersHistoryState;
 

@@ -34,9 +34,11 @@ action:
     export: Exportieren
     history: Verlauf anzeigen
     save: Speichern
-    shareLink: Link teilen
+    shareLink: Stash-Link kopieren
+    sharePrivateBin: Über PrivateBin freigeben
     saveChanges: Speichern
     revertChanges: Änderungen verwerfen
+    confirm: Bestätigen
   folder:
     permissions: Berechtigungen
     addExternal: Dateien hinzufügen
@@ -76,6 +78,7 @@ page:
     language: Anzeigesprache
     autoLock: Inaktivitätssperre (minuten)
     scale: UI-Skalierung / Font-Größe (px)
+    privateBinSite: URL der PrivateBin-Installation, die für das Teilen von Zugangsdaten verwendet wird
     changelog.title: Liste der Änderungen anzeigen
     appVersion: "{name} {version} ({gitVersion} erstellt am {buildDate, date, shortTimeMedium}, basiert auf Electron {electronVersion})"
     help:
@@ -282,6 +285,31 @@ component:
       folders: Berechtigte Ordner
   usersHistoryPopup:
     title: Änderungen an Benutzern
+  sharePrivateBinPopup:
+    title: Eintrag auf PrivateBin teilen
+    info: |
+      Indem Sie {entry} auf der PrivateBin-Seite {siteLink} teilen, wird der Eintrag vor dem Upload lokal auf Ihrem Rechner
+      mit AES-256 sicher verschlüsselt. Nur Besitzer des generierten Links können die Daten lokal auf ihrem Rechner entschlüsseln.
+      Keine unverschlüsselten Daten werden jemals an die PrivateBin-Seite übertragen.
+    field:
+      expire: Ablaufzeit
+      burnAfterReading: Einmaliges Lesen
+    expire:
+      5min: 5 Minuten
+      10min: 10 Minuten
+      1hour: 1 Stunde
+      1day: 1 Tag
+      1week: 1 Woche
+      1month: 1 Monat
+      1year: 1 Jahr
+      never: niemals
+  shareSuccessPopup:
+    title: Eintrag geteilt
+    info: |
+      Der Eintrag {entry} wurde erfolgreich auf PrivateBin geteilt. Der Link wurde in die Zwischenablage kopiert.
+      Der Link ist nur für die gewählte Gültigkeit abrufbar und wird ggf. nach einmaligem Aufruf gelöscht.
+    action:
+      copy: Link kopieren
 fileType:
   default:
     field:

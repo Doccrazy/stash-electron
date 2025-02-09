@@ -22,6 +22,8 @@ import NoKeyAlert from '../containers/NoKeyAlert';
 import AuthorizedUsersPopup from '../containers/AuthorizedUsersPopup';
 import RefreshLink from '../containers/RefreshLink';
 import SettingsToggleLink from '../containers/SettingsToggleLink';
+import SharePrivateBinPopup from '../containers/SharePrivateBinPopup';
+import ShareSuccessPopup from '../containers/ShareSuccessPopup';
 
 export default class HomePage extends React.Component<{}, {}> {
   render() {
@@ -35,6 +37,8 @@ export default class HomePage extends React.Component<{}, {}> {
         <AuthorizedUsersPopup />
         <MoveFolderPopup />
         <FolderHistoryPopup />
+        <SharePrivateBinPopup />
+        <ShareSuccessPopup />
         <ScrollWatch className={styles.sidebar} step={20} classes={['', styles.scroll1, styles.scroll2, styles.scroll3]}>
           <div className={styles.sideToolbar}>
             <span className="pull-right">

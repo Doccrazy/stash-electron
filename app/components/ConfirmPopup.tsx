@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
+import withTrans from '../utils/i18n/withTrans';
 
 export interface Props {
   open?: boolean;
@@ -7,6 +8,7 @@ export interface Props {
   title: string;
   feedback?: string;
   valid?: boolean;
+  size?: string;
   children: any;
   onConfirm: () => void;
   onClose?: () => void;
@@ -18,8 +20,8 @@ function doFocus(ref: HTMLButtonElement) {
   }
 }
 
-const ConfirmPopup = ({ open, disabled, title, feedback, valid = true, children, onConfirm, onClose }: Props) => (
-  <Modal isOpen={open} toggle={onClose} returnFocusAfterClose={false}>
+const ConfirmPopup = withTrans<Props>()(({ t, open, disabled, title, feedback, valid = true, size, children, onConfirm, onClose }) => (
+  <Modal isOpen={open} toggle={onClose} returnFocusAfterClose={false} size={size}>
     <ModalHeader toggle={onClose}>{title}</ModalHeader>
     <ModalBody>
       <Form id="editForm" onSubmit={onConfirm}>
@@ -31,15 +33,15 @@ const ConfirmPopup = ({ open, disabled, title, feedback, valid = true, children,
         {feedback}
       </div>
       <Button type="submit" form="editForm" innerRef={doFocus} color="primary" disabled={!valid || disabled}>
-        Confirm
+        {t('action.common.confirm')}
       </Button>{' '}
       {onClose && (
         <Button color="secondary" onClick={onClose} disabled={disabled}>
-          Cancel
+          {t('action.common.cancel')}
         </Button>
       )}
     </ModalFooter>
   </Modal>
-);
+));
 
 export default ConfirmPopup;

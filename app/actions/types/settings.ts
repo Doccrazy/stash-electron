@@ -13,6 +13,7 @@ export interface StringSettings {
   inactivityTimeout: number;
   keyDisplayFormat: KeyFormat;
   locale: string;
+  privateBinSite: string;
 }
 
 export interface BoolSettings {

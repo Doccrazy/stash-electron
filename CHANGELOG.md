@@ -1,5 +1,9 @@
 ## v1.4.0 (no planned release date)
 
+#### New features
+
+- Entries can now be securely shared on PrivateBin
+
 #### Changes
 
 - Electron has been upgraded to v27.1.3
